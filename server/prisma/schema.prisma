@@ -1,0 +1,47 @@
+// Prisma Schema Language (PSL)
+// https://github.com/prisma/prisma2/blob/master/docs/prisma-schema-file.md
+// https://github.com/prisma/specs/tree/master/schema
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.db"
+  default  = true
+}
+
+generator photon {
+  provider = "photonjs"
+}
+
+model User {
+  id            String      @default(cuid()) @id
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  lastLoginAt   DateTime?
+  name          String?     @unique
+  email         String      @unique
+  events        Event[]
+  questions     Question[]
+}
+
+model Event{
+    id          String      @default(uuid()) @id
+    code        String      @unique
+    name        String
+    owner       User
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    startAt     DateTime?
+    endAt       DateTime?
+    questions   Question[]
+}
+
+model Question{
+    id          String      @id
+    event       Event
+    user        User?
+    username    String?
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    content     String
+    vote        Int         @default(0)
+}
