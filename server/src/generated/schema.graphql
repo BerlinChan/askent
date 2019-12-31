@@ -22,24 +22,24 @@ input DateTimeFilter {
 type Event {
   code: String!
   createdAt: DateTime!
-  endAt: DateTime
+  endAt: DateTime!
   id: UUID!
   name: String!
   owner: User!
   questions(after: String, before: String, first: Int, last: Int, skip: Int): [Question!]!
-  startAt: DateTime
+  startAt: DateTime!
   updatedAt: DateTime!
 }
 
 input EventCreateInput {
   code: String!
   createdAt: DateTime
-  endAt: DateTime
+  endAt: DateTime!
   id: UUID
   name: String!
   owner: UserCreateOneWithoutOwnerInput!
   questions: QuestionCreateManyWithoutQuestionsInput
-  startAt: DateTime
+  startAt: DateTime!
   updatedAt: DateTime
 }
 
@@ -56,22 +56,22 @@ input EventCreateOneWithoutEventInput {
 input EventCreateWithoutOwnerInput {
   code: String!
   createdAt: DateTime
-  endAt: DateTime
+  endAt: DateTime!
   id: UUID
   name: String!
   questions: QuestionCreateManyWithoutQuestionsInput
-  startAt: DateTime
+  startAt: DateTime!
   updatedAt: DateTime
 }
 
 input EventCreateWithoutQuestionsInput {
   code: String!
   createdAt: DateTime
-  endAt: DateTime
+  endAt: DateTime!
   id: UUID
   name: String!
   owner: UserCreateOneWithoutOwnerInput!
-  startAt: DateTime
+  startAt: DateTime!
   updatedAt: DateTime
 }
 
@@ -85,13 +85,13 @@ input EventScalarWhereInput {
   AND: [EventScalarWhereInput!]
   code: StringFilter
   createdAt: DateTimeFilter
-  endAt: NullableDateTimeFilter
+  endAt: DateTimeFilter
   id: UUIDFilter
   name: StringFilter
   NOT: [EventScalarWhereInput!]
   OR: [EventScalarWhereInput!]
   questions: QuestionFilter
-  startAt: NullableDateTimeFilter
+  startAt: DateTimeFilter
   updatedAt: DateTimeFilter
 }
 
@@ -193,14 +193,14 @@ input EventWhereInput {
   AND: [EventWhereInput!]
   code: StringFilter
   createdAt: DateTimeFilter
-  endAt: NullableDateTimeFilter
+  endAt: DateTimeFilter
   id: UUIDFilter
   name: StringFilter
   NOT: [EventWhereInput!]
   OR: [EventWhereInput!]
   owner: UserWhereInput
   questions: QuestionFilter
-  startAt: NullableDateTimeFilter
+  startAt: DateTimeFilter
   updatedAt: DateTimeFilter
 }
 
@@ -291,6 +291,7 @@ input QuestionCreateInput {
   createdAt: DateTime
   event: EventCreateOneWithoutEventInput!
   id: String!
+  ip: String!
   updatedAt: DateTime
   user: UserCreateOneWithoutUserInput
   username: String
@@ -306,6 +307,7 @@ input QuestionCreateWithoutEventInput {
   content: String!
   createdAt: DateTime
   id: String!
+  ip: String!
   updatedAt: DateTime
   user: UserCreateOneWithoutUserInput
   username: String
@@ -317,6 +319,7 @@ input QuestionCreateWithoutUserInput {
   createdAt: DateTime
   event: EventCreateOneWithoutEventInput!
   id: String!
+  ip: String!
   updatedAt: DateTime
   username: String
   vote: Int
@@ -333,6 +336,7 @@ input QuestionScalarWhereInput {
   content: StringFilter
   createdAt: DateTimeFilter
   id: StringFilter
+  ip: StringFilter
   NOT: [QuestionScalarWhereInput!]
   OR: [QuestionScalarWhereInput!]
   updatedAt: DateTimeFilter
@@ -345,6 +349,7 @@ input QuestionUpdateInput {
   createdAt: DateTime
   event: EventUpdateOneRequiredWithoutQuestionsInput
   id: String
+  ip: String
   updatedAt: DateTime
   user: UserUpdateOneWithoutQuestionsInput
   username: String
@@ -355,6 +360,7 @@ input QuestionUpdateManyDataInput {
   content: String
   createdAt: DateTime
   id: String
+  ip: String
   updatedAt: DateTime
   username: String
   vote: Int
@@ -364,6 +370,7 @@ input QuestionUpdateManyMutationInput {
   content: String
   createdAt: DateTime
   id: String
+  ip: String
   updatedAt: DateTime
   username: String
   vote: Int
@@ -402,6 +409,7 @@ input QuestionUpdateWithoutEventDataInput {
   content: String
   createdAt: DateTime
   id: String
+  ip: String
   updatedAt: DateTime
   user: UserUpdateOneWithoutQuestionsInput
   username: String
@@ -413,6 +421,7 @@ input QuestionUpdateWithoutUserDataInput {
   createdAt: DateTime
   event: EventUpdateOneRequiredWithoutQuestionsInput
   id: String
+  ip: String
   updatedAt: DateTime
   username: String
   vote: Int
@@ -446,6 +455,7 @@ input QuestionWhereInput {
   createdAt: DateTimeFilter
   event: EventWhereInput
   id: StringFilter
+  ip: StringFilter
   NOT: [QuestionWhereInput!]
   OR: [QuestionWhereInput!]
   updatedAt: DateTimeFilter

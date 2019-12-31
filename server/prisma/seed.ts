@@ -11,6 +11,8 @@ async function main() {
                 create: {
                     code: 'graphql',
                     name: 'GraphQL Conf',
+                    startAt: new Date('2019-11-02T01:01:01Z'),
+                    endAt: new Date('2019-11-05T02:02:02Z'),
                 },
             },
         },
@@ -24,16 +26,21 @@ async function main() {
                     {
                         code: 'Subscribe to GraphQL Weekly for community news',
                         name: 'https://graphqlweekly.com/',
+                        startAt: new Date('2019-11-03T03:03:03Z'),
+                        endAt: new Date('2019-11-04T04:04:04Z'),
                     },
                     {
                         code: 'Follow Prisma on Twitter',
                         name: 'https://twitter.com/prisma/',
+                        startAt: new Date('2019-12-09T05:05:05Z'),
+                        endAt: new Date('2019-12-13T05:05:05Z'),
                     },
                 ],
             },
         },
     })
-    console.log({user1, user2})
+    const user1Events = await photon.users.findOne({where: {name: 'Bob'}})
+    console.log({user1, user2, user1Events})
 }
 
 main()

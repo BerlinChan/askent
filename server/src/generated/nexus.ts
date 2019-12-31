@@ -33,12 +33,12 @@ export interface NexusGenInputs {
   EventCreateInput: { // input type
     code: string; // String!
     createdAt?: any | null; // DateTime
-    endAt?: any | null; // DateTime
+    endAt: any; // DateTime!
     id?: any | null; // UUID
     name: string; // String!
     owner: NexusGenInputs['UserCreateOneWithoutOwnerInput']; // UserCreateOneWithoutOwnerInput!
     questions?: NexusGenInputs['QuestionCreateManyWithoutQuestionsInput'] | null; // QuestionCreateManyWithoutQuestionsInput
-    startAt?: any | null; // DateTime
+    startAt: any; // DateTime!
     updatedAt?: any | null; // DateTime
   }
   EventCreateManyWithoutEventsInput: { // input type
@@ -52,21 +52,21 @@ export interface NexusGenInputs {
   EventCreateWithoutOwnerInput: { // input type
     code: string; // String!
     createdAt?: any | null; // DateTime
-    endAt?: any | null; // DateTime
+    endAt: any; // DateTime!
     id?: any | null; // UUID
     name: string; // String!
     questions?: NexusGenInputs['QuestionCreateManyWithoutQuestionsInput'] | null; // QuestionCreateManyWithoutQuestionsInput
-    startAt?: any | null; // DateTime
+    startAt: any; // DateTime!
     updatedAt?: any | null; // DateTime
   }
   EventCreateWithoutQuestionsInput: { // input type
     code: string; // String!
     createdAt?: any | null; // DateTime
-    endAt?: any | null; // DateTime
+    endAt: any; // DateTime!
     id?: any | null; // UUID
     name: string; // String!
     owner: NexusGenInputs['UserCreateOneWithoutOwnerInput']; // UserCreateOneWithoutOwnerInput!
-    startAt?: any | null; // DateTime
+    startAt: any; // DateTime!
     updatedAt?: any | null; // DateTime
   }
   EventFilter: { // input type
@@ -78,13 +78,13 @@ export interface NexusGenInputs {
     AND?: NexusGenInputs['EventScalarWhereInput'][] | null; // [EventScalarWhereInput!]
     code?: NexusGenInputs['StringFilter'] | null; // StringFilter
     createdAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
-    endAt?: NexusGenInputs['NullableDateTimeFilter'] | null; // NullableDateTimeFilter
+    endAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
     id?: NexusGenInputs['UUIDFilter'] | null; // UUIDFilter
     name?: NexusGenInputs['StringFilter'] | null; // StringFilter
     NOT?: NexusGenInputs['EventScalarWhereInput'][] | null; // [EventScalarWhereInput!]
     OR?: NexusGenInputs['EventScalarWhereInput'][] | null; // [EventScalarWhereInput!]
     questions?: NexusGenInputs['QuestionFilter'] | null; // QuestionFilter
-    startAt?: NexusGenInputs['NullableDateTimeFilter'] | null; // NullableDateTimeFilter
+    startAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
     updatedAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
   }
   EventUpdateInput: { // input type
@@ -174,14 +174,14 @@ export interface NexusGenInputs {
     AND?: NexusGenInputs['EventWhereInput'][] | null; // [EventWhereInput!]
     code?: NexusGenInputs['StringFilter'] | null; // StringFilter
     createdAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
-    endAt?: NexusGenInputs['NullableDateTimeFilter'] | null; // NullableDateTimeFilter
+    endAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
     id?: NexusGenInputs['UUIDFilter'] | null; // UUIDFilter
     name?: NexusGenInputs['StringFilter'] | null; // StringFilter
     NOT?: NexusGenInputs['EventWhereInput'][] | null; // [EventWhereInput!]
     OR?: NexusGenInputs['EventWhereInput'][] | null; // [EventWhereInput!]
     owner?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
     questions?: NexusGenInputs['QuestionFilter'] | null; // QuestionFilter
-    startAt?: NexusGenInputs['NullableDateTimeFilter'] | null; // NullableDateTimeFilter
+    startAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
     updatedAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
   }
   EventWhereUniqueInput: { // input type
@@ -226,6 +226,7 @@ export interface NexusGenInputs {
     createdAt?: any | null; // DateTime
     event: NexusGenInputs['EventCreateOneWithoutEventInput']; // EventCreateOneWithoutEventInput!
     id: string; // String!
+    ip: string; // String!
     updatedAt?: any | null; // DateTime
     user?: NexusGenInputs['UserCreateOneWithoutUserInput'] | null; // UserCreateOneWithoutUserInput
     username?: string | null; // String
@@ -239,6 +240,7 @@ export interface NexusGenInputs {
     content: string; // String!
     createdAt?: any | null; // DateTime
     id: string; // String!
+    ip: string; // String!
     updatedAt?: any | null; // DateTime
     user?: NexusGenInputs['UserCreateOneWithoutUserInput'] | null; // UserCreateOneWithoutUserInput
     username?: string | null; // String
@@ -249,6 +251,7 @@ export interface NexusGenInputs {
     createdAt?: any | null; // DateTime
     event: NexusGenInputs['EventCreateOneWithoutEventInput']; // EventCreateOneWithoutEventInput!
     id: string; // String!
+    ip: string; // String!
     updatedAt?: any | null; // DateTime
     username?: string | null; // String
     vote?: number | null; // Int
@@ -263,6 +266,7 @@ export interface NexusGenInputs {
     content?: NexusGenInputs['StringFilter'] | null; // StringFilter
     createdAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    ip?: NexusGenInputs['StringFilter'] | null; // StringFilter
     NOT?: NexusGenInputs['QuestionScalarWhereInput'][] | null; // [QuestionScalarWhereInput!]
     OR?: NexusGenInputs['QuestionScalarWhereInput'][] | null; // [QuestionScalarWhereInput!]
     updatedAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
@@ -274,6 +278,7 @@ export interface NexusGenInputs {
     createdAt?: any | null; // DateTime
     event?: NexusGenInputs['EventUpdateOneRequiredWithoutQuestionsInput'] | null; // EventUpdateOneRequiredWithoutQuestionsInput
     id?: string | null; // String
+    ip?: string | null; // String
     updatedAt?: any | null; // DateTime
     user?: NexusGenInputs['UserUpdateOneWithoutQuestionsInput'] | null; // UserUpdateOneWithoutQuestionsInput
     username?: string | null; // String
@@ -283,6 +288,7 @@ export interface NexusGenInputs {
     content?: string | null; // String
     createdAt?: any | null; // DateTime
     id?: string | null; // String
+    ip?: string | null; // String
     updatedAt?: any | null; // DateTime
     username?: string | null; // String
     vote?: number | null; // Int
@@ -291,6 +297,7 @@ export interface NexusGenInputs {
     content?: string | null; // String
     createdAt?: any | null; // DateTime
     id?: string | null; // String
+    ip?: string | null; // String
     updatedAt?: any | null; // DateTime
     username?: string | null; // String
     vote?: number | null; // Int
@@ -333,6 +340,7 @@ export interface NexusGenInputs {
     content?: string | null; // String
     createdAt?: any | null; // DateTime
     id?: string | null; // String
+    ip?: string | null; // String
     updatedAt?: any | null; // DateTime
     user?: NexusGenInputs['UserUpdateOneWithoutQuestionsInput'] | null; // UserUpdateOneWithoutQuestionsInput
     username?: string | null; // String
@@ -343,6 +351,7 @@ export interface NexusGenInputs {
     createdAt?: any | null; // DateTime
     event?: NexusGenInputs['EventUpdateOneRequiredWithoutQuestionsInput'] | null; // EventUpdateOneRequiredWithoutQuestionsInput
     id?: string | null; // String
+    ip?: string | null; // String
     updatedAt?: any | null; // DateTime
     username?: string | null; // String
     vote?: number | null; // Int
@@ -363,6 +372,7 @@ export interface NexusGenInputs {
     createdAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
     event?: NexusGenInputs['EventWhereInput'] | null; // EventWhereInput
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    ip?: NexusGenInputs['StringFilter'] | null; // StringFilter
     NOT?: NexusGenInputs['QuestionWhereInput'][] | null; // [QuestionWhereInput!]
     OR?: NexusGenInputs['QuestionWhereInput'][] | null; // [QuestionWhereInput!]
     updatedAt?: NexusGenInputs['DateTimeFilter'] | null; // DateTimeFilter
@@ -603,12 +613,12 @@ export interface NexusGenFieldTypes {
   Event: { // field return type
     code: string; // String!
     createdAt: any; // DateTime!
-    endAt: any | null; // DateTime
+    endAt: any; // DateTime!
     id: any; // UUID!
     name: string; // String!
     owner: NexusGenRootTypes['User']; // User!
     questions: NexusGenRootTypes['Question'][]; // [Question!]!
-    startAt: any | null; // DateTime
+    startAt: any; // DateTime!
     updatedAt: any; // DateTime!
   }
   Mutation: { // field return type
