@@ -1,9 +1,9 @@
 ## TODO
 
 - [x] [Use Apollo Server Integrations](https://github.com/apollographql/apollo-server#installation-integrations)
+- [ ] [Store password hash use bcrypt](https://www.youtube.com/watch?v=Ud5xKCYQTjM)
 - [ ] API registry/checkNameExist/checkEmailExist
 - [ ] RSA encryption for password transfer
-- [ ] [Store password hash use bcrypt](https://github.com/WebDevSimplified/Nodejs-User-Authentication/blob/master/server.js)
 - [ ] [API login/logout](https://github.com/WebDevSimplified/Nodejs-Passport-Login/blob/master/server.js), learn Auth0/npm passport
 - [ ] [Add JWT](https://github.com/prisma/prisma-examples/tree/prisma2/typescript/graphql-auth)
 - [ ] Add API createEvent

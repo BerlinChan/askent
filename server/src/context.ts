@@ -3,10 +3,10 @@ import {ExpressContext} from 'apollo-server-express/src/ApolloServer'
 
 const photon = new Photon()
 
-export interface Context {
+export interface Context extends ExpressContext {
     photon: Photon
 }
 
 export function createContext({req, res, connection}: ExpressContext): Context {
-    return {photon}
+    return {photon, req, res, connection}
 }
