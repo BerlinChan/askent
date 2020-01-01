@@ -7,6 +7,7 @@ async function main() {
         data: {
             email: 'alice@prisma.io',
             name: 'Alice',
+            password: '123456',
             events: {
                 create: {
                     code: 'graphql',
@@ -21,6 +22,7 @@ async function main() {
         data: {
             email: 'bob@prisma.io',
             name: 'Bob',
+            password: '123456',
             events: {
                 create: [
                     {
@@ -39,8 +41,16 @@ async function main() {
             },
         },
     })
-    const user1Events = await photon.users.findOne({where: {name: 'Bob'}})
-    console.log({user1, user2, user1Events})
+    const user1Events = await photon.events.findMany({where: {owner: {name: 'Alice'}}})
+    const user1Question = await photon.questions.create({
+        data: {
+            event: {connect: {id: user1Events[0].id}},
+            content: 'How can I use?',
+            user: {connect: {id: user1.id}},
+        },
+    })
+
+    console.log({user1, user2, user1Events, user1Question})
 }
 
 main()

@@ -1,5 +1,7 @@
 {
-  "name": "askent",
+  "name": "askent-server",
+  "version": "0.1.0",
+  "description": "",
   "scripts": {
     "start": "node dist/server",
     "clean": "rm -rf dist",
@@ -9,7 +11,8 @@
     "generate:nexus": "ts-node --transpile-only src/schema",
     "postinstall": "npm -s run generate",
     "dev": "ts-node-dev --no-notify --respawn --transpileOnly src/server",
-    "seed": "ts-node prisma/seed"
+    "seed": "ts-node prisma/seed",
+    "prisma-dev": "npx prisma2 dev"
   },
   "dependencies": {
     "@prisma/photon": "2.0.0-preview019",

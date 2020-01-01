@@ -1,4 +1,4 @@
-import {objectType, extendType} from 'nexus'
+import {objectType, extendType, stringArg} from 'nexus'
 
 export const User = objectType({
     name: 'User',
@@ -14,23 +14,24 @@ export const User = objectType({
     },
 })
 
-export const userQuery = extendType({
-    type: 'Query',
-    definition(t) {
-        t.crud.user()
-        t.crud.users()
-    },
-})
-
 export const userMutation = extendType({
     type: 'Mutation',
     definition(t) {
-        t.crud.createOneUser()
-        t.crud.updateOneUser()
-        t.crud.upsertOneUser()
-        t.crud.deleteOneUser()
+        t.field('createUser', {
+            type: 'User',
+            args: {
+                name: stringArg(),
+                email: stringArg(),
+                password: stringArg(),
+            },
+            resolve: (parent, args, context, info) => {
+                return context.photon.users.create({
+                    data: args,
+                    select: {id: true, name: true, email: true, password: false},
+                })
+            },
+        })
 
-        t.crud.updateManyUser()
-        t.crud.deleteManyUser()
+        // t.crud.createOneUser()
     },
 })
