@@ -1,4 +1,5 @@
 import {objectType, extendType, stringArg} from 'nexus'
+import {UserSelect, UserCreateInput} from "@prisma/photon";
 
 export const User = objectType({
     name: 'User',
@@ -17,17 +18,17 @@ export const User = objectType({
 export const userMutation = extendType({
     type: 'Mutation',
     definition(t) {
-        t.field('createUser', {
+        t.field('register', {
             type: 'User',
             args: {
-                name: stringArg(),
-                email: stringArg(),
-                password: stringArg(),
+                name: stringArg({required: true, description: 'username'}),
+                email: stringArg({required: true}),
+                password: stringArg({required: true}),
             },
-            resolve: (parent, args, context, info) => {
-                return context.photon.users.create({
-                    data: args,
-                    select: {id: true, name: true, email: true, password: false},
+            resolve: async (parent, args, context, info) => {
+                return await context.photon.users.create({
+                    data: args as UserCreateInput,
+                    select: {id: true, name: true, email: true} as UserSelect,
                 })
             },
         })
