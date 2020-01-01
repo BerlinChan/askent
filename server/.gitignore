@@ -1,2 +1,6 @@
+dist/
+schema.graphql
+
 # prisma
-server/prisma/migrations/
+prisma/migrations/dev/
+prisma/dev.db
