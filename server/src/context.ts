@@ -8,5 +8,6 @@ export interface Context extends ExpressContext {
 }
 
 export function createContext({req, res, connection}: ExpressContext): Context {
+    console.log('Authorization:', req.headers.authorization)
     return {photon, req, res, connection}
 }

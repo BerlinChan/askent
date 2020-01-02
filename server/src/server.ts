@@ -1,9 +1,20 @@
+import dotenv from 'dotenv'
+import path from 'path'
 import express from 'express'
 import {ApolloServer} from 'apollo-server-express'
 import {schema} from './schema'
 import {createContext} from './context'
+import {applyMiddleware} from 'graphql-middleware'
+import {permissions} from "./permissions"
 
-const server = new ApolloServer({schema, context: createContext});
+const dotenvResult = dotenv.config({path: path.join(__dirname, '../.env.test')})
+if (dotenvResult.error) {
+    throw dotenvResult.error
+}
+const server = new ApolloServer({
+    schema: applyMiddleware(schema, permissions),
+    context: createContext,
+});
 const app = express();
 
 server.applyMiddleware({app});
