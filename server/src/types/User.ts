@@ -59,7 +59,7 @@ export const userQuery = extendType({
             },
         })
         t.field('PGP', {
-            type: PGP,
+            type: 'PGP',
             resolve: (root, args, ctx) => {
                 return {pubKey: process.env.PGP_PUB_KEY} as NexusGenFieldTypes['PGP']
             },
@@ -78,8 +78,9 @@ export const userMutation = extendType({
                 email: stringArg({required: true, description: 'User Email'}),
                 password: stringArg({required: true}),
             },
-            resolve: async (parent, args, context, info) => {
+            resolve: async (root, args, context, info) => {
                 // TODO: move hash to client
+                // const exist = await root.Query
                 const hashedPassword = await hash(args.password, 10)
                 const user = await context.photon.users.create({
                     data: {...args, password: hashedPassword} as UserCreateInput,

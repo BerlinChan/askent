@@ -44,5 +44,5 @@ model Question{
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     content     String
-    vote        Int         @default(0)
+    vote        Int?        @default(0)
 }

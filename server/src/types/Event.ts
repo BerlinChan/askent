@@ -19,8 +19,6 @@ export const Event = objectType({
 export const eventQuery = extendType({
     type: 'Query',
     definition(t) {
-        t.crud.event()
-        t.crud.events()
     },
 })
 

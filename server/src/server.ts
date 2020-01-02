@@ -11,6 +11,8 @@ const dotenvResult = dotenv.config({path: path.join(__dirname, '../.env.test')})
 if (dotenvResult.error) {
     throw dotenvResult.error
 }
+const {PORT = 4000} = process.env
+
 const server = new ApolloServer({
     schema: applyMiddleware(schema, permissions),
     context: createContext,
@@ -19,6 +21,6 @@ const app = express();
 
 server.applyMiddleware({app});
 
-app.listen({port: 4000}, () =>
-    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+app.listen({port: PORT}, () =>
+    console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
 );
