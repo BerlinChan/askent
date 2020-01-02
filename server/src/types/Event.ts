@@ -35,7 +35,7 @@ export const eventMutation = extendType({
                 startAt: arg({type: 'DateTime', required: true}),
                 endAt: arg({type: 'DateTime', required: true}),
             },
-            resolve: async (root, {code, name, startAt, endAt}, ctx) => {
+            resolve: (root, {code, name, startAt, endAt}, ctx) => {
                 const userId = getUserId(ctx)
                 return ctx.photon.events.create({
                     data: {
