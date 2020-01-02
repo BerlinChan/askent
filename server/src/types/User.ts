@@ -8,6 +8,7 @@ import {
 import {NexusGenFieldTypes} from 'nexus-typegen'
 import {hash, compare} from 'bcryptjs'
 import {sign} from 'jsonwebtoken'
+import {Context} from "../context";
 
 export const User = objectType({
     name: 'User',
@@ -46,16 +47,8 @@ export const userQuery = extendType({
             args: {
                 string: stringArg({required: true}),
             },
-            resolve: async (root, {string}, {photon}): Promise<boolean> => {
-                if (/@/.test(string)) {
-                    return Boolean(await photon.users.findOne({
-                        where: {email: string} as UserWhereUniqueInput,
-                    }))
-                } else {
-                    return Boolean(await photon.users.findOne({
-                        where: {name: string} as UserWhereUniqueInput,
-                    }))
-                }
+            resolve: async (root, {string}, ctx) => {
+                return await nameOrEmailExisted(ctx, string)
             },
         })
         t.field('PGP', {
@@ -66,7 +59,6 @@ export const userQuery = extendType({
         })
     },
 })
-
 export const userMutation = extendType({
     type: 'Mutation',
     definition(t) {
@@ -80,7 +72,11 @@ export const userMutation = extendType({
             },
             resolve: async (root, args, context, info) => {
                 // TODO: move hash to client
-                // const exist = await root.Query
+                if (await nameOrEmailExisted(context, args.name)) {
+                    throw new Error(`Name "${args.name}" has already existed.`)
+                } else if (await nameOrEmailExisted(context, args.email)) {
+                    throw new Error(`Email "${args.email}" has already existed.`)
+                }
                 const hashedPassword = await hash(args.password, 10)
                 const user = await context.photon.users.create({
                     data: {...args, password: hashedPassword} as UserCreateInput,
@@ -105,11 +101,11 @@ export const userMutation = extendType({
                 if (!user) {
                     throw new Error(`No user found for email: ${args.email}`)
                 }
+                // TODO: hash password on client side
                 const passwordValid = await compare(args.password as string, user.password)
                 if (!passwordValid) {
                     throw new Error('Invalid password')
                 }
-                // TODO: console.log(user)
 
                 return {
                     token: sign({userId: user.id}, process.env.JWT_SECRET as string),
@@ -119,3 +115,15 @@ export const userMutation = extendType({
         })
     },
 })
+
+async function nameOrEmailExisted(content: Context, string: string): Promise<boolean> {
+    if (/@/.test(string)) {
+        return Boolean(await content.photon.users.findOne({
+            where: {email: string} as UserWhereUniqueInput,
+        }))
+    } else {
+        return Boolean(await content.photon.users.findOne({
+            where: {name: string} as UserWhereUniqueInput,
+        }))
+    }
+}

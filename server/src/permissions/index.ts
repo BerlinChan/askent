@@ -9,8 +9,11 @@ const rules = {
 }
 
 export const permissions = shield({
-    Query: {},
+    Query: {
+        // events: rules.isAuthenticatedUser,
+    },
     Mutation: {
         createEvent: rules.isAuthenticatedUser,
+        createQuestion: rules.isAuthenticatedUser,
     },
 })
