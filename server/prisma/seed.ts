@@ -1,13 +1,14 @@
 import {Photon} from '@prisma/photon'
+import {hash} from 'bcryptjs'
 
 const photon = new Photon()
 
 async function main() {
     const user1 = await photon.users.create({
         data: {
-            email: 'alice@prisma.io',
-            name: 'Alice',
-            password: '123456',
+            email: 'w@w',
+            name: 'w',
+            password: await hash('w', 10),
             events: {
                 create: {
                     code: 'graphql',
@@ -41,12 +42,12 @@ async function main() {
             },
         },
     })
-    const user1Events = await photon.events.findMany({where: {owner: {name: 'Alice'}}})
+    const user1Events = await photon.events.findMany({where: {owner: {name: 'w'}}})
     const user1Question = await photon.questions.create({
         data: {
             event: {connect: {id: user1Events[0].id}},
             content: 'How can I use?',
-            user: {connect: {id: user1.id}},
+            author: {connect: {id: user1.id}},
         },
     })
 

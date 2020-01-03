@@ -39,10 +39,10 @@ model Event{
 model Question{
     id          String      @default(uuid()) @id
     event       Event
-    user        User?
+    author      User?
     username    String?
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     content     String
-    vote        Int?        @default(0)
+    votedUsers  User[]      @relation(name:"questionVotedUsersRelation")
 }

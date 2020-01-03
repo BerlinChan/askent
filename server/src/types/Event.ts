@@ -1,5 +1,6 @@
 import {objectType, extendType, stringArg, arg} from 'nexus'
 import {getUserId} from "../utils";
+import {Context} from "../context";
 
 export const Event = objectType({
     name: 'Event',
@@ -26,14 +27,14 @@ export const eventQuery = extendType({
                 return context.photon.events.findMany({where: {owner: {id: userId}}})
             },
         })
-        t.field('checkEventCodeExisted', {
+        t.field('checkEventCodeExist', {
             type: 'Boolean',
-            description: 'Check if a event code has already existed.',
+            description: 'Check if a event code has already exist.',
             args: {
                 code: stringArg({required: true}),
             },
             resolve: async (root, {code}, context) => {
-                return Boolean(await context.photon.events.findOne({where: {code}}))
+                return await checkEventCodeExist(context, code)
             },
         })
     },
@@ -50,7 +51,10 @@ export const eventMutation = extendType({
                 startAt: arg({type: 'DateTime', required: true}),
                 endAt: arg({type: 'DateTime', required: true}),
             },
-            resolve: (root, {code, name, startAt, endAt}, ctx) => {
+            resolve: async (root, {code, name, startAt, endAt}, ctx) => {
+                if (await checkEventCodeExist(ctx, code)) {
+                    throw new Error(`Code "${code}" has already exist.`)
+                }
                 const userId = getUserId(ctx)
                 return ctx.photon.events.create({
                     data: {
@@ -65,3 +69,7 @@ export const eventMutation = extendType({
         })
     },
 })
+
+async function checkEventCodeExist(context: Context, code: string) {
+    return Boolean(await context.photon.events.findOne({where: {code}}))
+}

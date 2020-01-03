@@ -21,7 +21,7 @@ export const User = objectType({
         t.model.email()
         t.model.events()
         t.model.questions()
-        t.model.password()
+        // t.model.password()
     },
 })
 export const AuthPayload = objectType({
@@ -41,14 +41,14 @@ export const PGP = objectType({
 export const userQuery = extendType({
     type: 'Query',
     definition(t) {
-        t.field('checkNameOrEmailExisted', {
+        t.field('checkNameOrEmailExist', {
             type: "Boolean",
-            description: "Check if a name or email has already existed.",
+            description: "Check if a name or email has already exist.",
             args: {
                 string: stringArg({required: true}),
             },
             resolve: async (root, {string}, ctx) => {
-                return await checkNameOrEmailExisted(ctx, string)
+                return await checkNameOrEmailExist(ctx, string)
             },
         })
         t.field('PGP', {
@@ -72,15 +72,14 @@ export const userMutation = extendType({
             },
             resolve: async (root, args, context, info) => {
                 // TODO: move hash to client
-                if (await checkNameOrEmailExisted(context, args.name)) {
-                    throw new Error(`Name "${args.name}" has already existed.`)
-                } else if (await checkNameOrEmailExisted(context, args.email)) {
-                    throw new Error(`Email "${args.email}" has already existed.`)
+                if (await checkNameOrEmailExist(context, args.name)) {
+                    throw new Error(`Name "${args.name}" has already exist.`)
+                } else if (await checkNameOrEmailExist(context, args.email)) {
+                    throw new Error(`Email "${args.email}" has already exist.`)
                 }
                 const hashedPassword = await hash(args.password, 10)
                 const user = await context.photon.users.create({
                     data: {...args, password: hashedPassword} as UserCreateInput,
-                    select: {id: true, name: true, email: true} as UserSelect,
                 })
                 return {
                     token: sign({userId: user.id}, process.env.JWT_SECRET as string),
@@ -116,7 +115,7 @@ export const userMutation = extendType({
     },
 })
 
-async function checkNameOrEmailExisted(context: Context, string: string): Promise<boolean> {
+async function checkNameOrEmailExist(context: Context, string: string): Promise<boolean> {
     if (/@/.test(string)) {
         return Boolean(await context.photon.users.findOne({
             where: {email: string} as UserWhereUniqueInput,
