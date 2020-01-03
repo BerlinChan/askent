@@ -8,6 +8,7 @@
 - [x] [API login/logout](https://github.com/WebDevSimplified/Nodejs-Passport-Login/blob/master/server.js)
 - [x] [Add JWT](https://github.com/prisma/prisma-examples/tree/prisma2/typescript/graphql-auth)
 - [x] Add API createEvent
+- [ ] API updateEvent
 - [ ] API pagination
 
 # GraphQL Apollo Server Example

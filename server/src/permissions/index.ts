@@ -22,6 +22,8 @@ export const permissions = shield({
     },
     Mutation: {
         createEvent: rules.isAuthenticatedUser,
+        updateEvent: rules.isQuestionAuthor,
+        deleteEvent: rules.isQuestionAuthor,
         createQuestion: rules.isAuthenticatedUser,
         updateQuestion: rules.isQuestionAuthor,
         deleteQuestion: rules.isQuestionAuthor,

@@ -1,6 +1,7 @@
-import {objectType, extendType, stringArg, arg} from 'nexus'
+import {objectType, extendType, stringArg, arg, idArg} from 'nexus'
 import {getUserId} from "../utils";
 import {Context} from "../context";
+import {Event as EventType} from "@prisma/photon";
 
 export const Event = objectType({
     name: 'Event',
@@ -67,9 +68,58 @@ export const eventMutation = extendType({
                 })
             },
         })
+        t.field('updateEvent', {
+            type: "Event",
+            args: {
+                eventId: idArg(),
+                code: stringArg({nullable: true}),
+                name: stringArg({nullable: true}),
+                startAt: arg({type: 'DateTime', nullable: true}),
+                endAt: arg({type: 'DateTime', nullable: true}),
+            },
+            resolve: async (root, args, context) => {
+                await checkEventExist(context, args.eventId as string)
+                const findEvent = await context.photon.events.findOne({
+                    where: {id: args.eventId},
+                    select: {code: true},
+                })
+                if (args.code && args.code !== findEvent?.code && await checkEventCodeExist(context, args.code)) {
+                    throw new Error(`Code "${args.code}" has already exist.`)
+                }
+                let event = Object.assign({},
+                    args?.code ? {code: args?.code} : {},
+                    args?.name ? {code: args?.name} : {},
+                    args?.startAt ? {code: args?.startAt} : {},
+                    args?.endAt ? {code: args?.endAt} : {},
+                )
+
+                return context.photon.events.update({
+                    where: {id: args.eventId},
+                    data: event,
+                })
+            },
+        })
+        t.field('deleteEvent', {
+            type: "Event",
+            args: {
+                eventId: idArg(),
+            },
+            resolve: async (root, args, context) => {
+                await checkEventExist(context, args.eventId as string)
+                return context.photon.events.delete({where: {id: args.eventId}})
+            },
+        })
     },
 })
 
 async function checkEventCodeExist(context: Context, code: string) {
     return Boolean(await context.photon.events.findOne({where: {code}}))
+}
+
+async function checkEventExist(context: Context, eventId: EventType['id']): Promise<boolean> {
+    const findEvent = await context.photon.events.findOne({where: {id: eventId}})
+    if (!findEvent) {
+        throw new Error(`No event for id: ${eventId}`)
+    }
+    return true
 }
