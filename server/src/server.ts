@@ -7,7 +7,7 @@ import {createContext} from './context'
 import {applyMiddleware} from 'graphql-middleware'
 import {permissions} from "./permissions"
 
-const dotenvResult = dotenv.config({path: path.join(__dirname, '../.env.test')})
+const dotenvResult = dotenv.config({path: path.join(__dirname, '../.env')})
 if (dotenvResult.error) {
     throw dotenvResult.error
 }

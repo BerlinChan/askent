@@ -41,14 +41,14 @@ export const PGP = objectType({
 export const userQuery = extendType({
     type: 'Query',
     definition(t) {
-        t.field('nameOrEmailExisted', {
+        t.field('checkNameOrEmailExisted', {
             type: "Boolean",
-            description: "Test if a name or email has already existed.",
+            description: "Check if a name or email has already existed.",
             args: {
                 string: stringArg({required: true}),
             },
             resolve: async (root, {string}, ctx) => {
-                return await nameOrEmailExisted(ctx, string)
+                return await checkNameOrEmailExisted(ctx, string)
             },
         })
         t.field('PGP', {
@@ -72,9 +72,9 @@ export const userMutation = extendType({
             },
             resolve: async (root, args, context, info) => {
                 // TODO: move hash to client
-                if (await nameOrEmailExisted(context, args.name)) {
+                if (await checkNameOrEmailExisted(context, args.name)) {
                     throw new Error(`Name "${args.name}" has already existed.`)
-                } else if (await nameOrEmailExisted(context, args.email)) {
+                } else if (await checkNameOrEmailExisted(context, args.email)) {
                     throw new Error(`Email "${args.email}" has already existed.`)
                 }
                 const hashedPassword = await hash(args.password, 10)
@@ -116,13 +116,13 @@ export const userMutation = extendType({
     },
 })
 
-async function nameOrEmailExisted(content: Context, string: string): Promise<boolean> {
+async function checkNameOrEmailExisted(context: Context, string: string): Promise<boolean> {
     if (/@/.test(string)) {
-        return Boolean(await content.photon.users.findOne({
+        return Boolean(await context.photon.users.findOne({
             where: {email: string} as UserWhereUniqueInput,
         }))
     } else {
-        return Boolean(await content.photon.users.findOne({
+        return Boolean(await context.photon.users.findOne({
             where: {name: string} as UserWhereUniqueInput,
         }))
     }

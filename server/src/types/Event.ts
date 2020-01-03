@@ -1,6 +1,5 @@
 import {objectType, extendType, stringArg, arg} from 'nexus'
 import {getUserId} from "../utils";
-import {ObjectDefinitionBlock} from "nexus/dist/definitions/objectType";
 
 export const Event = objectType({
     name: 'Event',
@@ -16,25 +15,27 @@ export const Event = objectType({
         t.model.questions()
     },
 })
-/*
-export const Events = objectType({
-    name: 'Events',
-    definition(t): void {
-        t.list.field('events', {
-            type: 'Event',
-            resolve: (root, args, context) => {
-                const userId = getUserId(context)
-                return context.photon.events.findMany({where: {owner: {id: userId}}})
-            },
-        })
-    }
-})
-*/
 
 export const eventQuery = extendType({
     type: 'Query',
     definition(t) {
-        t.crud.events()
+        t.list.field('events', {
+            type: 'Event',
+            resolve: async (root, args, context) => {
+                const userId = getUserId(context)
+                return context.photon.events.findMany({where: {owner: {id: userId}}})
+            },
+        })
+        t.field('checkEventCodeExisted', {
+            type: 'Boolean',
+            description: 'Check if a event code has already existed.',
+            args: {
+                code: stringArg({required: true}),
+            },
+            resolve: async (root, {code}, context) => {
+                return Boolean(await context.photon.events.findOne({where: {code}}))
+            },
+        })
     },
 })
 
