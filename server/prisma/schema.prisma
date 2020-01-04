@@ -24,7 +24,7 @@ model User {
     questions   Question[]
 }
 
-model Event{
+model Event {
     id          String      @default(uuid()) @id
     code        String      @unique
     name        String
@@ -36,7 +36,7 @@ model Event{
     questions   Question[]
 }
 
-model Question{
+model Question {
     id          String      @default(uuid()) @id
     event       Event
     author      User?

@@ -1,14 +1,11 @@
 ## TODO
 
-- [x] [Use Apollo Server Integrations](https://github.com/apollographql/apollo-server#installation-integrations)
-- [x] Add dotenv dependency
-- [x] API checkNameExist/checkEmailExist
-- [x] API signup
-- [x] [Store password hash use bcrypt](https://www.youtube.com/watch?v=Ud5xKCYQTjM)
-- [x] [API login/logout](https://github.com/WebDevSimplified/Nodejs-Passport-Login/blob/master/server.js)
-- [x] [Add JWT](https://github.com/prisma/prisma-examples/tree/prisma2/typescript/graphql-auth)
-- [x] Add API createEvent
-- [ ] API updateEvent
+- [ ] [Frontend React](https://github.com/graphql-boilerplates)
+- [ ] [Apollo codegen](https://github.com/apollographql/apollo-tooling)
+- [ ] Build for production
+- [ ] Github renovate config
+- [ ] [API logout, invalid JWT]()
+- [ ] [improve JWT auth and session]()
 - [ ] API pagination
 
 # GraphQL Apollo Server Example
