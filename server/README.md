@@ -1,10 +1,11 @@
 ## TODO
 
-- [ ] [Frontend React](https://github.com/graphql-boilerplates)
+- [ ] [React starter kit. Apollo, BrowserSync, router, MaterialUI, i18n, Typescipt](https://github.com/kriasoft/react-starter-kit)
+- [ ] [Apollo subscription or websocket?](https://www.npmjs.com/package/react-use-websocket)
 - [ ] [Apollo codegen](https://github.com/apollographql/apollo-tooling)
 - [ ] Build for production
 - [ ] Github renovate config
-- [ ] [API logout, invalid JWT]()
+- [ ] [API logout, invalid JWT](https://www.npmjs.com/package/express-jwt)
 - [ ] [improve JWT auth and session]()
 - [ ] API pagination
 
