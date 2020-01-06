@@ -1,5 +1,0 @@
-query PGP {
-  PGP {
-    pubKey
-  }
-}

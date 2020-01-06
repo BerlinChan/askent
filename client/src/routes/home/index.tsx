@@ -1,8 +1,10 @@
 import React from "react";
 import { TextField, InputAdornment, Button } from "@material-ui/core";
-import { withPgp } from "../../generated/dataBinders";
+import { withPgp, PgpProps, PgpQueryResult } from "../../generated/dataBinders";
 
-const Home: React.FC = props => {
+const withPgpData = withPgp<PgpProps>();
+
+const Home = withPgpData((props) => {
   console.log(props);
 
   return (
@@ -22,6 +24,6 @@ const Home: React.FC = props => {
       </Button>
     </React.Fragment>
   );
-};
+});
 
-export default withPgp()(Home);
+export default Home;

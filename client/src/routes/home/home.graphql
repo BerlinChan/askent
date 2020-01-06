@@ -1,0 +1,9 @@
+query PGP {
+  PGP {
+    pubKey
+  }
+}
+
+query CheckEventCodeExist($code:String!){
+  checkEventCodeExist(code:$code)
+}
