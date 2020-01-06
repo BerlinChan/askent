@@ -1,11 +1,16 @@
 import React from "react";
 import { TextField, InputAdornment, Button } from "@material-ui/core";
-import { withPgp, PgpProps, PgpQueryResult } from "../../generated/dataBinders";
+import {
+  usePgpQuery,
+  useCheckEventCodeExistQuery
+} from "../../generated/dataBinders";
 
-const withPgpData = withPgp<PgpProps>();
-
-const Home = withPgpData((props) => {
-  console.log(props);
+const Home: React.FC = props => {
+  const { data, loading, error } = usePgpQuery();
+  const { data: checkData } = useCheckEventCodeExistQuery({
+    variables: { code: "asdf" }
+  });
+  console.log(data, checkData);
 
   return (
     <React.Fragment>
@@ -24,6 +29,6 @@ const Home = withPgpData((props) => {
       </Button>
     </React.Fragment>
   );
-});
+};
 
 export default Home;

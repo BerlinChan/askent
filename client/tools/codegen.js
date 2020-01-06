@@ -11,7 +11,12 @@ async function codegen() {
             "typescript",
             "typescript-operations",
             "typescript-react-apollo"
-          ]
+          ],
+          config: {
+            withComponent: false,
+            withHOC: false,
+            withHooks: true
+          }
         }
       }
     },
