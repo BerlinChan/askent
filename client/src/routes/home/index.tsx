@@ -1,33 +1,9 @@
 import React from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import {
-  Container,
-  AppBar,
-  TextField,
-  InputAdornment,
-  Button,
-  Toolbar,
-  Typography,
-  IconButton
-} from "@material-ui/core";
-import { Menu as MenuIcon } from "@material-ui/icons";
+import { TextField, InputAdornment, Button } from "@material-ui/core";
+import { withPgp } from "../../generated/dataBinders";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1
-    },
-    menuButton: {
-      marginRight: theme.spacing(2)
-    },
-    title: {
-      flexGrow: 1
-    }
-  })
-);
-
-const Home: React.FC = () => {
-  const classes = useStyles();
+const Home: React.FC = props => {
+  console.log(props);
 
   return (
     <React.Fragment>
@@ -48,4 +24,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default withPgp()(Home);

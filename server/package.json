@@ -3,14 +3,13 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
-    "install": "npm i",
     "postinstall": "npm -s run generate",
     "dev": "ts-node-dev --no-notify --respawn --transpileOnly src/server",
     "start": "node dist/server",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && npm -s run generate && tsc",
-    "prisma-seed": "ts-node prisma/seed",
     "prisma-dev": "npx prisma2 dev",
+    "prisma-seed": "ts-node prisma/seed",
     "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
     "generate:prisma": "prisma2 generate",
     "generate:nexus": "ts-node --transpile-only src/schema"
@@ -19,6 +18,7 @@
     "@prisma/photon": "2.0.0-preview019",
     "apollo-server-express": "^2.9.15",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "graphql": "14.5.8",
     "graphql-middleware": "^4.0.2",
