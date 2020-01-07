@@ -88,7 +88,7 @@ const Signup: React.FC = props => {
               >
                 Create Account
               </Button>
-              {true && (
+              {loading && (
                 <CircularProgress
                   size={24}
                   className={classes.buttonProgress}

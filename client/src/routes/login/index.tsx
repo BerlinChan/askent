@@ -10,7 +10,7 @@ import {
   CircularProgress
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { useSignupMutation } from "../../generated/graphqlHooks";
+import { useLoginMutation } from "../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Login: React.FC = () => {
   const classes = useStyles();
-  const [signupMutation, { data, loading, error }] = useSignupMutation();
+  const [loginMutation, { data, loading, error }] = useLoginMutation();
   const history = useHistory();
   const location = useLocation();
   const { from } = location.state || { from: { pathname: "/" } };
@@ -79,7 +79,7 @@ const Login: React.FC = () => {
               >
                 Log In
               </Button>
-              {true && (
+              {loading && (
                 <CircularProgress
                   size={24}
                   className={classes.buttonProgress}
