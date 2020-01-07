@@ -7,10 +7,10 @@ import {
 
 const Home: React.FC = props => {
   const { data, loading, error } = usePgpQuery();
-  const { data: checkData } = useCheckEventCodeExistQuery({
+  const { data: checkData,error:checkError } = useCheckEventCodeExistQuery({
     variables: { code: "asdf" }
   });
-  console.log(data, checkData);
+  console.log(data, checkData,checkError);
 
   return (
     <React.Fragment>

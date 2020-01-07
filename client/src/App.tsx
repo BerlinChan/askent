@@ -4,7 +4,7 @@ import loadable from "@loadable/component";
 import Loading from "./components/Loading";
 import { PrivateRoute } from "./components/PrivateRoute";
 import Layout from "./components/Layout";
-import createApolloClient from "./createApolloClient";
+import createApolloClient from "./graphql/createApolloClient";
 import { ApolloProvider } from "@apollo/react-hooks";
 
 const HomeComponent = loadable(() => import("./routes/home"), {

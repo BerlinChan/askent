@@ -1,9 +1,10 @@
-const { generate } = require("@graphql-codegen/cli");
+import { generate } from "@graphql-codegen/cli";
+import config from '../src/config'
 
 async function codegen() {
-  const generatedFiles = await generate(
+  await generate(
     {
-      schema: "http://localhost:4000/graphql",
+      schema: config.api,
       documents: "./src/**/*.{graphql,ts,tsx}",
       generates: {
         ["src/generated/dataBinders.tsx"]: {
@@ -25,5 +26,3 @@ async function codegen() {
 }
 
 codegen();
-
-exports.default = codegen;
