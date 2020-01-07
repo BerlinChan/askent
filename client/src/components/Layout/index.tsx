@@ -6,8 +6,8 @@ import Header from "../Header";
 const Layout: React.FC = props => {
   return (
     <React.Fragment>
+      <CssBaseline />
       <Container maxWidth="xl">
-        <CssBaseline />
         <Header />
         {props.children}
       </Container>

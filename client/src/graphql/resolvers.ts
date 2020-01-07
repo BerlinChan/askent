@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { Resolvers } from "apollo-client";
 
 export const typeDefs = gql`
   type PackageInfo {
@@ -13,13 +14,9 @@ export const typeDefs = gql`
   }
 `;
 
-export const resolvers = {
+export const resolvers: Resolvers = {
   Mutation: {
-    packageInfo: (
-      parent: any,
-      args: { version?: string; description?: string },
-      context: any
-    ) => {
+    packageInfo: (parent, args, context) => {
       console.log(args);
       return args;
     }

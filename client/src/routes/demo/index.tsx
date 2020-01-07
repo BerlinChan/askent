@@ -10,7 +10,7 @@ const Demo: React.FC = props => {
     variables: { code: "code" }
   });
   const [packageInfoMutation, { data: infoData }] = usePackageInfoMutation();
-  console.log(checkData, error, infoData);
+  console.log(loading, checkData, error, infoData);
 
   return (
     <React.Fragment>

@@ -1,7 +1,7 @@
 import React from "react";
 import loadable from "@loadable/component";
 import Loading from "../components/Loading";
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { PrivateRoute } from "../components/PrivateRoute";
 import Layout from "../components/Layout";
