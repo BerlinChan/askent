@@ -4,12 +4,14 @@ query PGP {
   }
 }
 
-query CheckEventCodeExist($code:String!){
-  checkEventCodeExist(code:$code)
+# Use Apollo Server
+query CheckEventCodeExist($code: String!) {
+  checkEventCodeExist(code: $code)
 }
 
-mutation PackageInfo($version: String, $description: String){
-  packageInfo(version:$version, description:$description){
+# Use client-side schema
+mutation PackageInfo($version: String, $description: String) {
+  packageInfo(version: $version, description: $description) @client {
     version
     description
   }

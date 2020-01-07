@@ -1,5 +1,5 @@
 import { generate } from "@graphql-codegen/cli";
-import config from '../src/config'
+import config from "../src/config";
 
 async function codegen() {
   await generate(
@@ -8,6 +8,7 @@ async function codegen() {
       documents: "./src/**/*.{graphql,ts,tsx}",
       generates: {
         ["src/generated/dataBinders.tsx"]: {
+          schema: "./src/graphql/resolvers.ts",
           plugins: [
             "typescript",
             "typescript-operations",

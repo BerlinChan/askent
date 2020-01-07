@@ -1,16 +1,16 @@
 import React from "react";
 import { TextField, InputAdornment, Button } from "@material-ui/core";
 import {
-  usePgpQuery,
-  useCheckEventCodeExistQuery
+  useCheckEventCodeExistQuery,
+  usePackageInfoMutation
 } from "../../generated/dataBinders";
 
 const Home: React.FC = props => {
-  const { data, loading, error } = usePgpQuery();
-  const { data: checkData,error:checkError } = useCheckEventCodeExistQuery({
-    variables: { code: "asdf" }
+  const { data: checkData, loading, error } = useCheckEventCodeExistQuery({
+    variables: { code: "code" }
   });
-  console.log(data, checkData,checkError);
+  const [packageInfoMutation, { data: infoData }] = usePackageInfoMutation();
+  console.log(checkData, infoData);
 
   return (
     <React.Fragment>
@@ -24,7 +24,15 @@ const Home: React.FC = props => {
           }}
         />
       </form>
-      <Button variant="contained" color="primary">
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() =>
+          packageInfoMutation({
+            variables: { version: "0.2.0", description: "Some text" }
+          })
+        }
+      >
         Join
       </Button>
     </React.Fragment>

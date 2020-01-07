@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
-  extend type PackageInfo {
+  type PackageInfo {
     version: String!
     description: String!
   }
