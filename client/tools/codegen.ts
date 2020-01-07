@@ -7,7 +7,7 @@ async function codegen() {
       schema: config.api,
       documents: "./src/**/*.{graphql,ts,tsx}",
       generates: {
-        ["src/generated/dataBinders.tsx"]: {
+        ["src/generated/graphqlHooks.tsx"]: {
           schema: "./src/graphql/resolvers.ts",
           plugins: [
             "typescript",
