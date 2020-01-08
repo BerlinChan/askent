@@ -68,6 +68,7 @@ const Signup: React.FC = () => {
           password: "",
           repeatPassword: ""
         }}
+        validateOnBlur
         validate={async ({ name, email, password, repeatPassword }) => {
           try {
             await Yup.object({
@@ -106,16 +107,17 @@ const Signup: React.FC = () => {
               string: name
             }
           });
+          if (checkNameData?.checkNameOrEmailExist) {
+            return { name: "Name exist" };
+          }
           await checkEmailExistLazyQuery({
             variables: {
               string: email
             }
           });
-
-          return {
-            name: checkNameData?.checkNameOrEmailExist ? "Name exist" : "",
-            email: checkEmailData?.checkNameOrEmailExist ? "Eamil exist" : ""
-          };
+          if (checkEmailData?.checkNameOrEmailExist) {
+            return { email: "Eamil exist" };
+          }
         }}
         onSubmit={async values => {
           const res = await signupMutation({
