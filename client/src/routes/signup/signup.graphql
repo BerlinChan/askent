@@ -7,3 +7,7 @@ mutation Signup($name: String!, $email: String!, $password: String!) {
     }
   }
 }
+
+query CheckNameOrEmailExist($string: String!) {
+  checkNameOrEmailExist(string: $string)
+}

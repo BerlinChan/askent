@@ -57,9 +57,15 @@ export default function Header() {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" className={classes.title}>
+            <Link
+              color="inherit"
+              component={RouterLink}
+              className={classes.title}
+              to="/"
+              variant="h6"
+            >
               Askent
-            </Typography>
+            </Link>
             <Link color="inherit" component={RouterLink} to="/login">
               Log In
             </Link>

@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  TextField,
   Box,
   Button,
   Card,
@@ -8,8 +7,14 @@ import {
   CardContent,
   CircularProgress
 } from "@material-ui/core";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { useSignupMutation } from "../../generated/graphqlHooks";
+import {
+  useSignupMutation,
+  useCheckNameOrEmailExistLazyQuery
+} from "../../generated/graphqlHooks";
+import { FTextField } from "../../components/Form";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,66 +43,127 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Signup: React.FC = props => {
+const Signup: React.FC = () => {
   const classes = useStyles();
-  const [signupMutation, { data, loading, error }] = useSignupMutation();
+  const [signupMutation, { data, loading }] = useSignupMutation();
+  const [
+    checkNameExistLazyQuery,
+    { data: checkNameData, loading: checkNameLoading }
+  ] = useCheckNameOrEmailExistLazyQuery();
+  const [
+    checkEmailExistLazyQuery,
+    { data: checkEmailData, loading: checkEmailLoading }
+  ] = useCheckNameOrEmailExistLazyQuery();
+  const checkNameExist = async (value: string) => {
+    await checkNameExistLazyQuery({
+      variables: {
+        string: value
+      }
+    });
+    if (checkNameData?.checkNameOrEmailExist) {
+      return "Name exist";
+    }
+
+    return;
+  };
+  const checkEmailExist = async (value: string) => {
+    await checkEmailExistLazyQuery({
+      variables: {
+        string: value
+      }
+    });
+    if (checkEmailData?.checkNameOrEmailExist) {
+      return "Eamil exist";
+    }
+
+    return;
+  };
 
   return (
     <Box className={classes.signupBox}>
-      <form className={classes.form} noValidate autoComplete="off">
-        <Card className={classes.card}>
-          <CardContent>
-            <TextField required fullWidth label="User Name" margin="normal" />
-            <TextField
-              required
-              fullWidth
-              label="Email"
-              type="email"
-              margin="normal"
-            />
-            <TextField
-              required
-              fullWidth
-              label="Password"
-              type="password"
-              margin="normal"
-            />
-            <TextField
-              required
-              fullWidth
-              label="Password repeat"
-              type="password"
-              margin="normal"
-            />
-          </CardContent>
-          <CardActions>
-            <div className={classes.buttonWrapper}>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={loading}
-                onClick={() => {
-                  signupMutation({
-                    variables: {
-                      name: "Baobao",
-                      email: "bao@bao",
-                      password: "bao"
-                    }
-                  });
-                }}
-              >
-                Create Account
-              </Button>
-              {loading && (
-                <CircularProgress
-                  size={24}
-                  className={classes.buttonProgress}
-                />
-              )}
-            </div>
-          </CardActions>
-        </Card>
-      </form>
+      <Formik
+        initialValues={{
+          name: "",
+          email: "",
+          password: ""
+        }}
+        validationSchema={Yup.object({
+          name: Yup.string()
+            .max(30, "Must be 30 characters or less")
+            .required("Required"),
+          email: Yup.string()
+            .email("Invalid email address")
+            .required("Required"),
+          password: Yup.string()
+            .max(20, "Must be 20 characters or less")
+            .required("Required")
+        })}
+        onSubmit={async values => {
+          await signupMutation({
+            variables: values
+          });
+          console.log(data);
+        }}
+      >
+        <Form className={classes.form}>
+          <Card className={classes.card}>
+            <CardContent>
+              <FTextField
+                autoFocus
+                id="name"
+                name="name"
+                fullWidth
+                label="User Name"
+                disabled={loading || checkNameLoading || checkEmailLoading}
+                validate={checkNameExist}
+              />
+              <FTextField
+                id="email"
+                name="email"
+                fullWidth
+                label="Email"
+                type="email"
+                disabled={loading || checkNameLoading || checkEmailLoading}
+                validate={checkEmailExist}
+              />
+              <FTextField
+                id="password"
+                name="password"
+                fullWidth
+                label="Password"
+                type="password"
+                disabled={loading || checkNameLoading || checkEmailLoading}
+              />
+              <FTextField
+                id="repeatPassword"
+                name="repeatPassword"
+                fullWidth
+                label="Password repeat"
+                type="password"
+                disabled={loading || checkNameLoading || checkEmailLoading}
+              />
+            </CardContent>
+            <CardActions>
+              <div className={classes.buttonWrapper}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={loading || checkNameLoading || checkEmailLoading}
+                >
+                  Create Account
+                </Button>
+                {(loading || checkNameLoading || checkEmailLoading) && (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                )}
+              </div>
+            </CardActions>
+          </Card>
+        </Form>
+      </Formik>
     </Box>
   );
 };
