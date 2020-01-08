@@ -15,6 +15,8 @@ import {
   useCheckNameOrEmailExistLazyQuery
 } from "../../generated/graphqlHooks";
 import { FTextField } from "../../components/Form";
+import { useHistory } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,7 +47,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Signup: React.FC = () => {
   const classes = useStyles();
-  const [signupMutation, { data, loading }] = useSignupMutation();
+  const history = useHistory();
+  const { enqueueSnackbar } = useSnackbar();
+  const [signupMutation, { loading }] = useSignupMutation();
   const [
     checkNameExistLazyQuery,
     { data: checkNameData, loading: checkNameLoading }
@@ -54,7 +58,7 @@ const Signup: React.FC = () => {
     checkEmailExistLazyQuery,
     { data: checkEmailData, loading: checkEmailLoading }
   ] = useCheckNameOrEmailExistLazyQuery();
-  const checkNameExist = async (value: string) => {
+  const validateNameExist = async (value: string) => {
     await checkNameExistLazyQuery({
       variables: {
         string: value
@@ -66,7 +70,7 @@ const Signup: React.FC = () => {
 
     return;
   };
-  const checkEmailExist = async (value: string) => {
+  const validateEmailExist = async (value: string) => {
     await checkEmailExistLazyQuery({
       variables: {
         string: value
@@ -78,6 +82,9 @@ const Signup: React.FC = () => {
 
     return;
   };
+  const validateRepeatPassword = (value: string) => {
+    return;
+  };
 
   return (
     <Box className={classes.signupBox}>
@@ -85,7 +92,8 @@ const Signup: React.FC = () => {
         initialValues={{
           name: "",
           email: "",
-          password: ""
+          password: "",
+          repeatPassword: ""
         }}
         validationSchema={Yup.object({
           name: Yup.string()
@@ -96,13 +104,22 @@ const Signup: React.FC = () => {
             .required("Required"),
           password: Yup.string()
             .max(20, "Must be 20 characters or less")
+            .required("Required"),
+          repeatPassword: Yup.string()
+            .max(20, "Must be 20 characters or less")
             .required("Required")
         })}
         onSubmit={async values => {
-          await signupMutation({
+          const res = await signupMutation({
             variables: values
           });
-          console.log(data);
+
+          if (res) {
+            enqueueSnackbar("Sign up success!", {
+              variant: "success"
+            });
+            history.replace("/login");
+          }
         }}
       >
         <Form className={classes.form}>
@@ -114,8 +131,8 @@ const Signup: React.FC = () => {
                 name="name"
                 fullWidth
                 label="User Name"
-                disabled={loading || checkNameLoading || checkEmailLoading}
-                validate={checkNameExist}
+                disabled={loading}
+                validate={validateNameExist}
               />
               <FTextField
                 id="email"
@@ -123,8 +140,8 @@ const Signup: React.FC = () => {
                 fullWidth
                 label="Email"
                 type="email"
-                disabled={loading || checkNameLoading || checkEmailLoading}
-                validate={checkEmailExist}
+                disabled={loading}
+                validate={validateEmailExist}
               />
               <FTextField
                 id="password"
@@ -132,7 +149,7 @@ const Signup: React.FC = () => {
                 fullWidth
                 label="Password"
                 type="password"
-                disabled={loading || checkNameLoading || checkEmailLoading}
+                disabled={loading}
               />
               <FTextField
                 id="repeatPassword"
@@ -140,7 +157,8 @@ const Signup: React.FC = () => {
                 fullWidth
                 label="Password repeat"
                 type="password"
-                disabled={loading || checkNameLoading || checkEmailLoading}
+                disabled={loading}
+                validate={validateRepeatPassword}
               />
             </CardContent>
             <CardActions>

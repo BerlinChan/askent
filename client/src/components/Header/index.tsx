@@ -2,13 +2,7 @@ import React from "react";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import { Link as RouterLink } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import {
-  Link,
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton
-} from "@material-ui/core";
+import { Link, AppBar, Toolbar, IconButton } from "@material-ui/core";
 import { Menu as MenuIcon } from "@material-ui/icons";
 
 interface Props {

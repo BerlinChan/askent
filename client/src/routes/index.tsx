@@ -1,9 +1,10 @@
 import React from "react";
 import loadable from "@loadable/component";
-import Loading from "../components/Loading";
+import { PrivateRoute } from "../components/PrivateRoute";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import { PrivateRoute } from "../components/PrivateRoute";
+import { SnackbarProvider } from "notistack";
+import Loading from "../components/Loading";
 import Layout from "../components/Layout";
 
 const theme = createMuiTheme();
@@ -31,28 +32,30 @@ const Router = () => {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <Layout>
-          <Switch>
-            <Route exact path="/">
-              <HomeComponent />
-            </Route>
-            <Route path="/login">
-              <LoginComponent />
-            </Route>
-            <Route path="/signup">
-              <SignupComponent />
-            </Route>
-            <PrivateRoute path="/admin">
-              <AdminComponent />
-            </PrivateRoute>
-            <Route path="/about">
-              <AboutComponent />
-            </Route>
-            <Route path="/demo">
-              <DemoComponent />
-            </Route>
-          </Switch>
-        </Layout>
+        <SnackbarProvider>
+          <Layout>
+            <Switch>
+              <Route exact path="/">
+                <HomeComponent />
+              </Route>
+              <Route path="/login">
+                <LoginComponent />
+              </Route>
+              <Route path="/signup">
+                <SignupComponent />
+              </Route>
+              <PrivateRoute path="/admin">
+                <AdminComponent />
+              </PrivateRoute>
+              <Route path="/about">
+                <AboutComponent />
+              </Route>
+              <Route path="/demo">
+                <DemoComponent />
+              </Route>
+            </Switch>
+          </Layout>
+        </SnackbarProvider>
       </ThemeProvider>
     </BrowserRouter>
   );
