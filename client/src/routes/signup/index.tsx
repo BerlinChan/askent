@@ -58,33 +58,6 @@ const Signup: React.FC = () => {
     checkEmailExistLazyQuery,
     { data: checkEmailData, loading: checkEmailLoading }
   ] = useCheckNameOrEmailExistLazyQuery();
-  const validateNameExist = async (value: string) => {
-    await checkNameExistLazyQuery({
-      variables: {
-        string: value
-      }
-    });
-    if (checkNameData?.checkNameOrEmailExist) {
-      return "Name exist";
-    }
-
-    return;
-  };
-  const validateEmailExist = async (value: string) => {
-    await checkEmailExistLazyQuery({
-      variables: {
-        string: value
-      }
-    });
-    if (checkEmailData?.checkNameOrEmailExist) {
-      return "Eamil exist";
-    }
-
-    return;
-  };
-  const validateRepeatPassword = (value: string) => {
-    return;
-  };
 
   return (
     <Box className={classes.signupBox}>
@@ -95,20 +68,55 @@ const Signup: React.FC = () => {
           password: "",
           repeatPassword: ""
         }}
-        validationSchema={Yup.object({
-          name: Yup.string()
-            .max(30, "Must be 30 characters or less")
-            .required("Required"),
-          email: Yup.string()
-            .email("Invalid email address")
-            .required("Required"),
-          password: Yup.string()
-            .max(20, "Must be 20 characters or less")
-            .required("Required"),
-          repeatPassword: Yup.string()
-            .max(20, "Must be 20 characters or less")
-            .required("Required")
-        })}
+        validate={async ({ name, email, password, repeatPassword }) => {
+          try {
+            await Yup.object({
+              name: Yup.string()
+                .max(30, "Must be 30 characters or less")
+                .required("Required"),
+              email: Yup.string()
+                .email("Invalid email address")
+                .required("Required"),
+              password: Yup.string()
+                .max(20, "Must be 20 characters or less")
+                .required("Required"),
+              repeatPassword: Yup.string()
+                .max(20, "Must be 20 characters or less")
+                .required("Required")
+            }).validate({
+              name,
+              email,
+              password,
+              repeatPassword
+            });
+          } catch (err) {
+            const { path, message } = err as Yup.ValidationError;
+            const error: any = {};
+            error[path] = message;
+
+            return error;
+          }
+
+          if (password !== repeatPassword) {
+            return { repeatPassword: "Not same" };
+          }
+
+          await checkNameExistLazyQuery({
+            variables: {
+              string: name
+            }
+          });
+          await checkEmailExistLazyQuery({
+            variables: {
+              string: email
+            }
+          });
+
+          return {
+            name: checkNameData?.checkNameOrEmailExist ? "Name exist" : "",
+            email: checkEmailData?.checkNameOrEmailExist ? "Eamil exist" : ""
+          };
+        }}
         onSubmit={async values => {
           const res = await signupMutation({
             variables: values
@@ -132,7 +140,6 @@ const Signup: React.FC = () => {
                 fullWidth
                 label="User Name"
                 disabled={loading}
-                validate={validateNameExist}
               />
               <FTextField
                 id="email"
@@ -141,7 +148,6 @@ const Signup: React.FC = () => {
                 label="Email"
                 type="email"
                 disabled={loading}
-                validate={validateEmailExist}
               />
               <FTextField
                 id="password"
@@ -158,7 +164,6 @@ const Signup: React.FC = () => {
                 label="Password repeat"
                 type="password"
                 disabled={loading}
-                validate={validateRepeatPassword}
               />
             </CardContent>
             <CardActions>
