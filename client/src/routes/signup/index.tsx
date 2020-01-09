@@ -68,7 +68,6 @@ const Signup: React.FC = () => {
           password: "",
           repeatPassword: ""
         }}
-        validateOnBlur
         validate={async ({ name, email, password, repeatPassword }) => {
           try {
             await Yup.object({
