@@ -1,7 +1,6 @@
 import React from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import {
-  TextField,
   Box,
   Button,
   Card,
@@ -9,8 +8,12 @@ import {
   CardContent,
   CircularProgress
 } from "@material-ui/core";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+import { FTextField } from "../../components/Form";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useLoginMutation } from "../../generated/graphqlHooks";
+import { AUTH_TOKEN, USER } from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,54 +44,72 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Login: React.FC = () => {
   const classes = useStyles();
-  const [loginMutation, { data, loading, error }] = useLoginMutation();
+  const [loginMutation, { loading }] = useLoginMutation();
   const history = useHistory();
-  const location = useLocation();
-  const { from } = location.state || { from: { pathname: "/" } };
-  const login = () => {
-    history.replace(from);
-  };
+  if (localStorage.getItem(AUTH_TOKEN)) {
+    history.replace("/admin");
+  }
 
   return (
     <Box className={classes.signupBox}>
-      <form className={classes.form} noValidate autoComplete="off">
-        <Card className={classes.card}>
-          <CardContent>
-            <TextField
-              required
-              fullWidth
-              label="Email"
-              type="email"
-              margin="normal"
-            />
-            <TextField
-              required
-              fullWidth
-              label="Password"
-              type="password"
-              margin="normal"
-            />
-          </CardContent>
-          <CardActions>
-            <div className={classes.buttonWrapper}>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={loading}
-                onClick={login}
-              >
-                Log In
-              </Button>
-              {loading && (
-                <CircularProgress
-                  size={24}
-                  className={classes.buttonProgress}
-                />
-              )}
-            </div>
-          </CardActions>
-        </Card>
-      </form>
+      <Formik
+        initialValues={{ email: "", password: "" }}
+        validationSchema={Yup.object({
+          email: Yup.string()
+            .email()
+            .required(),
+          password: Yup.string()
+            .max(20)
+            .required()
+        })}
+        onSubmit={async values => {
+          const { data } = await loginMutation({ variables: values });
+          localStorage.setItem(AUTH_TOKEN, data?.login.token as string);
+          localStorage.setItem(USER, JSON.stringify(data?.login.user));
+          history.replace("/admin");
+        }}
+      >
+        <Form className={classes.form}>
+          <Card className={classes.card}>
+            <CardContent>
+              <FTextField
+                fullWidth
+                id="email"
+                name="email"
+                label="Email"
+                type="email"
+                margin="normal"
+              />
+              <FTextField
+                fullWidth
+                id="password"
+                name="password"
+                label="Password"
+                type="password"
+                margin="normal"
+              />
+            </CardContent>
+            <CardActions>
+              <div className={classes.buttonWrapper}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={loading}
+                >
+                  Log In
+                </Button>
+                {loading && (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                )}
+              </div>
+            </CardActions>
+          </Card>
+        </Form>
+      </Formik>
     </Box>
   );
 };

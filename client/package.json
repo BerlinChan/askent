@@ -21,6 +21,8 @@
     "@types/yup": "^0.26.27",
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-client": "^2.6.8",
+    "apollo-link": "^1.2.13",
+    "apollo-link-error": "^1.1.12",
     "apollo-link-http": "^1.5.16",
     "formik": "^2.1.1",
     "graphql-tag": "^2.10.1",

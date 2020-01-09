@@ -17,6 +17,7 @@ import {
 import { FTextField } from "../../components/Form";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { AUTH_TOKEN } from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,6 +49,9 @@ const useStyles = makeStyles((theme: Theme) =>
 const Signup: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
+  if (localStorage.getItem(AUTH_TOKEN)) {
+    history.replace("/admin");
+  }
   const { enqueueSnackbar } = useSnackbar();
   const [signupMutation, { loading }] = useSignupMutation();
   const [
@@ -119,11 +123,11 @@ const Signup: React.FC = () => {
           }
         }}
         onSubmit={async values => {
-          const res = await signupMutation({
+          const { data } = await signupMutation({
             variables: values
           });
 
-          if (res) {
+          if (data) {
             enqueueSnackbar("Sign up success!", {
               variant: "success"
             });
@@ -140,6 +144,7 @@ const Signup: React.FC = () => {
                 name="name"
                 fullWidth
                 label="User Name"
+                margin="normal"
                 disabled={loading}
               />
               <FTextField
@@ -148,6 +153,7 @@ const Signup: React.FC = () => {
                 fullWidth
                 label="Email"
                 type="email"
+                margin="normal"
                 disabled={loading}
               />
               <FTextField
@@ -156,6 +162,7 @@ const Signup: React.FC = () => {
                 fullWidth
                 label="Password"
                 type="password"
+                margin="normal"
                 disabled={loading}
               />
               <FTextField
@@ -164,6 +171,7 @@ const Signup: React.FC = () => {
                 fullWidth
                 label="Password repeat"
                 type="password"
+                margin="normal"
                 disabled={loading}
               />
             </CardContent>
