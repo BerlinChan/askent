@@ -13,7 +13,7 @@ import * as Yup from "yup";
 import { FTextField } from "../../components/Form";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useLoginMutation } from "../../generated/graphqlHooks";
-import { AUTH_TOKEN, USER } from "../../constant";
+import { AUTH_TOKEN } from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,7 +65,6 @@ const Login: React.FC = () => {
         onSubmit={async values => {
           const { data } = await loginMutation({ variables: values });
           localStorage.setItem(AUTH_TOKEN, data?.login.token as string);
-          localStorage.setItem(USER, JSON.stringify(data?.login.user));
           history.replace("/admin");
         }}
       >

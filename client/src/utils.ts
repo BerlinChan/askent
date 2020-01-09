@@ -1,6 +1,5 @@
-import { AUTH_TOKEN, USER } from "./constant";
+import { AUTH_TOKEN } from "./constant";
 
 export function logout() {
   localStorage.removeItem(AUTH_TOKEN);
-  localStorage.removeItem(USER);
 }

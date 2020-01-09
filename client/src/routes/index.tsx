@@ -3,6 +3,7 @@ import loadable from "@loadable/component";
 import { PrivateRoute } from "../components/PrivateRoute";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
 import { SnackbarProvider } from "notistack";
 import Loading from "../components/Loading";
 import Layout from "../components/Layout";
@@ -32,8 +33,8 @@ const Router = () => {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
+      <CssBaseline />
         <SnackbarProvider>
-          <Layout>
             <Switch>
               <Route exact path="/">
                 <HomeComponent />
@@ -54,7 +55,6 @@ const Router = () => {
                 <DemoComponent />
               </Route>
             </Switch>
-          </Layout>
         </SnackbarProvider>
       </ThemeProvider>
     </BrowserRouter>

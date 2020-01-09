@@ -1,0 +1,9 @@
+mutation Events {
+  events {
+    id
+    name
+    code
+    startAt
+    endAt
+  }
+}
