@@ -1,8 +1,7 @@
 import dotenv from 'dotenv'
 import path from 'path'
-import express, { NextFunction, Request, Response } from 'express'
+import express from 'express'
 import cors from 'cors'
-import expressJwt, { UnauthorizedError as Jwt401Error } from 'express-jwt'
 import { ApolloServer } from 'apollo-server-express'
 import { schema } from './schema'
 import { createContext } from './context'
@@ -21,24 +20,6 @@ const app = express()
 // Register Node.js middleware
 // -----------------------------------------------------------------------------
 app.use(cors())
-
-//
-// Authentication
-// -----------------------------------------------------------------------------
-app.use(
-  expressJwt({
-    secret: process.env.JWT_SECRET as string,
-    credentialsRequired: false,
-    getToken: req => req.headers.authorization,
-  }),
-)
-// Error handler for express-jwt
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof Jwt401Error) {
-    console.error('[express-jwt-error]', req.headers.authorization)
-  }
-  next(err)
-})
 
 //
 // Register API middleware
