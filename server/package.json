@@ -4,8 +4,8 @@
   "description": "",
   "scripts": {
     "postinstall": "npm -s run generate",
-    "dev": "ts-node-dev --no-notify --respawn --transpileOnly src/server",
-    "start": "node dist/server",
+    "dev": "ts-node-dev --no-notify --respawn --transpileOnly src/index",
+    "start": "node dist/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && npm -s run generate && tsc",
     "prisma-dev": "npx prisma2 dev",
@@ -20,6 +20,7 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "express-jwt": "^5.3.1",
     "graphql": "14.5.8",
     "graphql-middleware": "^4.0.2",
     "graphql-shield": "^7.0.7",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@prisma/sdk": "0.0.105",
     "@types/bcryptjs": "^2.4.2",
+    "@types/express-jwt": "^0.0.42",
     "@types/jsonwebtoken": "^8.3.5",
     "@types/node": "12.12.22",
     "@types/node-fetch": "2.5.4",

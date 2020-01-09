@@ -240,6 +240,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/cookie-parser@^1.4.2":
+  version "1.4.2"
+  resolved "https://registry.npm.taobao.org/@types/cookie-parser/download/@types/cookie-parser-1.4.2.tgz#e4d5c5ffda82b80672a88a4281aaceefb1bd9df5"
+  integrity sha1-5NXF/9qCuAZyqIpCgarO77G9nfU=
+  dependencies:
+    "@types/express" "*"
+
 "@types/cookies@*":
   version "0.7.4"
   resolved "https://registry.npm.taobao.org/@types/cookies/download/@types/cookies-0.7.4.tgz#26dedf791701abc0e36b5b79a5722f40e455f87b"
@@ -264,6 +271,14 @@
   dependencies:
     "@types/node" "*"
 
+"@types/express-jwt@^0.0.42":
+  version "0.0.42"
+  resolved "https://registry.npm.taobao.org/@types/express-jwt/download/@types/express-jwt-0.0.42.tgz#4f04e1fadf9d18725950dc041808a4a4adf7f5ae"
+  integrity sha1-TwTh+t+dGHJZUNwEGAikpK339a4=
+  dependencies:
+    "@types/express" "*"
+    "@types/express-unless" "*"
+
 "@types/express-serve-static-core@*":
   version "4.17.1"
   resolved "https://registry.npm.taobao.org/@types/express-serve-static-core/download/@types/express-serve-static-core-4.17.1.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fexpress-serve-static-core%2Fdownload%2F%40types%2Fexpress-serve-static-core-4.17.1.tgz#82be64a77211b205641e0209096fd3afb62481d3"
@@ -271,6 +286,13 @@
   dependencies:
     "@types/node" "*"
     "@types/range-parser" "*"
+
+"@types/express-unless@*":
+  version "0.5.1"
+  resolved "https://registry.npm.taobao.org/@types/express-unless/download/@types/express-unless-0.5.1.tgz#4f440b905e42bbf53382b8207bc337dc5ff9fd1f"
+  integrity sha1-T0QLkF5Cu/Uzgrgge8M33F/5/R8=
+  dependencies:
+    "@types/express" "*"
 
 "@types/express@*":
   version "4.17.2"
@@ -659,6 +681,11 @@ async-retry@^1.2.1:
   dependencies:
     retry "0.12.0"
 
+async@^1.5.0:
+  version "1.5.2"
+  resolved "https://registry.npm.taobao.org/async/download/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
+  integrity sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=
+
 backo2@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npm.taobao.org/backo2/download/backo2-1.0.2.tgz#31ab1ac8b129363463e35b3ebb69f4dfcfba7947"
@@ -674,7 +701,7 @@ bcryptjs@^2.4.3:
   resolved "https://registry.npm.taobao.org/bcryptjs/download/bcryptjs-2.4.3.tgz#9ab5627b93e60621ff7cdac5da9733027df1d0cb"
   integrity sha1-mrVie5PmBiH/fNrF2pczAn3x0Ms=
 
-body-parser@1.19.0, body-parser@^1.18.3:
+body-parser@1.19.0, body-parser@^1.18.3, body-parser@^1.19.0:
   version "1.19.0"
   resolved "https://registry.npm.taobao.org/body-parser/download/body-parser-1.19.0.tgz#96b2709e57c9c4e09a6fd66a8fd979844f69f08a"
   integrity sha1-lrJwnlfJxOCab9Zqj9l5hE9p8Io=
@@ -836,10 +863,23 @@ content-type@~1.0.4:
   resolved "https://registry.npm.taobao.org/content-type/download/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
   integrity sha1-4TjMdeBAxyexlm/l5fjJruJW/js=
 
+cookie-parser@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.npm.taobao.org/cookie-parser/download/cookie-parser-1.4.4.tgz#e6363de4ea98c3def9697b93421c09f30cf5d188"
+  integrity sha1-5jY95OqYw975aXuTQhwJ8wz10Yg=
+  dependencies:
+    cookie "0.3.1"
+    cookie-signature "1.0.6"
+
 cookie-signature@1.0.6:
   version "1.0.6"
   resolved "https://registry.npm.taobao.org/cookie-signature/download/cookie-signature-1.0.6.tgz#e303a882b342cc3ee8ca513a79999734dab3ae2c"
   integrity sha1-4wOogrNCzD7oylE6eZmXNNqzriw=
+
+cookie@0.3.1:
+  version "0.3.1"
+  resolved "https://registry.npm.taobao.org/cookie/download/cookie-0.3.1.tgz#e7e0a1f9ef43b4c8ba925c5c5a96e806d16873bb"
+  integrity sha1-5+Ch+e9DtMi6klxcWpboBtFoc7s=
 
 cookie@0.4.0:
   version "0.4.0"
@@ -851,7 +891,7 @@ core-js@^3.0.1:
   resolved "https://registry.npm.taobao.org/core-js/download/core-js-3.6.1.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fcore-js%2Fdownload%2Fcore-js-3.6.1.tgz#39d5e2e346258cc01eb7d44345b1c3c014ca3f05"
   integrity sha1-OdXi40YljMAet9RDRbHDwBTKPwU=
 
-cors@^2.8.4:
+cors@^2.8.4, cors@^2.8.5:
   version "2.8.5"
   resolved "https://registry.npm.taobao.org/cors/download/cors-2.8.5.tgz#eac11da51592dd86b9f06f6e7ac293b3df875d29"
   integrity sha1-6sEdpRWS3Ya58G9uesKTs9+HXSk=
@@ -1148,6 +1188,21 @@ execa@^3.4.0:
     p-finally "^2.0.0"
     signal-exit "^3.0.2"
     strip-final-newline "^2.0.0"
+
+express-jwt@^5.3.1:
+  version "5.3.1"
+  resolved "https://registry.npm.taobao.org/express-jwt/download/express-jwt-5.3.1.tgz#66f05c7dddb5409c037346a98b88965bb10ea4ae"
+  integrity sha1-ZvBcfd21QJwDc0api4iWW7EOpK4=
+  dependencies:
+    async "^1.5.0"
+    express-unless "^0.3.0"
+    jsonwebtoken "^8.1.0"
+    lodash.set "^4.0.0"
+
+express-unless@^0.3.0:
+  version "0.3.1"
+  resolved "https://registry.npm.taobao.org/express-unless/download/express-unless-0.3.1.tgz#2557c146e75beb903e2d247f9b5ba01452696e20"
+  integrity sha1-JVfBRudb65A+LSR/m1ugFFJpbiA=
 
 express@^4.17.1:
   version "4.17.1"
@@ -1624,7 +1679,7 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsonwebtoken@^8.5.1:
+jsonwebtoken@^8.1.0, jsonwebtoken@^8.5.1:
   version "8.5.1"
   resolved "https://registry.npm.taobao.org/jsonwebtoken/download/jsonwebtoken-8.5.1.tgz#00e71e0b8df54c2121a1f26137df2280673bcc0d"
   integrity sha1-AOceC431TCEhofJhN98igGc7zA0=
@@ -1726,6 +1781,11 @@ lodash.once@^4.0.0:
   version "4.1.1"
   resolved "https://registry.npm.taobao.org/lodash.once/download/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
   integrity sha1-DdOXEhPHxW34gJd9UEyI+0cal6w=
+
+lodash.set@^4.0.0:
+  version "4.3.2"
+  resolved "https://registry.npm.taobao.org/lodash.set/download/lodash.set-4.3.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Flodash.set%2Fdownload%2Flodash.set-4.3.2.tgz#d8757b1da807dde24816b0d6a84bea1a76230b23"
+  integrity sha1-2HV7HagH3eJIFrDWqEvqGnYjCyM=
 
 lodash.sortby@^4.7.0:
   version "4.7.0"
