@@ -46,9 +46,6 @@ const Login: React.FC = () => {
   const classes = useStyles();
   const [loginMutation, { loading }] = useLoginMutation();
   const history = useHistory();
-  if (localStorage.getItem(AUTH_TOKEN)) {
-    history.replace("/admin");
-  }
 
   return (
     <Box className={classes.signupBox}>

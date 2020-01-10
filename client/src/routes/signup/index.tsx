@@ -17,7 +17,6 @@ import {
 import { FTextField } from "../../components/Form";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import { AUTH_TOKEN } from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,9 +48,6 @@ const useStyles = makeStyles((theme: Theme) =>
 const Signup: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
-  if (localStorage.getItem(AUTH_TOKEN)) {
-    history.replace("/admin");
-  }
   const { enqueueSnackbar } = useSnackbar();
   const [signupMutation, { loading }] = useSignupMutation();
   const [

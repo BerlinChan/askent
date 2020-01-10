@@ -1,4 +1,4 @@
-mutation Events {
+query Events {
   events {
     id
     name

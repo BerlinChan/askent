@@ -1,12 +1,12 @@
 import React from "react";
 import loadable from "@loadable/component";
 import { PrivateRoute } from "../components/PrivateRoute";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { SnackbarProvider } from "notistack";
 import Loading from "../components/Loading";
-import Layout from "../components/Layout";
+import { AUTH_TOKEN } from "../constant";
 
 const theme = createMuiTheme();
 
@@ -30,31 +30,28 @@ export const DemoComponent = loadable(() => import("./demo"), {
 });
 
 const Router = () => {
+  const token = localStorage.getItem(AUTH_TOKEN);
+
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-      <CssBaseline />
+        <CssBaseline />
         <SnackbarProvider>
-            <Switch>
-              <Route exact path="/">
-                <HomeComponent />
-              </Route>
-              <Route path="/login">
-                <LoginComponent />
-              </Route>
-              <Route path="/signup">
-                <SignupComponent />
-              </Route>
-              <PrivateRoute path="/admin">
-                <AdminComponent />
-              </PrivateRoute>
-              <Route path="/about">
-                <AboutComponent />
-              </Route>
-              <Route path="/demo">
-                <DemoComponent />
-              </Route>
-            </Switch>
+          <Switch>
+            <Route exact path="/" component={HomeComponent} />
+            <Route path="/login">
+              {token ? <Redirect to="/admin" /> : <LoginComponent />}
+            </Route>
+            <Route path="/signup">
+              {token ? <Redirect to="/admin" /> : <SignupComponent />}
+            </Route>
+            <Redirect exact path="/admin" to="/admin/events" />
+            <PrivateRoute path="/admin">
+              <AdminComponent />
+            </PrivateRoute>
+            <Route path="/about" component={AboutComponent} />
+            <Route path="/demo" component={DemoComponent} />
+          </Switch>
         </SnackbarProvider>
       </ThemeProvider>
     </BrowserRouter>

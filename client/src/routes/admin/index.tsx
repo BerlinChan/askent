@@ -1,182 +1,31 @@
-import React, { useState } from "react";
-import { Paper, Tabs, Tab, Box } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
+import React from "react";
+import { AdminHeader } from "../../components/Header";
+import { Switch, useRouteMatch } from "react-router-dom";
+import { PrivateRoute } from "../../components/PrivateRoute";
+import Loading from "../../components/Loading";
+import loadable from "@loadable/component";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1
-    }
-  })
-);
+const EventsComponent = loadable(() => import("./events"), {
+  fallback: <Loading />
+});
+const AnalyticsComponent = loadable(() => import("./analytics"), {
+  fallback: <Loading />
+});
 
 const Admin: React.FC = () => {
-  const classes = useStyles();
-  const [tabIndex, setTabIndex] = useState(0);
-  const history = useHistory();
+  let { path } = useRouteMatch();
 
   return (
     <React.Fragment>
-      <Paper className={classes.root}>
-        <Tabs
-          value={tabIndex}
-          onChange={(event: React.ChangeEvent<{}>, newValue: number) => {
-            setTabIndex(newValue);
-          }}
-          indicatorColor="primary"
-          textColor="primary"
-          centered
-        >
-          <Tab label="Item One" />
-          <Tab label="Item Two" />
-          <Tab label="Item Three" />
-        </Tabs>
-      </Paper>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
-      <p>
-        asdfasdfasd
-        fasdf
-        asd
-        fasdfasdfasdf
-      </p>
+      <AdminHeader />
+      <Switch>
+        <PrivateRoute path={`${path}/events`}>
+          <EventsComponent />
+        </PrivateRoute>
+        <PrivateRoute path={`${path}/analytics`}>
+          <AnalyticsComponent />
+        </PrivateRoute>
+      </Switch>
     </React.Fragment>
   );
 };
