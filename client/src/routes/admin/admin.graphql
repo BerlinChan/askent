@@ -1,9 +1,0 @@
-query Events {
-  events {
-    id
-    name
-    code
-    startAt
-    endAt
-  }
-}

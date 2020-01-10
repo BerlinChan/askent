@@ -4,6 +4,7 @@ import { Switch, useRouteMatch } from "react-router-dom";
 import { PrivateRoute } from "../../components/PrivateRoute";
 import Loading from "../../components/Loading";
 import loadable from "@loadable/component";
+import { Container } from "@material-ui/core";
 
 const EventsComponent = loadable(() => import("./events"), {
   fallback: <Loading />
@@ -18,14 +19,16 @@ const Admin: React.FC = () => {
   return (
     <React.Fragment>
       <AdminHeader />
-      <Switch>
-        <PrivateRoute path={`${path}/events`}>
-          <EventsComponent />
-        </PrivateRoute>
-        <PrivateRoute path={`${path}/analytics`}>
-          <AnalyticsComponent />
-        </PrivateRoute>
-      </Switch>
+      <Container maxWidth="lg">
+        <Switch>
+          <PrivateRoute path={`${path}/events`}>
+            <EventsComponent />
+          </PrivateRoute>
+          <PrivateRoute path={`${path}/analytics`}>
+            <AnalyticsComponent />
+          </PrivateRoute>
+        </Switch>
+      </Container>
     </React.Fragment>
   );
 };
