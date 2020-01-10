@@ -5,6 +5,8 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { SnackbarProvider } from "notistack";
 import { IntlProvider } from "react-intl";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
 
 const apolloClient = createApolloClient();
 const theme = createMuiTheme();
@@ -32,7 +34,11 @@ const Providers: React.FC<Props> = props => {
       <IntlProvider locale={locale} messages={messages[locale]}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <SnackbarProvider>{props.children}</SnackbarProvider>
+          <SnackbarProvider>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              {props.children}
+            </MuiPickersUtilsProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </IntlProvider>
     </ApolloProvider>
