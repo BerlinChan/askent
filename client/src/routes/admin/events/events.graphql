@@ -7,3 +7,24 @@ query Events {
     endAt
   }
 }
+
+query CheckEventCodeExist($code: String!) {
+  checkEventCodeExist(code: $code)
+}
+
+mutation CreateEvent(
+  $code: String!
+  $name: String!
+  $startAt: DateTime!
+  $endAt: DateTime!
+) {
+  createEvent(code: $code, name: $name, startAt: $startAt, endAt: $endAt) {
+    id
+    code
+    name
+    createdAt
+    updatedAt
+    startAt
+    endAt
+  }
+}
