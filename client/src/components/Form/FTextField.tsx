@@ -2,10 +2,10 @@ import React from "react";
 import { TextField, TextFieldProps } from "@material-ui/core";
 import { useField, FieldAttributes } from "formik";
 
-export const FTextField: React.ComponentType<TextFieldProps> & any = ({
+export const FTextField: React.FC<TextFieldProps & FieldAttributes<any>> = ({
   validate,
   ...props
-}: TextFieldProps & FieldAttributes<any>) => {
+}) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and also replace ErrorMessage entirely.
   const [field, meta] = useField({ validate, ...props });

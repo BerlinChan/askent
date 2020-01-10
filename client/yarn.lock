@@ -1063,6 +1063,18 @@
   resolved "https://registry.npm.taobao.org/@csstools/normalize.css/download/@csstools/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha1-8JULuhiBlRLUL3GX5WxRiqSRzxg=
 
+"@date-io/core@^1.3.13":
+  version "1.3.13"
+  resolved "https://registry.npm.taobao.org/@date-io/core/download/@date-io/core-1.3.13.tgz#90c71da493f20204b7a972929cc5c482d078b3fa"
+  integrity sha1-kMcdpJPyAgS3qXKSnMXEgtB4s/o=
+
+"@date-io/date-fns@^1.3.13":
+  version "1.3.13"
+  resolved "https://registry.npm.taobao.org/@date-io/date-fns/download/@date-io/date-fns-1.3.13.tgz#7798844041640ab393f7e21a7769a65d672f4735"
+  integrity sha1-d5iEQEFkCrOT9+Iad2mmXWcvRzU=
+  dependencies:
+    "@date-io/core" "^1.3.13"
+
 "@emotion/hash@^0.7.4":
   version "0.7.4"
   resolved "https://registry.npm.taobao.org/@emotion/hash/download/@emotion/hash-0.7.4.tgz?cache=0&sync_timestamp=1577064800424&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40emotion%2Fhash%2Fdownload%2F%40emotion%2Fhash-0.7.4.tgz#f14932887422c9056b15a8d222a9074a7dfa2831"
@@ -4345,6 +4357,11 @@ date-fns@^1.27.2:
   version "1.30.1"
   resolved "https://registry.npm.taobao.org/date-fns/download/date-fns-1.30.1.tgz?cache=0&sync_timestamp=1574404231599&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fdate-fns%2Fdownload%2Fdate-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
   integrity sha1-LnG/CxGRU9u0zE6I2epaz7UNwFw=
+
+date-fns@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.npm.taobao.org/date-fns/download/date-fns-2.9.0.tgz?cache=0&sync_timestamp=1578488821613&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fdate-fns%2Fdownload%2Fdate-fns-2.9.0.tgz#d0b175a5c37ed5f17b97e2272bbc1fa5aec677d2"
+  integrity sha1-0LF1pcN+1fF7l+InK7wfpa7Gd9I=
 
 de-indent@^1.0.2:
   version "1.0.2"

@@ -8,17 +8,12 @@ import {
   DialogContent,
   DialogActions
 } from "@material-ui/core";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker
-} from "@material-ui/pickers";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { FTextField } from "../../../components/Form";
-import moment from "moment";
+import { FTextField, FDatePicker } from "../../../components/Form";
+import { add } from "date-fns";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,7 +55,7 @@ const Events: React.FC<{}> = () => {
               name: "",
               code: "",
               startAt: new Date(),
-              endAt: moment().add(4, "days")
+              endAt: add(new Date(), { days: 4 })
             }}
             validationSchema={Yup.object({
               name: Yup.string()
@@ -78,6 +73,7 @@ const Events: React.FC<{}> = () => {
           >
             <Form>
               <FTextField
+                autoFocus
                 fullWidth
                 id="name"
                 name="name"
@@ -92,16 +88,25 @@ const Events: React.FC<{}> = () => {
                 type="code"
                 margin="normal"
               />
-              <KeyboardDatePicker
-                disableToolbar
+              <FDatePicker
+                id="startAt"
+                name="startAt"
+                label="Start date"
                 variant="inline"
-                format="MM/dd/yyyy"
                 margin="normal"
-                id="date-picker-inline"
-                label="Date picker inline"
-                KeyboardButtonProps={{
-                  "aria-label": "change date"
-                }}
+                autoOk
+                disableToolbar
+                disablePast
+              />
+              <FDatePicker
+                id="endAt"
+                name="endAt"
+                label="End date"
+                variant="inline"
+                margin="normal"
+                autoOk
+                disableToolbar
+                disablePast
               />
             </Form>
           </Formik>

@@ -7,6 +7,8 @@ import { SnackbarProvider } from "notistack";
 import { IntlProvider } from "react-intl";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import enLocale from "date-fns/locale/en-US";
+import zhLocale from "date-fns/locale/zh-CN";
 
 const apolloClient = createApolloClient();
 const theme = createMuiTheme();
@@ -19,6 +21,11 @@ const messages = {
   en: {
     CREAT_EVENT: "Create Event"
   }
+};
+// TODO: DatePicker i18n, ref: https://material-ui-pickers.dev/localization/date-fns
+const localeMap = {
+  en: enLocale,
+  zh: zhLocale
 };
 
 interface Props {
@@ -35,7 +42,10 @@ const Providers: React.FC<Props> = props => {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <SnackbarProvider>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <MuiPickersUtilsProvider
+              utils={DateFnsUtils}
+              locale={localeMap[locale]}
+            >
               {props.children}
             </MuiPickersUtilsProvider>
           </SnackbarProvider>
