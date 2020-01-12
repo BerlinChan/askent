@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "postinstall": "npm -s run generate",
-    "dev": "ts-node-dev --no-notify --respawn --transpileOnly src/index",
+    "dev": "ts-node-dev --no-notify --respawn --transpileOnly --inspect=9229 src/index",
     "start": "node dist/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && npm -s run generate && tsc",
