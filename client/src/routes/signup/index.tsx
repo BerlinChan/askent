@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CircularProgress
-} from "@material-ui/core";
+import { Box, Card, CardActions, CardContent } from "@material-ui/core";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -14,7 +7,7 @@ import {
   useSignupMutation,
   useCheckNameOrEmailExistLazyQuery
 } from "../../generated/graphqlHooks";
-import { FTextField } from "../../components/Form";
+import { FTextField, ButtonLoading } from "../../components/Form";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
 
@@ -30,17 +23,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     card: {
       padding: theme.spacing(2)
-    },
-    buttonWrapper: {
-      margin: theme.spacing(1),
-      position: "relative"
-    },
-    buttonProgress: {
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      marginTop: -12,
-      marginLeft: -12
     }
   })
 );
@@ -119,9 +101,7 @@ const Signup: React.FC = () => {
           }
         }}
         onSubmit={async values => {
-          const { data } = await signupMutation({
-            variables: values
-          });
+          const { data } = await signupMutation({ variables: values });
 
           if (data) {
             enqueueSnackbar("Sign up success!", {
@@ -172,22 +152,15 @@ const Signup: React.FC = () => {
               />
             </CardContent>
             <CardActions>
-              <div className={classes.buttonWrapper}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={loading || checkNameLoading || checkEmailLoading}
-                >
-                  Create Account
-                </Button>
-                {(loading || checkNameLoading || checkEmailLoading) && (
-                  <CircularProgress
-                    size={24}
-                    className={classes.buttonProgress}
-                  />
-                )}
-              </div>
+              <ButtonLoading
+                type="submit"
+                variant="contained"
+                color="primary"
+                loading={loading || checkNameLoading || checkEmailLoading}
+                disabled={loading || checkNameLoading || checkEmailLoading}
+              >
+                Create Account
+              </ButtonLoading>
             </CardActions>
           </Card>
         </Form>

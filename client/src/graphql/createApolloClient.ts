@@ -25,7 +25,7 @@ const link = from([
   new HttpLink({
     uri: config.api,
     headers: {
-      authorization: localStorage.getItem(AUTH_TOKEN)
+      Authorization: localStorage.getItem(AUTH_TOKEN)
     }
   })
 ]);

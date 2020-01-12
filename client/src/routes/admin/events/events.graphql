@@ -28,3 +28,11 @@ mutation CreateEvent(
     endAt
   }
 }
+
+mutation DeleteEvent($eventId: ID!) {
+  deleteEvent(eventId: $eventId) {
+    id
+    name
+    code
+  }
+}

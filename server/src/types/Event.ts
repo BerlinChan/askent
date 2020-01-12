@@ -1,125 +1,137 @@
-import {objectType, extendType, stringArg, arg, idArg} from 'nexus'
-import {getUserId} from "../utils";
-import {Context} from "../context";
-import {Event as EventType} from "@prisma/photon";
+import { objectType, extendType, stringArg, arg, idArg } from 'nexus'
+import { getUserId } from '../utils'
+import { Context } from '../context'
+import { Event as EventType } from '@prisma/photon'
 
 export const Event = objectType({
-    name: 'Event',
-    definition(t) {
-        t.model.id()
-        t.model.code()
-        t.model.name()
-        t.model.owner()
-        t.model.createdAt()
-        t.model.updatedAt()
-        t.model.startAt()
-        t.model.endAt()
-        t.model.questions()
-    },
+  name: 'Event',
+  definition(t) {
+    t.model.id()
+    t.model.code()
+    t.model.name()
+    t.model.owner()
+    t.model.createdAt()
+    t.model.updatedAt()
+    t.model.startAt()
+    t.model.endAt()
+    t.model.questions()
+  },
 })
 
 export const eventQuery = extendType({
-    type: 'Query',
-    definition(t) {
-        t.list.field('events', {
-            type: 'Event',
-            resolve: async (root, args, context) => {
-                const userId = getUserId(context)
-                return context.photon.events.findMany({where: {owner: {id: userId}}})
-            },
+  type: 'Query',
+  definition(t) {
+    t.list.field('events', {
+      type: 'Event',
+      resolve: async (root, args, context) => {
+        const userId = getUserId(context)
+        return context.photon.events.findMany({
+          where: { owner: { id: userId } },
         })
-        t.field('checkEventCodeExist', {
-            type: 'Boolean',
-            description: 'Check if a event code has already exist.',
-            args: {
-                code: stringArg({required: true}),
-            },
-            resolve: async (root, {code}, context) => {
-                return await checkEventCodeExist(context, code)
-            },
-        })
-    },
+      },
+    })
+    t.field('checkEventCodeExist', {
+      type: 'Boolean',
+      description: 'Check if a event code has already exist.',
+      args: {
+        code: stringArg({ required: true }),
+      },
+      resolve: async (root, { code }, context) => {
+        return await checkEventCodeExist(context, code)
+      },
+    })
+  },
 })
 
 export const eventMutation = extendType({
-    type: 'Mutation',
-    definition(t) {
-        t.field('createEvent', {
-            type: 'Event',
-            args: {
-                code: stringArg({required: true}),
-                name: stringArg({required: true}),
-                startAt: arg({type: 'DateTime', required: true}),
-                endAt: arg({type: 'DateTime', required: true}),
-            },
-            resolve: async (root, {code, name, startAt, endAt}, ctx) => {
-                if (await checkEventCodeExist(ctx, code)) {
-                    throw new Error(`Code "${code}" has already exist.`)
-                }
-                const userId = getUserId(ctx)
-                return ctx.photon.events.create({
-                    data: {
-                        owner: {connect: {id: userId}},
-                        code,
-                        name,
-                        startAt,
-                        endAt,
-                    },
-                })
-            },
+  type: 'Mutation',
+  definition(t) {
+    t.field('createEvent', {
+      type: 'Event',
+      args: {
+        code: stringArg({ required: true }),
+        name: stringArg({ required: true }),
+        startAt: arg({ type: 'DateTime', required: true }),
+        endAt: arg({ type: 'DateTime', required: true }),
+      },
+      resolve: async (root, { code, name, startAt, endAt }, ctx) => {
+        if (await checkEventCodeExist(ctx, code)) {
+          throw new Error(`Code "${code}" has already exist.`)
+        }
+        const userId = getUserId(ctx)
+        return ctx.photon.events.create({
+          data: {
+            owner: { connect: { id: userId } },
+            code,
+            name,
+            startAt,
+            endAt,
+          },
         })
-        t.field('updateEvent', {
-            type: "Event",
-            args: {
-                eventId: idArg(),
-                code: stringArg({nullable: true}),
-                name: stringArg({nullable: true}),
-                startAt: arg({type: 'DateTime', nullable: true}),
-                endAt: arg({type: 'DateTime', nullable: true}),
-            },
-            resolve: async (root, args, context) => {
-                await checkEventExist(context, args.eventId as string)
-                const findEvent = await context.photon.events.findOne({
-                    where: {id: args.eventId},
-                    select: {code: true},
-                })
-                if (args.code && args.code !== findEvent?.code && await checkEventCodeExist(context, args.code)) {
-                    throw new Error(`Code "${args.code}" has already exist.`)
-                }
-                let event = Object.assign({},
-                    args?.code ? {code: args?.code} : {},
-                    args?.name ? {code: args?.name} : {},
-                    args?.startAt ? {code: args?.startAt} : {},
-                    args?.endAt ? {code: args?.endAt} : {},
-                )
+      },
+    })
+    t.field('updateEvent', {
+      type: 'Event',
+      args: {
+        eventId: idArg(),
+        code: stringArg({ nullable: true }),
+        name: stringArg({ nullable: true }),
+        startAt: arg({ type: 'DateTime', nullable: true }),
+        endAt: arg({ type: 'DateTime', nullable: true }),
+      },
+      resolve: async (root, args, context) => {
+        await checkEventExist(context, args.eventId as string)
+        const findEvent = await context.photon.events.findOne({
+          where: { id: args.eventId },
+          select: { code: true },
+        })
+        if (
+          args.code &&
+          args.code !== findEvent?.code &&
+          (await checkEventCodeExist(context, args.code))
+        ) {
+          throw new Error(`Code "${args.code}" has already exist.`)
+        }
+        let event = Object.assign(
+          {},
+          args?.code ? { code: args?.code } : {},
+          args?.name ? { code: args?.name } : {},
+          args?.startAt ? { code: args?.startAt } : {},
+          args?.endAt ? { code: args?.endAt } : {},
+        )
 
-                return context.photon.events.update({
-                    where: {id: args.eventId},
-                    data: event,
-                })
-            },
+        return context.photon.events.update({
+          where: { id: args.eventId },
+          data: event,
         })
-        t.field('deleteEvent', {
-            type: "Event",
-            args: {
-                eventId: idArg(),
-            },
-            resolve: async (root, args, context) => {
-                await checkEventExist(context, args.eventId as string)
-                return context.photon.events.delete({where: {id: args.eventId}})
-            },
-        })
-    },
+      },
+    })
+    t.field('deleteEvent', {
+      type: 'Event',
+      args: {
+        eventId: idArg({ required: true }),
+      },
+      resolve: async (root, args, context) => {
+        await checkEventExist(context, args.eventId as string)
+        return context.photon.events.delete({ where: { id: args.eventId } })
+      },
+    })
+  },
 })
 
 async function checkEventCodeExist(context: Context, code: string) {
-    return Boolean(await context.photon.events.findOne({where: {code}}))
+  return Boolean(await context.photon.events.findOne({ where: { code } }))
 }
 
-async function checkEventExist(context: Context, eventId: EventType['id']): Promise<boolean> {
-    const findEvent = await context.photon.events.findOne({where: {id: eventId}})
-    if (!findEvent) {
-        throw new Error(`No event for id: ${eventId}`)
-    }
-    return true
+async function checkEventExist(
+  context: Context,
+  eventId: EventType['id'],
+): Promise<boolean> {
+  const findEvent = await context.photon.events.findOne({
+    where: { id: eventId },
+  })
+  if (!findEvent) {
+    throw new Error(`No event for id: ${eventId}`)
+  }
+  return true
 }

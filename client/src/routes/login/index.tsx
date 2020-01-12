@@ -1,16 +1,9 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CircularProgress
-} from "@material-ui/core";
+import { Box, Card, CardActions, CardContent } from "@material-ui/core";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { FTextField } from "../../components/Form";
+import { FTextField, ButtonLoading } from "../../components/Form";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useLoginMutation } from "../../generated/graphqlHooks";
 import { AUTH_TOKEN } from "../../constant";
@@ -27,17 +20,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     card: {
       padding: theme.spacing(2)
-    },
-    buttonWrapper: {
-      margin: theme.spacing(1),
-      position: "relative"
-    },
-    buttonProgress: {
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      marginTop: -12,
-      marginLeft: -12
     }
   })
 );
@@ -86,22 +68,15 @@ const Login: React.FC = () => {
               />
             </CardContent>
             <CardActions>
-              <div className={classes.buttonWrapper}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={loading}
-                >
-                  Log In
-                </Button>
-                {loading && (
-                  <CircularProgress
-                    size={24}
-                    className={classes.buttonProgress}
-                  />
-                )}
-              </div>
+              <ButtonLoading
+                type="submit"
+                variant="contained"
+                color="primary"
+                loading={loading}
+                disabled={loading}
+              >
+                Log In
+              </ButtonLoading>
             </CardActions>
           </Card>
         </Form>

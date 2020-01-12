@@ -12,12 +12,17 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { FTextField, FDatePicker } from "../../../components/Form";
+import {
+  FTextField,
+  FDatePicker,
+  ButtonLoading
+} from "../../../components/Form";
 import { add } from "date-fns";
 import {
   useCheckEventCodeExistLazyQuery,
   useCreateEventMutation
 } from "../../../generated/graphqlHooks";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,40 +44,74 @@ interface Props {
 
 const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
   const [
     checkEventCodeExistLazyQuery,
     { data: checkEventCodeData, loading: checkEventCodeLoading }
   ] = useCheckEventCodeExistLazyQuery();
+  const [
+    createEventMutation,
+    { loading: createEventLoading }
+  ] = useCreateEventMutation();
 
   return (
     <Dialog {...props}>
-      <DialogTitle>
-        <FormattedMessage id="CREAT_EVENT" />
-      </DialogTitle>
-      <DialogContent>
-        <Formik
-          initialValues={{
-            name: "",
-            code: "",
-            startAt: new Date(),
-            endAt: add(new Date(), { days: 4 })
-          }}
-          validationSchema={Yup.object({
-            name: Yup.string()
-              .max(20)
-              .required(),
-            code: Yup.string()
-              .max(20)
-              .required(),
-            startAt: Yup.date(),
-            endAt: Yup.date()
-          })}
-          onSubmit={async values => {
+      <Formik
+        initialValues={{
+          name: "",
+          code: "",
+          startAt: new Date(),
+          endAt: add(new Date(), { days: 4 })
+        }}
+        validate={async ({ name, code, startAt, endAt }) => {
+          try {
+            await Yup.object({
+              name: Yup.string()
+                .max(20)
+                .required(),
+              code: Yup.string()
+                .max(20)
+                .required(),
+              startAt: Yup.date(),
+              endAt: Yup.date()
+            }).validate({
+              name,
+              code,
+              startAt,
+              endAt
+            });
+          } catch (err) {
+            const { path, message } = err as Yup.ValidationError;
+            const error: any = {};
+            error[path] = message;
+
+            return error;
+          }
+
+          if (endAt < startAt) {
+            return { endAt: "End must after start" };
+          }
+
+          await checkEventCodeExistLazyQuery({ variables: { code } });
+          if (checkEventCodeData?.checkEventCodeExist) {
+            return { code: "Code exist" };
+          }
+        }}
+        onSubmit={async values => {
+          const { data } = await createEventMutation({ variables: values });
+          if (data) {
+            enqueueSnackbar("Create success!", {
+              variant: "success"
+            });
             props.onClose();
-            // const { data } = await loginMutation({ variables: values });
-          }}
-        >
-          <Form className={classes.createForm}>
+          }
+        }}
+      >
+        <Form className={classes.createForm}>
+          <DialogTitle>
+            <FormattedMessage id="CREAT_EVENT" />
+          </DialogTitle>
+          <DialogContent>
             <FTextField
               autoFocus
               fullWidth
@@ -111,20 +150,21 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
               type="code"
               margin="normal"
             />
-          </Form>
-        </Formik>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={props.onClose}>Cancel</Button>
-        <Button
-          className={classes.boldButton}
-          type="submit"
-          color="primary"
-          // disabled={loading}
-        >
-          <FormattedMessage id="CREAT_EVENT" />
-        </Button>
-      </DialogActions>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={props.onClose}>Cancel</Button>
+            <ButtonLoading
+              className={classes.boldButton}
+              type="submit"
+              color="primary"
+              disabled={createEventLoading || checkEventCodeLoading}
+              loading={createEventLoading || checkEventCodeLoading}
+            >
+              <FormattedMessage id="CREAT_EVENT" />
+            </ButtonLoading>
+          </DialogActions>
+        </Form>
+      </Formik>
     </Dialog>
   );
 };
