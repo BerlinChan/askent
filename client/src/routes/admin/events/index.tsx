@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { useHistory } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -33,14 +34,20 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Events: React.FC<{}> = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [openCreate, setOpenCreate] = React.useState(false);
-  const { data: eventsData, loading: eventsLoading } = useEventsQuery();
+  const {
+    data: eventsData,
+    loading: eventsLoading,
+    refetch: eventsRefetch
+  } = useEventsQuery();
   const [deleteEventMutation] = useDeleteEventMutation();
 
   const handleClickOpen = () => {
     setOpenCreate(true);
   };
   const handleClose = () => {
+    eventsRefetch();
     setOpenCreate(false);
   };
 
@@ -55,7 +62,10 @@ const Events: React.FC<{}> = () => {
       <Box>
         <List>
           {eventsData?.events.map((eventItem, eventIndex) => (
-            <ListItem key={eventIndex}>
+            <ListItem
+              key={eventIndex}
+              onClick={() => history.push(`/admin/event/${eventItem.id}`)}
+            >
               <ListItemAvatar>
                 <Avatar>
                   <FolderIcon />

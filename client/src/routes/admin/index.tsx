@@ -12,6 +12,9 @@ const EventsComponent = loadable(() => import("./events"), {
 const AnalyticsComponent = loadable(() => import("./analytics"), {
   fallback: <Loading />
 });
+const EventComponent = loadable(() => import("./event"), {
+  fallback: <Loading />
+});
 
 const Admin: React.FC = () => {
   let { path } = useRouteMatch();
@@ -26,6 +29,9 @@ const Admin: React.FC = () => {
           </PrivateRoute>
           <PrivateRoute path={`${path}/analytics`}>
             <AnalyticsComponent />
+          </PrivateRoute>
+          <PrivateRoute path={`${path}/event`}>
+            <EventComponent />
           </PrivateRoute>
         </Switch>
       </Container>
