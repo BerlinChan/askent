@@ -1,6 +1,6 @@
 import React from "react";
 import { AdminHeader } from "../../components/Header";
-import { Switch, useRouteMatch } from "react-router-dom";
+import { Switch, Redirect, useRouteMatch } from "react-router-dom";
 import { PrivateRoute } from "../../components/PrivateRoute";
 import Loading from "../../components/Loading";
 import loadable from "@loadable/component";
@@ -12,9 +12,6 @@ const EventsComponent = loadable(() => import("./events"), {
 const AnalyticsComponent = loadable(() => import("./analytics"), {
   fallback: <Loading />
 });
-const EventComponent = loadable(() => import("./event"), {
-  fallback: <Loading />
-});
 
 const Admin: React.FC = () => {
   let { path } = useRouteMatch();
@@ -24,14 +21,12 @@ const Admin: React.FC = () => {
       <AdminHeader />
       <Container maxWidth="lg">
         <Switch>
+          <Redirect exact path={path} to={`${path}/events`} />
           <PrivateRoute path={`${path}/events`}>
             <EventsComponent />
           </PrivateRoute>
           <PrivateRoute path={`${path}/analytics`}>
             <AnalyticsComponent />
-          </PrivateRoute>
-          <PrivateRoute path={`${path}/event`}>
-            <EventComponent />
           </PrivateRoute>
         </Switch>
       </Container>

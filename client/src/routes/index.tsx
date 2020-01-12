@@ -18,6 +18,9 @@ const SignupComponent = loadable(() => import("./signup"), {
 const AdminComponent = loadable(() => import("./admin"), {
   fallback: <Loading />
 });
+const EventComponent = loadable(() => import("./event"), {
+  fallback: <Loading />
+});
 const AboutComponent = loadable(() => import("./about"), {
   fallback: <Loading />
 });
@@ -39,10 +42,13 @@ const Router = () => {
           <Route path="/signup">
             {token ? <Redirect to="/admin" /> : <SignupComponent />}
           </Route>
-          <Redirect exact path="/admin" to="/admin/events" />
           <PrivateRoute path="/admin">
             <AdminComponent />
           </PrivateRoute>
+          <PrivateRoute path={`/event`}>
+            <EventComponent />
+          </PrivateRoute>
+
           <Route path="/about" component={AboutComponent} />
           <Route path="/demo" component={DemoComponent} />
         </Switch>

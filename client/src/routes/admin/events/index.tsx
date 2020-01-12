@@ -64,7 +64,7 @@ const Events: React.FC<{}> = () => {
           {eventsData?.events.map((eventItem, eventIndex) => (
             <ListItem
               key={eventIndex}
-              onClick={() => history.push(`/admin/event/${eventItem.id}`)}
+              onClick={() => history.push(`/event/${eventItem.id}`)}
             >
               <ListItemAvatar>
                 <Avatar>
