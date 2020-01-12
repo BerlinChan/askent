@@ -42,6 +42,7 @@ const Router = () => {
           <Route path="/signup">
             {token ? <Redirect to="/admin" /> : <SignupComponent />}
           </Route>
+          
           <PrivateRoute path="/admin">
             <AdminComponent />
           </PrivateRoute>
