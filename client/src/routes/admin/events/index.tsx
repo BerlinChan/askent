@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Box,
+  Paper,
   Typography,
   Button,
   Avatar,
@@ -27,6 +28,9 @@ const useStyles = makeStyles((theme: Theme) =>
     titleBox: {
       display: "flex",
       justifyContent: "space-between",
+      marginTop: theme.spacing(2)
+    },
+    eventList: {
       marginTop: theme.spacing(2)
     }
   })
@@ -59,8 +63,8 @@ const Events: React.FC<{}> = () => {
           <FormattedMessage id="CREAT_EVENT" />
         </Button>
       </Box>
-      <Box>
-        <List>
+      <Paper className={classes.eventList}>
+        <List disablePadding>
           {eventsData?.events.map((eventItem, eventIndex) => (
             <ListItem
               key={eventIndex}
@@ -102,7 +106,7 @@ const Events: React.FC<{}> = () => {
             </ListItem>
           ))}
         </List>
-      </Box>
+      </Paper>
 
       <CreateEventDialog open={openCreate} onClose={handleClose} />
     </Fragment>

@@ -1,9 +1,13 @@
 import React, { Fragment } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { matchPath } from "react-router";
+import {
+  Link as RouterLink,
+  useRouteMatch,
+  useLocation
+} from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Box, Link, Toolbar, Paper } from "@material-ui/core";
 import AppBarElevationScroll from "../AppBarElevationScroll";
-import { useRouteMatch } from "react-router-dom";
 import RouteTabs from "../RouteTabs";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -15,9 +19,13 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function AdminHeader() {
+export function EventHeader() {
   const classes = useStyles();
-  let { url } = useRouteMatch();
+  let { path } = useRouteMatch();
+  const { pathname } = useLocation();
+  const { url } = matchPath(pathname, { path: `${path}/:id` }) as {
+    url: string;
+  };
 
   return (
     <AppBarElevationScroll>
@@ -35,7 +43,8 @@ export function AdminHeader() {
         <Paper elevation={0} square>
           <RouteTabs
             tabs={[
-              { label: "活动", to: `${url}/events` },
+              { label: "问答", to: `${url}/questions` },
+              { label: "调查", to: `${url}/polls` },
               { label: "分析", to: `${url}/analytics` }
             ]}
             indicatorColor="primary"

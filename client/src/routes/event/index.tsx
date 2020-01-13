@@ -3,6 +3,7 @@ import { Switch, useRouteMatch, Redirect } from "react-router-dom";
 import { PrivateRoute } from "../../components/PrivateRoute";
 import Loading from "../../components/Loading";
 import loadable from "@loadable/component";
+import { EventHeader } from "../../components/Header";
 
 const QuestionsComponent = loadable(() => import("./questions"), {
   fallback: <Loading />
@@ -13,6 +14,7 @@ const Event: React.FC = () => {
 
   return (
     <React.Fragment>
+      <EventHeader />
       <div>Event deatil</div>
       <Switch>
         <Redirect exact path={`${path}/:id`} to={`${path}/:id/questions`} />
