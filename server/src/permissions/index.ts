@@ -11,7 +11,7 @@ const rules = {
     const owner = await context.photon.events
       .findOne({ where: { id: eventId } })
       .owner()
-      
+
     return userId === owner.id
   }),
   isQuestionAuthor: rule()(async (parent, { questionId }, context) => {
@@ -26,6 +26,7 @@ const rules = {
 
 export const permissions = shield({
   Query: {
+    me: rules.isAuthenticatedUser,
     events: rules.isAuthenticatedUser,
     questions: rules.isAuthenticatedUser,
     checkEventCodeExist: rules.isAuthenticatedUser,
