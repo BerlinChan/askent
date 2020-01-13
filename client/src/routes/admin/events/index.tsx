@@ -1,36 +1,16 @@
 import React, { Fragment } from "react";
-import { useHistory } from "react-router-dom";
-import {
-  Box,
-  Paper,
-  Typography,
-  Button,
-  Avatar,
-  IconButton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  ListItemSecondaryAction
-} from "@material-ui/core";
-import FolderIcon from "@material-ui/icons/Folder";
-import DeleteIcon from "@material-ui/icons/Delete";
+import { Box, Button } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
-import {
-  useEventsQuery,
-  useDeleteEventMutation
-} from "../../../generated/graphqlHooks";
+import { useEventsQuery } from "../../../generated/graphqlHooks";
 import CreateEventDialog from "./CreateEventDialog";
+import EventList from "./EventList";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    titleBox: {
+    actionBox: {
       display: "flex",
-      justifyContent: "space-between",
-      marginTop: theme.spacing(2)
-    },
-    eventList: {
+      justifyContent: "flex-end",
       marginTop: theme.spacing(2)
     }
   })
@@ -38,14 +18,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Events: React.FC<{}> = () => {
   const classes = useStyles();
-  const history = useHistory();
   const [openCreate, setOpenCreate] = React.useState(false);
-  const {
-    data: eventsData,
-    loading: eventsLoading,
-    refetch: eventsRefetch
-  } = useEventsQuery();
-  const [deleteEventMutation] = useDeleteEventMutation();
+  const eventsQueryResult = useEventsQuery();
+  const { refetch: eventsRefetch } = eventsQueryResult;
 
   const handleClickOpen = () => {
     setOpenCreate(true);
@@ -57,56 +32,12 @@ const Events: React.FC<{}> = () => {
 
   return (
     <Fragment>
-      <Box className={classes.titleBox}>
-        <Typography variant="h6">Events</Typography>
+      <Box className={classes.actionBox}>
         <Button variant="contained" color="primary" onClick={handleClickOpen}>
-          <FormattedMessage id="CREAT_EVENT" />
+          <FormattedMessage id="CREAT_EVENT" defaultMessage="Create Event" />
         </Button>
       </Box>
-      <Paper className={classes.eventList}>
-        <List disablePadding>
-          {eventsData?.events.map((eventItem, eventIndex) => (
-            <ListItem
-              key={eventIndex}
-              button
-              divider
-              onClick={() => history.push(`/event/${eventItem.id}`)}
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  <FolderIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <Fragment>
-                    <Typography color="inherit" display="inline">
-                      {eventItem.name}
-                    </Typography>
-                    <Typography color="textSecondary" display="inline">
-                      # {eventItem.code}
-                    </Typography>
-                  </Fragment>
-                }
-                secondary={`${eventItem.startAt} ~ ${eventItem.endAt}`}
-              />
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() =>
-                    deleteEventMutation({
-                      variables: { eventId: eventItem.id }
-                    })
-                  }
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
-      </Paper>
+      <EventList eventsQueryResult={eventsQueryResult} />
 
       <CreateEventDialog open={openCreate} onClose={handleClose} />
     </Fragment>

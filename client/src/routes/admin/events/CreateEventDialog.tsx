@@ -152,7 +152,9 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={props.onClose}>Cancel</Button>
+            <Button onClick={props.onClose}>
+              <FormattedMessage id="CANCEL" defaultMessage="Cancel" />
+            </Button>
             <ButtonLoading
               className={classes.boldButton}
               type="submit"
@@ -160,7 +162,7 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
               disabled={createEventLoading || checkEventCodeLoading}
               loading={createEventLoading || checkEventCodeLoading}
             >
-              <FormattedMessage id="CREAT_EVENT" />
+              <FormattedMessage id="CREATE" defaultMessage="Create" />
             </ButtonLoading>
           </DialogActions>
         </Form>

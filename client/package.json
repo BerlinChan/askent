@@ -43,7 +43,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "codegen": "ts-node --skip-project tools/codegen.ts"
+    "codegen": "ts-node --skip-project tools/codegen.ts",
+    "intl:extract": "npx formatjs extract --messages-dir src/generated src/**/*.tsx"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -61,6 +62,7 @@
     ]
   },
   "devDependencies": {
+    "@formatjs/cli": "^1.1.18",
     "@graphql-codegen/cli": "^1.10.0",
     "@graphql-codegen/typescript-operations": "1.10.0",
     "@graphql-codegen/typescript-react-apollo": "1.10.0",

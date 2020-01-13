@@ -1,23 +1,57 @@
 import React, { Fragment } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Box, Link, Toolbar, Paper } from "@material-ui/core";
+import {
+  Container,
+  Box,
+  Link,
+  Toolbar,
+  Paper,
+  IconButton,
+  Avatar,
+  Typography,
+  TextField,
+  InputAdornment
+} from "@material-ui/core";
 import AppBarElevationScroll from "../AppBarElevationScroll";
 import { useRouteMatch } from "react-router-dom";
 import RouteTabs from "../RouteTabs";
+import { useMeQuery } from "../../../generated/graphqlHooks";
+import SearchIcon from "@material-ui/icons/Search";
+import { useIntl } from "react-intl";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     toolbar: {
       justifyContent: "space-between"
     },
-    actions: { "& > *": { margin: theme.spacing(1) } }
+    actions: {
+      display: "flex",
+      alignItems: "center",
+      flexWrap: "nowrap",
+      "& > *": { margin: theme.spacing(1) }
+    },
+    searchInput: {
+      borderRadius: theme.shape.borderRadius,
+      padding: theme.spacing(0.2, 0.4),
+      backgroundColor: theme.palette.divider
+    },
+    userInfo: {},
+    email: {
+      fontSize: theme.typography.pxToRem(14),
+      fontWeight: theme.typography.fontWeightBold
+    },
+    name: {
+      fontSize: theme.typography.pxToRem(14)
+    }
   })
 );
 
 export function AdminHeader() {
   const classes = useStyles();
+  const { formatMessage } = useIntl();
   let { url } = useRouteMatch();
+  const { data: userData } = useMeQuery();
 
   return (
     <AppBarElevationScroll>
@@ -27,21 +61,49 @@ export function AdminHeader() {
             Askent
           </Link>
           <Box className={classes.actions}>
+            <TextField
+              className={classes.searchInput}
+              placeholder={formatMessage({
+                id: "SEARCH_EVENTS",
+                defaultMessage: "Search events"
+              })}
+              InputProps={{
+                disableUnderline: true,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="inherit" />
+                  </InputAdornment>
+                )
+              }}
+            />
             <Link color="inherit" component={RouterLink} to="/admin">
               Admin
             </Link>
+            <Box className={classes.userInfo}>
+              <Typography className={classes.email}>
+                {userData?.me.email}
+              </Typography>
+              <Typography className={classes.name}>
+                {userData?.me.name}
+              </Typography>
+            </Box>
+
+            <IconButton size="small">
+              <Avatar>H</Avatar>
+            </IconButton>
           </Box>
         </Toolbar>
         <Paper elevation={0} square>
-          <RouteTabs
-            tabs={[
-              { label: "活动", to: `${url}/events` },
-              { label: "分析", to: `${url}/analytics` }
-            ]}
-            indicatorColor="primary"
-            textColor="primary"
-            centered
-          />
+          <Container maxWidth="lg">
+            <RouteTabs
+              tabs={[
+                { label: "活动", to: `${url}/events` },
+                { label: "分析", to: `${url}/analytics` }
+              ]}
+              indicatorColor="primary"
+              textColor="primary"
+            />
+          </Container>
         </Paper>
       </Fragment>
     </AppBarElevationScroll>

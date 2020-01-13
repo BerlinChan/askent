@@ -10,6 +10,7 @@ import {
 import { FTextField, ButtonLoading } from "../../components/Form";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { FormattedMessage } from "react-intl";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -159,7 +160,10 @@ const Signup: React.FC = () => {
                 loading={loading || checkNameLoading || checkEmailLoading}
                 disabled={loading || checkNameLoading || checkEmailLoading}
               >
-                Create Account
+                <FormattedMessage
+                  id="CREATE_ACCOUNT"
+                  defaultMessage="创建账号"
+                />
               </ButtonLoading>
             </CardActions>
           </Card>

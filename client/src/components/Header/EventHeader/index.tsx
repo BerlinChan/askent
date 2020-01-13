@@ -6,7 +6,7 @@ import {
   useLocation
 } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Box, Link, Toolbar, Paper } from "@material-ui/core";
+import { Container, Box, Link, Toolbar, Paper } from "@material-ui/core";
 import AppBarElevationScroll from "../AppBarElevationScroll";
 import RouteTabs from "../RouteTabs";
 
@@ -41,16 +41,17 @@ export function EventHeader() {
           </Box>
         </Toolbar>
         <Paper elevation={0} square>
-          <RouteTabs
-            tabs={[
-              { label: "问答", to: `${url}/questions` },
-              { label: "调查", to: `${url}/polls` },
-              { label: "分析", to: `${url}/analytics` }
-            ]}
-            indicatorColor="primary"
-            textColor="primary"
-            centered
-          />
+          <Container maxWidth="lg">
+            <RouteTabs
+              tabs={[
+                { label: "问答", to: `${url}/questions` },
+                { label: "调查", to: `${url}/polls` },
+                { label: "分析", to: `${url}/analytics` }
+              ]}
+              indicatorColor="primary"
+              textColor="primary"
+            />
+          </Container>
         </Paper>
       </Fragment>
     </AppBarElevationScroll>
