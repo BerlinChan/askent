@@ -1,15 +1,14 @@
 import React from "react";
-import { matchPath } from "react-router";
 import {
   Link as RouterLink,
   useRouteMatch,
-  useLocation,
-  useHistory
+  useHistory,
 } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
   Box,
+  Typography,
   Link,
   AppBar,
   Toolbar,
@@ -18,6 +17,7 @@ import {
 } from "@material-ui/core";
 import RouteTabs from "../../components/Header/RouteTabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
+import { useEventQuery } from "../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,26 +32,29 @@ export function EventHeader() {
   const classes = useStyles();
   const history = useHistory();
   let { path } = useRouteMatch();
-  const { pathname } = useLocation();
-  const { url } = matchPath(pathname, { path: `${path}/:id` }) as {
-    url: string;
-  };
+  let { url, params } = useRouteMatch<{id:string}>(`${path}/:id`);
+  console.log(url, params);
+  // TODO: generate short id for event
+  const { data: eventData, loading } = useEventQuery({
+    variables: { eventId: params.id }
+  });
 
   return (
     <AppBar position="static" elevation={2}>
       <Container maxWidth="lg">
         <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            size="small"
-            onClick={() => history.goBack()}
-          >
-            <NavigateBeforeIcon fontSize="large" />
-          </IconButton>
-          <Link color="inherit" component={RouterLink} to="/" variant="h6">
-            Askent
-          </Link>
+          <Box>
+            <IconButton
+              edge="start"
+              color="inherit"
+              size="small"
+              onClick={() => history.goBack()}
+            >
+              <NavigateBeforeIcon fontSize="large" />
+            </IconButton>
+            <Typography color="inherit">{eventData?.event.name}</Typography>
+          </Box>
+          <Typography color="inherit">#{eventData?.event.code}</Typography>
           <Box className={classes.actions}>
             <Link color="inherit" component={RouterLink} to="/admin">
               Admin
