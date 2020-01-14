@@ -1,8 +1,9 @@
 import React from "react";
+import { match } from "react-router";
 import {
   Link as RouterLink,
   useRouteMatch,
-  useHistory,
+  useHistory
 } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
@@ -24,16 +25,20 @@ const useStyles = makeStyles((theme: Theme) =>
     toolbar: {
       justifyContent: "space-between"
     },
+    leftBox: {
+      display: "flex",
+      flexWrap: "nowrap"
+    },
     actions: { "& > *": { margin: theme.spacing(1) } }
   })
 );
 
+type Params = { id: string };
+
 export function EventHeader() {
   const classes = useStyles();
   const history = useHistory();
-  let { path } = useRouteMatch();
-  let { url, params } = useRouteMatch<{id:string}>(`${path}/:id`);
-  console.log(url, params);
+  let { params, url } = useRouteMatch<Params>(`/event/:id`) as match<Params>;
   // TODO: generate short id for event
   const { data: eventData, loading } = useEventQuery({
     variables: { eventId: params.id }
@@ -43,7 +48,7 @@ export function EventHeader() {
     <AppBar position="static" elevation={2}>
       <Container maxWidth="lg">
         <Toolbar className={classes.toolbar}>
-          <Box>
+          <Box className={classes.leftBox}>
             <IconButton
               edge="start"
               color="inherit"
