@@ -1,10 +1,11 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
   Box,
   Link,
+  AppBar,
   Toolbar,
   Paper,
   IconButton,
@@ -13,10 +14,9 @@ import {
   TextField,
   InputAdornment
 } from "@material-ui/core";
-import AppBarElevationScroll from "../AppBarElevationScroll";
 import { useRouteMatch } from "react-router-dom";
-import RouteTabs from "../RouteTabs";
-import { useMeQuery } from "../../../generated/graphqlHooks";
+import RouteTabs from "../../components/Header/RouteTabs";
+import { useMeQuery } from "../../generated/graphqlHooks";
 import SearchIcon from "@material-ui/icons/Search";
 import { useIntl } from "react-intl";
 
@@ -47,15 +47,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function AdminHeader() {
+function AdminHeader() {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   let { url } = useRouteMatch();
   const { data: userData } = useMeQuery();
 
   return (
-    <AppBarElevationScroll>
-      <Fragment>
+    <AppBar position="static" elevation={2}>
+      <Container maxWidth="lg">
         <Toolbar className={classes.toolbar}>
           <Link color="inherit" component={RouterLink} to="/" variant="h6">
             Askent
@@ -93,19 +93,21 @@ export function AdminHeader() {
             </IconButton>
           </Box>
         </Toolbar>
-        <Paper elevation={0} square>
-          <Container maxWidth="lg">
-            <RouteTabs
-              tabs={[
-                { label: "活动", to: `${url}/events` },
-                { label: "分析", to: `${url}/analytics` }
-              ]}
-              indicatorColor="primary"
-              textColor="primary"
-            />
-          </Container>
-        </Paper>
-      </Fragment>
-    </AppBarElevationScroll>
+      </Container>
+      <Paper elevation={0} square>
+        <Container maxWidth="lg">
+          <RouteTabs
+            tabs={[
+              { label: "活动", to: `${url}/events` },
+              { label: "分析", to: `${url}/analytics` }
+            ]}
+            indicatorColor="primary"
+            textColor="primary"
+          />
+        </Container>
+      </Paper>
+    </AppBar>
   );
 }
+
+export default AdminHeader;

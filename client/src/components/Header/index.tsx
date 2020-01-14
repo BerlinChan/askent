@@ -1,3 +1,2 @@
 export { HomeHeader } from "./HomeHeader";
-export { AdminHeader } from "./AdminHeader";
-export { EventHeader } from "./EventHeader";
+export { EventHeader } from "../../routes/event/EventHeader";

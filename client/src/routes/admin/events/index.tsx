@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme: Theme) =>
     actionBox: {
       display: "flex",
       justifyContent: "flex-end",
-      marginTop: theme.spacing(2)
     }
   })
 );
