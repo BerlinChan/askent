@@ -14,11 +14,13 @@ import {
   AppBar,
   Toolbar,
   Paper,
-  IconButton
+  IconButton,
+  CircularProgress
 } from "@material-ui/core";
 import RouteTabs from "../../components/Header/RouteTabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import { useEventQuery } from "../../generated/graphqlHooks";
+import { format } from "date-fns";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,23 +50,44 @@ export function EventHeader() {
     <AppBar position="static" elevation={2}>
       <Container maxWidth="lg">
         <Toolbar className={classes.toolbar}>
-          <Box className={classes.leftBox}>
-            <IconButton
-              edge="start"
-              color="inherit"
-              size="small"
-              onClick={() => history.goBack()}
-            >
-              <NavigateBeforeIcon fontSize="large" />
-            </IconButton>
-            <Typography color="inherit">{eventData?.event.name}</Typography>
-          </Box>
-          <Typography color="inherit">#{eventData?.event.code}</Typography>
-          <Box className={classes.actions}>
-            <Link color="inherit" component={RouterLink} to="/admin">
-              Admin
-            </Link>
-          </Box>
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <React.Fragment>
+              <Box className={classes.leftBox}>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  size="small"
+                  onClick={() => history.goBack()}
+                >
+                  <NavigateBeforeIcon fontSize="large" />
+                </IconButton>
+                <Box>
+                  <Typography color="inherit">
+                    {eventData?.event.name}
+                  </Typography>
+                  <Typography color="inherit">
+                    {format(eventData?.event.startAt, "yyyy-MM-dd")} ~{" "}
+                    {format(eventData?.event.endAt, "yyyy-MM-dd")}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box>
+                <Typography color="inherit">
+                  #{eventData?.event.code}
+                </Typography>
+                <Typography color="inherit">
+                  #{eventData?.event.code}
+                </Typography>
+              </Box>
+              <Box className={classes.actions}>
+                <Link color="inherit" component={RouterLink} to="/admin">
+                  Admin
+                </Link>
+              </Box>
+            </React.Fragment>
+          )}
         </Toolbar>
       </Container>
       <Paper elevation={0} square>
