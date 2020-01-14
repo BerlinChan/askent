@@ -21,6 +21,17 @@ export const Event = objectType({
 export const eventQuery = extendType({
   type: 'Query',
   definition(t) {
+    t.field('event', {
+      type: 'Event',
+      args: {
+        eventId: idArg({ required: true }),
+      },
+      resolve: (root, { eventId }, context) => {
+        return context.photon.events.findOne({
+          where: { id: eventId },
+        }) as Promise<EventType>
+      },
+    })
     t.list.field('events', {
       type: 'Event',
       resolve: async (root, args, context) => {
