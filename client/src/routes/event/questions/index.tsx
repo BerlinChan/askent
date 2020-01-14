@@ -8,7 +8,12 @@ import {
   FormControlLabel,
   Switch,
   Tabs,
-  Tab
+  Tab,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar
 } from "@material-ui/core";
 import {
   createStyles,
@@ -19,6 +24,11 @@ import {
 import { FormattedMessage, useIntl } from "react-intl";
 import TabPanel from "../../../components/TabPanel";
 import SearchIcon from "@material-ui/icons/Search";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import ThumbUpIcon from '@material-ui/icons/ThumbUp';
+import ThumbDownIcon from '@material-ui/icons/ThumbDown';
+
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,9 +48,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     gridItemPaper: {
       flex: 1,
-      minHeight: 360
+      overflowX: "hidden",
+      overflowY: "auto"
     },
-    tabPanel: {}
+    list: {
+      width: "100%",
+      backgroundColor: theme.palette.background.paper
+    },
+    listItem: { flexWrap: "wrap" }
   })
 );
 
@@ -51,7 +66,8 @@ const QuestionTabs = withStyles({
 })(Tabs);
 const QuestionTab = withStyles({
   root: {
-    minHeight: 38
+    minHeight: 38,
+    minWidth: 120
   }
 })(Tab);
 
@@ -113,10 +129,49 @@ const Questions: React.FC = () => {
         </Box>
         <Paper className={classes.gridItemPaper}>
           <TabPanel value={tabIndex} index={0}>
-            <Box className={classes.tabPanel}> Item One</Box>
+            <List className={classes.list}>
+              <ListItem
+                className={classes.listItem}
+                alignItems="flex-start"
+                divider
+              >
+                <ListItemAvatar>
+                  <Avatar src="/static/images/avatar/1.jpg" />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="textPrimary"
+                    >
+                      Anonymous
+                    </Typography>
+                  }
+                  secondary={
+                    <React.Fragment>
+                      <AccessTimeIcon style={{ fontSize: 12 }} />
+                      <ThumbUpIcon style={{ fontSize: 12 }} />
+                      <ThumbDownIcon style={{ fontSize: 12 }} />
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        color="inherit"
+                      >
+                        Ali Connors
+                      </Typography>
+                    </React.Fragment>
+                  }
+                />
+                <Typography variant="body1">
+                  sadfsd sdfsd fasdfsadfasdf sadf sdfsaf sadf ds fsad sdfsad fsd
+                  fasf sadfsdf safsdfas.
+                </Typography>
+              </ListItem>
+            </List>
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
-            <Box className={classes.tabPanel}>Item 2</Box>
+            Item 2
           </TabPanel>
         </Paper>
       </Grid>

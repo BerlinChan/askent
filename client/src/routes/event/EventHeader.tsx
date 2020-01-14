@@ -20,7 +20,7 @@ import {
 import RouteTabs from "../../components/Header/RouteTabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import { useEventQuery } from "../../generated/graphqlHooks";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,6 +59,7 @@ export function EventHeader() {
                   edge="start"
                   color="inherit"
                   size="small"
+                  style={{width:48}}
                   onClick={() => history.goBack()}
                 >
                   <NavigateBeforeIcon fontSize="large" />
@@ -68,8 +69,8 @@ export function EventHeader() {
                     {eventData?.event.name}
                   </Typography>
                   <Typography color="inherit">
-                    {format(eventData?.event.startAt, "yyyy-MM-dd")} ~{" "}
-                    {format(eventData?.event.endAt, "yyyy-MM-dd")}
+                    {format(parseISO(eventData?.event.startAt), "yyyy-MM-dd")} ~{" "}
+                    {format(parseISO(eventData?.event.endAt), "yyyy-MM-dd")}
                   </Typography>
                 </Box>
               </Box>
