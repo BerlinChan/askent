@@ -2,26 +2,36 @@ import { rule, shield } from 'graphql-shield'
 import { getUserId } from '../utils'
 
 const rules = {
-  isAuthenticatedUser: rule()((parent, args, context) => {
-    const userId = getUserId(context)
-    return Boolean(userId)
-  }),
-  isEventAuthor: rule()(async (parent, { eventId }, context) => {
-    const userId = getUserId(context)
-    const owner = await context.photon.events
-      .findOne({ where: { id: eventId } })
-      .owner()
+  isAuthenticatedUser: rule({ cache: 'contextual' })(
+    (parent, args, context) => {
+      const userId = getUserId(context)
+      return Boolean(userId)
+    },
+  ),
+  isEventAuthor: rule({ cache: 'strict' })(
+    async (parent, { eventId }, context) => {
+      const userId = getUserId(context)
+      const owner = await context.photon.events
+        .findOne({ where: { id: eventId } })
+        .owner()
 
-    return userId === owner.id
-  }),
-  isQuestionAuthor: rule()(async (parent, { questionId }, context) => {
-    const userId = getUserId(context)
-    const author = await context.photon.questions
-      .findOne({ where: { id: questionId } })
-      .author()
+      return userId === owner.id
+    },
+  ),
+  isQuestionOrEventAuthor: rule({ cache: 'strict' })(
+    async (parent, { questionId }, context) => {
+      const userId = getUserId(context)
+      const question = await context.photon.questions.findOne({
+        where: { id: questionId },
+        include: { author: true, event: true },
+      })
+      const eventOwner = await context.photon.events
+        .findOne({ where: { id: question.event.id } })
+        .owner()
 
-    return userId === author.id
-  }),
+      return userId === question.author.id || userId === eventOwner.id
+    },
+  ),
 }
 
 export const permissions = shield({
@@ -37,7 +47,7 @@ export const permissions = shield({
     updateEvent: rules.isEventAuthor,
     deleteEvent: rules.isEventAuthor,
     createQuestion: rules.isAuthenticatedUser,
-    updateQuestion: rules.isQuestionAuthor,
-    deleteQuestion: rules.isQuestionAuthor,
+    updateQuestion: rules.isQuestionOrEventAuthor,
+    deleteQuestion: rules.isQuestionOrEventAuthor,
   },
 })
