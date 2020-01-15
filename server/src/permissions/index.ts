@@ -46,6 +46,7 @@ export const permissions = shield({
     createEvent: rules.isAuthenticatedUser,
     updateEvent: rules.isEventAuthor,
     deleteEvent: rules.isEventAuthor,
+    // TODO: only event owner can update published field
     createQuestion: rules.isAuthenticatedUser,
     updateQuestion: rules.isQuestionOrEventAuthor,
     deleteQuestion: rules.isQuestionOrEventAuthor,

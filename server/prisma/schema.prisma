@@ -25,15 +25,16 @@ model User {
 }
 
 model Event {
-  id        String     @default(uuid()) @id
-  code      String     @unique
-  name      String
-  owner     User
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  startAt   DateTime
-  endAt     DateTime
-  questions Question[]
+  id         String     @default(uuid()) @id
+  code       String     @unique
+  name       String
+  owner      User
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  startAt    DateTime
+  endAt      DateTime
+  questions  Question[]
+  moderation Boolean    @default(false)
 }
 
 model Question {
@@ -47,4 +48,5 @@ model Question {
   votedUsers User[]   @relation(name: "questionVotedUsersRelation")
   star       Boolean  @default(false)
   archived   Boolean  @default(false)
+  published  Boolean  @default(true)
 }

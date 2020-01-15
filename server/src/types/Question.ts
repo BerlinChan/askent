@@ -1,5 +1,9 @@
 import { objectType, extendType, stringArg, idArg, booleanArg } from 'nexus'
-import { Question as QuestionType, User } from '@prisma/photon'
+import {
+  Question as QuestionType,
+  User,
+  QuestionCreateInput,
+} from '@prisma/photon'
 import { Context } from '../context'
 import { getUserId } from '../utils'
 
@@ -15,6 +19,7 @@ export const Question = objectType({
     t.model.content()
     t.model.star()
     t.model.archived()
+    t.model.published()
     // t.model.votedUsers()
 
     t.int('voteCount', {
@@ -50,6 +55,7 @@ export const questionQuery = extendType({
         searchString: stringArg(),
         star: booleanArg(),
         archived: booleanArg(),
+        published: booleanArg(),
       },
       resolve: (root, args, context) => {
         return context.photon.questions.findMany({
@@ -57,6 +63,7 @@ export const questionQuery = extendType({
             event: { id: args.eventId },
             star: args.star,
             archived: args.archived,
+            published: args.published,
             OR: [
               { username: { contains: args.searchString } },
               { content: { contains: args.searchString } },
@@ -82,7 +89,11 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { username, content, eventId }, ctx) => {
         const userId = getUserId(ctx)
-        let question: any = {
+        const event = await ctx.photon.events.findOne({
+          where: { id: eventId },
+        })
+        let question: QuestionCreateInput = {
+          published: !event?.moderation,
           content,
           event: { connect: { id: eventId } },
         }
@@ -109,14 +120,15 @@ export const questionMutation = extendType({
       description: "Update a question's content.",
       args: {
         content: stringArg(),
-        questionId: idArg(),
+        questionId: idArg({ required: true }),
+        published: booleanArg(),
       },
-      resolve: async (root, { content, questionId }, ctx) => {
+      resolve: async (root, { content, questionId, published }, ctx) => {
         await checkQuestionExist(ctx, questionId as string)
 
         return ctx.photon.questions.update({
           where: { id: questionId },
-          data: { content },
+          data: { content, published },
         })
       },
     })
@@ -124,7 +136,7 @@ export const questionMutation = extendType({
       type: 'Question',
       description: 'Delete a question.',
       args: {
-        questionId: idArg(),
+        questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
         await checkQuestionExist(ctx, questionId as string)
@@ -138,7 +150,7 @@ export const questionMutation = extendType({
       type: 'Question',
       description: 'Vote for a question.',
       args: {
-        questionId: idArg(),
+        questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, context) => {
         await checkQuestionExist(context, questionId as string)

@@ -1,4 +1,11 @@
-import { objectType, extendType, stringArg, arg, idArg } from 'nexus'
+import {
+  objectType,
+  extendType,
+  stringArg,
+  arg,
+  idArg,
+  booleanArg,
+} from 'nexus'
 import { getUserId } from '../utils'
 import { Context } from '../context'
 import { Event as EventType } from '@prisma/photon'
@@ -15,6 +22,7 @@ export const Event = objectType({
     t.model.startAt()
     t.model.endAt()
     t.model.questions()
+    t.model.moderation()
   },
 })
 
@@ -89,6 +97,7 @@ export const eventMutation = extendType({
         name: stringArg({ nullable: true }),
         startAt: arg({ type: 'DateTime', nullable: true }),
         endAt: arg({ type: 'DateTime', nullable: true }),
+        moderation: booleanArg({ nullable: true }),
       },
       resolve: async (root, args, context) => {
         await checkEventExist(context, args.eventId as string)
@@ -106,9 +115,10 @@ export const eventMutation = extendType({
         let event = Object.assign(
           {},
           args?.code ? { code: args?.code } : {},
-          args?.name ? { code: args?.name } : {},
-          args?.startAt ? { code: args?.startAt } : {},
-          args?.endAt ? { code: args?.endAt } : {},
+          args?.name ? { name: args?.name } : {},
+          args?.startAt ? { startAt: args?.startAt } : {},
+          args?.endAt ? { codendAte: args?.endAt } : {},
+          args?.moderation ? { moderation: args?.moderation } : {},
         )
 
         return context.photon.events.update({
