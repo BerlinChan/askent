@@ -22,6 +22,7 @@ import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import { QueryResult } from "@apollo/react-common";
 import {
+  Question,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
   useDeleteQuestionMutation
@@ -55,9 +56,19 @@ interface Props {
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables
   >;
+  filter?: (
+    item: Pick<
+      Question,
+      | "star"
+      | "archived"
+    >
+  ) => boolean;
 }
 
-const QuestionList: React.FC<Props> = ({ questionsByEventQuery }) => {
+const QuestionList: React.FC<Props> = ({
+  questionsByEventQuery,
+  filter = () => true
+}) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const { data, refetch } = questionsByEventQuery;
@@ -99,7 +110,7 @@ const QuestionList: React.FC<Props> = ({ questionsByEventQuery }) => {
   return (
     <React.Fragment>
       <List className={classes.list}>
-        {data?.questionsByEvent.map((item, index) => (
+        {data?.questionsByEvent.filter(filter).map((item, index) => (
           <ListItem
             key={index}
             className={classes.listItem}

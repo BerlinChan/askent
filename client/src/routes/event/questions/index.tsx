@@ -68,7 +68,7 @@ const Questions: React.FC = () => {
     variables: { eventId: id as string }
   });
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);
   };
 
@@ -99,7 +99,7 @@ const Questions: React.FC = () => {
       </Grid>
       <Grid item sm={6} className={classes.gridItem}>
         <Box className={classes.reviewActions}>
-          <QuestionTabs value={tabIndex} onChange={handleChange}>
+          <QuestionTabs value={tabIndex} onChange={handleTabsChange}>
             <QuestionTab
               label={formatMessage({
                 id: "Live",
@@ -119,10 +119,10 @@ const Questions: React.FC = () => {
         </Box>
         <Paper className={classes.gridItemPaper}>
           <TabPanel value={tabIndex} index={0}>
-            <QuestionList questionsByEventQuery={questionsByEventQuery} />
+            <QuestionList questionsByEventQuery={questionsByEventQuery} filter={item=>!item.archived}/>
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
-            Item 2
+            <QuestionList questionsByEventQuery={questionsByEventQuery} filter={item=>item.archived}/>
           </TabPanel>
         </Paper>
       </Grid>
