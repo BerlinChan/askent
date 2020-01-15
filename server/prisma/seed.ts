@@ -11,8 +11,8 @@ async function main() {
             password: await hash('w', 10),
             events: {
                 create: {
-                    code: 'graphql',
-                    name: 'GraphQL Conf',
+                    code: 'e1',
+                    name: 'e1',
                     startAt: new Date('2019-11-02T01:01:01Z'),
                     endAt: new Date('2019-11-05T02:02:02Z'),
                 },

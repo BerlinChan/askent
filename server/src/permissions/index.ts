@@ -28,7 +28,8 @@ export const permissions = shield({
   Query: {
     me: rules.isAuthenticatedUser,
     events: rules.isAuthenticatedUser,
-    questions: rules.isAuthenticatedUser,
+    questionsByMe: rules.isAuthenticatedUser,
+    questionsByEvent: rules.isAuthenticatedUser,
     checkEventCodeExist: rules.isAuthenticatedUser,
   },
   Mutation: {

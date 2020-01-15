@@ -13,36 +13,39 @@ generator photon {
 }
 
 model User {
-    id          String      @default(cuid()) @id
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
-    lastLoginAt DateTime?
-    name        String      @unique
-    email       String      @unique
-    password    String
-    events      Event[]
-    questions   Question[]
+  id          String     @default(cuid()) @id
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  lastLoginAt DateTime?
+  name        String     @unique
+  email       String     @unique
+  password    String
+  events      Event[]
+  questions   Question[]
 }
 
 model Event {
-    id          String      @default(uuid()) @id
-    code        String      @unique
-    name        String
-    owner       User
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
-    startAt     DateTime
-    endAt       DateTime
-    questions   Question[]
+  id        String     @default(uuid()) @id
+  code      String     @unique
+  name      String
+  owner     User
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  startAt   DateTime
+  endAt     DateTime
+  questions Question[]
 }
 
 model Question {
-    id          String      @default(uuid()) @id
-    event       Event
-    author      User?
-    username    String?
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
-    content     String
-    votedUsers  User[]      @relation(name:"questionVotedUsersRelation")
+  id         String   @default(uuid()) @id
+  event      Event
+  author     User?
+  username   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  content    String
+  votedUsers User[]   @relation(name: "questionVotedUsersRelation")
+  star       Boolean  @default(false)
+  archived   Boolean  @default(false)
+  reply      String   @default("")
 }

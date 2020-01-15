@@ -81,7 +81,6 @@ export const userMutation = extendType({
         password: stringArg({ required: true }),
       },
       resolve: async (root, args, context, info) => {
-        // TODO: move hash to client
         if (await checkNameOrEmailExist(context, args.name)) {
           throw new Error(`Name "${args.name}" has already exist.`)
         } else if (await checkNameOrEmailExist(context, args.email)) {
@@ -91,6 +90,7 @@ export const userMutation = extendType({
         const user = await context.photon.users.create({
           data: { ...args, password: hashedPassword } as UserCreateInput,
         })
+
         return {
           token: sign({ userId: user.id }, process.env.JWT_SECRET as string),
           user,

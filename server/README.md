@@ -2,10 +2,10 @@
 
 - [ ] [Apollo subscription or websocket?](https://www.npmjs.com/package/react-use-websocket)
 - [ ] Build for production
+- [ ] [Benchmark](https://github.com/benawad/node-graphql-benchmarks)
 - [ ] Github renovate config
 - [ ] [API logout, invalid JWT](https://www.npmjs.com/package/express-jwt)
 - [ ] [improve JWT auth and session](https://github.com/kriasoft/react-starter-kit)
-- [ ] API pagination
 
 # GraphQL Apollo Server Example
 
