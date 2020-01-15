@@ -13,7 +13,8 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  Avatar
+  Avatar,
+  IconButton
 } from "@material-ui/core";
 import {
   createStyles,
@@ -21,14 +22,18 @@ import {
   Theme,
   withStyles
 } from "@material-ui/core/styles";
-import { FormattedMessage, useIntl } from "react-intl";
+import {
+  FormattedMessage,
+  useIntl,
+  FormattedDate,
+  FormattedTime
+} from "react-intl";
 import TabPanel from "../../../components/TabPanel";
 import SearchIcon from "@material-ui/icons/Search";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import ThumbDownIcon from '@material-ui/icons/ThumbDown';
-
-
+import ThumbUpIcon from "@material-ui/icons/ThumbUp";
+import { useQuestionsByEventQuery } from "../../../generated/graphqlHooks";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,7 +60,17 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
       backgroundColor: theme.palette.background.paper
     },
-    listItem: { flexWrap: "wrap" }
+    listItem: { flexWrap: "wrap", position: "relative" },
+    questionMeta: {
+      marginLeft: theme.spacing(0.5),
+      marginRight: theme.spacing(1)
+    },
+    questionContent: { width: "100%" },
+    questionMoreButton: {
+      position: "absolute",
+      top: 8,
+      right: 8
+    }
   })
 );
 
@@ -74,9 +89,12 @@ const QuestionTab = withStyles({
 const Questions: React.FC = () => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  let { id } = useParams();
+  const { id } = useParams();
   const { url, path } = useRouteMatch();
   const [tabIndex, setTabIndex] = React.useState(0);
+  const { data: questionsData } = useQuestionsByEventQuery({
+    variables: { eventId: id as string }
+  });
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);
@@ -130,44 +148,71 @@ const Questions: React.FC = () => {
         <Paper className={classes.gridItemPaper}>
           <TabPanel value={tabIndex} index={0}>
             <List className={classes.list}>
-              <ListItem
-                className={classes.listItem}
-                alignItems="flex-start"
-                divider
-              >
-                <ListItemAvatar>
-                  <Avatar src="/static/images/avatar/1.jpg" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      color="textPrimary"
-                    >
-                      Anonymous
-                    </Typography>
-                  }
-                  secondary={
-                    <React.Fragment>
-                      <AccessTimeIcon style={{ fontSize: 12 }} />
-                      <ThumbUpIcon style={{ fontSize: 12 }} />
-                      <ThumbDownIcon style={{ fontSize: 12 }} />
+              {questionsData?.questionsByEvent.map((item, index) => (
+                <ListItem
+                  key={index}
+                  className={classes.listItem}
+                  alignItems="flex-start"
+                  divider
+                >
+                  <ListItemAvatar>
+                    <Avatar src="/static/images/avatar/1.jpg" />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
                       <Typography
                         component="span"
                         variant="body2"
-                        color="inherit"
+                        color="textPrimary"
                       >
-                        Ali Connors
+                        {item.username ? (
+                          item.username
+                        ) : (
+                          <FormattedMessage
+                            id="Anonymous"
+                            defaultMessage="Anonymous"
+                          />
+                        )}
                       </Typography>
-                    </React.Fragment>
-                  }
-                />
-                <Typography variant="body1">
-                  sadfsd sdfsd fasdfsadfasdf sadf sdfsaf sadf ds fsad sdfsad fsd
-                  fasf sadfsdf safsdfas.
-                </Typography>
-              </ListItem>
+                    }
+                    secondary={
+                      <React.Fragment>
+                        <ThumbUpIcon style={{ fontSize: 12 }} />
+                        <Typography
+                          className={classes.questionMeta}
+                          component="span"
+                          variant="body2"
+                          color="inherit"
+                        >
+                          {item.voteCount}
+                        </Typography>
+                        <AccessTimeIcon style={{ fontSize: 12 }} />
+                        <Typography
+                          className={classes.questionMeta}
+                          component="span"
+                          variant="body2"
+                          color="inherit"
+                        >
+                          <FormattedDate value={item.updatedAt} />{" "}
+                          <FormattedTime value={item.updatedAt} />
+                        </Typography>
+                      </React.Fragment>
+                    }
+                  />
+                  <Typography
+                    className={classes.questionContent}
+                    variant="body1"
+                  >
+                    {item.content}
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    className={classes.questionMoreButton}
+                  >
+                    <MoreHorizIcon fontSize="inherit" />
+                  </IconButton>
+                </ListItem>
+              ))}
             </List>
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>

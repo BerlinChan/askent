@@ -1,0 +1,24 @@
+query QuestionsByEvent(
+  $eventId: ID!
+  $searchString: String
+  $star: Boolean
+  $archived: Boolean
+) {
+  questionsByEvent(
+    eventId: $eventId
+    searchString: $searchString
+    star: $star
+    archived: $archived
+  ) {
+    id
+    updatedAt
+    voteCount
+    username
+    content
+    star
+    archived
+    author {
+      id
+    }
+  }
+}

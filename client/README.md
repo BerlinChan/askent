@@ -1,6 +1,4 @@
 ## TODO
-- [ ] [Validation](https://medium.com/codefully-io/react-forms-validation-with-formik-and-material-ui-1adf0c1cae5c)
-- [ ] [Apollo client error handling](https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts), use apollo-link-error
 - [ ] [React starter kit. Apollo, BrowserSync, router, MaterialUI, i18n, Typescipt](https://github.com/kriasoft/react-starter-kit)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

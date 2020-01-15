@@ -20,7 +20,7 @@ import {
 import RouteTabs from "../../components/Header/RouteTabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import { useEventQuery } from "../../generated/graphqlHooks";
-import { format, parseISO } from "date-fns";
+import { FormattedDate } from "react-intl";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Params = { id: string };
 
-export function EventHeader() {
+export default function EventHeader() {
   const classes = useStyles();
   const history = useHistory();
   let { params, url } = useRouteMatch<Params>(`/event/:id`) as match<Params>;
@@ -69,8 +69,8 @@ export function EventHeader() {
                     {eventData?.event.name}
                   </Typography>
                   <Typography color="inherit">
-                    {format(parseISO(eventData?.event.startAt), "yyyy-MM-dd")} ~{" "}
-                    {format(parseISO(eventData?.event.endAt), "yyyy-MM-dd")}
+                    <FormattedDate value={eventData?.event.startAt} /> ~{" "}
+                    <FormattedDate value={eventData?.event.endAt} />
                   </Typography>
                 </Box>
               </Box>

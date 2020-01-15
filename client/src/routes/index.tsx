@@ -27,6 +27,12 @@ const AboutComponent = loadable(() => import("./about"), {
 const DemoComponent = loadable(() => import("./demo"), {
   fallback: <Loading />
 });
+const Error401Component = loadable(() => import("./error/401"), {
+  fallback: <Loading />
+});
+const Error404Component = loadable(() => import("./error/404"), {
+  fallback: <Loading />
+});
 
 const Router = () => {
   const token = localStorage.getItem(AUTH_TOKEN);
@@ -42,7 +48,7 @@ const Router = () => {
           <Route path="/signup">
             {token ? <Redirect to="/admin" /> : <SignupComponent />}
           </Route>
-          
+
           <PrivateRoute path="/admin">
             <AdminComponent />
           </PrivateRoute>
@@ -52,6 +58,9 @@ const Router = () => {
 
           <Route path="/about" component={AboutComponent} />
           <Route path="/demo" component={DemoComponent} />
+
+          <Route path="/unauthorized" component={Error401Component} />
+          <Route path="*" component={Error404Component} />
         </Switch>
       </BrowserRouter>
     </Providers>
