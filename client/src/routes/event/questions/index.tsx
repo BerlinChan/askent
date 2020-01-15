@@ -14,7 +14,9 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  IconButton
+  IconButton,
+  MenuItem,
+  Menu
 } from "@material-ui/core";
 import {
   createStyles,
@@ -98,6 +100,16 @@ const Questions: React.FC = () => {
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);
+  };
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -208,9 +220,27 @@ const Questions: React.FC = () => {
                   <IconButton
                     size="small"
                     className={classes.questionMoreButton}
+                    onClick={handleClick}
                   >
                     <MoreHorizIcon fontSize="inherit" />
                   </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right"
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right"
+                    }}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                  >
+                    <MenuItem onClick={handleClose}>Profile</MenuItem>
+                    <MenuItem onClick={handleClose}>My account</MenuItem>
+                    <MenuItem onClick={handleClose}>Logout</MenuItem>
+                  </Menu>
                 </ListItem>
               ))}
             </List>
