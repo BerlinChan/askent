@@ -23,10 +23,12 @@ import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import { QueryResult } from "@apollo/react-common";
 import {
   QuestionsByEventQuery,
-  QuestionsByEventQueryVariables
+  QuestionsByEventQueryVariables,
+  useDeleteQuestionMutation
 } from "../../../generated/graphqlHooks";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
+import Confirm from "../../../components/Confirm";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,102 +59,149 @@ interface Props {
 
 const QuestionList: React.FC<Props> = ({ questionsByEventQuery }) => {
   const classes = useStyles();
-  const { data: questionsData } = questionsByEventQuery;
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { formatMessage } = useIntl();
+  const { data, refetch } = questionsByEventQuery;
+  const [moreMenu, setMoreMenu] = React.useState<{
+    anchorEl: null | HTMLElement;
+    id: string;
+  }>({ anchorEl: null, id: "" });
+  const [deleteConfirm, setDeleteConfirm] = React.useState({
+    open: false,
+    id: ""
+  });
+  const [deleteQuestionMutation] = useDeleteQuestionMutation();
 
-  const handleMoreClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleMoreClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    setMoreMenu({ anchorEl: event.currentTarget, id });
   };
   const handleMoreClose = () => {
-    setAnchorEl(null);
+    setMoreMenu({ anchorEl: null, id: "" });
+  };
+
+  const handleOpenDelete = (id: string) => {
+    setDeleteConfirm({ open: true, id });
+  };
+  const handleCloseDelete = () => {
+    setDeleteConfirm({ open: false, id: "" });
+    handleMoreClose();
+  };
+  const handleDelete = async () => {
+    await deleteQuestionMutation({
+      variables: { questionId: deleteConfirm.id }
+    });
+    refetch();
+    handleCloseDelete();
   };
 
   return (
-    <List className={classes.list}>
-      {questionsData?.questionsByEvent.map((item, index) => (
-        <ListItem
-          key={index}
-          className={classes.listItem}
-          alignItems="flex-start"
-          divider
-        >
-          <ListItemAvatar>
-            <Avatar src="/static/images/avatar/1.jpg" />
-          </ListItemAvatar>
+    <React.Fragment>
+      <List className={classes.list}>
+        {data?.questionsByEvent.map((item, index) => (
+          <ListItem
+            key={index}
+            className={classes.listItem}
+            alignItems="flex-start"
+            divider
+          >
+            <ListItemAvatar>
+              <Avatar src="/static/images/avatar/1.jpg" />
+            </ListItemAvatar>
+            <ListItemText
+              primary={
+                <Typography
+                  component="span"
+                  variant="body2"
+                  color="textPrimary"
+                >
+                  {item.username ? (
+                    item.username
+                  ) : (
+                    <FormattedMessage
+                      id="Anonymous"
+                      defaultMessage="Anonymous"
+                    />
+                  )}
+                </Typography>
+              }
+              secondary={
+                <React.Fragment>
+                  <ThumbUpIcon style={{ fontSize: 12 }} />
+                  <Typography
+                    className={classes.questionMeta}
+                    component="span"
+                    variant="body2"
+                    color="inherit"
+                  >
+                    {item.voteCount}
+                  </Typography>
+                  <AccessTimeIcon style={{ fontSize: 12 }} />
+                  <Typography
+                    className={classes.questionMeta}
+                    component="span"
+                    variant="body2"
+                    color="inherit"
+                  >
+                    <FormattedDate value={item.updatedAt} />{" "}
+                    <FormattedTime value={item.updatedAt} />
+                  </Typography>
+                </React.Fragment>
+              }
+            />
+            <Typography className={classes.questionContent} variant="body1">
+              {item.content}
+            </Typography>
+            <IconButton
+              size="small"
+              className={classes.questionMoreButton}
+              onClick={e => handleMoreClick(e, item.id)}
+            >
+              <MoreHorizIcon fontSize="inherit" />
+            </IconButton>
+          </ListItem>
+        ))}
+      </List>
+
+      <Menu
+        MenuListProps={{ dense: true }}
+        anchorEl={moreMenu.anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right"
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+        open={Boolean(moreMenu.anchorEl)}
+        onClose={handleMoreClose}
+      >
+        <MenuItem onClick={() => handleOpenDelete(moreMenu.id)}>
+          <ListItemIcon>
+            <DeleteForeverIcon fontSize="small" />
+          </ListItemIcon>
           <ListItemText
-            primary={
-              <Typography component="span" variant="body2" color="textPrimary">
-                {item.username ? (
-                  item.username
-                ) : (
-                  <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
-                )}
-              </Typography>
-            }
-            secondary={
-              <React.Fragment>
-                <ThumbUpIcon style={{ fontSize: 12 }} />
-                <Typography
-                  className={classes.questionMeta}
-                  component="span"
-                  variant="body2"
-                  color="inherit"
-                >
-                  {item.voteCount}
-                </Typography>
-                <AccessTimeIcon style={{ fontSize: 12 }} />
-                <Typography
-                  className={classes.questionMeta}
-                  component="span"
-                  variant="body2"
-                  color="inherit"
-                >
-                  <FormattedDate value={item.updatedAt} />{" "}
-                  <FormattedTime value={item.updatedAt} />
-                </Typography>
-              </React.Fragment>
-            }
+            primary={formatMessage({
+              id: "Delete",
+              defaultMessage: "Delete"
+            })}
           />
-          <Typography className={classes.questionContent} variant="body1">
-            {item.content}
-          </Typography>
-          <IconButton
-            size="small"
-            className={classes.questionMoreButton}
-            onClick={handleMoreClick}
-          >
-            <MoreHorizIcon fontSize="inherit" />
-          </IconButton>
-          <Menu
-            MenuListProps={{ dense: true }}
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right"
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right"
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleMoreClose}
-          >
-            <MenuItem onClick={handleMoreClose}>
-              <ListItemIcon>
-                <DeleteForeverIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={formatMessage({
-                  id: "Delete",
-                  defaultMessage: "Delete"
-                })}
-              />
-            </MenuItem>
-          </Menu>
-        </ListItem>
-      ))}
-    </List>
+        </MenuItem>
+      </Menu>
+      <Confirm
+        open={deleteConfirm.open}
+        contentText={
+          <FormattedMessage
+            id="Delete_this_question?"
+            defaultMessage="Delete this question?"
+          />
+        }
+        onCancel={handleCloseDelete}
+        onOk={handleDelete}
+      />
+    </React.Fragment>
   );
 };
 

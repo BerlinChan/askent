@@ -22,3 +22,9 @@ query QuestionsByEvent(
     }
   }
 }
+
+mutation DeleteQuestion($questionId: ID) {
+  deleteQuestion(questionId: $questionId) {
+    id
+  }
+}
