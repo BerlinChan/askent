@@ -15,7 +15,6 @@ export const Question = objectType({
     t.model.content()
     t.model.star()
     t.model.archived()
-    t.model.reply()
     // t.model.votedUsers()
 
     t.int('voteCount', {
@@ -61,7 +60,6 @@ export const questionQuery = extendType({
             OR: [
               { username: { contains: args.searchString } },
               { content: { contains: args.searchString } },
-              { reply: { contains: args.searchString } },
             ],
           },
         })

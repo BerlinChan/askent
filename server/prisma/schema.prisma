@@ -47,5 +47,4 @@ model Question {
   votedUsers User[]   @relation(name: "questionVotedUsersRelation")
   star       Boolean  @default(false)
   archived   Boolean  @default(false)
-  reply      String   @default("")
 }
