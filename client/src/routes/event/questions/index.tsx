@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, useRouteMatch } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Grid,
   Paper,
@@ -62,7 +62,6 @@ const Questions: React.FC = () => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const { id } = useParams();
-  const { url, path } = useRouteMatch();
   const [tabIndex, setTabIndex] = React.useState(0);
   const questionsByEventQuery = useQuestionsByEventQuery({
     variables: { eventId: id as string }
@@ -89,12 +88,10 @@ const Questions: React.FC = () => {
           />
         </Box>
         <Paper className={classes.gridItemPaper}>
-          <div>Event Questions</div>
-          <ul>
-            <li> id: {id}</li>
-            <li> path: {path}</li>
-            <li> url: {url}</li>
-          </ul>
+          <QuestionList
+            questionsByEventQuery={questionsByEventQuery}
+            filter={item => !item.published}
+          />
         </Paper>
       </Grid>
       <Grid item sm={6} className={classes.gridItem}>
@@ -119,10 +116,16 @@ const Questions: React.FC = () => {
         </Box>
         <Paper className={classes.gridItemPaper}>
           <TabPanel value={tabIndex} index={0}>
-            <QuestionList questionsByEventQuery={questionsByEventQuery} filter={item=>!item.archived}/>
+            <QuestionList
+              questionsByEventQuery={questionsByEventQuery}
+              filter={item => !item.archived && item.published}
+            />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
-            <QuestionList questionsByEventQuery={questionsByEventQuery} filter={item=>item.archived}/>
+            <QuestionList
+              questionsByEventQuery={questionsByEventQuery}
+              filter={item => item.archived && item.published}
+            />
           </TabPanel>
         </Paper>
       </Grid>

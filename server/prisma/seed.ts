@@ -49,6 +49,7 @@ async function main() {
     data: {
       event: { connect: { id: user1Events[0].id } },
       content: 'How can I use?',
+      archived: true,
       author: { connect: { id: user1.id } },
     },
   })

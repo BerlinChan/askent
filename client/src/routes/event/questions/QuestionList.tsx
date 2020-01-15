@@ -56,13 +56,7 @@ interface Props {
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables
   >;
-  filter?: (
-    item: Pick<
-      Question,
-      | "star"
-      | "archived"
-    >
-  ) => boolean;
+  filter?: (item: Pick<Question, "star" | "archived" | "published">) => boolean;
 }
 
 const QuestionList: React.FC<Props> = ({

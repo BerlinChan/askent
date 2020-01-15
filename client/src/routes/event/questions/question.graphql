@@ -17,13 +17,14 @@ query QuestionsByEvent(
     content
     star
     archived
+    published
     author {
       id
     }
   }
 }
 
-mutation DeleteQuestion($questionId: ID) {
+mutation DeleteQuestion($questionId: ID!) {
   deleteQuestion(questionId: $questionId) {
     id
   }
