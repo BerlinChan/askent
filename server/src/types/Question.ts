@@ -1,4 +1,12 @@
-import { objectType, extendType, stringArg, idArg, booleanArg } from 'nexus'
+import {
+  objectType,
+  extendType,
+  inputObjectType,
+  stringArg,
+  idArg,
+  arg,
+  booleanArg,
+} from 'nexus'
 import {
   Question as QuestionType,
   User,
@@ -20,6 +28,7 @@ export const Question = objectType({
     t.model.star()
     t.model.archived()
     t.model.published()
+    t.model.top()
     // t.model.votedUsers()
 
     t.int('voteCount', {
@@ -31,6 +40,17 @@ export const Question = objectType({
         return users.length
       },
     })
+  },
+})
+export const UpdateQuestionInputType = inputObjectType({
+  name: 'UpdateQuestionInputType',
+  definition(t) {
+    t.id('questionId', { required: true })
+    t.string('content')
+    t.boolean('published')
+    t.boolean('archived')
+    t.boolean('star')
+    t.boolean('top')
   },
 })
 
@@ -56,6 +76,7 @@ export const questionQuery = extendType({
         star: booleanArg(),
         archived: booleanArg(),
         published: booleanArg(),
+        top: booleanArg(),
       },
       resolve: (root, args, context) => {
         return context.photon.questions.findMany({
@@ -64,6 +85,7 @@ export const questionQuery = extendType({
             star: args.star,
             archived: args.archived,
             published: args.published,
+            top: args.top,
             OR: [
               { username: { contains: args.searchString } },
               { content: { contains: args.searchString } },
@@ -119,16 +141,15 @@ export const questionMutation = extendType({
       type: 'Question',
       description: "Update a question's content.",
       args: {
-        content: stringArg(),
-        questionId: idArg({ required: true }),
-        published: booleanArg(),
+        data: arg({ type: 'UpdateQuestionInputType', required: true }),
       },
-      resolve: async (root, { content, questionId, published }, ctx) => {
-        await checkQuestionExist(ctx, questionId as string)
+      resolve: async (root, { data }, ctx) => {
+        const { content, questionId, published, archived, star, top } = data
+        await checkQuestionExist(ctx, questionId)
 
         return ctx.photon.questions.update({
           where: { id: questionId },
-          data: { content, published },
+          data: { content, published, archived, star, top },
         })
       },
     })

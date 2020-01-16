@@ -49,4 +49,5 @@ model Question {
   star       Boolean  @default(false)
   archived   Boolean  @default(false)
   published  Boolean  @default(true)
+  top        Boolean  @default(false)
 }

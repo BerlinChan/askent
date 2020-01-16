@@ -3,12 +3,14 @@ query QuestionsByEvent(
   $searchString: String
   $star: Boolean
   $archived: Boolean
+  $top: Boolean
 ) {
   questionsByEvent(
     eventId: $eventId
     searchString: $searchString
     star: $star
     archived: $archived
+    top: $top
   ) {
     id
     updatedAt
@@ -18,6 +20,7 @@ query QuestionsByEvent(
     star
     archived
     published
+    top
     author {
       id
     }
@@ -27,5 +30,25 @@ query QuestionsByEvent(
 mutation DeleteQuestion($questionId: ID!) {
   deleteQuestion(questionId: $questionId) {
     id
+  }
+}
+
+input UpdateQuestionInputType {
+  questionId: ID!
+  content: String
+  published: Boolean
+  archived: Boolean
+  star: Boolean
+  top: Boolean
+}
+
+mutation UpdateQuestion($data: UpdateQuestionInputType!) {
+  updateQuestion(data: $data) {
+    id
+    published
+    star
+    archived
+    top
+    content
   }
 }

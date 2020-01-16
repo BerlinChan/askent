@@ -1,4 +1,4 @@
-import { rule, shield } from 'graphql-shield'
+import { rule, shield, or } from 'graphql-shield'
 import { getUserId } from '../utils'
 
 const rules = {
@@ -18,18 +18,29 @@ const rules = {
       return userId === owner.id
     },
   ),
-  isQuestionOrEventAuthor: rule({ cache: 'strict' })(
+  isQuestionAuthor: rule({ cache: 'strict' })(
     async (parent, { questionId }, context) => {
       const userId = getUserId(context)
-      const question = await context.photon.questions.findOne({
-        where: { id: questionId },
-        include: { author: true, event: true },
-      })
-      const eventOwner = await context.photon.events
-        .findOne({ where: { id: question.event.id } })
+      const questionAuthor = await context.photon.questions
+        .findOne({
+          where: { id: questionId },
+        })
+        .author()
+
+      return userId === questionAuthor.id
+    },
+  ),
+  isQuestionEventOwner: rule({ cache: 'strict' })(
+    async (parent, { questionId }, context) => {
+      const userId = getUserId(context)
+      const eventOwner = await context.photon.questions
+        .findOne({
+          where: { id: questionId },
+        })
+        .event()
         .owner()
 
-      return userId === question.author.id || userId === eventOwner.id
+      return userId === eventOwner.id
     },
   ),
 }
@@ -46,9 +57,14 @@ export const permissions = shield({
     createEvent: rules.isAuthenticatedUser,
     updateEvent: rules.isEventAuthor,
     deleteEvent: rules.isEventAuthor,
-    // TODO: only event owner can update published field
     createQuestion: rules.isAuthenticatedUser,
-    updateQuestion: rules.isQuestionOrEventAuthor,
-    deleteQuestion: rules.isQuestionOrEventAuthor,
+    deleteQuestion: or(rules.isQuestionAuthor, rules.isQuestionEventOwner),
+  },
+  UpdateQuestionInputType: {
+    content: or(rules.isQuestionAuthor, rules.isQuestionEventOwner),
+    published: rules.isQuestionEventOwner,
+    star: rules.isQuestionEventOwner,
+    top: rules.isQuestionEventOwner,
+    archived: rules.isQuestionEventOwner,
   },
 })

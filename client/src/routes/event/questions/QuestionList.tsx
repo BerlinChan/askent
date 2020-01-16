@@ -26,13 +26,16 @@ import {
   Question,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
-  useDeleteQuestionMutation
+  useDeleteQuestionMutation,
+  useUpdateQuestionMutation
 } from "../../../generated/graphqlHooks";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../components/Confirm";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import UnarchiveIcon from "@material-ui/icons/Unarchive";
+import CheckIcon from "@material-ui/icons/Check";
+import ClearIcon from "@material-ui/icons/Clear";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -88,6 +91,7 @@ const QuestionList: React.FC<Props> = ({
     id: ""
   });
   const [deleteQuestionMutation] = useDeleteQuestionMutation();
+  const [updateQuestionMutation] = useUpdateQuestionMutation();
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -112,6 +116,24 @@ const QuestionList: React.FC<Props> = ({
     });
     refetch();
     handleCloseDelete();
+  };
+  const handleArchiveClick = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+    archived: boolean
+  ) => {
+    await updateQuestionMutation({
+      variables: { data: { questionId: id, archived: !archived } }
+    });
+  };
+  const handleReviewClick = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+    published: boolean
+  ) => {
+    await updateQuestionMutation({
+      variables: { data: { questionId: id, published: !published } }
+    });
   };
 
   return (
@@ -174,10 +196,27 @@ const QuestionList: React.FC<Props> = ({
             <Box className={classes.questionActionBox}>
               <IconButton
                 className={"questionHover"}
-                onClick={e => handleMoreClick(e, item.id)}
+                onClick={e => handleReviewClick(e, item.id, item.published)}
               >
-                <ArchiveIcon fontSize="inherit" />
+                {item.published ? (
+                  <ClearIcon fontSize="inherit" />
+                ) : (
+                  <CheckIcon fontSize="inherit" />
+                )}
               </IconButton>
+
+              {item.published && (
+                <IconButton
+                  className={"questionHover"}
+                  onClick={e => handleArchiveClick(e, item.id, item.archived)}
+                >
+                  {item.archived ? (
+                    <UnarchiveIcon fontSize="inherit" />
+                  ) : (
+                    <ArchiveIcon fontSize="inherit" />
+                  )}
+                </IconButton>
+              )}
               <IconButton
                 size="small"
                 onClick={e => handleMoreClick(e, item.id)}
