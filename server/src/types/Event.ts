@@ -100,7 +100,7 @@ export const eventMutation = extendType({
         moderation: booleanArg({ nullable: true }),
       },
       resolve: async (root, args, context) => {
-        await checkEventExist(context, args.eventId as string)
+        await checkEventExist(context, args.eventId)
         const findEvent = await context.photon.events.findOne({
           where: { id: args.eventId },
           select: { code: true },

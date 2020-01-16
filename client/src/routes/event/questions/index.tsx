@@ -52,9 +52,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     moderationOffTips: {
       display: "flex",
-      flexDirection:'column',
-      justifyContent:'center',
-      height: '100%',
+      flexDirection: "column",
+      justifyContent: "center",
+      height: "100%"
     }
   })
 );
@@ -142,6 +142,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         <Paper className={classes.gridItemPaper}>
           {eventData?.event.moderation ? (
             <QuestionList
+              eventQuery={eventQuery}
               questionsByEventQuery={questionsByEventQuery}
               filter={item => !item.published}
             />
@@ -180,12 +181,14 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         <Paper className={classes.gridItemPaper}>
           <TabPanel value={tabIndex} index={0}>
             <QuestionList
+              eventQuery={eventQuery}
               questionsByEventQuery={questionsByEventQuery}
               filter={item => !item.archived && item.published}
             />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             <QuestionList
+              eventQuery={eventQuery}
               questionsByEventQuery={questionsByEventQuery}
               filter={item => item.archived && item.published}
             />

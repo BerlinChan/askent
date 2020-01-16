@@ -26,6 +26,8 @@ import {
   Question,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
+  EventQuery,
+  EventQueryVariables,
   useDeleteQuestionMutation,
   useUpdateQuestionMutation
 } from "../../../generated/graphqlHooks";
@@ -36,6 +38,8 @@ import ArchiveIcon from "@material-ui/icons/Archive";
 import UnarchiveIcon from "@material-ui/icons/Unarchive";
 import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
+import StarIcon from "@material-ui/icons/Star";
+import TopIcon from "@material-ui/icons/Publish";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -68,6 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  eventQuery: QueryResult<EventQuery, EventQueryVariables>;
   questionsByEventQuery: QueryResult<
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables
@@ -76,11 +81,13 @@ interface Props {
 }
 
 const QuestionList: React.FC<Props> = ({
+  eventQuery,
   questionsByEventQuery,
   filter = () => true
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
+  const { data: eventData } = eventQuery;
   const { data, refetch } = questionsByEventQuery;
   const [moreMenu, setMoreMenu] = React.useState<{
     anchorEl: null | HTMLElement;
@@ -135,6 +142,24 @@ const QuestionList: React.FC<Props> = ({
       variables: { data: { questionId: id, published: !published } }
     });
   };
+  const handleStarClick = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+    star: boolean
+  ) => {
+    await updateQuestionMutation({
+      variables: { data: { questionId: id, star: !star } }
+    });
+  };
+  const handleTopClick = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+    top: boolean
+  ) => {
+    await updateQuestionMutation({
+      variables: { data: { questionId: id, top: !top } }
+    });
+  };
 
   return (
     <React.Fragment>
@@ -184,7 +209,8 @@ const QuestionList: React.FC<Props> = ({
                     variant="body2"
                     color="inherit"
                   >
-                    <FormattedDate value={item.updatedAt} />{" "}
+                    <FormattedDate value={item.updatedAt} />
+                    {", "}
                     <FormattedTime value={item.updatedAt} />
                   </Typography>
                 </React.Fragment>
@@ -193,18 +219,42 @@ const QuestionList: React.FC<Props> = ({
             <Typography className={classes.questionContent} variant="body1">
               {item.content}
             </Typography>
-            <Box className={classes.questionActionBox}>
-              <IconButton
-                className={"questionHover"}
-                onClick={e => handleReviewClick(e, item.id, item.published)}
-              >
-                {item.published ? (
-                  <ClearIcon fontSize="inherit" />
-                ) : (
-                  <CheckIcon fontSize="inherit" />
-                )}
-              </IconButton>
 
+            <Box className={classes.questionActionBox}>
+              {item.published && (
+                <IconButton
+                  className={"questionHover"}
+                  onClick={e => handleStarClick(e, item.id, item.star)}
+                >
+                  <StarIcon
+                    fontSize="inherit"
+                    color={item.star ? "secondary" : "inherit"}
+                  />
+                </IconButton>
+              )}
+              {item.published && !item.archived && (
+                <IconButton
+                  className={"questionHover"}
+                  onClick={e => handleTopClick(e, item.id, item.top)}
+                >
+                  <TopIcon
+                    fontSize="inherit"
+                    color={item.top ? "secondary" : "inherit"}
+                  />
+                </IconButton>
+              )}
+              {eventData?.event.moderation && !item.archived && (
+                <IconButton
+                  className={"questionHover"}
+                  onClick={e => handleReviewClick(e, item.id, item.published)}
+                >
+                  {item.published ? (
+                    <ClearIcon fontSize="inherit" />
+                  ) : (
+                    <CheckIcon fontSize="inherit" />
+                  )}
+                </IconButton>
+              )}
               {item.published && (
                 <IconButton
                   className={"questionHover"}

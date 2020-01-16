@@ -137,9 +137,9 @@ export const questionMutation = extendType({
         })
       },
     })
-    t.field('updateQuestion', {
+    t.list.field('updateQuestion', {
       type: 'Question',
-      description: "Update a question's content.",
+      description: 'Update a question. Can only top one question at a time.',
       args: {
         data: arg({ type: 'UpdateQuestionInputType', required: true }),
       },
@@ -147,10 +147,32 @@ export const questionMutation = extendType({
         const { content, questionId, published, archived, star, top } = data
         await checkQuestionExist(ctx, questionId)
 
-        return ctx.photon.questions.update({
-          where: { id: questionId },
-          data: { content, published, archived, star, top },
-        })
+        // can only top one question at a time
+        let topQuestion = []
+        if (top) {
+          topQuestion = await ctx.photon.questions.findMany({
+            where: { top: true },
+          })
+          await ctx.photon.questions.updateMany({
+            where: { top: true },
+            data: { top: false },
+          })
+        }
+
+        let question = Object.assign(
+          { content, published, archived, star, top },
+          archived === true ? { top: false } : {},
+          published === false
+            ? { top: false, star: false, archived: false }
+            : {},
+        )
+
+        return [
+         await ctx.photon.questions.update({
+            where: { id: questionId },
+            data: question,
+          }),
+        ].concat(topQuestion)
       },
     })
     t.field('deleteQuestion', {
