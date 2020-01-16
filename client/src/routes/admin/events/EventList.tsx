@@ -125,6 +125,7 @@ const EventList: React.FC<Props> = ({ eventsQueryResult, ...props }) => {
             defaultMessage="Delete this event?"
           />
         }
+        okText={<FormattedMessage id="Delete" defaultMessage="Delete" />}
         onCancel={handleCloseDelete}
         onOk={handleDelete}
       />

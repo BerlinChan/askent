@@ -13,10 +13,10 @@ import { FormattedMessage } from "react-intl";
 interface Props {
   open: boolean;
   loading?: boolean;
-  title?: React.ReactElement;
-  contentText?: React.ReactElement;
-  cancelText?: React.ReactElement;
-  okText?: React.ReactElement;
+  title?: React.ReactElement | string;
+  contentText?: React.ReactElement | string;
+  cancelText?: React.ReactElement | string;
+  okText?: React.ReactElement | string;
   onCancel: MouseEventHandler;
   onOk: MouseEventHandler;
 }
@@ -56,7 +56,7 @@ const Confirm: React.FC<Props> = ({
           {okText ? (
             okText
           ) : (
-            <FormattedMessage id="Delete" defaultMessage="Delete" />
+            <FormattedMessage id="Confirm" defaultMessage="Confirm" />
           )}
         </ButtonLoading>
       </DialogActions>

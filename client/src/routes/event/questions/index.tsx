@@ -27,6 +27,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
+import Confirm from "../../../components/Confirm";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,6 +49,12 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
       overflowX: "hidden",
       overflowY: "auto"
+    },
+    moderationOffTips: {
+      display: "flex",
+      flexDirection:'column',
+      justifyContent:'center',
+      height: '100%',
     }
   })
 );
@@ -73,22 +80,33 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const { formatMessage } = useIntl();
   const { id } = useParams();
   const [tabIndex, setTabIndex] = React.useState(0);
-  const { data: eventData, refetch: eventRefetch } = eventQuery;
+  const { data: eventData } = eventQuery;
   const questionsByEventQuery = useQuestionsByEventQuery({
     variables: { eventId: id as string }
   });
   const [updateEventMutation] = useUpdateEventMutation();
+  const [confirmModeration, setConfirmModeration] = React.useState(false);
 
   const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);
   };
   const handleModerationChange = async () => {
+    if (eventData?.event.moderation) {
+      setConfirmModeration(true);
+    }
     await updateEventMutation({
       variables: {
         eventId: id as string,
         moderation: !eventData?.event.moderation
       }
     });
+  };
+  const handleModerationCancel = () => {
+    setConfirmModeration(false);
+  };
+  const handleModerationOk = () => {
+    //TODO: publish all unreview questions
+    setConfirmModeration(false);
   };
 
   return (
@@ -111,12 +129,32 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
               defaultMessage: "Moderation"
             })}
           />
+          <Confirm
+            contentText={formatMessage({
+              id: "Publish_all_unreview_questions?",
+              defaultMessage: "Publish all unreview questions?"
+            })}
+            open={confirmModeration}
+            onCancel={handleModerationCancel}
+            onOk={handleModerationOk}
+          />
         </Box>
         <Paper className={classes.gridItemPaper}>
-          <QuestionList
-            questionsByEventQuery={questionsByEventQuery}
-            filter={item => !item.published}
-          />
+          {eventData?.event.moderation ? (
+            <QuestionList
+              questionsByEventQuery={questionsByEventQuery}
+              filter={item => !item.published}
+            />
+          ) : (
+            <Box className={classes.moderationOffTips}>
+              <Typography variant="h6" align="center" paragraph>
+                Moderation is off
+              </Typography>
+              <Typography align="center">
+                Incoming questions will automatically appear live.
+              </Typography>
+            </Box>
+          )}
         </Paper>
       </Grid>
       <Grid item sm={6} className={classes.gridItem}>

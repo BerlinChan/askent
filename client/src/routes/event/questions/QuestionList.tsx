@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Box,
   Typography,
   List,
   ListItem,
@@ -30,6 +31,8 @@ import {
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../components/Confirm";
+import ArchiveIcon from "@material-ui/icons/Archive";
+import UnarchiveIcon from "@material-ui/icons/Unarchive";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,17 +40,27 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
       backgroundColor: theme.palette.background.paper
     },
-    listItem: { flexWrap: "wrap", position: "relative" },
+    listItem: {
+      flexWrap: "wrap",
+      position: "relative",
+      "&:hover .questionHover": {
+        visibility: "visible"
+      },
+      "& .questionHover": {
+        visibility: "hidden"
+      }
+    },
     questionMeta: {
       marginLeft: theme.spacing(0.5),
       marginRight: theme.spacing(1)
     },
     questionContent: { width: "100%" },
-    questionMoreButton: {
+    questionActionBox: {
       position: "absolute",
-      top: 8,
+      top: 0,
       right: 8
-    }
+    },
+    questionMoreButton: {}
   })
 );
 
@@ -158,13 +171,20 @@ const QuestionList: React.FC<Props> = ({
             <Typography className={classes.questionContent} variant="body1">
               {item.content}
             </Typography>
-            <IconButton
-              size="small"
-              className={classes.questionMoreButton}
-              onClick={e => handleMoreClick(e, item.id)}
-            >
-              <MoreHorizIcon fontSize="inherit" />
-            </IconButton>
+            <Box className={classes.questionActionBox}>
+              <IconButton
+                className={"questionHover"}
+                onClick={e => handleMoreClick(e, item.id)}
+              >
+                <ArchiveIcon fontSize="inherit" />
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={e => handleMoreClick(e, item.id)}
+              >
+                <MoreHorizIcon fontSize="inherit" />
+              </IconButton>
+            </Box>
           </ListItem>
         ))}
       </List>
@@ -203,6 +223,7 @@ const QuestionList: React.FC<Props> = ({
             defaultMessage="Delete this question?"
           />
         }
+        okText={<FormattedMessage id="Delete" defaultMessage="Delete" />}
         onCancel={handleCloseDelete}
         onOk={handleDelete}
       />
