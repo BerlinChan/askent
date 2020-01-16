@@ -19,7 +19,13 @@ import {
 import { FormattedMessage, useIntl } from "react-intl";
 import TabPanel from "../../../components/TabPanel";
 import SearchIcon from "@material-ui/icons/Search";
-import { useQuestionsByEventQuery } from "../../../generated/graphqlHooks";
+import {
+  useQuestionsByEventQuery,
+  useUpdateEventMutation,
+  EventQuery,
+  EventQueryVariables
+} from "../../../generated/graphqlHooks";
+import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -58,17 +64,31 @@ const QuestionTab = withStyles({
   }
 })(Tab);
 
-const Questions: React.FC = () => {
+interface Props {
+  eventQuery: QueryResult<EventQuery, EventQueryVariables>;
+}
+
+const Questions: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const { id } = useParams();
   const [tabIndex, setTabIndex] = React.useState(0);
+  const { data: eventData, refetch: eventRefetch } = eventQuery;
   const questionsByEventQuery = useQuestionsByEventQuery({
     variables: { eventId: id as string }
   });
+  const [updateEventMutation] = useUpdateEventMutation();
 
   const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);
+  };
+  const handleModerationChange = async () => {
+    await updateEventMutation({
+      variables: {
+        eventId: id as string,
+        moderation: !eventData?.event.moderation
+      }
+    });
   };
 
   return (
@@ -80,7 +100,12 @@ const Questions: React.FC = () => {
           </Typography>
           <FormControlLabel
             labelPlacement="start"
-            control={<Switch value="checkedC" />}
+            control={
+              <Switch
+                checked={Boolean(eventData?.event.moderation)}
+                onChange={handleModerationChange}
+              />
+            }
             label={formatMessage({
               id: "Moderation",
               defaultMessage: "Moderation"

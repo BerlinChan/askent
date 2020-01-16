@@ -1,6 +1,6 @@
 import React from "react";
 import loadable from "@loadable/component";
-import { PrivateRoute } from "../components/PrivateRoute";
+import  PrivateRoute  from "../components/PrivateRoute";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../components/Loading";
 import Providers from "../components/Providers";

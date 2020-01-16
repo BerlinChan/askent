@@ -92,7 +92,7 @@ export const eventMutation = extendType({
     t.field('updateEvent', {
       type: 'Event',
       args: {
-        eventId: idArg(),
+        eventId: idArg({ required: true }),
         code: stringArg({ nullable: true }),
         name: stringArg({ nullable: true }),
         startAt: arg({ type: 'DateTime', nullable: true }),
@@ -118,7 +118,9 @@ export const eventMutation = extendType({
           args?.name ? { name: args?.name } : {},
           args?.startAt ? { startAt: args?.startAt } : {},
           args?.endAt ? { codendAte: args?.endAt } : {},
-          args?.moderation ? { moderation: args?.moderation } : {},
+          typeof args?.moderation === 'boolean'
+            ? { moderation: args?.moderation }
+            : {},
         )
 
         return context.photon.events.update({

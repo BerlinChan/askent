@@ -1,10 +1,6 @@
 import React from "react";
 import { match } from "react-router";
-import {
-  Link as RouterLink,
-  useRouteMatch,
-  useHistory
-} from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
@@ -19,8 +15,10 @@ import {
 } from "@material-ui/core";
 import RouteTabs from "../../components/Header/RouteTabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
-import { useEventQuery } from "../../generated/graphqlHooks";
+import { EventQuery, EventQueryVariables } from "../../generated/graphqlHooks";
+import { QueryResult } from "@apollo/react-common";
 import { FormattedDate } from "react-intl";
+import { EventRouteParams } from "./index";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,16 +33,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type Params = { id: string };
+interface Props {
+  eventQuery: QueryResult<EventQuery, EventQueryVariables>;
+  routeMatch: match<EventRouteParams>;
+}
 
-export default function EventHeader() {
+const EventHeader: React.FC<Props> = ({ eventQuery, routeMatch }) => {
   const classes = useStyles();
   const history = useHistory();
-  let { params, url } = useRouteMatch<Params>(`/event/:id`) as match<Params>;
-  // TODO: generate short id for event
-  const { data: eventData, loading } = useEventQuery({
-    variables: { eventId: params.id }
-  });
+  let { url } = routeMatch;
+  const { data: eventData, loading } = eventQuery;
 
   return (
     <AppBar position="static" elevation={2}>
@@ -59,7 +57,7 @@ export default function EventHeader() {
                   edge="start"
                   color="inherit"
                   size="small"
-                  style={{width:48}}
+                  style={{ width: 48 }}
                   onClick={() => history.goBack()}
                 >
                   <NavigateBeforeIcon fontSize="large" />
@@ -106,4 +104,6 @@ export default function EventHeader() {
       </Paper>
     </AppBar>
   );
-}
+};
+
+export default EventHeader;

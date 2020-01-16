@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Events: React.FC<{}> = () => {
+const Events: React.FC = () => {
   const classes = useStyles();
   const [openCreate, setOpenCreate] = React.useState(false);
   const eventsQueryResult = useEventsQuery();

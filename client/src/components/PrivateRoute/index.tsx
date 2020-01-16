@@ -5,7 +5,7 @@ import { AUTH_TOKEN } from "../../constant";
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-export function PrivateRoute({ children, ...rest }: RouteProps) {
+const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
   const token = localStorage.getItem(AUTH_TOKEN);
 
   return (
@@ -25,4 +25,6 @@ export function PrivateRoute({ children, ...rest }: RouteProps) {
       }
     />
   );
-}
+};
+
+export default PrivateRoute;

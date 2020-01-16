@@ -6,7 +6,7 @@ const photon = new Photon()
 async function main() {
   const user1 = await photon.users.create({
     data: {
-      email: 'w@w',
+      email: 'w@w.w',
       name: 'w',
       password: await hash('w', 10),
       events: {
