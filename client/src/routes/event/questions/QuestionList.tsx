@@ -1,26 +1,13 @@
 import React from "react";
 import {
-  Box,
-  Typography,
   List,
-  ListItem,
   ListItemIcon,
   ListItemText,
-  ListItemAvatar,
-  Avatar,
-  IconButton,
   Menu,
   MenuItem
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import {
-  useIntl,
-  FormattedMessage,
-  FormattedDate,
-  FormattedTime
-} from "react-intl";
-import AccessTimeIcon from "@material-ui/icons/AccessTime";
-import ThumbUpIcon from "@material-ui/icons/ThumbUp";
+import { useIntl, FormattedMessage } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
 import {
   Question,
@@ -28,46 +15,18 @@ import {
   QuestionsByEventQueryVariables,
   EventQuery,
   EventQueryVariables,
-  useDeleteQuestionMutation,
-  useUpdateQuestionMutation
+  useDeleteQuestionMutation
 } from "../../../generated/graphqlHooks";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../components/Confirm";
-import ArchiveIcon from "@material-ui/icons/Archive";
-import UnarchiveIcon from "@material-ui/icons/Unarchive";
-import CheckIcon from "@material-ui/icons/Check";
-import ClearIcon from "@material-ui/icons/Clear";
-import StarIcon from "@material-ui/icons/Star";
-import TopIcon from "@material-ui/icons/Publish";
+import QuestionItem from "./QuestionItem";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     list: {
       width: "100%",
       backgroundColor: theme.palette.background.paper
-    },
-    listItem: {
-      flexWrap: "wrap",
-      position: "relative",
-      "&:hover .questionHover": {
-        visibility: "visible"
-      },
-      "& .questionHover": {
-        visibility: "hidden"
-      }
-    },
-    questionMeta: {
-      marginLeft: theme.spacing(0.5),
-      marginRight: theme.spacing(1)
-    },
-    questionContent: { width: "100%" },
-    questionActionBox: {
-      position: "absolute",
-      top: 0,
-      right: 8
-    },
-    questionMoreButton: {}
+    }
   })
 );
 
@@ -87,7 +46,6 @@ const QuestionList: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const { data: eventData } = eventQuery;
   const { data, refetch } = questionsByEventQuery;
   const [moreMenu, setMoreMenu] = React.useState<{
     anchorEl: null | HTMLElement;
@@ -98,7 +56,6 @@ const QuestionList: React.FC<Props> = ({
     id: ""
   });
   const [deleteQuestionMutation] = useDeleteQuestionMutation();
-  const [updateQuestionMutation] = useUpdateQuestionMutation();
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -124,158 +81,21 @@ const QuestionList: React.FC<Props> = ({
     refetch();
     handleCloseDelete();
   };
-  const handleArchiveClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-    archived: boolean
-  ) => {
-    await updateQuestionMutation({
-      variables: { data: { questionId: id, archived: !archived } }
-    });
-  };
-  const handleReviewClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-    published: boolean
-  ) => {
-    await updateQuestionMutation({
-      variables: { data: { questionId: id, published: !published } }
-    });
-  };
-  const handleStarClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-    star: boolean
-  ) => {
-    await updateQuestionMutation({
-      variables: { data: { questionId: id, star: !star } }
-    });
-  };
-  const handleTopClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-    top: boolean
-  ) => {
-    await updateQuestionMutation({
-      variables: { data: { questionId: id, top: !top } }
-    });
-  };
 
   return (
     <React.Fragment>
       <List className={classes.list}>
-        {data?.questionsByEvent.filter(filter).map((item, index) => (
-          <ListItem
-            key={index}
-            className={classes.listItem}
-            alignItems="flex-start"
-            divider
-          >
-            <ListItemAvatar>
-              <Avatar src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Typography
-                  component="span"
-                  variant="body2"
-                  color="textPrimary"
-                >
-                  {item.username ? (
-                    item.username
-                  ) : (
-                    <FormattedMessage
-                      id="Anonymous"
-                      defaultMessage="Anonymous"
-                    />
-                  )}
-                </Typography>
-              }
-              secondary={
-                <React.Fragment>
-                  <ThumbUpIcon style={{ fontSize: 12 }} />
-                  <Typography
-                    className={classes.questionMeta}
-                    component="span"
-                    variant="body2"
-                    color="inherit"
-                  >
-                    {item.voteCount}
-                  </Typography>
-                  <AccessTimeIcon style={{ fontSize: 12 }} />
-                  <Typography
-                    className={classes.questionMeta}
-                    component="span"
-                    variant="body2"
-                    color="inherit"
-                  >
-                    <FormattedDate value={item.updatedAt} />
-                    {", "}
-                    <FormattedTime value={item.updatedAt} />
-                  </Typography>
-                </React.Fragment>
-              }
+        {data?.questionsByEvent
+          .sort((a, b) => (b.top ? 1 : -1))
+          .filter(filter)
+          .map((item, index) => (
+            <QuestionItem
+              key={index}
+              question={item}
+              eventQuery={eventQuery}
+              handleMoreClick={handleMoreClick}
             />
-            <Typography className={classes.questionContent} variant="body1">
-              {item.content}
-            </Typography>
-
-            <Box className={classes.questionActionBox}>
-              {item.published && (
-                <IconButton
-                  className={"questionHover"}
-                  onClick={e => handleStarClick(e, item.id, item.star)}
-                >
-                  <StarIcon
-                    fontSize="inherit"
-                    color={item.star ? "secondary" : "inherit"}
-                  />
-                </IconButton>
-              )}
-              {item.published && !item.archived && (
-                <IconButton
-                  className={"questionHover"}
-                  onClick={e => handleTopClick(e, item.id, item.top)}
-                >
-                  <TopIcon
-                    fontSize="inherit"
-                    color={item.top ? "secondary" : "inherit"}
-                  />
-                </IconButton>
-              )}
-              {eventData?.event.moderation && !item.archived && (
-                <IconButton
-                  className={"questionHover"}
-                  onClick={e => handleReviewClick(e, item.id, item.published)}
-                >
-                  {item.published ? (
-                    <ClearIcon fontSize="inherit" />
-                  ) : (
-                    <CheckIcon fontSize="inherit" />
-                  )}
-                </IconButton>
-              )}
-              {item.published && (
-                <IconButton
-                  className={"questionHover"}
-                  onClick={e => handleArchiveClick(e, item.id, item.archived)}
-                >
-                  {item.archived ? (
-                    <UnarchiveIcon fontSize="inherit" />
-                  ) : (
-                    <ArchiveIcon fontSize="inherit" />
-                  )}
-                </IconButton>
-              )}
-              <IconButton
-                size="small"
-                onClick={e => handleMoreClick(e, item.id)}
-              >
-                <MoreHorizIcon fontSize="inherit" />
-              </IconButton>
-            </Box>
-          </ListItem>
-        ))}
+          ))}
       </List>
 
       <Menu
