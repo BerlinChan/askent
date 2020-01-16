@@ -148,11 +148,12 @@ export const questionMutation = extendType({
         await checkQuestionExist(ctx, questionId)
 
         // can only top one question at a time
-        let topQuestion = []
+        let topQuestion: Array<QuestionType> = []
         if (top) {
           topQuestion = await ctx.photon.questions.findMany({
             where: { top: true },
           })
+          topQuestion = topQuestion.map(item => ({ ...item, top: false }))
           await ctx.photon.questions.updateMany({
             where: { top: true },
             data: { top: false },
@@ -167,12 +168,12 @@ export const questionMutation = extendType({
             : {},
         )
 
-        return [
-         await ctx.photon.questions.update({
-            where: { id: questionId },
-            data: question,
-          }),
-        ].concat(topQuestion)
+        const currentTopQuestion = await ctx.photon.questions.update({
+          where: { id: questionId },
+          data: question,
+        })
+
+        return [currentTopQuestion].concat(topQuestion)
       },
     })
     t.field('deleteQuestion', {
