@@ -141,10 +141,10 @@ export const questionMutation = extendType({
       type: 'Question',
       description: 'Update a question. Can only top one question at a time.',
       args: {
-        data: arg({ type: 'UpdateQuestionInputType', required: true }),
+        input: arg({ type: 'UpdateQuestionInputType', required: true }),
       },
-      resolve: async (root, { data }, ctx) => {
-        const { content, questionId, published, archived, star, top } = data
+      resolve: async (root, { input }, ctx) => {
+        const { content, questionId, published, archived, star, top } = input
         await checkQuestionExist(ctx, questionId)
 
         // can only top one question at a time

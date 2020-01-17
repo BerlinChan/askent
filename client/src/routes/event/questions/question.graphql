@@ -42,8 +42,8 @@ input UpdateQuestionInputType {
   top: Boolean
 }
 
-mutation UpdateQuestion($data: UpdateQuestionInputType!) {
-  updateQuestion(data: $data) {
+mutation UpdateQuestion($input: UpdateQuestionInputType!) {
+  updateQuestion(input: $input) {
     id
     published
     star

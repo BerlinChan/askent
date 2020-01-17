@@ -47,6 +47,12 @@ const useStyles = makeStyles((theme: Theme) =>
         visibility: "hidden"
       }
     },
+    starQuestion: {
+      backgroundColor: theme.palette.warning.light
+    },
+    topQuestion: {
+      backgroundColor: theme.palette.success.light
+    },
     questionMeta: {
       marginLeft: theme.spacing(0.5),
       marginRight: theme.spacing(1)
@@ -92,7 +98,7 @@ const QuestionListItem: React.FC<Props> = ({
 
   const handleArchiveClick: handleToggleInterface = async (e, id, archived) => {
     await updateQuestionMutation({
-      variables: { data: { questionId: id, archived: !archived } }
+      variables: { input: { questionId: id, archived: !archived } }
     });
   };
   const handlePublishClick: handleToggleInterface = async (
@@ -101,22 +107,28 @@ const QuestionListItem: React.FC<Props> = ({
     published
   ) => {
     await updateQuestionMutation({
-      variables: { data: { questionId: id, published: !published } }
+      variables: { input: { questionId: id, published: !published } }
     });
   };
   const handleStarClick: handleToggleInterface = async (e, id, star) => {
     await updateQuestionMutation({
-      variables: { data: { questionId: id, star: !star } }
+      variables: { input: { questionId: id, star: !star } }
     });
   };
   const handleTopClick: handleToggleInterface = async (e, id, top) => {
     await updateQuestionMutation({
-      variables: { data: { questionId: id, top: !top } }
+      variables: { input: { questionId: id, top: !top } }
     });
   };
 
   return (
-    <ListItem className={classes.listItem} alignItems="flex-start" divider>
+    <ListItem
+      className={`${classes.listItem} ${
+        question.star ? classes.starQuestion : ""
+      } ${question.top ? classes.topQuestion : ""}`}
+      alignItems="flex-start"
+      divider
+    >
       <ListItemAvatar>
         <Avatar src="/static/images/avatar/1.jpg" />
       </ListItemAvatar>

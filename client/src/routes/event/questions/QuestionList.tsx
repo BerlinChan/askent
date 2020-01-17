@@ -84,7 +84,7 @@ const QuestionList: React.FC<Props> = ({
 
   return (
     <React.Fragment>
-      <List className={classes.list}>
+      <List className={classes.list} disablePadding>
         {data?.questionsByEvent
           .sort((a, b) => (b.top ? 1 : -1))
           .filter(filter)
