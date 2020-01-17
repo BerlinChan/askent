@@ -6,6 +6,7 @@ import {
   idArg,
   arg,
   booleanArg,
+  subscriptionField,
 } from 'nexus'
 import {
   Question as QuestionType,
@@ -146,6 +147,7 @@ export const questionMutation = extendType({
         })
 
         ctx.pubsub.publish('QUESTION_ADDED', {
+          eventId,
           questionAdded: newQuestion,
         })
 
@@ -231,18 +233,20 @@ export const questionMutation = extendType({
   },
 })
 
-export const questionSubscription = extendType({
-  type: 'Subscription',
-  definition(t) {
-    t.field('questionAdded', {
-      type: 'Question',
-      args: {},
-      subscribe: (parent, args, ctx) => {
-        return ctx.pubsub.asyncIterator(['QUESTION_ADDED'])
-      },
-    })
+export const questionSubscription = subscriptionField<'questionAdded'>(
+  'questionAdded',
+  {
+    type: 'Question',
+    args: { eventId: idArg({ required: true }) },
+    subscribe: withFilter(
+      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_ADDED']),
+      (payload, args, context) => payload.eventId === args.eventId,
+    ),
+    resolve: (payload, args, context) => {
+      return payload.questionAdded
+    },
   },
-})
+)
 
 async function checkQuestionExist(
   context: Context,
