@@ -1,12 +1,19 @@
-import {Photon} from '@prisma/photon'
-import {ExpressContext} from 'apollo-server-express/src/ApolloServer'
+import { Photon } from '@prisma/photon'
+import { PubSub } from 'apollo-server-express'
+import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 
 const photon = new Photon()
+const pubsub = new PubSub()
 
 export interface Context extends ExpressContext {
-    photon: Photon
+  photon: Photon
+  pubsub: PubSub
 }
 
-export function createContext({req, res, connection}: ExpressContext): Context {
-    return {photon, req, res, connection}
+export function createContext({
+  req,
+  res,
+  connection,
+}: ExpressContext): Context {
+  return { photon, pubsub, req, res, connection }
 }

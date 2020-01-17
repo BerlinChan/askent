@@ -14,6 +14,7 @@ import {
 } from '@prisma/photon'
 import { Context } from '../context'
 import { getUserId } from '../utils'
+import { withFilter } from 'apollo-server-express'
 
 export const Question = objectType({
   name: 'Question',
@@ -57,6 +58,14 @@ export const UpdateQuestionInputType = inputObjectType({
 export const questionQuery = extendType({
   type: 'Query',
   definition(t) {
+    t.field('latestQuestion', {
+      type: 'Question',
+      resolve: async (root, args, ctx) => {
+        const latest = await ctx.photon.questions.findMany({ first: 1 })
+
+        return latest[0]
+      },
+    })
     t.list.field('questionsByMe', {
       type: 'Question',
       args: {
@@ -132,9 +141,15 @@ export const questionMutation = extendType({
           question.username = username
         }
 
-        return ctx.photon.questions.create({
+        const newQuestion = await ctx.photon.questions.create({
           data: question,
         })
+
+        ctx.pubsub.publish('QUESTION_ADDED', {
+          questionAdded: newQuestion,
+        })
+
+        return newQuestion
       },
     })
     t.list.field('updateQuestion', {
@@ -211,6 +226,19 @@ export const questionMutation = extendType({
               : { connect: { id: userId } },
           },
         })
+      },
+    })
+  },
+})
+
+export const questionSubscription = extendType({
+  type: 'Subscription',
+  definition(t) {
+    t.field('questionAdded', {
+      type: 'Question',
+      args: {},
+      subscribe: (parent, args, ctx) => {
+        return ctx.pubsub.asyncIterator(['QUESTION_ADDED'])
       },
     })
   },

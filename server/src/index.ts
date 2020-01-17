@@ -1,3 +1,4 @@
+import http from 'http'
 import dotenv from 'dotenv'
 import path from 'path'
 import express from 'express'
@@ -31,8 +32,15 @@ const server = new ApolloServer({
 })
 server.applyMiddleware({ app })
 
-app.listen({ port: PORT }, () =>
+const httpServer = http.createServer(app)
+server.installSubscriptionHandlers(httpServer)
+
+// ⚠️ Pay attention to the fact that we are calling `listen` on the http server variable, and not on `app`.
+httpServer.listen(PORT, () => {
   console.log(
     `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`,
-  ),
-)
+  )
+  console.log(
+    `🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`,
+  )
+})
