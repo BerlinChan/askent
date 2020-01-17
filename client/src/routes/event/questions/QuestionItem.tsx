@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
+  useIntl,
   FormattedMessage,
   FormattedDate,
   FormattedTime
@@ -30,6 +31,9 @@ import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
 import StarIcon from "@material-ui/icons/Star";
 import TopIcon from "@material-ui/icons/Publish";
+import QuestionToggleButton, {
+  handleToggleInterface
+} from "./QuestionToggleButton";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -83,51 +87,36 @@ const QuestionListItem: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { data: eventData } = eventQuery;
+  const { formatMessage } = useIntl();
   const [updateQuestionMutation] = useUpdateQuestionMutation();
 
-  const handleArchiveClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-    archived: boolean
-  ) => {
+  const handleArchiveClick: handleToggleInterface = async (e, id, archived) => {
     await updateQuestionMutation({
       variables: { data: { questionId: id, archived: !archived } }
     });
   };
-  const handleReviewClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-    published: boolean
+  const handlePublishClick: handleToggleInterface = async (
+    e,
+    id,
+    published
   ) => {
     await updateQuestionMutation({
       variables: { data: { questionId: id, published: !published } }
     });
   };
-  const handleStarClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-    star: boolean
-  ) => {
+  const handleStarClick: handleToggleInterface = async (e, id, star) => {
     await updateQuestionMutation({
       variables: { data: { questionId: id, star: !star } }
     });
   };
-  const handleTopClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-    top: boolean
-  ) => {
+  const handleTopClick: handleToggleInterface = async (e, id, top) => {
     await updateQuestionMutation({
       variables: { data: { questionId: id, top: !top } }
     });
   };
 
   return (
-    <ListItem
-      className={classes.listItem}
-      alignItems="flex-start"
-      divider
-    >
+    <ListItem className={classes.listItem} alignItems="flex-start" divider>
       <ListItemAvatar>
         <Avatar src="/static/images/avatar/1.jpg" />
       </ListItemAvatar>
@@ -172,51 +161,66 @@ const QuestionListItem: React.FC<Props> = ({
 
       <Box className={classes.questionActionBox}>
         {question.published && (
-          <IconButton
-            className={"questionHover"}
-            onClick={e => handleStarClick(e, question.id, question.star)}
-          >
-            <StarIcon
-              fontSize="inherit"
-              color={question.star ? "secondary" : "inherit"}
-            />
-          </IconButton>
+          <QuestionToggleButton
+            className="questionHover"
+            id={question.id}
+            status={question.star}
+            onTitle={formatMessage({ id: "Unstar", defaultMessage: "Unstar" })}
+            offTitle={formatMessage({ id: "Star", defaultMessage: "Star" })}
+            onIcon={<StarIcon fontSize="inherit" color="secondary" />}
+            offIcon={<StarIcon fontSize="inherit" color="inherit" />}
+            handleToggle={handleStarClick}
+          />
         )}
         {question.published && !question.archived && (
-          <IconButton
-            className={"questionHover"}
-            onClick={e => handleTopClick(e, question.id, question.top)}
-          >
-            <TopIcon
-              fontSize="inherit"
-              color={question.top ? "secondary" : "inherit"}
-            />
-          </IconButton>
+          <QuestionToggleButton
+            className="questionHover"
+            id={question.id}
+            status={question.top}
+            onTitle={formatMessage({ id: "Untop", defaultMessage: "Untop" })}
+            offTitle={formatMessage({ id: "Top", defaultMessage: "Top" })}
+            onIcon={<TopIcon fontSize="inherit" color="secondary" />}
+            offIcon={<TopIcon fontSize="inherit" color="inherit" />}
+            handleToggle={handleTopClick}
+          />
         )}
         {eventData?.event.moderation && !question.archived && (
-          <IconButton
-            className={"questionHover"}
-            onClick={e => handleReviewClick(e, question.id, question.published)}
-          >
-            {question.published ? (
-              <ClearIcon fontSize="inherit" />
-            ) : (
-              <CheckIcon fontSize="inherit" />
-            )}
-          </IconButton>
+          <QuestionToggleButton
+            className="questionHover"
+            id={question.id}
+            status={question.published}
+            onTitle={formatMessage({
+              id: "Unpublish",
+              defaultMessage: "Unpublish"
+            })}
+            offTitle={formatMessage({
+              id: "Publish",
+              defaultMessage: "Publish"
+            })}
+            onIcon={<ClearIcon fontSize="inherit" />}
+            offIcon={<CheckIcon fontSize="inherit" />}
+            handleToggle={handlePublishClick}
+          />
         )}
         {question.published && (
-          <IconButton
-            className={"questionHover"}
-            onClick={e => handleArchiveClick(e, question.id, question.archived)}
-          >
-            {question.archived ? (
-              <UnarchiveIcon fontSize="inherit" />
-            ) : (
-              <ArchiveIcon fontSize="inherit" />
-            )}
-          </IconButton>
+          <QuestionToggleButton
+            className="questionHover"
+            id={question.id}
+            status={question.archived}
+            onTitle={formatMessage({
+              id: "Unarchive",
+              defaultMessage: "Unarchive"
+            })}
+            offTitle={formatMessage({
+              id: "Archive",
+              defaultMessage: "Archive"
+            })}
+            onIcon={<UnarchiveIcon fontSize="inherit" />}
+            offIcon={<ArchiveIcon fontSize="inherit" />}
+            handleToggle={handleArchiveClick}
+          />
         )}
+
         <IconButton size="small" onClick={e => handleMoreClick(e, question.id)}>
           <MoreHorizIcon fontSize="inherit" />
         </IconButton>
