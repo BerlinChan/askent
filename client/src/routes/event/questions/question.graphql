@@ -1,3 +1,18 @@
+fragment QuestionFields on Question {
+  id
+  updatedAt
+  voteCount
+  username
+  content
+  star
+  archived
+  published
+  top
+  author {
+    id
+  }
+}
+
 query QuestionsByEvent(
   $eventId: ID!
   $searchString: String
@@ -12,18 +27,7 @@ query QuestionsByEvent(
     archived: $archived
     top: $top
   ) {
-    id
-    updatedAt
-    voteCount
-    username
-    content
-    star
-    archived
-    published
-    top
-    author {
-      id
-    }
+    ...QuestionFields
   }
 }
 
@@ -50,5 +54,11 @@ mutation UpdateQuestion($input: UpdateQuestionInputType!) {
     archived
     top
     content
+  }
+}
+
+subscription QuestionAdded($eventId: ID!) {
+  questionAdded(eventId: $eventId) {
+    ...QuestionFields
   }
 }

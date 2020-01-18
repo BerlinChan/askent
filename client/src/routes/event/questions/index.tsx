@@ -22,8 +22,12 @@ import SearchIcon from "@material-ui/icons/Search";
 import {
   useQuestionsByEventQuery,
   useUpdateEventMutation,
+  useQuestionAddedSubscription,
   EventQuery,
-  EventQueryVariables
+  EventQueryVariables,
+  QuestionsByEventQuery,
+  QuestionsByEventQueryVariables,
+  QuestionsByEventDocument
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
@@ -86,6 +90,34 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   });
   const [updateEventMutation] = useUpdateEventMutation();
   const [confirmModeration, setConfirmModeration] = React.useState(false);
+
+  // subscription to new question added
+  const questionAddedSubscription = useQuestionAddedSubscription({
+    variables: { eventId: id as string },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const questions = client.readQuery<
+        QuestionsByEventQuery,
+        QuestionsByEventQueryVariables
+      >({
+        query: QuestionsByEventDocument,
+        variables: { eventId: id as string }
+      });
+
+      // merge
+      client.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>({
+        query: QuestionsByEventDocument,
+        variables: { eventId: id as string },
+        data: {
+          questionsByEvent: (subscriptionData.data?.questionAdded
+            ? [subscriptionData.data?.questionAdded]
+            : []
+          ).concat(
+            questions?.questionsByEvent ? questions?.questionsByEvent : []
+          )
+        }
+      });
+    }
+  });
 
   const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);

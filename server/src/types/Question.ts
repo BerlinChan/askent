@@ -238,13 +238,13 @@ export const questionSubscription = subscriptionField<'questionAdded'>(
   {
     type: 'Question',
     args: { eventId: idArg({ required: true }) },
+    resolve: (payload, args, context) => {
+      return payload.questionAdded
+    },
     subscribe: withFilter(
       (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_ADDED']),
       (payload, args, context) => payload.eventId === args.eventId,
     ),
-    resolve: (payload, args, context) => {
-      return payload.questionAdded
-    },
   },
 )
 
