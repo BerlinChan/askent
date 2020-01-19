@@ -13,7 +13,7 @@ import {
   IconButton,
   CircularProgress
 } from "@material-ui/core";
-import RouteTabs from "../../components/Header/RouteTabs";
+import { RouteTabs } from "../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import { EventQuery, EventQueryVariables } from "../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";

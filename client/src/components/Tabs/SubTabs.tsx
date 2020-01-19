@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, Tab, TabsProps, TabProps } from "@material-ui/core";
+import { Tabs, TabsProps } from "@material-ui/core";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 interface StyledTabsProps {
@@ -25,10 +25,3 @@ export const SubTabs = withStyles((theme: Theme) =>
 )((props: StyledTabsProps & Omit<TabsProps, keyof StyledTabsProps>) => (
   <Tabs {...props} TabIndicatorProps={{ children: <div /> }} />
 ));
-
-export const SubTab = withStyles({
-  root: {
-    minHeight: 38,
-    minWidth: 120
-  }
-})((props: TabProps) => <Tab {...props} disableRipple />);

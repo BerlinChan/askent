@@ -1,6 +1,6 @@
 import React from "react";
 import { TextField, InputAdornment, Button } from "@material-ui/core";
-import { HomeHeader } from "../../components/Header";
+import HomeHeader from "./HomeHeader";
 
 const Home: React.FC = props => {
   return (

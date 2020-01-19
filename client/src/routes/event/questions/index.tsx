@@ -6,11 +6,9 @@ import {
   Box,
   Typography,
   FormControlLabel,
-  Switch} from "@material-ui/core";
-import {
-  createStyles,
-  makeStyles,
-  Theme} from "@material-ui/core/styles";
+  Switch
+} from "@material-ui/core";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
 import TabPanel from "../../../components/TabPanel";
 import SearchIcon from "@material-ui/icons/Search";
@@ -31,7 +29,7 @@ import {
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
 import Confirm from "../../../components/Confirm";
-import { SubTabs, SubTab } from "../../../components/SubTabs"
+import { SubTabs, SubTab } from "../../../components/Tabs";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -85,18 +83,6 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   ] = usePublishAllUnpublishedQuestionsMutation();
   const [confirmModeration, setConfirmModeration] = React.useState(false);
 
-  // questionsByEventQuery.subscribeToMore({
-  //   document: QuestionAddedDocument,
-  //   variables: { eventId: id as string },
-  //   updateQuery: (prev, { subscriptionData }) => {
-  //     return Object.assign({}, prev, {
-  //       questionsByEvent: (subscriptionData.data?.questionAdded
-  //         ? [subscriptionData.data?.questionAdded]
-  //         : []
-  //       ).concat(prev.questionsByEvent)
-  //     });
-  //   }
-  // });
   // subscriptions
   const questionAddedSubscription = useQuestionAddedSubscription({
     variables: { eventId: id as string },

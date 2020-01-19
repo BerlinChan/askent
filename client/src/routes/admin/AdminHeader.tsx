@@ -15,7 +15,7 @@ import {
   InputAdornment
 } from "@material-ui/core";
 import { useRouteMatch } from "react-router-dom";
-import RouteTabs from "../../components/Header/RouteTabs";
+import { RouteTabs } from "../../components/Tabs";
 import { useMeQuery } from "../../generated/graphqlHooks";
 import SearchIcon from "@material-ui/icons/Search";
 import { useIntl } from "react-intl";

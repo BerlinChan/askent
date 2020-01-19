@@ -6,7 +6,7 @@ interface Props {
   tabs: Array<{ label: string; to: string }>;
 }
 
-const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
+export const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
   tabs,
   ...props
 }) => {
@@ -32,5 +32,3 @@ const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
     </Tabs>
   );
 };
-
-export default RouteTabs;

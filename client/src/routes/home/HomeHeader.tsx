@@ -2,7 +2,7 @@ import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Box, Link, Toolbar } from "@material-ui/core";
-import AppBarElevationScroll from "../AppBarElevationScroll";
+import AppBarElevationScroll from "../../components/AppBarElevationScroll";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function HomeHeader() {
+export default function HomeHeader() {
   const classes = useStyles();
 
   return (
