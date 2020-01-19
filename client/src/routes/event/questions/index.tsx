@@ -23,6 +23,8 @@ import {
   useQuestionsByEventQuery,
   useUpdateEventMutation,
   useQuestionAddedSubscription,
+  useQuestionUpdatedSubscription,
+  useQuestionDeletedSubscription,
   EventQuery,
   EventQueryVariables,
   QuestionsByEventQuery,
@@ -91,7 +93,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const [updateEventMutation] = useUpdateEventMutation();
   const [confirmModeration, setConfirmModeration] = React.useState(false);
 
-  // subscription to new question added
+  // subscriptions
   const questionAddedSubscription = useQuestionAddedSubscription({
     variables: { eventId: id as string },
     onSubscriptionData: ({ client, subscriptionData }) => {
@@ -113,6 +115,35 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
             : []
           ).concat(
             questions?.questionsByEvent ? questions?.questionsByEvent : []
+          )
+        }
+      });
+    }
+  });
+  const questionUpdatedSubscription = useQuestionUpdatedSubscription({
+    variables: { eventId: id as string }
+  });
+  const questionDeletedSubscription = useQuestionDeletedSubscription({
+    variables: { eventId: id as string },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const questions = client.readQuery<
+        QuestionsByEventQuery,
+        QuestionsByEventQueryVariables
+      >({
+        query: QuestionsByEventDocument,
+        variables: { eventId: id as string }
+      });
+
+      // merge
+      client.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>({
+        query: QuestionsByEventDocument,
+        variables: { eventId: id as string },
+        data: {
+          questionsByEvent: (questions?.questionsByEvent
+            ? questions?.questionsByEvent
+            : []
+          ).filter(
+            item => item.id !== subscriptionData.data?.questionDeleted.id
           )
         }
       });

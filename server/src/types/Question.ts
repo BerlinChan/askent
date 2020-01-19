@@ -38,7 +38,7 @@ export const Question = objectType({
           .findOne({ where: { id } })
           .votedUsers()
 
-        return users.length
+        return users?.length || 0
       },
     })
   },
@@ -158,7 +158,7 @@ export const questionMutation = extendType({
           include: { event: true },
         })
         if (!findQuestion) {
-          ERROR_MESSAGE.noQuestionId(questionId)
+          throw new Error(ERROR_MESSAGE.noQuestionId(questionId))
         }
 
         // can only top one question at a time
@@ -185,8 +185,8 @@ export const questionMutation = extendType({
           where: { id: questionId },
           data: question,
         })
-
         const response = [currentTopQuestion].concat(topQuestion)
+
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: findQuestion?.event.id,
           questionUpdated: response,
@@ -197,14 +197,29 @@ export const questionMutation = extendType({
     })
     t.field('deleteQuestion', {
       type: 'Question',
-      description: 'Delete a question.',
+      description: 'Delete a question by id.',
       args: {
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
-        return ctx.photon.questions.delete({
+        const findQuestion = await ctx.photon.questions.findOne({
+          where: { id: questionId },
+          include: { event: true },
+        })
+        if (!findQuestion) {
+          throw new Error(ERROR_MESSAGE.noQuestionId(questionId))
+        }
+
+        const response = await ctx.photon.questions.delete({
           where: { id: questionId },
         })
+
+        ctx.pubsub.publish('QUESTION_DELETED', {
+          eventId: findQuestion?.event.id,
+          questionDeleted: response,
+        })
+
+        return response
       },
     })
     t.field('voteQuestion', {
@@ -256,6 +271,20 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
     },
     subscribe: withFilter(
       (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_UPDATED']),
+      (payload, args, context) => payload.eventId === args.eventId,
+    ),
+  },
+)
+export const questionDeletedSubscription = subscriptionField<'questionDeleted'>(
+  'questionDeleted',
+  {
+    type: 'Question',
+    args: { eventId: idArg({ required: true }) },
+    resolve: payload => {
+      return payload.questionDeleted
+    },
+    subscribe: withFilter(
+      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_DELETED']),
       (payload, args, context) => payload.eventId === args.eventId,
     ),
   },

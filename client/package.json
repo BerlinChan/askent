@@ -36,6 +36,7 @@
     "react-intl": "^3.11.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.0",
+    "subscriptions-transport-ws": "^0.9.16",
     "typescript": "~3.7.2",
     "yup": "^0.28.0"
   },

@@ -62,3 +62,15 @@ subscription QuestionAdded($eventId: ID!) {
     ...QuestionFields
   }
 }
+
+subscription QuestionUpdated($eventId: ID!) {
+  questionUpdated(eventId: $eventId) {
+    ...QuestionFields
+  }
+}
+
+subscription QuestionDeleted($eventId: ID!) {
+  questionDeleted(eventId: $eventId) {
+    ...QuestionFields
+  }
+}
