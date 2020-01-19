@@ -4,6 +4,12 @@ query PGP {
   }
 }
 
+mutation Persist($token: String!) {
+  persist(token: $token) @client {
+    token
+  }
+}
+
 # Use client-side schema
 mutation PackageInfo($version: String, $description: String) {
   packageInfo(version: $version, description: $description) @client {

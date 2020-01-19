@@ -10,8 +10,13 @@ import config from "../config";
 import { AUTH_TOKEN } from "../constant";
 
 // TODO: refactor to createChache, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
-// TODO: presist cache for token & user info/config, ref: https://www.apollographql.com/docs/react/caching/cache-interaction/#cache-persistence
+// Doc: https://www.apollographql.com/docs/react/caching/cache-interaction/#cache-persistence
 const cache = new InMemoryCache();
+cache.writeData({
+  data: {
+    token: localStorage.getItem(AUTH_TOKEN)
+  }
+});
 
 // TODO: apollo error handling, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
 const link = from([
