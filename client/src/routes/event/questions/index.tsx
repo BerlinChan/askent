@@ -174,7 +174,9 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     }
   };
   const handleDeleteAll = async () => {
-    await publishAllUnpublishedQuestionsMutation();
+    await deleteAllUnpublishedQuestionsMutation({
+      variables: { eventId: id as string }
+    });
     //TODO: update cache
     await updateEventMutation({
       variables: {
@@ -185,7 +187,9 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     setConfirmModeration(false);
   };
   const handlePublishAll = async () => {
-    await deleteAllUnpublishedQuestionsMutation();
+    await publishAllUnpublishedQuestionsMutation({
+      variables: { eventId: id as string }
+    });
     //TODO: update cache
     await updateEventMutation({
       variables: {
@@ -217,6 +221,8 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
             })}
           />
           <Confirm
+            disableBackdropClick
+            disableEscapeKeyDown
             contentText={formatMessage({
               id: "Publish_or_delete_all_unreview_questions?",
               defaultMessage: "Publish or delete all unreview questions?"

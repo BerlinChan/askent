@@ -230,7 +230,7 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { eventId }, ctx) => {
         const { count } = await ctx.photon.questions.deleteMany({
-          where: { event: { id: eventId } },
+          where: { event: { id: eventId }, published: false },
         })
 
         return count
@@ -244,7 +244,7 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { eventId }, ctx) => {
         const { count } = await ctx.photon.questions.updateMany({
-          where: { event: { id: eventId } },
+          where: { event: { id: eventId }, published: false },
           data: { published: true },
         })
 

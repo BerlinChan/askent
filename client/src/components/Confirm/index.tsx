@@ -1,6 +1,7 @@
 import React, { MouseEventHandler } from "react";
 import {
   Button,
+  DialogProps,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -21,7 +22,7 @@ interface Props {
   onOk: MouseEventHandler;
 }
 
-const Confirm: React.FC<Props> = ({
+const Confirm: React.FC<Props & DialogProps> = ({
   open,
   title,
   contentText,
@@ -29,10 +30,11 @@ const Confirm: React.FC<Props> = ({
   okText,
   onCancel,
   onOk,
-  loading = false
+  loading = false,
+  ...props
 }) => {
   return (
-    <Dialog open={open} onClose={onCancel}>
+    <Dialog open={open} onClose={onCancel} {...props}>
       {title && <DialogTitle>{title}</DialogTitle>}
       {contentText && (
         <DialogContent>
