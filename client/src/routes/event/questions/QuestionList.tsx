@@ -77,6 +77,7 @@ const QuestionList: React.FC<Props> = ({
   const handleDelete = async () => {
     await deleteQuestionMutation({
       variables: { questionId: deleteConfirm.id }
+      // TODO: update cache without refetch
     });
     refetch();
     handleCloseDelete();

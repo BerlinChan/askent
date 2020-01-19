@@ -222,6 +222,35 @@ export const questionMutation = extendType({
         return response
       },
     })
+    t.field('deleteAllUnpublishedQuestions', {
+      type: 'Int',
+      description: 'Delete all unpublished questions by event.',
+      args: {
+        eventId: idArg({ required: true }),
+      },
+      resolve: async (root, { eventId }, ctx) => {
+        const { count } = await ctx.photon.questions.deleteMany({
+          where: { event: { id: eventId } },
+        })
+
+        return count
+      },
+    })
+    t.field('publishAllUnpublishedQuestions', {
+      type: 'Int',
+      description: 'Delete all unpublished questions by event.',
+      args: {
+        eventId: idArg({ required: true }),
+      },
+      resolve: async (root, { eventId }, ctx) => {
+        const { count } = await ctx.photon.questions.updateMany({
+          where: { event: { id: eventId } },
+          data: { published: true },
+        })
+
+        return count
+      },
+    })
     t.field('voteQuestion', {
       type: 'Question',
       description: 'Vote for a question.',

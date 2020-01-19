@@ -25,6 +25,8 @@ import {
   useQuestionAddedSubscription,
   useQuestionUpdatedSubscription,
   useQuestionDeletedSubscription,
+  useDeleteAllUnpublishedQuestionsMutation,
+  usePublishAllUnpublishedQuestionsMutation,
   EventQuery,
   EventQueryVariables,
   QuestionsByEventQuery,
@@ -91,6 +93,12 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     variables: { eventId: id as string }
   });
   const [updateEventMutation] = useUpdateEventMutation();
+  const [
+    deleteAllUnpublishedQuestionsMutation
+  ] = useDeleteAllUnpublishedQuestionsMutation();
+  const [
+    publishAllUnpublishedQuestionsMutation
+  ] = usePublishAllUnpublishedQuestionsMutation();
   const [confirmModeration, setConfirmModeration] = React.useState(false);
 
   // subscriptions
@@ -156,19 +164,35 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const handleModerationChange = async () => {
     if (eventData?.event.moderation) {
       setConfirmModeration(true);
+    } else {
+      await updateEventMutation({
+        variables: {
+          eventId: id as string,
+          moderation: true
+        }
+      });
     }
+  };
+  const handleDeleteAll = async () => {
+    await publishAllUnpublishedQuestionsMutation();
+    //TODO: update cache
     await updateEventMutation({
       variables: {
         eventId: id as string,
-        moderation: !eventData?.event.moderation
+        moderation: false
       }
     });
-  };
-  const handleModerationCancel = () => {
     setConfirmModeration(false);
   };
-  const handleModerationOk = () => {
-    //TODO: publish all unreview questions
+  const handlePublishAll = async () => {
+    await deleteAllUnpublishedQuestionsMutation();
+    //TODO: update cache
+    await updateEventMutation({
+      variables: {
+        eventId: id as string,
+        moderation: false
+      }
+    });
     setConfirmModeration(false);
   };
 
@@ -194,12 +218,22 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           />
           <Confirm
             contentText={formatMessage({
-              id: "Publish_all_unreview_questions?",
-              defaultMessage: "Publish all unreview questions?"
+              id: "Publish_or_delete_all_unreview_questions?",
+              defaultMessage: "Publish or delete all unreview questions?"
             })}
             open={confirmModeration}
-            onCancel={handleModerationCancel}
-            onOk={handleModerationOk}
+            cancelText={
+              <Typography color="error" variant="subtitle1">
+                <FormattedMessage id="Delete" defaultMessage="Delete" />
+              </Typography>
+            }
+            okText={
+              <Typography variant="subtitle1">
+                <FormattedMessage id="Publish" defaultMessage="Publish" />
+              </Typography>
+            }
+            onCancel={handleDeleteAll}
+            onOk={handlePublishAll}
           />
         </Box>
         <Paper className={classes.gridItemPaper}>

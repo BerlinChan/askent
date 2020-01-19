@@ -37,6 +37,14 @@ mutation DeleteQuestion($questionId: ID!) {
   }
 }
 
+mutation DeleteAllUnpublishedQuestions($eventId: ID!) {
+  deleteAllUnpublishedQuestions(eventId: $eventId)
+}
+
+mutation PublishAllUnpublishedQuestions($eventId: ID!) {
+  publishAllUnpublishedQuestions(eventId: $eventId)
+}
+
 input UpdateQuestionInputType {
   questionId: ID!
   content: String

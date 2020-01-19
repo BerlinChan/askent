@@ -57,8 +57,11 @@ export const permissions = shield({
     createEvent: rules.isAuthenticatedUser,
     updateEvent: rules.isEventAuthor,
     deleteEvent: rules.isEventAuthor,
+
     createQuestion: rules.isAuthenticatedUser,
     deleteQuestion: or(rules.isQuestionAuthor, rules.isQuestionEventOwner),
+    deleteAllUnpublishedQuestions: rules.isEventAuthor,
+    publishAllUnpublishedQuestions: rules.isEventAuthor,
   },
   UpdateQuestionInputType: {
     content: or(rules.isQuestionAuthor, rules.isQuestionEventOwner),
