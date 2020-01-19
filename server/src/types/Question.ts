@@ -13,7 +13,6 @@ import {
   User,
   QuestionCreateInput,
 } from '@prisma/photon'
-import { Context } from '../context'
 import { getUserId } from '../utils'
 import { withFilter } from 'apollo-server-express'
 
@@ -59,14 +58,6 @@ export const UpdateQuestionInputType = inputObjectType({
 export const questionQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.field('latestQuestion', {
-      type: 'Question',
-      resolve: async (root, args, ctx) => {
-        const latest = await ctx.photon.questions.findMany({ first: 1 })
-
-        return latest[0]
-      },
-    })
     t.list.field('questionsByMe', {
       type: 'Question',
       args: {
@@ -162,7 +153,13 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { input }, ctx) => {
         const { content, questionId, published, archived, star, top } = input
-        await checkQuestionExist(ctx, questionId)
+        const findQuestion = await ctx.photon.questions.findOne({
+          where: { id: questionId },
+          include: { event: true },
+        })
+        if (!findQuestion) {
+          ERROR_MESSAGE.noQuestionId(questionId)
+        }
 
         // can only top one question at a time
         let topQuestion: Array<QuestionType> = []
@@ -184,13 +181,18 @@ export const questionMutation = extendType({
             ? { top: false, star: false, archived: false }
             : {},
         )
-
         const currentTopQuestion = await ctx.photon.questions.update({
           where: { id: questionId },
           data: question,
         })
 
-        return [currentTopQuestion].concat(topQuestion)
+        const response = [currentTopQuestion].concat(topQuestion)
+        ctx.pubsub.publish('QUESTION_UPDATED', {
+          eventId: findQuestion?.event.id,
+          questionUpdated: response,
+        })
+
+        return response
       },
     })
     t.field('deleteQuestion', {
@@ -200,8 +202,6 @@ export const questionMutation = extendType({
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
-        await checkQuestionExist(ctx, questionId as string)
-
         return ctx.photon.questions.delete({
           where: { id: questionId },
         })
@@ -214,8 +214,6 @@ export const questionMutation = extendType({
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, context) => {
-        await checkQuestionExist(context, questionId as string)
-
         const userId = getUserId(context)
         const votedUsers: User[] = await context.photon.questions
           .findOne({ where: { id: questionId } })
@@ -233,7 +231,7 @@ export const questionMutation = extendType({
   },
 })
 
-export const questionSubscription = subscriptionField<'questionAdded'>(
+export const questionAddedSubscription = subscriptionField<'questionAdded'>(
   'questionAdded',
   {
     type: 'Question',
@@ -247,16 +245,22 @@ export const questionSubscription = subscriptionField<'questionAdded'>(
     ),
   },
 )
+export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
+  'questionUpdated',
+  {
+    type: 'Question',
+    list: true,
+    args: { eventId: idArg({ required: true }) },
+    resolve: payload => {
+      return payload.questionUpdated
+    },
+    subscribe: withFilter(
+      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_UPDATED']),
+      (payload, args, context) => payload.eventId === args.eventId,
+    ),
+  },
+)
 
-async function checkQuestionExist(
-  context: Context,
-  questionId: QuestionType['id'],
-): Promise<boolean> {
-  const findQuestion = await context.photon.questions.findOne({
-    where: { id: questionId },
-  })
-  if (!findQuestion) {
-    throw new Error(`No question for id: ${questionId}`)
-  }
-  return true
+const ERROR_MESSAGE = {
+  noQuestionId: (questionId: string) => `No question for id: ${questionId}`,
 }
