@@ -15,7 +15,8 @@ import {
   QuestionsByEventQueryVariables,
   EventQuery,
   EventQueryVariables,
-  useDeleteQuestionMutation
+  useDeleteQuestionMutation,
+  QuestionsByEventDocument
 } from "../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../components/Confirm";
@@ -46,7 +47,7 @@ const QuestionList: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const { data, refetch } = questionsByEventQuery;
+  const { data } = questionsByEventQuery;
   const [moreMenu, setMoreMenu] = React.useState<{
     anchorEl: null | HTMLElement;
     id: string;
@@ -76,10 +77,28 @@ const QuestionList: React.FC<Props> = ({
   };
   const handleDelete = async () => {
     await deleteQuestionMutation({
-      variables: { questionId: deleteConfirm.id }
-      // TODO: update cache without refetch
+      variables: { questionId: deleteConfirm.id },
+      update: (cache, mutationResult) => {
+        const questions = cache.readQuery<
+          QuestionsByEventQuery,
+          QuestionsByEventQueryVariables
+        >({
+          query: QuestionsByEventDocument,
+          variables: { eventId: eventQuery.data?.event.id as string }
+        });
+        cache.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>(
+          {
+            query: QuestionsByEventDocument,
+            variables: { eventId: eventQuery.data?.event.id as string },
+            data: {
+              questionsByEvent: (questions?.questionsByEvent || []).filter(
+                item => item.id !== mutationResult.data?.deleteQuestion.id
+              )
+            }
+          }
+        );
+      }
     });
-    refetch();
     handleCloseDelete();
   };
 

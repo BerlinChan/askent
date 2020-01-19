@@ -101,6 +101,18 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   ] = usePublishAllUnpublishedQuestionsMutation();
   const [confirmModeration, setConfirmModeration] = React.useState(false);
 
+  // questionsByEventQuery.subscribeToMore({
+  //   document: QuestionAddedDocument,
+  //   variables: { eventId: id as string },
+  //   updateQuery: (prev, { subscriptionData }) => {
+  //     return Object.assign({}, prev, {
+  //       questionsByEvent: (subscriptionData.data?.questionAdded
+  //         ? [subscriptionData.data?.questionAdded]
+  //         : []
+  //       ).concat(prev.questionsByEvent)
+  //     });
+  //   }
+  // });
   // subscriptions
   const questionAddedSubscription = useQuestionAddedSubscription({
     variables: { eventId: id as string },
@@ -147,10 +159,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         query: QuestionsByEventDocument,
         variables: { eventId: id as string },
         data: {
-          questionsByEvent: (questions?.questionsByEvent
-            ? questions?.questionsByEvent
-            : []
-          ).filter(
+          questionsByEvent: (questions?.questionsByEvent || []).filter(
             item => item.id !== subscriptionData.data?.questionDeleted.id
           )
         }
@@ -175,9 +184,28 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   };
   const handleDeleteAll = async () => {
     await deleteAllUnpublishedQuestionsMutation({
-      variables: { eventId: id as string }
+      variables: { eventId: id as string },
+      update: (cache, mutationResult) => {
+        const questions = cache.readQuery<
+          QuestionsByEventQuery,
+          QuestionsByEventQueryVariables
+        >({
+          query: QuestionsByEventDocument,
+          variables: { eventId: id as string }
+        });
+        cache.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>(
+          {
+            query: QuestionsByEventDocument,
+            variables: { eventId: id as string },
+            data: {
+              questionsByEvent: (questions?.questionsByEvent || []).filter(
+                item => item.published
+              )
+            }
+          }
+        );
+      }
     });
-    //TODO: update cache
     await updateEventMutation({
       variables: {
         eventId: id as string,
@@ -188,9 +216,28 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   };
   const handlePublishAll = async () => {
     await publishAllUnpublishedQuestionsMutation({
-      variables: { eventId: id as string }
+      variables: { eventId: id as string },
+      update: (cache, mutationResult) => {
+        const questions = cache.readQuery<
+          QuestionsByEventQuery,
+          QuestionsByEventQueryVariables
+        >({
+          query: QuestionsByEventDocument,
+          variables: { eventId: id as string }
+        });
+        cache.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>(
+          {
+            query: QuestionsByEventDocument,
+            variables: { eventId: id as string },
+            data: {
+              questionsByEvent: (
+                questions?.questionsByEvent || []
+              ).map(item => ({ ...item, published: true }))
+            }
+          }
+        );
+      }
     });
-    //TODO: update cache
     await updateEventMutation({
       variables: {
         eventId: id as string,
