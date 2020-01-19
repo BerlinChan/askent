@@ -6,16 +6,11 @@ import {
   Box,
   Typography,
   FormControlLabel,
-  Switch,
-  Tabs,
-  Tab
-} from "@material-ui/core";
+  Switch} from "@material-ui/core";
 import {
   createStyles,
   makeStyles,
-  Theme,
-  withStyles
-} from "@material-ui/core/styles";
+  Theme} from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
 import TabPanel from "../../../components/TabPanel";
 import SearchIcon from "@material-ui/icons/Search";
@@ -36,6 +31,7 @@ import {
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
 import Confirm from "../../../components/Confirm";
+import { SubTabs, SubTab } from "../../../components/SubTabs"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -66,18 +62,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
-
-const QuestionTabs = withStyles({
-  root: {
-    minHeight: 38
-  }
-})(Tabs);
-const QuestionTab = withStyles({
-  root: {
-    minHeight: 38,
-    minWidth: 120
-  }
-})(Tab);
 
 interface Props {
   eventQuery: QueryResult<EventQuery, EventQueryVariables>;
@@ -310,20 +294,20 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       </Grid>
       <Grid item sm={6} className={classes.gridItem}>
         <Box className={classes.reviewActions}>
-          <QuestionTabs value={tabIndex} onChange={handleTabsChange}>
-            <QuestionTab
+          <SubTabs value={tabIndex} onChange={handleTabsChange}>
+            <SubTab
               label={formatMessage({
                 id: "Live",
                 defaultMessage: "Live"
               })}
             />
-            <QuestionTab
+            <SubTab
               label={formatMessage({
                 id: "Archive",
                 defaultMessage: "Archive"
               })}
             />
-          </QuestionTabs>
+          </SubTabs>
           <Box>
             <SearchIcon color="inherit" fontSize="small" />
           </Box>
