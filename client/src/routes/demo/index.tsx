@@ -1,8 +1,8 @@
 import React from "react";
 import { Button } from "@material-ui/core";
 import {
-  useCheckEventCodeExistQuery,
   usePackageInfoMutation,
+  useCheckEventCodeExistQuery
 } from "../../generated/graphqlHooks";
 
 const Demo: React.FC = props => {

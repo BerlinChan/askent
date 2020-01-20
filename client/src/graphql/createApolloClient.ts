@@ -8,6 +8,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { resolvers, typeDefs } from "./resolvers";
 import config from "../config";
 import { AUTH_TOKEN } from "../constant";
+import gql from "graphql-tag";
 
 // TODO: refactor to createChache, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
 // Doc: https://www.apollographql.com/docs/react/caching/cache-interaction/#cache-persistence
@@ -17,6 +18,13 @@ cache.writeData({
     token: localStorage.getItem(AUTH_TOKEN)
   }
 });
+
+// console.log(
+//   3,
+//   cache.readQuery<GetCachePersistQuery, GetCachePersistQueryVariables>({
+//     query: GetCachePersistDocument
+//   }) as GetCachePersistQuery
+// );
 
 // TODO: apollo error handling, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
 const link = from([

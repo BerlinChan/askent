@@ -45,15 +45,6 @@ mutation PublishAllUnpublishedQuestions($eventId: ID!) {
   publishAllUnpublishedQuestions(eventId: $eventId)
 }
 
-input UpdateQuestionInputType {
-  questionId: ID!
-  content: String
-  published: Boolean
-  archived: Boolean
-  star: Boolean
-  top: Boolean
-}
-
 mutation UpdateQuestion($input: UpdateQuestionInputType!) {
   updateQuestion(input: $input) {
     id
