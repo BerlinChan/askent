@@ -7,12 +7,3 @@ mutation Login($email: String!, $password: String!) {
     }
   }
 }
-
-# Use client-side schema
-query GetToken {
-  token @client
-}
-
-mutation Token($newToken: String!) {
-  token(newToken: $newToken) @client
-}
