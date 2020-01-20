@@ -22,9 +22,16 @@ const authMiddleware = setContext((operation, { headers }) => {
     }
   };
 });
-
+const wsLink = new WebSocketLink({
+  uri: config.webSocketUri,
+  options: {
+    reconnect: true
+  }
+});
+const httpLink = new HttpLink({
+  uri: config.apiUri
+});
 const link = from([
-  authMiddleware,
   // TODO: apollo error handling, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
   onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors)
@@ -35,6 +42,7 @@ const link = from([
       );
     if (networkError) console.warn(`[Network error]: ${networkError}`);
   }),
+  authMiddleware,
   // using the ability to split links, you can send data to each link
   // depending on what kind of operation is being sent
   split(
@@ -46,15 +54,8 @@ const link = from([
         definition.operation === "subscription"
       );
     },
-    new WebSocketLink({
-      uri: config.webSocketUri,
-      options: {
-        reconnect: true
-      }
-    }),
-    new HttpLink({
-      uri: config.apiUri
-    })
+    wsLink,
+    httpLink
   )
 ]);
 
