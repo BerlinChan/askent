@@ -28,7 +28,7 @@
     "apollo-link-http": "1.5.16",
     "apollo-link-ws": "1.0.19",
     "date-fns": "2.9.0",
-    "formik": "2.1.1",
+    "formik": "2.1.2",
     "graphql-tag": "2.10.1",
     "notistack": "0.9.7",
     "react": "16.12.0",
