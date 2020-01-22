@@ -35,7 +35,7 @@
     "@types/node": "12.12.22",
     "@types/node-fetch": "2.5.4",
     "create-nexus-type": "1.1.2",
-    "prisma2": "2.0.0-preview019",
+    "prisma2": "2.0.0-preview020.1",
     "ts-node": "8.5.4",
     "ts-node-dev": "1.0.0-pre.44",
     "typescript": "3.7.4"
