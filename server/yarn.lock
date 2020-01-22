@@ -893,10 +893,10 @@ cors@2.8.5, cors@^2.8.4:
     object-assign "^4"
     vary "^1"
 
-create-nexus-type@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/create-nexus-type/-/create-nexus-type-1.1.2.tgz#3d97c9e1ec36e729fe8af57dbe2e906821e2abfe"
-  integrity sha512-/GSmkci5Xxd7MGf5uytVvg/SWshWmZv0x+VHPNGWFSkKNLlNcGj1xnyVBDA0X6q1QwfCKNRfk6vm7yH/kWAhZw==
+create-nexus-type@1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/create-nexus-type/-/create-nexus-type-1.1.4.tgz#6149f77733cb05c93fcc1b5dbd22b5376a065b7a"
+  integrity sha512-dsZGZWskJwt56KKk0dliSNvap3BqIAzl84sKr3qcujY/svRKkD6oBSMFyk4yz6EygRrxmw2SKHjX/+7RMTwfiw==
   dependencies:
     arg "^4.1.2"
     pluralize "^8.0.0"
