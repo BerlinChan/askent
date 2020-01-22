@@ -32,7 +32,7 @@
     "@types/bcryptjs": "2.4.2",
     "@types/express-jwt": "0.0.42",
     "@types/jsonwebtoken": "8.3.5",
-    "@types/node": "12.12.22",
+    "@types/node": "12.12.25",
     "@types/node-fetch": "2.5.4",
     "create-nexus-type": "1.1.2",
     "prisma2": "2.0.0-preview019",
