@@ -66,25 +66,23 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@prisma/engine-core@2.0.87":
-  version "2.0.87"
-  resolved "https://registry.yarnpkg.com/@prisma/engine-core/-/engine-core-2.0.87.tgz#abd70055e85515830abb364eacdfd2434ba2aa89"
-  integrity sha512-Ko9MGH3nPn2LJNcrEDPJPS9re6TdQBraQTeU2Cma89yoewXyUSs8e0MnVmEy0wZVOlMxDhiHSC88TkL5e1CTcw==
+"@prisma/engine-core@2.0.41":
+  version "2.0.41"
+  resolved "https://registry.yarnpkg.com/@prisma/engine-core/-/engine-core-2.0.41.tgz#23c8e388352c0712df70ccc78b65012468be1c56"
+  integrity sha512-jJ7+OGmNHVLVlpCOuF2I/XJoUVrBMk62GFl02nsbgl1bJyhL3squSLemahGlpAfDF5vnUaZZl2NwPBxIUAKTJg==
   dependencies:
     "@prisma/generator-helper" "0.0.29"
     "@prisma/get-platform" "0.1.23"
-    agentkeepalive "^4.1.0"
-    camelcase "^5.3.1"
     chalk "^3.0.0"
     cross-fetch "^3.0.4"
     debug "^4.1.1"
     got "9.6.0"
     indent-string "^4.0.0"
 
-"@prisma/fetch-engine@0.3.52":
-  version "0.3.52"
-  resolved "https://registry.yarnpkg.com/@prisma/fetch-engine/-/fetch-engine-0.3.52.tgz#8a43177942d1ce856269615f7a8db1fe41f72097"
-  integrity sha512-zQgSdOQ+rTn0UjBS0G6fTVJa5Hrv2+bdDwPMKaklB4mUevlOL5uTntIefU3BVuhp9txvARyFJFoz4ttwo6Wh4g==
+"@prisma/fetch-engine@0.3.34":
+  version "0.3.34"
+  resolved "https://registry.yarnpkg.com/@prisma/fetch-engine/-/fetch-engine-0.3.34.tgz#455e288f99514295923b821dbc1f86708ff201c3"
+  integrity sha512-V7g0r2g+uniMFytkeTZWTpzIiBRUA9NwD+jpXmUhVxsrXoAxBZllWnBUC0+9pF61L4dcRvo8JJ4dncy7DHI8uA==
   dependencies:
     "@prisma/get-platform" "0.1.23"
     chalk "^3.0.0"
@@ -95,10 +93,8 @@
     https-proxy-agent "^3.0.1"
     make-dir "^3.0.0"
     node-fetch "^2.6.0"
-    p-map "^3.0.0"
     p-retry "^4.2.0"
     progress "^2.0.3"
-    rimraf "^3.0.0"
 
 "@prisma/generator-helper@0.0.29":
   version "0.0.29"
@@ -123,14 +119,14 @@
   resolved "https://registry.npm.taobao.org/@prisma/photon/download/@prisma/photon-2.0.0-preview019.tgz#cd083628f668fbdc4ab8f7d15cd8a33b83a997a3"
   integrity sha1-zQg2KPZo+9xKuPfRXNijO4Opl6M=
 
-"@prisma/sdk@0.0.160":
-  version "0.0.160"
-  resolved "https://registry.yarnpkg.com/@prisma/sdk/-/sdk-0.0.160.tgz#43e1d579b0e2deddb6dbae8a627f30aa783531e2"
-  integrity sha512-NHOpHikatEOSdiGIH7oEDpFMO0bVKhTKjrPA/WDe1Hs+G7Hv699V2vGvJr5z6Bczboa2AtgnbmNPbIpwLWWEfw==
+"@prisma/sdk@0.0.162":
+  version "0.0.162"
+  resolved "https://registry.yarnpkg.com/@prisma/sdk/-/sdk-0.0.162.tgz#09204c43f676ce389d7844889f692c0185b9a419"
+  integrity sha512-qSznTrVEjn5ALsbNeLsXbDn+QeS1pd+SidSoBwyGmP0sm9lffiDlTa5hjxIHYD2KmkGOAwNMIh1turTRWzovIQ==
   dependencies:
     "@apexearth/copy" "^1.4.4"
-    "@prisma/engine-core" "2.0.87"
-    "@prisma/fetch-engine" "0.3.52"
+    "@prisma/engine-core" "2.0.41"
+    "@prisma/fetch-engine" "0.3.34"
     "@prisma/generator-helper" "0.0.29"
     "@prisma/get-platform" "0.1.23"
     chalk "^3.0.0"
@@ -452,15 +448,6 @@ agent-base@4, agent-base@^4.3.0:
   integrity sha1-gWXwHENgCbzK0LHRIvBe13Dvxu4=
   dependencies:
     es6-promisify "^5.0.0"
-
-agentkeepalive@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/agentkeepalive/-/agentkeepalive-4.1.0.tgz#a48e040ed16745dd29ce923675f60c9c90f39ee0"
-  integrity sha512-CW/n1wxF8RpEuuiq6Vbn9S8m0VSYDMnZESqaJ6F2cWN9fY8rei2qaxweIaRgq+ek8TqfoFIsUjaGNKGGEHElSg==
-  dependencies:
-    debug "^4.1.0"
-    depd "^1.1.2"
-    humanize-ms "^1.2.1"
 
 aggregate-error@^3.0.0:
   version "3.0.1"
@@ -949,7 +936,7 @@ debug@3.1.0:
   dependencies:
     ms "2.0.0"
 
-debug@4.1.1, debug@^4.1.0, debug@^4.1.1:
+debug@4.1.1, debug@^4.1.1:
   version "4.1.1"
   resolved "https://registry.npm.taobao.org/debug/download/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
   integrity sha1-O3ImAlUQnGtYnO4FDx1RYTlmR5E=
@@ -987,7 +974,7 @@ define-properties@^1.1.2, define-properties@^1.1.3:
   dependencies:
     object-keys "^1.0.12"
 
-depd@^1.1.2, depd@~1.1.2:
+depd@~1.1.2:
   version "1.1.2"
   resolved "https://registry.npm.taobao.org/depd/download/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
   integrity sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak=
@@ -1520,13 +1507,6 @@ human-signals@^1.1.1:
   resolved "https://registry.npm.taobao.org/human-signals/download/human-signals-1.1.1.tgz#c5b1cd14f50aeae09ab6c59fe63ba3395fe4dfa3"
   integrity sha1-xbHNFPUK6uCatsWf5jujOV/k36M=
 
-humanize-ms@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/humanize-ms/-/humanize-ms-1.2.1.tgz#c46e3159a293f6b896da29316d8b6fe8bb79bbed"
-  integrity sha1-xG4xWaKT9riW2ikxbYtv6Lt5u+0=
-  dependencies:
-    ms "^2.0.0"
-
 iconv-lite@0.4.24:
   version "0.4.24"
   resolved "https://registry.npm.taobao.org/iconv-lite/download/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -1936,7 +1916,7 @@ ms@2.1.1:
   resolved "https://registry.npm.taobao.org/ms/download/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha1-MKWGTrPrsKZvLr5tcnrwagnYbgo=
 
-ms@^2.0.0, ms@^2.1.1:
+ms@^2.1.1:
   version "2.1.2"
   resolved "https://registry.npm.taobao.org/ms/download/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha1-0J0fNXtEP0kzgqjrPM0YOHKuYAk=
