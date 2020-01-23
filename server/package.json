@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@prisma/photon": "2.0.0-preview019",
-    "apollo-server-express": "2.9.15",
+    "apollo-server-express": "2.9.16",
     "bcryptjs": "2.4.3",
     "cors": "2.8.5",
     "dotenv": "8.2.0",
