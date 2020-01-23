@@ -2225,10 +2225,10 @@ prettysize@^2.0.0:
   resolved "https://registry.npm.taobao.org/prettysize/download/prettysize-2.0.0.tgz#902c02480d865d9cc0813011c9feb4fa02ce6996"
   integrity sha1-kCwCSA2GXZzAgTARyf60+gLOaZY=
 
-prisma2@2.0.0-preview019:
-  version "2.0.0-preview019"
-  resolved "https://registry.npm.taobao.org/prisma2/download/prisma2-2.0.0-preview019.tgz#d0d2bafad041071fa59400eb04e41b21de68aac6"
-  integrity sha1-0NK6+tBBBx+llADrBOQbId5oqsY=
+prisma2@2.0.0-preview020.1:
+  version "2.0.0-preview020.1"
+  resolved "https://registry.yarnpkg.com/prisma2/-/prisma2-2.0.0-preview020.1.tgz#7bc091b1f572f803127a973bccab2bbced8efbb1"
+  integrity sha512-CBcKtRkZ6BI4Ll47EQr5LlpYltXYn3AGgxC5fQ+Wgj5eoKJvtG16qxq+dbWvnQFJqTu99IzzEL0VyBqqDrtQvg==
 
 progress@^2.0.3:
   version "2.0.3"
