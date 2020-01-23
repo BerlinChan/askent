@@ -21,6 +21,7 @@ import {
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../components/Confirm";
 import QuestionItem from "./QuestionItem";
+import EditIcon from "@material-ui/icons/Edit";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -101,6 +102,8 @@ const QuestionList: React.FC<Props> = ({
     });
     handleCloseDelete();
   };
+  const [editContent, setEditContent] = React.useState("");
+  const handleEditContent = async () => {};
 
   return (
     <React.Fragment>
@@ -140,6 +143,17 @@ const QuestionList: React.FC<Props> = ({
             primary={formatMessage({
               id: "Delete",
               defaultMessage: "Delete"
+            })}
+          />
+        </MenuItem>
+        <MenuItem onClick={() => setEditContent(moreMenu.id)}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary={formatMessage({
+              id: "Edit",
+              defaultMessage: "Edit"
             })}
           />
         </MenuItem>
