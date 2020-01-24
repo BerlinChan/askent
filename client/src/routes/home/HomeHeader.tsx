@@ -24,9 +24,6 @@ export default function HomeHeader() {
             Askent
           </Link>
           <Box className={classes.actions}>
-            <Link color="inherit" component={RouterLink} to="/admin">
-              Admin
-            </Link>
             <Link color="inherit" component={RouterLink} to="/login">
               Log In
             </Link>

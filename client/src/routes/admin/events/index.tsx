@@ -10,15 +10,21 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     actionBox: {
       display: "flex",
-      justifyContent: "flex-end",
+      justifyContent: "flex-end"
     }
   })
 );
 
-const Events: React.FC = () => {
+interface Props {
+  searchString: string;
+}
+
+const Events: React.FC<Props> = ({ searchString }) => {
   const classes = useStyles();
   const [openCreate, setOpenCreate] = React.useState(false);
-  const eventsQueryResult = useEventsQuery();
+  const eventsQueryResult = useEventsQuery({
+    variables: { searchString }
+  });
   const { refetch: eventsRefetch } = eventsQueryResult;
 
   const handleClickOpen = () => {
