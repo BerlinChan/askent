@@ -23,6 +23,7 @@ import {
   useCreateEventMutation
 } from "../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
+import { EVENT_CODE_MAX_LENGTH } from "../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -70,7 +71,7 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
                 .max(20)
                 .required(),
               code: Yup.string()
-                .max(20)
+                .max(EVENT_CODE_MAX_LENGTH)
                 .required(),
               startAt: Yup.date(),
               endAt: Yup.date()
