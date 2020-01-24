@@ -1,5 +1,4 @@
 import React from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
 import {
   createStyles,
   makeStyles,
@@ -9,26 +8,17 @@ import {
 import {
   Container,
   Box,
-  Link,
   AppBar,
   Toolbar,
   Paper,
-  IconButton,
-  Avatar,
-  Typography,
   TextField,
-  InputAdornment,
-  Menu,
-  MenuItem,
-  ListItemIcon
+  InputAdornment
 } from "@material-ui/core";
 import { useRouteMatch } from "react-router-dom";
 import { RouteTabs } from "../../components/Tabs";
-import { useMeQuery } from "../../generated/graphqlHooks";
 import SearchIcon from "@material-ui/icons/Search";
-import { useIntl, FormattedMessage } from "react-intl";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import { AUTH_TOKEN } from "../../constant";
+import { useIntl } from "react-intl";
+import { Logo, AuthedAction } from "../../components/Header";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,14 +51,6 @@ const useStyles = makeStyles((theme: Theme) =>
           width: 200
         }
       }
-    },
-    userInfo: {},
-    email: {
-      fontSize: theme.typography.pxToRem(14),
-      fontWeight: theme.typography.fontWeightBold
-    },
-    name: {
-      fontSize: theme.typography.pxToRem(14)
     }
   })
 );
@@ -82,27 +64,12 @@ const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   let { url } = useRouteMatch();
-  const history = useHistory();
-  const { data: userData } = useMeQuery();
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
-    null
-  );
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setMenuAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setMenuAnchorEl(null);
-  };
 
   return (
     <AppBar position="static" elevation={2}>
       <Container maxWidth="lg">
         <Toolbar className={classes.toolbar}>
-          <Link color="inherit" component={RouterLink} to="/" variant="h6">
-            Askent
-          </Link>
+          <Logo />
           <Box className={classes.actions}>
             <TextField
               className={classes.searchInput}
@@ -125,45 +92,8 @@ const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
               value={searchString}
               onChange={e => setSearchString(e.target.value)}
             />
-            <Box className={classes.userInfo}>
-              <Typography className={classes.email}>
-                {userData?.me.email}
-              </Typography>
-              <Typography className={classes.name}>
-                {userData?.me.name}
-              </Typography>
-            </Box>
 
-            <IconButton size="small" onClick={handleMenuOpen}>
-              <Avatar>H</Avatar>
-            </IconButton>
-            <Menu
-              keepMounted
-              anchorEl={menuAnchorEl}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right"
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right"
-              }}
-              open={Boolean(menuAnchorEl)}
-              onClose={handleMenuClose}
-            >
-              <MenuItem
-                onClick={() => {
-                  localStorage.removeItem(AUTH_TOKEN);
-                  history.replace("/");
-                  handleMenuClose();
-                }}
-              >
-                <ListItemIcon>
-                  <ExitToAppIcon fontSize="small" />
-                </ListItemIcon>
-                <FormattedMessage id="Logout" defaultMessage="Logout" />
-              </MenuItem>
-            </Menu>
+            <AuthedAction />
           </Box>
         </Toolbar>
       </Container>
