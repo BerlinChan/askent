@@ -38,6 +38,7 @@ import QuestionToggleButton, {
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { FTextField, ButtonLoading } from "../../../components/Form";
+import { QUESTION_CONTENT_MAX_LENGTH } from "../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -107,7 +108,10 @@ const QuestionListItem: React.FC<Props> = ({
   const classes = useStyles();
   const { data: eventData } = eventQuery;
   const { formatMessage } = useIntl();
-  const [updateQuestionMutation] = useUpdateQuestionMutation();
+  const [
+    updateQuestionMutation,
+    { loading: updateQuestionLoading }
+  ] = useUpdateQuestionMutation();
 
   const handleArchiveClick: handleToggleInterface = async (e, id, archived) => {
     await updateQuestionMutation({
@@ -185,43 +189,63 @@ const QuestionListItem: React.FC<Props> = ({
           initialValues={{ content: question.content }}
           validationSchema={Yup.object({
             content: Yup.string()
-              .max(300)
+              .max(QUESTION_CONTENT_MAX_LENGTH)
               .required()
           })}
           onSubmit={async values => {
-            console.log(values);
+            await updateQuestionMutation({
+              variables: {
+                input: { questionId: question.id, content: values.content }
+              }
+            });
+            handleEditContentToggle(question.id);
           }}
         >
-          <Form className={classes.editContentForm}>
-            <FTextField
-              inputRef={editContentInputRef}
-              fullWidth
-              id="content"
-              name="content"
-              margin="normal"
-              size="small"
-            />
-            <Box className={classes.editContentAction}>
-              <Typography>300</Typography>
-              <Box className={classes.editContentFormButtons}>
-                <Button
-                  size="small"
-                  onClick={() => handleEditContentToggle(question.id)}
+          {formProps => (
+            <Form className={classes.editContentForm}>
+              <FTextField
+                inputRef={editContentInputRef}
+                fullWidth
+                id="content"
+                name="content"
+                margin="normal"
+                size="small"
+                disabled={updateQuestionLoading}
+              />
+              <Box className={classes.editContentAction}>
+                <Typography
+                  variant="body2"
+                  color={
+                    QUESTION_CONTENT_MAX_LENGTH -
+                      formProps.values.content.length <
+                    0
+                      ? "error"
+                      : "textSecondary"
+                  }
                 >
-                  <FormattedMessage id="Cancel" defaultMessage="Cancel" />
-                </Button>
-                <ButtonLoading
-                  size="small"
-                  type="submit"
-                  color="primary"
-                  loading={false}
-                  disabled={false}
-                >
-                  <FormattedMessage id="Save" defaultMessage="Save" />
-                </ButtonLoading>
+                  {QUESTION_CONTENT_MAX_LENGTH -
+                    formProps.values.content.length}
+                </Typography>
+                <Box className={classes.editContentFormButtons}>
+                  <Button
+                    size="small"
+                    onClick={() => handleEditContentToggle(question.id)}
+                  >
+                    <FormattedMessage id="Cancel" defaultMessage="Cancel" />
+                  </Button>
+                  <ButtonLoading
+                    size="small"
+                    type="submit"
+                    color="primary"
+                    loading={updateQuestionLoading}
+                    disabled={updateQuestionLoading}
+                  >
+                    <FormattedMessage id="Save" defaultMessage="Save" />
+                  </ButtonLoading>
+                </Box>
               </Box>
-            </Box>
-          </Form>
+            </Form>
+          )}
         </Formik>
       ) : (
         <React.Fragment>
