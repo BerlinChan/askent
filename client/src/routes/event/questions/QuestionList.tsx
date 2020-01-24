@@ -58,6 +58,7 @@ const QuestionList: React.FC<Props> = ({
     id: ""
   });
   const [deleteQuestionMutation] = useDeleteQuestionMutation();
+  const editContentInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -102,8 +103,17 @@ const QuestionList: React.FC<Props> = ({
     });
     handleCloseDelete();
   };
-  const [editContent, setEditContent] = React.useState("");
-  const handleEditContent = async () => {};
+  const [editContentIds, setEditContentIds] = React.useState<Array<string>>([]);
+  const handleEditContentToggle = (id: string) => {
+    const findId = editContentIds.find(item => item === id);
+    setEditContentIds(
+      findId
+        ? editContentIds.filter(item => item !== id)
+        : editContentIds.concat([id])
+    );
+    handleMoreClose();
+    setTimeout(() => editContentInputRef.current?.focus(), 100);
+  };
 
   return (
     <React.Fragment>
@@ -117,6 +127,9 @@ const QuestionList: React.FC<Props> = ({
               question={item}
               eventQuery={eventQuery}
               handleMoreClick={handleMoreClick}
+              editContent={editContentIds.includes(item.id)}
+              handleEditContentToggle={handleEditContentToggle}
+              editContentInputRef={editContentInputRef}
             />
           ))}
       </List>
@@ -135,6 +148,17 @@ const QuestionList: React.FC<Props> = ({
         open={Boolean(moreMenu.anchorEl)}
         onClose={handleMoreClose}
       >
+        <MenuItem onClick={() => handleEditContentToggle(moreMenu.id)}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary={formatMessage({
+              id: "Edit",
+              defaultMessage: "Edit"
+            })}
+          />
+        </MenuItem>
         <MenuItem onClick={() => handleOpenDelete(moreMenu.id)}>
           <ListItemIcon>
             <DeleteForeverIcon fontSize="small" />
@@ -143,17 +167,6 @@ const QuestionList: React.FC<Props> = ({
             primary={formatMessage({
               id: "Delete",
               defaultMessage: "Delete"
-            })}
-          />
-        </MenuItem>
-        <MenuItem onClick={() => setEditContent(moreMenu.id)}>
-          <ListItemIcon>
-            <EditIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatMessage({
-              id: "Edit",
-              defaultMessage: "Edit"
             })}
           />
         </MenuItem>

@@ -6,7 +6,8 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  IconButton
+  IconButton,
+  Button
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
@@ -34,6 +35,9 @@ import TopIcon from "@material-ui/icons/Publish";
 import QuestionToggleButton, {
   handleToggleInterface
 } from "./QuestionToggleButton";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+import { FTextField, ButtonLoading } from "../../../components/Form";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,6 +62,9 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1)
     },
     questionContent: { width: "100%" },
+    editContentForm: { width: "100%" },
+    editContentAction: { display: "flex", justifyContent: "space-between" },
+    editContentFormButtons: { "& > *": { display: "inline-block" } },
     questionActionBox: {
       position: "absolute",
       top: 0,
@@ -84,12 +91,18 @@ interface Props {
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
   ) => void;
+  editContent: boolean;
+  handleEditContentToggle: (id: string) => void;
+  editContentInputRef: React.RefObject<HTMLInputElement>;
 }
 
 const QuestionListItem: React.FC<Props> = ({
   question,
   handleMoreClick,
-  eventQuery
+  eventQuery,
+  editContent,
+  handleEditContentToggle,
+  editContentInputRef
 }) => {
   const classes = useStyles();
   const { data: eventData } = eventQuery;
@@ -167,76 +180,132 @@ const QuestionListItem: React.FC<Props> = ({
           </React.Fragment>
         }
       />
-      <Typography className={classes.questionContent} variant="body1">
-        {question.content}
-      </Typography>
+      {editContent ? (
+        <Formik
+          initialValues={{ content: question.content }}
+          validationSchema={Yup.object({
+            content: Yup.string()
+              .max(300)
+              .required()
+          })}
+          onSubmit={async values => {
+            console.log(values);
+          }}
+        >
+          <Form className={classes.editContentForm}>
+            <FTextField
+              inputRef={editContentInputRef}
+              fullWidth
+              id="content"
+              name="content"
+              margin="normal"
+              size="small"
+            />
+            <Box className={classes.editContentAction}>
+              <Typography>300</Typography>
+              <Box className={classes.editContentFormButtons}>
+                <Button
+                  size="small"
+                  onClick={() => handleEditContentToggle(question.id)}
+                >
+                  <FormattedMessage id="Cancel" defaultMessage="Cancel" />
+                </Button>
+                <ButtonLoading
+                  size="small"
+                  type="submit"
+                  color="primary"
+                  loading={false}
+                  disabled={false}
+                >
+                  <FormattedMessage id="Save" defaultMessage="Save" />
+                </ButtonLoading>
+              </Box>
+            </Box>
+          </Form>
+        </Formik>
+      ) : (
+        <React.Fragment>
+          <Typography className={classes.questionContent} variant="body1">
+            {question.content}
+          </Typography>
 
-      <Box className={classes.questionActionBox}>
-        {question.published && (
-          <QuestionToggleButton
-            className="questionHover"
-            id={question.id}
-            status={question.star}
-            onTitle={formatMessage({ id: "Unstar", defaultMessage: "Unstar" })}
-            offTitle={formatMessage({ id: "Star", defaultMessage: "Star" })}
-            onIcon={<StarIcon fontSize="inherit" color="secondary" />}
-            offIcon={<StarIcon fontSize="inherit" color="inherit" />}
-            handleToggle={handleStarClick}
-          />
-        )}
-        {question.published && !question.archived && (
-          <QuestionToggleButton
-            className="questionHover"
-            id={question.id}
-            status={question.top}
-            onTitle={formatMessage({ id: "Untop", defaultMessage: "Untop" })}
-            offTitle={formatMessage({ id: "Top", defaultMessage: "Top" })}
-            onIcon={<TopIcon fontSize="inherit" color="secondary" />}
-            offIcon={<TopIcon fontSize="inherit" color="inherit" />}
-            handleToggle={handleTopClick}
-          />
-        )}
-        {eventData?.event.moderation && !question.archived && (
-          <QuestionToggleButton
-            className="questionHover"
-            id={question.id}
-            status={question.published}
-            onTitle={formatMessage({
-              id: "Unpublish",
-              defaultMessage: "Unpublish"
-            })}
-            offTitle={formatMessage({
-              id: "Publish",
-              defaultMessage: "Publish"
-            })}
-            onIcon={<ClearIcon fontSize="inherit" />}
-            offIcon={<CheckIcon fontSize="inherit" />}
-            handleToggle={handlePublishClick}
-          />
-        )}
-        {question.published && (
-          <QuestionToggleButton
-            className="questionHover"
-            id={question.id}
-            status={question.archived}
-            onTitle={formatMessage({
-              id: "Unarchive",
-              defaultMessage: "Unarchive"
-            })}
-            offTitle={formatMessage({
-              id: "Archive",
-              defaultMessage: "Archive"
-            })}
-            onIcon={<UnarchiveIcon fontSize="inherit" />}
-            offIcon={<ArchiveIcon fontSize="inherit" />}
-            handleToggle={handleArchiveClick}
-          />
-        )}
+          <Box className={classes.questionActionBox}>
+            {question.published && (
+              <QuestionToggleButton
+                className="questionHover"
+                id={question.id}
+                status={question.star}
+                onTitle={formatMessage({
+                  id: "Unstar",
+                  defaultMessage: "Unstar"
+                })}
+                offTitle={formatMessage({ id: "Star", defaultMessage: "Star" })}
+                onIcon={<StarIcon fontSize="inherit" color="secondary" />}
+                offIcon={<StarIcon fontSize="inherit" color="inherit" />}
+                handleToggle={handleStarClick}
+              />
+            )}
+            {question.published && !question.archived && (
+              <QuestionToggleButton
+                className="questionHover"
+                id={question.id}
+                status={question.top}
+                onTitle={formatMessage({
+                  id: "Untop",
+                  defaultMessage: "Untop"
+                })}
+                offTitle={formatMessage({ id: "Top", defaultMessage: "Top" })}
+                onIcon={<TopIcon fontSize="inherit" color="secondary" />}
+                offIcon={<TopIcon fontSize="inherit" color="inherit" />}
+                handleToggle={handleTopClick}
+              />
+            )}
+            {eventData?.event.moderation && !question.archived && (
+              <QuestionToggleButton
+                className="questionHover"
+                id={question.id}
+                status={question.published}
+                onTitle={formatMessage({
+                  id: "Unpublish",
+                  defaultMessage: "Unpublish"
+                })}
+                offTitle={formatMessage({
+                  id: "Publish",
+                  defaultMessage: "Publish"
+                })}
+                onIcon={<ClearIcon fontSize="inherit" />}
+                offIcon={<CheckIcon fontSize="inherit" />}
+                handleToggle={handlePublishClick}
+              />
+            )}
+            {question.published && (
+              <QuestionToggleButton
+                className="questionHover"
+                id={question.id}
+                status={question.archived}
+                onTitle={formatMessage({
+                  id: "Unarchive",
+                  defaultMessage: "Unarchive"
+                })}
+                offTitle={formatMessage({
+                  id: "Archive",
+                  defaultMessage: "Archive"
+                })}
+                onIcon={<UnarchiveIcon fontSize="inherit" />}
+                offIcon={<ArchiveIcon fontSize="inherit" />}
+                handleToggle={handleArchiveClick}
+              />
+            )}
 
-        <IconButton size="small" onClick={e => handleMoreClick(e, question.id)}>
-          <MoreHorizIcon fontSize="inherit" />
-        </IconButton>
-      </Box>
+            <IconButton
+              size="small"
+              onClick={e => handleMoreClick(e, question.id)}
+            >
+              <MoreHorizIcon fontSize="inherit" />
+            </IconButton>
+          </Box>
+        </React.Fragment>
+      )}
     </ListItem>
   );
 };
