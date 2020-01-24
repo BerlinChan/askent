@@ -42,10 +42,17 @@ export const eventQuery = extendType({
     })
     t.list.field('events', {
       type: 'Event',
+      args: { searchString: stringArg() },
       resolve: async (root, args, context) => {
         const userId = getUserId(context)
         return context.photon.events.findMany({
-          where: { owner: { id: userId } },
+          where: {
+            owner: { id: userId },
+            OR: [
+              { name: { contains: args.searchString } },
+              { code: { contains: args.searchString } },
+            ],
+          },
         })
       },
     })
