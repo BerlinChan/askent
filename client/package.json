@@ -68,6 +68,6 @@
     "@graphql-codegen/cli": "1.10.0",
     "@graphql-codegen/typescript-operations": "1.10.0",
     "@graphql-codegen/typescript-react-apollo": "1.10.0",
-    "ts-node": "8.5.4"
+    "ts-node": "8.6.2"
   }
 }
