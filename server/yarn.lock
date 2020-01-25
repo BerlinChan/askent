@@ -66,10 +66,10 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@prisma/client@^2.0.0-preview020.3":
+"@prisma/client@2.0.0-preview020.3":
   version "2.0.0-preview020.3"
-  resolved "https://registry.npm.taobao.org/@prisma/client/download/@prisma/client-2.0.0-preview020.3.tgz#c1042cba540b580d8068f32654bb1e9519fc81a7"
-  integrity sha1-wQQsulQLWA2AaPMmVLselRn8gac=
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.0.0-preview020.3.tgz#c1042cba540b580d8068f32654bb1e9519fc81a7"
+  integrity sha512-W+CXyj8Z1UFpWXDMMUTql2QdtxfDrNKYa2F7jdU/Qb5PKBankmQeDlUSWfBNWAoTHUREQ5Q+gGOFRVoHfMvaow==
 
 "@prisma/engine-core@2.0.41":
   version "2.0.41"
