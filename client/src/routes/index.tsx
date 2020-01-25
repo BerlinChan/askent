@@ -49,13 +49,13 @@ const Router = () => {
             {token ? <Redirect to="/admin" /> : <SignupComponent />}
           </Route>
 
+          <Redirect exact path="/admin" to="/admin/events" />
           <PrivateRoute path="/admin">
             <AdminComponent />
           </PrivateRoute>
-          <Redirect exact path={`/event`} to={`/admin`} />
-          <PrivateRoute path={`/event`}>
-            <EventComponent />
-          </PrivateRoute>
+
+          <Redirect exact path="/event" to="/" />
+          <Route path="/event/:id" component={EventComponent} />
 
           <Route path="/about" component={AboutComponent} />
           <Route path="/demo" component={DemoComponent} />

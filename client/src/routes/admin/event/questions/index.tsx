@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
-import TabPanel from "../../../components/TabPanel";
+import TabPanel from "../../../../components/TabPanel";
 import SearchIcon from "@material-ui/icons/Search";
 import {
   useQuestionsByEventQuery,
@@ -25,11 +25,11 @@ import {
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument
-} from "../../../generated/graphqlHooks";
+} from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
-import Confirm from "../../../components/Confirm";
-import { SubTabs, SubTab } from "../../../components/Tabs";
+import Confirm from "../../../../components/Confirm";
+import { SubTabs, SubTab } from "../../../../components/Tabs";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

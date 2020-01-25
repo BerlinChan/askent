@@ -17,9 +17,9 @@ import {
   EventQueryVariables,
   useDeleteQuestionMutation,
   QuestionsByEventDocument
-} from "../../../generated/graphqlHooks";
+} from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import Confirm from "../../../components/Confirm";
+import Confirm from "../../../../components/Confirm";
 import QuestionItem from "./QuestionItem";
 import EditIcon from "@material-ui/icons/Edit";
 

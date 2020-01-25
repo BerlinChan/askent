@@ -1,6 +1,9 @@
 import React from "react";
-import { match } from "react-router";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import {
+  Link as RouterLink,
+  useHistory,
+  useRouteMatch
+} from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
@@ -13,12 +16,14 @@ import {
   IconButton,
   CircularProgress
 } from "@material-ui/core";
-import { RouteTabs } from "../../components/Tabs";
+import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
-import { EventQuery, EventQueryVariables } from "../../generated/graphqlHooks";
+import {
+  EventQuery,
+  EventQueryVariables
+} from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { FormattedDate } from "react-intl";
-import { EventRouteParams } from "./index";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,13 +40,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   eventQuery: QueryResult<EventQuery, EventQueryVariables>;
-  routeMatch: match<EventRouteParams>;
 }
 
-const EventHeader: React.FC<Props> = ({ eventQuery, routeMatch }) => {
+const EventHeader: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const history = useHistory();
-  let { url } = routeMatch;
+  let { url } = useRouteMatch();
   const { data: eventData, loading } = eventQuery;
 
   return (

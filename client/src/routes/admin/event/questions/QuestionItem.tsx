@@ -24,7 +24,7 @@ import {
   EventQuery,
   EventQueryVariables,
   useUpdateQuestionMutation
-} from "../../../generated/graphqlHooks";
+} from "../../../../generated/graphqlHooks";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import UnarchiveIcon from "@material-ui/icons/Unarchive";
@@ -37,8 +37,8 @@ import QuestionToggleButton, {
 } from "./QuestionToggleButton";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { FTextField, ButtonLoading } from "../../../components/Form";
-import { QUESTION_CONTENT_MAX_LENGTH } from "../../../constant";
+import { FTextField, ButtonLoading } from "../../../../components/Form";
+import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

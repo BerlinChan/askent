@@ -12,31 +12,40 @@ const EventsComponent = loadable(() => import("./events"), {
 const AnalyticsComponent = loadable(() => import("./analytics"), {
   fallback: <Loading />
 });
+const EventComponent = loadable(() => import("./event"), {
+  fallback: <Loading />
+});
 
 const Admin: React.FC = () => {
   let { path } = useRouteMatch();
   const [searchString, setSearchString] = React.useState<string>("");
 
   return (
-    <Layout
-      header={
-        <AdminHeader
-          searchString={searchString}
-          setSearchString={setSearchString}
-        />
-      }
-      body={
-        <Switch>
-          <Redirect exact path={path} to={`${path}/events`} />
-          <PrivateRoute path={`${path}/events`}>
-            <EventsComponent searchString={searchString} />
-          </PrivateRoute>
-          <PrivateRoute path={`${path}/analytics`}>
-            <AnalyticsComponent />
-          </PrivateRoute>
-        </Switch>
-      }
-    />
+    <Switch>
+      <Redirect exact path={`${path}/event`} to={`${path}/events`} />
+      <PrivateRoute path={`${path}/event/:id`}>
+        <EventComponent />
+      </PrivateRoute>
+
+      <Layout
+        header={
+          <AdminHeader
+            searchString={searchString}
+            setSearchString={setSearchString}
+          />
+        }
+        body={
+          <Switch>
+            <PrivateRoute path={`${path}/events`}>
+              <EventsComponent searchString={searchString} />
+            </PrivateRoute>
+            <PrivateRoute path={`${path}/analytics`}>
+              <AnalyticsComponent />
+            </PrivateRoute>
+          </Switch>
+        }
+      />
+    </Switch>
   );
 };
 

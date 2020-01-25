@@ -77,7 +77,7 @@ const EventList: React.FC<Props> = ({ eventsQueryResult, ...props }) => {
               key={eventIndex}
               button
               divider
-              onClick={() => history.push(`/event/${eventItem.id}`)}
+              onClick={() => history.push(`/admin/event/${eventItem.id}`)}
             >
               <ListItemAvatar>
                 <Avatar>
