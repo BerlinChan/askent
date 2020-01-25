@@ -11,7 +11,7 @@ const rules = {
   isEventAuthor: rule({ cache: 'strict' })(
     async (parent, { eventId }, context) => {
       const userId = getUserId(context)
-      const owner = await context.photon.events
+      const owner = await context.prisma.events
         .findOne({ where: { id: eventId } })
         .owner()
 
@@ -21,7 +21,7 @@ const rules = {
   isQuestionAuthor: rule({ cache: 'strict' })(
     async (parent, { questionId }, context) => {
       const userId = getUserId(context)
-      const questionAuthor = await context.photon.questions
+      const questionAuthor = await context.prisma.questions
         .findOne({
           where: { id: questionId },
         })
@@ -33,7 +33,7 @@ const rules = {
   isQuestionEventOwner: rule({ cache: 'strict' })(
     async (parent, { questionId }, context) => {
       const userId = getUserId(context)
-      const eventOwner = await context.photon.questions
+      const eventOwner = await context.prisma.questions
         .findOne({
           where: { id: questionId },
         })

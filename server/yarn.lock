@@ -66,6 +66,11 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
+"@prisma/client@^2.0.0-preview020.3":
+  version "2.0.0-preview020.3"
+  resolved "https://registry.npm.taobao.org/@prisma/client/download/@prisma/client-2.0.0-preview020.3.tgz#c1042cba540b580d8068f32654bb1e9519fc81a7"
+  integrity sha1-wQQsulQLWA2AaPMmVLselRn8gac=
+
 "@prisma/engine-core@2.0.41":
   version "2.0.41"
   resolved "https://registry.yarnpkg.com/@prisma/engine-core/-/engine-core-2.0.41.tgz#23c8e388352c0712df70ccc78b65012468be1c56"
@@ -113,11 +118,6 @@
   integrity sha1-6v9FKi3a+2NJ2gpZ57q8f5xsY3M=
   dependencies:
     debug "^4.1.1"
-
-"@prisma/photon@2.0.0-preview019":
-  version "2.0.0-preview019"
-  resolved "https://registry.npm.taobao.org/@prisma/photon/download/@prisma/photon-2.0.0-preview019.tgz#cd083628f668fbdc4ab8f7d15cd8a33b83a997a3"
-  integrity sha1-zQg2KPZo+9xKuPfRXNijO4Opl6M=
 
 "@prisma/sdk@0.0.172":
   version "0.0.172"
@@ -373,10 +373,10 @@
   resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-13.1.1.tgz?cache=0&sync_timestamp=1577380226814&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fnode%2Fdownload%2F%40types%2Fnode-13.1.1.tgz#6d11a8c2d58405b3db9388ab740106cbfa64c3c9"
   integrity sha1-bRGowtWEBbPbk4irdAEGy/pkw8k=
 
-"@types/node@12.12.25":
-  version "12.12.25"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.25.tgz#792c0afb798f1dd681dce9c4b4c431f7245a0a42"
-  integrity sha512-nf1LMGZvgFX186geVZR1xMZKKblJiRfiASTHw85zED2kI1yDKHDwTKMdkaCbTlXoRKlGKaDfYywt+V0As30q3w==
+"@types/node@13.5.0":
+  version "13.5.0"
+  resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-13.5.0.tgz#4e498dbf355795a611a87ae5ef811a8660d42662"
+  integrity sha1-TkmNvzVXlaYRqHrl74EahmDUJmI=
 
 "@types/node@^10.1.0":
   version "10.17.13"
@@ -1625,10 +1625,15 @@ isexe@^2.0.0:
   resolved "https://registry.npm.taobao.org/isexe/download/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-iterall@^1.1.3, iterall@^1.2.1, iterall@^1.2.2:
+iterall@^1.1.3, iterall@^1.2.1:
   version "1.2.2"
   resolved "https://registry.npm.taobao.org/iterall/download/iterall-1.2.2.tgz#92d70deb8028e0c39ff3164fdbf4d8b088130cd7"
   integrity sha1-ktcN64Ao4MOf8xZP2/TYsIgTDNc=
+
+iterall@^1.2.2:
+  version "1.3.0"
+  resolved "https://registry.npm.taobao.org/iterall/download/iterall-1.3.0.tgz?cache=0&sync_timestamp=1578018717555&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fiterall%2Fdownload%2Fiterall-1.3.0.tgz#afcb08492e2915cbd8a0884eb93a8c94d0d72fea"
+  integrity sha1-r8sISS4pFcvYoIhOuTqMlNDXL+o=
 
 js-tokens@^4.0.0:
   version "4.0.0"
@@ -1934,28 +1939,20 @@ negotiator@0.6.2:
   resolved "https://registry.npm.taobao.org/negotiator/download/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
   integrity sha1-/qz3zPUlp3rpY0Q2pkiD/+yjRvs=
 
-nexus-prisma@0.6.1:
-  version "0.6.1"
-  resolved "https://registry.npm.taobao.org/nexus-prisma/download/nexus-prisma-0.6.1.tgz#219641cf2e25da58385455382ed57eeb3c13d96e"
-  integrity sha1-IZZBzy4l2lg4VFU4LtV+6zwT2W4=
+nexus-prisma@0.7.0-next.2:
+  version "0.7.0-next.2"
+  resolved "https://registry.npm.taobao.org/nexus-prisma/download/nexus-prisma-0.7.0-next.2.tgz#17c63a589c84c643c0af754ca510b8aeddeade18"
+  integrity sha1-F8Y6WJyExkPAr3VMpRC4rt3q3hg=
   dependencies:
     camelcase "^5.3.1"
     fs-extra "^8.1.0"
-    nexus "^0.12.0-rc.4"
+    nexus "^0.12.0-rc.5"
     pluralize "^8.0.0"
 
-nexus@0.12.0-rc.9:
+nexus@0.12.0-rc.9, nexus@^0.12.0-rc.5:
   version "0.12.0-rc.9"
-  resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.12.0-rc.9.tgz#b97a9d23ebcad5349bb42035d7d02d0da55a9c6c"
-  integrity sha512-YiWCQJ9y6p9QPzmI/fQ0/+xfpXOo6S+gKD58dxSrDDO5TD01VqoN8HzGvgIGoLstmO/U5ecNdl02Dwj/RiKVsQ==
-  dependencies:
-    iterall "^1.2.2"
-    tslib "^1.9.3"
-
-nexus@^0.12.0-rc.4:
-  version "0.12.0-rc.5"
-  resolved "https://registry.npm.taobao.org/nexus/download/nexus-0.12.0-rc.5.tgz#98232f4ced045353892bfc9e06a0ff383143ba22"
-  integrity sha1-mCMvTO0EU1OJK/yeBqD/ODFDuiI=
+  resolved "https://registry.npm.taobao.org/nexus/download/nexus-0.12.0-rc.9.tgz#b97a9d23ebcad5349bb42035d7d02d0da55a9c6c"
+  integrity sha1-uXqdI+vK1TSbtCA119AtDaVanGw=
   dependencies:
     iterall "^1.2.2"
     tslib "^1.9.3"
@@ -2213,10 +2210,10 @@ prettysize@^2.0.0:
   resolved "https://registry.npm.taobao.org/prettysize/download/prettysize-2.0.0.tgz#902c02480d865d9cc0813011c9feb4fa02ce6996"
   integrity sha1-kCwCSA2GXZzAgTARyf60+gLOaZY=
 
-prisma2@2.0.0-preview019:
-  version "2.0.0-preview019"
-  resolved "https://registry.npm.taobao.org/prisma2/download/prisma2-2.0.0-preview019.tgz#d0d2bafad041071fa59400eb04e41b21de68aac6"
-  integrity sha1-0NK6+tBBBx+llADrBOQbId5oqsY=
+prisma2@2.0.0-preview020.3:
+  version "2.0.0-preview020.3"
+  resolved "https://registry.npm.taobao.org/prisma2/download/prisma2-2.0.0-preview020.3.tgz#2f9d839af0ec9d45c52540301ea0cb5302787064"
+  integrity sha1-L52DmvDsnUXFJUAwHqDLUwJ4cGQ=
 
 progress@^2.0.3:
   version "2.0.3"
