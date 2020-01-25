@@ -4,7 +4,7 @@ import {
   UserCreateInput,
   UserWhereUniqueInput,
   UserWhereInput,
-} from '@prisma/prisma'
+} from '@prisma/client'
 import { NexusGenFieldTypes } from 'nexus-typegen'
 import { hash, compare } from 'bcryptjs'
 import { sign } from 'jsonwebtoken'

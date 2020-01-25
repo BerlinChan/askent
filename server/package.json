@@ -8,10 +8,11 @@
     "start": "node dist/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && npm -s run generate && tsc",
-    "prisma:dev": "npx prisma2 dev",
+    "prisma:migrate-save": "prisma2 migrate save --experimental",
+    "prisma:migrate-up": "prisma2 migrate up --experimental",
     "prisma:seed": "ts-node prisma/seed",
-    "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
-    "generate:prisma": "prisma2 generate",
+    "prisma:generate": "prisma2 generate",
+    "generate": "npm -s run prisma:generate && npm -s run generate:nexus",
     "generate:nexus": "ts-node --transpile-only src/schema"
   },
   "dependencies": {

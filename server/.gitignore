@@ -3,6 +3,5 @@ build/
 schema.graphql
 
 # prisma
-prisma/migrations/dev/
-prisma/Studio
+prisma/migrations/
 prisma/dev.db

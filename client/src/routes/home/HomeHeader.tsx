@@ -1,7 +1,6 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Box, Link, Toolbar, Container } from "@material-ui/core";
+import { Box, Toolbar, Container } from "@material-ui/core";
 import AppBarElevationScroll from "../../components/AppBarElevationScroll";
 import { Logo, UnauthAction, AuthedAction } from "../../components/Header";
 import { AUTH_TOKEN } from "../../constant";
