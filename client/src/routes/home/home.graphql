@@ -1,0 +1,9 @@
+query PubEvents($code: String) {
+  pubEvents(code: $code) {
+    id
+    code
+    name
+    startAt
+    endAt
+  }
+}

@@ -1,15 +1,10 @@
 import React from "react";
-import {
-  Link as RouterLink,
-  useHistory,
-  useRouteMatch
-} from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
   Box,
   Typography,
-  Link,
   AppBar,
   Toolbar,
   Paper,
@@ -24,6 +19,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { FormattedDate } from "react-intl";
+import { AuthedAction } from "../../../components/Header";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,7 +30,12 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       flexWrap: "nowrap"
     },
-    actions: { "& > *": { margin: theme.spacing(1) } }
+    actions: {
+      display: "flex",
+      alignItems: "center",
+      flexWrap: "nowrap",
+      "& > *": { margin: theme.spacing(1) }
+    }
   })
 );
 
@@ -85,9 +86,7 @@ const EventHeader: React.FC<Props> = ({ eventQuery }) => {
                 </Typography>
               </Box>
               <Box className={classes.actions}>
-                <Link color="inherit" component={RouterLink} to="/admin">
-                  Admin
-                </Link>
+                <AuthedAction />
               </Box>
             </React.Fragment>
           )}

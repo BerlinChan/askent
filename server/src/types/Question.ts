@@ -12,7 +12,7 @@ import {
   Question as QuestionType,
   User,
   QuestionCreateInput,
-} from '@prisma/prisma'
+} from '@prisma/client'
 import { getUserId } from '../utils'
 import { withFilter } from 'apollo-server-express'
 

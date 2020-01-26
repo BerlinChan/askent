@@ -8,7 +8,7 @@ import {
 } from 'nexus'
 import { getUserId } from '../utils'
 import { Context } from '../context'
-import { Event as EventType } from '@prisma/prisma'
+import { Event as EventType } from '@prisma/client'
 
 export const Event = objectType({
   name: 'Event',
@@ -23,6 +23,27 @@ export const Event = objectType({
     t.model.endAt()
     t.model.questions()
     t.model.moderation()
+  },
+})
+export const PubEvent = objectType({
+  name: 'PubEvent',
+  description: 'Event for public use.',
+  definition(t) {
+    t.id('id')
+    t.string('code')
+    t.string('name')
+    t.field('startAt', { type: 'DateTime' })
+    t.field('endAt', { type: 'DateTime' })
+
+    t.list.field('publishedQuestions', {
+      type: 'Question',
+      resolve: async (root, args, ctx) => {
+        const findAllQuestions = await ctx.prisma.events
+          .findOne({ where: { id: root.id } })
+          .questions()
+        return findAllQuestions.filter(item => item.published)
+      },
+    })
   },
 })
 
@@ -42,6 +63,7 @@ export const eventQuery = extendType({
     })
     t.list.field('events', {
       type: 'Event',
+      description: 'Get all my events.',
       args: { searchString: stringArg() },
       resolve: async (root, args, context) => {
         const userId = getUserId(context)
@@ -64,6 +86,24 @@ export const eventQuery = extendType({
       },
       resolve: async (root, { code }, context) => {
         return await checkEventCodeExist(context, code)
+      },
+    })
+    t.list.field('pubEvents', {
+      type: 'PubEvent',
+      description: 'Get all public events.',
+      args: { code: stringArg() },
+      resolve: async (root, { code }, ctx) => {
+        const events = await ctx.prisma.events.findMany({
+          where: { code: { contains: code } },
+        })
+
+        return events.map(event => ({
+          id: event.id,
+          code: event.code,
+          name: event.name,
+          startAt: event.startAt,
+          endAt: event.endAt,
+        }))
       },
     })
   },
