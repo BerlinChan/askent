@@ -14,7 +14,6 @@ export const Event = objectType({
   name: 'Event',
   definition(t) {
     t.model.id()
-    t.model.shortId()
     t.model.code()
     t.model.name()
     t.model.owner()
@@ -31,7 +30,6 @@ export const PubEvent = objectType({
   description: 'Event for public use.',
   definition(t) {
     t.id('id')
-    t.string('shortId')
     t.string('code')
     t.string('name')
     t.field('startAt', { type: 'DateTime' })
@@ -67,8 +65,9 @@ export const eventQuery = extendType({
       type: 'Event',
       description: 'Get all my events.',
       args: { searchString: stringArg() },
-      resolve: async (root, args, context) => {
+      resolve: (root, args, context) => {
         const userId = getUserId(context)
+
         return context.prisma.events.findMany({
           where: {
             owner: { id: userId },
@@ -101,7 +100,6 @@ export const eventQuery = extendType({
 
         return events.map(event => ({
           id: event.id,
-          shortId: event.shortId,
           code: event.code,
           name: event.name,
           startAt: event.startAt,
