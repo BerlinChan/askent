@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import {
   InputAdornment,
   Paper,
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const JoinEventForm: React.FC = props => {
   const classes = useStyles();
+  const history = useHistory();
   const [pubEventsLazyQuery, { data, loading }] = usePubEventsLazyQuery();
 
   return (
@@ -36,7 +38,7 @@ const JoinEventForm: React.FC = props => {
             .required()
         })}
         onSubmit={async values => {
-          console.log("join event:", values);
+          history.push(`/event/${values.eventCode}/login`);
         }}
       >
         {formProps => (
@@ -53,7 +55,7 @@ const JoinEventForm: React.FC = props => {
                 event: React.ChangeEvent<{}>,
                 newValue: Pick<
                   PubEvent,
-                  "id" | "code" | "name" | "startAt" | "endAt"
+                  "id" | "shortId" | "code" | "name" | "startAt" | "endAt"
                 > | null
               ) => {
                 formProps.setTouched({ eventCode: true });

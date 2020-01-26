@@ -26,6 +26,7 @@ model User {
 
 model Event {
   id         String     @default(uuid()) @id
+  shortId    String     @unique
   code       String     @unique
   name       String
   owner      User

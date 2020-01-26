@@ -1,6 +1,7 @@
-query Event($eventId: ID!) {
-  event(eventId: $eventId) {
+query EventByMe($eventId: ID!) {
+  eventByMe(eventId: $eventId) {
     id
+    shortId
     name
     code
     startAt
@@ -26,6 +27,7 @@ mutation UpdateEvent(
     moderation: $moderation
   ) {
     id
+    shortId
     code
     name
     startAt

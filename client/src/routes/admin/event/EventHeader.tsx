@@ -14,8 +14,8 @@ import {
 import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import {
-  EventQuery,
-  EventQueryVariables
+  EventByMeQuery,
+  EventByMeQueryVariables
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { FormattedDate } from "react-intl";
@@ -40,14 +40,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQuery: QueryResult<EventQuery, EventQueryVariables>;
+  eventByMeQuery: QueryResult<EventByMeQuery, EventByMeQueryVariables>;
 }
 
-const EventHeader: React.FC<Props> = ({ eventQuery }) => {
+const EventHeader: React.FC<Props> = ({ eventByMeQuery }) => {
   const classes = useStyles();
   const history = useHistory();
   let { url } = useRouteMatch();
-  const { data: eventData, loading } = eventQuery;
+  const { data: eventByMeData, loading } = eventByMeQuery;
 
   return (
     <AppBar position="static" elevation={2}>
@@ -69,20 +69,20 @@ const EventHeader: React.FC<Props> = ({ eventQuery }) => {
                 </IconButton>
                 <Box>
                   <Typography color="inherit">
-                    {eventData?.event.name}
+                    {eventByMeData?.eventByMe.name}
                   </Typography>
                   <Typography color="inherit">
-                    <FormattedDate value={eventData?.event.startAt} /> ~{" "}
-                    <FormattedDate value={eventData?.event.endAt} />
+                    <FormattedDate value={eventByMeData?.eventByMe.startAt} /> ~{" "}
+                    <FormattedDate value={eventByMeData?.eventByMe.endAt} />
                   </Typography>
                 </Box>
               </Box>
               <Box>
                 <Typography color="inherit">
-                  #{eventData?.event.code}
+                  #{eventByMeData?.eventByMe.code}
                 </Typography>
                 <Typography color="inherit">
-                  #{eventData?.event.code}
+                  #{eventByMeData?.eventByMe.code}
                 </Typography>
               </Box>
               <Box className={classes.actions}>

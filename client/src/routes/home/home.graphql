@@ -1,6 +1,7 @@
 query PubEvents($code: String) {
   pubEvents(code: $code) {
     id
+    shortId
     code
     name
     startAt

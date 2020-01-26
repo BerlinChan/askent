@@ -15,8 +15,8 @@ import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
-  EventsQuery,
-  EventsQueryVariables,
+  EventsByMeQuery,
+  EventsByMeQueryVariables,
   useDeleteEventMutation
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
@@ -41,13 +41,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventsQueryResult: QueryResult<EventsQuery, EventsQueryVariables>;
+  eventsByMeQueryResult: QueryResult<EventsByMeQuery, EventsByMeQueryVariables>;
 }
 
-const EventList: React.FC<Props> = ({ eventsQueryResult, ...props }) => {
+const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
   const classes = useStyles();
   const history = useHistory();
-  const { data, loading, refetch } = eventsQueryResult;
+  const { data, loading, refetch } = eventsByMeQueryResult;
   const [deleteConfirm, setDeleteConfirm] = React.useState({
     open: false,
     id: ""
@@ -72,7 +72,7 @@ const EventList: React.FC<Props> = ({ eventsQueryResult, ...props }) => {
     <Fragment>
       <Paper className={classes.eventList}>
         <List disablePadding>
-          {data?.events.map((eventItem, eventIndex) => (
+          {data?.eventsByMe.map((eventItem, eventIndex) => (
             <ListItem
               key={eventIndex}
               button

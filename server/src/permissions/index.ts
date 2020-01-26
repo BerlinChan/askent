@@ -48,7 +48,8 @@ const rules = {
 export const permissions = shield({
   Query: {
     me: rules.isAuthenticatedUser,
-    events: rules.isAuthenticatedUser,
+    eventByMe: rules.isEventAuthor,
+    eventsByMe: rules.isAuthenticatedUser,
     questionsByMe: rules.isAuthenticatedUser,
     questionsByEvent: rules.isAuthenticatedUser,
     checkEventCodeExist: rules.isAuthenticatedUser,

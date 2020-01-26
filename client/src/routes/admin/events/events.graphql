@@ -1,6 +1,7 @@
-query Events($searchString: String) {
-  events(searchString: $searchString) {
+query EventsByMe($searchString: String) {
+  eventsByMe(searchString: $searchString) {
     id
+    shortId
     name
     code
     startAt
@@ -20,6 +21,7 @@ mutation CreateEvent(
 ) {
   createEvent(code: $code, name: $name, startAt: $startAt, endAt: $endAt) {
     id
+    shortId
     code
     name
     createdAt

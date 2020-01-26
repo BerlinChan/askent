@@ -9,11 +9,13 @@ import {
 import { getUserId } from '../utils'
 import { Context } from '../context'
 import { Event as EventType } from '@prisma/client'
+import cuid from 'cuid'
 
 export const Event = objectType({
   name: 'Event',
   definition(t) {
     t.model.id()
+    t.model.shortId()
     t.model.code()
     t.model.name()
     t.model.owner()
@@ -30,6 +32,7 @@ export const PubEvent = objectType({
   description: 'Event for public use.',
   definition(t) {
     t.id('id')
+    t.string('shortId')
     t.string('code')
     t.string('name')
     t.field('startAt', { type: 'DateTime' })
@@ -50,7 +53,7 @@ export const PubEvent = objectType({
 export const eventQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.field('event', {
+    t.field('eventByMe', {
       type: 'Event',
       args: {
         eventId: idArg({ required: true }),
@@ -61,7 +64,7 @@ export const eventQuery = extendType({
         }) as Promise<EventType>
       },
     })
-    t.list.field('events', {
+    t.list.field('eventsByMe', {
       type: 'Event',
       description: 'Get all my events.',
       args: { searchString: stringArg() },
@@ -99,6 +102,7 @@ export const eventQuery = extendType({
 
         return events.map(event => ({
           id: event.id,
+          shortId: event.shortId,
           code: event.code,
           name: event.name,
           startAt: event.startAt,
@@ -127,6 +131,7 @@ export const eventMutation = extendType({
         const userId = getUserId(ctx)
         return ctx.prisma.events.create({
           data: {
+            shortId: cuid.slug(),
             owner: { connect: { id: userId } },
             code,
             name,
