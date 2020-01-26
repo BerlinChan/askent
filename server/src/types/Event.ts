@@ -9,7 +9,6 @@ import {
 import { getUserId } from '../utils'
 import { Context } from '../context'
 import { Event as EventType } from '@prisma/client'
-import cuid from 'cuid'
 
 export const Event = objectType({
   name: 'Event',
@@ -131,7 +130,6 @@ export const eventMutation = extendType({
         const userId = getUserId(ctx)
         return ctx.prisma.events.create({
           data: {
-            shortId: cuid.slug(),
             owner: { connect: { id: userId } },
             code,
             name,

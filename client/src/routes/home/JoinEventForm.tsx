@@ -31,21 +31,25 @@ const JoinEventForm: React.FC = props => {
   return (
     <Paper>
       <Formik
-        initialValues={{ eventCode: "" }}
+        initialValues={{ code: "", id: "" }}
         validationSchema={Yup.object({
-          eventCode: Yup.string()
+          code: Yup.string()
             .max(EVENT_CODE_MAX_LENGTH)
             .required()
         })}
         onSubmit={async values => {
-          history.push(`/event/${values.eventCode}/login`);
+          console.log(values);
+          history.push(`/event/${values.id}/login`);
         }}
       >
         {formProps => (
           <Form className={classes.joinForm}>
             <Autocomplete
               clearOnEscape
-              id="eventCode"
+              id="code"
+              onOpen={() => {
+                pubEventsLazyQuery();
+              }}
               onInputChange={(event, value, reason) => {
                 pubEventsLazyQuery({
                   variables: { code: value }
@@ -55,13 +59,14 @@ const JoinEventForm: React.FC = props => {
                 event: React.ChangeEvent<{}>,
                 newValue: Pick<
                   PubEvent,
-                  "id" | "shortId" | "code" | "name" | "startAt" | "endAt"
+                  "id" | "code" | "name" | "startAt" | "endAt"
                 > | null
               ) => {
-                formProps.setTouched({ eventCode: true });
-                formProps.setFieldValue("eventCode", newValue?.code || "");
+                formProps.setTouched({ code: true, id: true });
+                formProps.setFieldValue("id", newValue?.id || "");
+                formProps.setFieldValue("code", newValue?.code || "");
               }}
-              getOptionSelected={(option, value) => option.code === value.code}
+              getOptionSelected={(option, value) => option.id === value.id}
               getOptionLabel={option => option.code}
               options={data?.pubEvents}
               loading={loading}
@@ -73,11 +78,11 @@ const JoinEventForm: React.FC = props => {
                   variant="outlined"
                   margin="normal"
                   error={Boolean(
-                    formProps.touched.eventCode && formProps.errors.eventCode
+                    formProps.touched.code && formProps.errors.code
                   )}
                   helperText={
-                    formProps.touched.eventCode && formProps.errors.eventCode
-                      ? formProps.errors.eventCode
+                    formProps.touched.code && formProps.errors.code
+                      ? formProps.errors.code
                       : " "
                   }
                   InputProps={{

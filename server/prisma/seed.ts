@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import { hash } from 'bcryptjs'
-import cuid from 'cuid'
 
 const prisma = new PrismaClient()
 
@@ -12,7 +11,6 @@ async function main() {
       password: await hash('w', 10),
       events: {
         create: {
-          shortId: cuid.slug(),
           code: 'e1',
           name: 'e1',
           startAt: new Date('2019-11-02T01:01:01Z'),
@@ -29,14 +27,12 @@ async function main() {
       events: {
         create: [
           {
-            shortId: cuid.slug(),
             code: 'Subscribe',
             name: 'Subscribe to GraphQL Weekly for community news',
             startAt: new Date('2019-11-03T03:03:03Z'),
             endAt: new Date('2019-11-04T04:04:04Z'),
           },
           {
-            shortId: cuid.slug(),
             code: 'Follow',
             name: 'Follow Prisma on Twitter',
             startAt: new Date('2019-12-09T05:05:05Z'),

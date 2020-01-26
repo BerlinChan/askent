@@ -20,7 +20,6 @@
     "apollo-server-express": "2.9.16",
     "bcryptjs": "2.4.3",
     "cors": "2.8.5",
-    "cuid": "^2.1.8",
     "dotenv": "8.2.0",
     "graphql": "14.5.8",
     "graphql-middleware": "4.0.2",
