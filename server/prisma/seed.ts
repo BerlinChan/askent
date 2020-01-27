@@ -27,14 +27,14 @@ async function main() {
       events: {
         create: [
           {
-            code: 'Subscribe to GraphQL Weekly for community news',
-            name: 'https://graphqlweekly.com/',
+            code: 'Subscribe',
+            name: 'Subscribe to GraphQL Weekly for community news',
             startAt: new Date('2019-11-03T03:03:03Z'),
             endAt: new Date('2019-11-04T04:04:04Z'),
           },
           {
-            code: 'Follow Prisma on Twitter',
-            name: 'https://twitter.com/prisma/',
+            code: 'Follow',
+            name: 'Follow Prisma on Twitter',
             startAt: new Date('2019-12-09T05:05:05Z'),
             endAt: new Date('2019-12-13T05:05:05Z'),
           },
