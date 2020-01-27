@@ -1,5 +1,5 @@
-query Events($searchString: String) {
-  events(searchString: $searchString) {
+query EventsByMe($searchString: String) {
+  eventsByMe(searchString: $searchString) {
     id
     name
     code

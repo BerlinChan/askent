@@ -1,5 +1,5 @@
-query Event($eventId: ID!) {
-  event(eventId: $eventId) {
+query EventByMe($eventId: ID!) {
+  eventByMe(eventId: $eventId) {
     id
     name
     code

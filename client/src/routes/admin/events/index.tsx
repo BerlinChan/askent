@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Box, Button } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
-import { useEventsQuery } from "../../../generated/graphqlHooks";
+import { useEventsByMeQuery } from "../../../generated/graphqlHooks";
 import CreateEventDialog from "./CreateEventDialog";
 import EventList from "./EventList";
 
@@ -22,16 +22,16 @@ interface Props {
 const Events: React.FC<Props> = ({ searchString }) => {
   const classes = useStyles();
   const [openCreate, setOpenCreate] = React.useState(false);
-  const eventsQueryResult = useEventsQuery({
+  const eventsByMeQueryResult = useEventsByMeQuery({
     variables: { searchString }
   });
-  const { refetch: eventsRefetch } = eventsQueryResult;
+  const { refetch: eventsByMeRefetch } = eventsByMeQueryResult;
 
   const handleClickOpen = () => {
     setOpenCreate(true);
   };
   const handleClose = () => {
-    eventsRefetch();
+    eventsByMeRefetch();
     setOpenCreate(false);
   };
 
@@ -42,7 +42,7 @@ const Events: React.FC<Props> = ({ searchString }) => {
           <FormattedMessage id="CREAT_EVENT" defaultMessage="Create Event" />
         </Button>
       </Box>
-      <EventList eventsQueryResult={eventsQueryResult} />
+      <EventList eventsByMeQueryResult={eventsByMeQueryResult} />
 
       <CreateEventDialog open={openCreate} onClose={handleClose} />
     </Fragment>
