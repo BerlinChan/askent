@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core/styles";
 import { FormattedMessage, FormattedDate } from "react-intl";
 import { useEventForLoginQuery } from "../../../generated/graphqlHooks";
+import { useFingerprint } from "../../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,6 +37,7 @@ const EventLogin: React.FC = () => {
   const { data, loading } = useEventForLoginQuery({
     variables: { eventId: id as string }
   });
+  const fingerprint = useFingerprint();
 
   const handleEventLogin = () => {
     history.replace("/");
