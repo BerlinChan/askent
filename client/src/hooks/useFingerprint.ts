@@ -6,7 +6,9 @@ export default function useFingerprint() {
 
   useEffect(() => {
     setTimeout(async () => {
-      const components = await Fingerprint2.getPromise();
+      const components = await Fingerprint2.getPromise({
+        excludes: { adBlock: true }
+      });
       const values = components.map(component => component.value);
       const murmur = Fingerprint2.x64hash128(values.join(""), 31);
       setFingerprint(murmur);

@@ -25,7 +25,8 @@
     "graphql-shield": "7.0.8",
     "jsonwebtoken": "8.5.1",
     "nexus": "0.12.0-rc.5",
-    "nexus-prisma": "0.6.1"
+    "nexus-prisma": "0.6.1",
+    "ramda": "^0.26.1"
   },
   "devDependencies": {
     "@prisma/sdk": "0.0.172",
@@ -34,6 +35,7 @@
     "@types/jsonwebtoken": "8.3.7",
     "@types/node": "13.5.0",
     "@types/node-fetch": "2.5.4",
+    "@types/ramda": "^0.26.40",
     "create-nexus-type": "1.1.4",
     "prisma2": "2.0.0-preview019",
     "ts-node": "8.6.2",

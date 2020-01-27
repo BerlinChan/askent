@@ -388,6 +388,13 @@
   resolved "https://registry.npm.taobao.org/@types/normalize-package-data/download/@types/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha1-5IbQ2XOW15vu3QpuM/RTT/a0lz4=
 
+"@types/ramda@^0.26.40":
+  version "0.26.40"
+  resolved "https://registry.npm.taobao.org/@types/ramda/download/@types/ramda-0.26.40.tgz#4fbd3bd6a8583e2aa0830b8942fbace44ecd070a"
+  integrity sha1-T7071qhYPiqggwuJQvus5E7NBwo=
+  dependencies:
+    ts-toolbelt "^4.12.0"
+
 "@types/range-parser@*":
   version "1.2.3"
   resolved "https://registry.npm.taobao.org/@types/range-parser/download/@types/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
@@ -2274,6 +2281,11 @@ querystringify@^2.1.1:
   resolved "https://registry.npm.taobao.org/querystringify/download/querystringify-2.1.1.tgz#60e5a5fd64a7f8bfa4d2ab2ed6fdf4c85bad154e"
   integrity sha1-YOWl/WSn+L+k0qsu1v30yFutFU4=
 
+ramda@^0.26.1:
+  version "0.26.1"
+  resolved "https://registry.npm.taobao.org/ramda/download/ramda-0.26.1.tgz#8d41351eb8111c55353617fc3bbffad8e4d35d06"
+  integrity sha1-jUE1HrgRHFU1Nhf8O7/62OTTXQY=
+
 range-parser@~1.2.1:
   version "1.2.1"
   resolved "https://registry.npm.taobao.org/range-parser/download/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
@@ -2747,6 +2759,11 @@ ts-node@8.6.2:
     make-error "^1.1.1"
     source-map-support "^0.5.6"
     yn "3.1.1"
+
+ts-toolbelt@^4.12.0:
+  version "4.14.6"
+  resolved "https://registry.npm.taobao.org/ts-toolbelt/download/ts-toolbelt-4.14.6.tgz#9a232f62276caeee4fa9e81e0c4bffa047de0765"
+  integrity sha1-miMvYidsru5PqegeDEv/oEfeB2U=
 
 tsconfig@^7.0.0:
   version "7.0.0"

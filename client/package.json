@@ -12,9 +12,6 @@
     "@material-ui/icons": "4.5.1",
     "@material-ui/lab": "4.0.0-alpha.40",
     "@material-ui/pickers": "3.2.10",
-    "@testing-library/jest-dom": "5.0.2",
-    "@testing-library/react": "9.4.0",
-    "@testing-library/user-event": "8.0.4",
     "apollo-cache-inmemory": "1.6.5",
     "apollo-client": "2.6.8",
     "apollo-link": "1.2.13",
@@ -32,7 +29,6 @@
     "react-router-dom": "5.1.2",
     "react-scripts": "3.3.0",
     "subscriptions-transport-ws": "0.9.16",
-    "typescript": "3.7.5",
     "yup": "0.28.0"
   },
   "scripts": {
@@ -59,6 +55,7 @@
     ]
   },
   "devDependencies": {
+    "typescript": "3.7.5",
     "@types/jest": "24.9.1",
     "@types/loadable__component": "5.10.0",
     "@types/node": "12.12.25",
@@ -71,6 +68,9 @@
     "@graphql-codegen/typescript-operations": "1.11.2",
     "@graphql-codegen/typescript-react-apollo": "1.11.2",
     "@types/fingerprintjs2": "^2.0.0",
-    "ts-node": "8.6.2"
+    "ts-node": "8.6.2",
+    "@testing-library/jest-dom": "5.0.2",
+    "@testing-library/react": "9.4.0",
+    "@testing-library/user-event": "8.0.4"
   }
 }
