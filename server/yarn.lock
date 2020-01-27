@@ -66,11 +66,6 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@prisma/client@2.0.0-preview020.3":
-  version "2.0.0-preview020.3"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.0.0-preview020.3.tgz#c1042cba540b580d8068f32654bb1e9519fc81a7"
-  integrity sha512-W+CXyj8Z1UFpWXDMMUTql2QdtxfDrNKYa2F7jdU/Qb5PKBankmQeDlUSWfBNWAoTHUREQ5Q+gGOFRVoHfMvaow==
-
 "@prisma/engine-core@2.0.41":
   version "2.0.41"
   resolved "https://registry.yarnpkg.com/@prisma/engine-core/-/engine-core-2.0.41.tgz#23c8e388352c0712df70ccc78b65012468be1c56"
@@ -118,6 +113,11 @@
   integrity sha1-6v9FKi3a+2NJ2gpZ57q8f5xsY3M=
   dependencies:
     debug "^4.1.1"
+
+"@prisma/photon@2.0.0-preview019":
+  version "2.0.0-preview019"
+  resolved "https://registry.npm.taobao.org/@prisma/photon/download/@prisma/photon-2.0.0-preview019.tgz#cd083628f668fbdc4ab8f7d15cd8a33b83a997a3"
+  integrity sha1-zQg2KPZo+9xKuPfRXNijO4Opl6M=
 
 "@prisma/sdk@0.0.172":
   version "0.0.172"
@@ -2217,10 +2217,10 @@ prettysize@^2.0.0:
   resolved "https://registry.npm.taobao.org/prettysize/download/prettysize-2.0.0.tgz#902c02480d865d9cc0813011c9feb4fa02ce6996"
   integrity sha1-kCwCSA2GXZzAgTARyf60+gLOaZY=
 
-prisma2@2.0.0-preview020.3:
-  version "2.0.0-preview020.3"
-  resolved "https://registry.npm.taobao.org/prisma2/download/prisma2-2.0.0-preview020.3.tgz#2f9d839af0ec9d45c52540301ea0cb5302787064"
-  integrity sha1-L52DmvDsnUXFJUAwHqDLUwJ4cGQ=
+prisma2@2.0.0-preview019:
+  version "2.0.0-preview019"
+  resolved "https://registry.npm.taobao.org/prisma2/download/prisma2-2.0.0-preview019.tgz#d0d2bafad041071fa59400eb04e41b21de68aac6"
+  integrity sha1-0NK6+tBBBx+llADrBOQbId5oqsY=
 
 progress@^2.0.3:
   version "2.0.3"

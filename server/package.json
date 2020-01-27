@@ -8,15 +8,14 @@
     "start": "node dist/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && npm -s run generate && tsc",
-    "prisma:migrate-save": "prisma2 migrate save --experimental",
-    "prisma:migrate-up": "prisma2 migrate up --experimental",
+    "prisma:dev": "npx prisma2 dev",
     "prisma:seed": "ts-node prisma/seed",
-    "prisma:generate": "prisma2 generate",
-    "generate": "npm -s run prisma:generate && npm -s run generate:nexus",
+    "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
+    "generate:prisma": "npx prisma2 generate",
     "generate:nexus": "ts-node --transpile-only src/schema"
   },
   "dependencies": {
-    "@prisma/client": "2.0.0-preview020.3",
+    "@prisma/photon": "2.0.0-preview019",
     "apollo-server-express": "2.9.16",
     "bcryptjs": "2.4.3",
     "cors": "2.8.5",
@@ -36,7 +35,7 @@
     "@types/node": "13.5.0",
     "@types/node-fetch": "2.5.4",
     "create-nexus-type": "1.1.4",
-    "prisma2": "2.0.0-preview020.3",
+    "prisma2": "2.0.0-preview019",
     "ts-node": "8.6.2",
     "ts-node-dev": "1.0.0-pre.44",
     "typescript": "3.7.5"

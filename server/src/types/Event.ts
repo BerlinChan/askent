@@ -8,7 +8,7 @@ import {
 } from 'nexus'
 import { getUserId } from '../utils'
 import { Context } from '../context'
-import { Event as EventType } from '@prisma/client'
+import { Event as EventType } from '@prisma/photon'
 
 export const Event = objectType({
   name: 'Event',
@@ -38,7 +38,7 @@ export const PubEvent = objectType({
     t.list.field('publishedQuestions', {
       type: 'Question',
       resolve: async (root, args, ctx) => {
-        const findAllQuestions = await ctx.prisma.events
+        const findAllQuestions = await ctx.photon.events
           .findOne({ where: { id: root.id } })
           .questions()
         return findAllQuestions.filter(item => item.published)
@@ -56,7 +56,7 @@ export const eventQuery = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: (root, { eventId }, context) => {
-        return context.prisma.events.findOne({
+        return context.photon.events.findOne({
           where: { id: eventId },
         }) as Promise<EventType>
       },
@@ -67,7 +67,7 @@ export const eventQuery = extendType({
       args: { searchString: stringArg() },
       resolve: async (root, args, context) => {
         const userId = getUserId(context)
-        return context.prisma.events.findMany({
+        return context.photon.events.findMany({
           where: {
             owner: { id: userId },
             OR: [
@@ -93,7 +93,7 @@ export const eventQuery = extendType({
       description: 'Get all public events.',
       args: { code: stringArg() },
       resolve: async (root, { code }, ctx) => {
-        const events = await ctx.prisma.events.findMany({
+        const events = await ctx.photon.events.findMany({
           where: { code: { contains: code } },
         })
 
@@ -125,7 +125,7 @@ export const eventMutation = extendType({
           throw new Error(`Code "${code}" has already exist.`)
         }
         const userId = getUserId(ctx)
-        return ctx.prisma.events.create({
+        return ctx.photon.events.create({
           data: {
             owner: { connect: { id: userId } },
             code,
@@ -148,7 +148,7 @@ export const eventMutation = extendType({
       },
       resolve: async (root, args, context) => {
         await checkEventExist(context, args.eventId)
-        const findEvent = await context.prisma.events.findOne({
+        const findEvent = await context.photon.events.findOne({
           where: { id: args.eventId },
           select: { code: true },
         })
@@ -170,7 +170,7 @@ export const eventMutation = extendType({
             : {},
         )
 
-        return context.prisma.events.update({
+        return context.photon.events.update({
           where: { id: args.eventId },
           data: event,
         })
@@ -183,21 +183,21 @@ export const eventMutation = extendType({
       },
       resolve: async (root, args, context) => {
         await checkEventExist(context, args.eventId as string)
-        return context.prisma.events.delete({ where: { id: args.eventId } })
+        return context.photon.events.delete({ where: { id: args.eventId } })
       },
     })
   },
 })
 
 async function checkEventCodeExist(context: Context, code: string) {
-  return Boolean(await context.prisma.events.findOne({ where: { code } }))
+  return Boolean(await context.photon.events.findOne({ where: { code } }))
 }
 
 async function checkEventExist(
   context: Context,
   eventId: EventType['id'],
 ): Promise<boolean> {
-  const findEvent = await context.prisma.events.findOne({
+  const findEvent = await context.photon.events.findOne({
     where: { id: eventId },
   })
   if (!findEvent) {

@@ -1,10 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { Photon } from '@prisma/photon'
 import { hash } from 'bcryptjs'
 
-const prisma = new PrismaClient()
+const photon = new Photon()
 
 async function main() {
-  const user1 = await prisma.users.create({
+  const user1 = await photon.users.create({
     data: {
       email: 'w@w.w',
       name: 'w',
@@ -19,7 +19,7 @@ async function main() {
       },
     },
   })
-  const user2 = await prisma.users.create({
+  const user2 = await photon.users.create({
     data: {
       email: 'w2@w.w',
       name: 'w2',
@@ -42,10 +42,10 @@ async function main() {
       },
     },
   })
-  const user1Events = await prisma.events.findMany({
+  const user1Events = await photon.events.findMany({
     where: { owner: { name: 'w' } },
   })
-  const user1Question = await prisma.questions.create({
+  const user1Question = await photon.questions.create({
     data: {
       event: { connect: { id: user1Events[0].id } },
       content: 'How can I use?',
@@ -53,7 +53,7 @@ async function main() {
       author: { connect: { id: user1.id } },
     },
   })
-  const user2Question = await prisma.questions.create({
+  const user2Question = await photon.questions.create({
     data: {
       event: { connect: { id: user1Events[0].id } },
       content: 'An other question by user: w2.',
@@ -67,5 +67,5 @@ async function main() {
 main()
   .catch(e => console.error(e))
   .finally(async () => {
-    await prisma.disconnect()
+    await photon.disconnect()
   })

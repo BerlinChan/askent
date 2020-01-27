@@ -4,7 +4,7 @@ import {
   UserCreateInput,
   UserWhereUniqueInput,
   UserWhereInput,
-} from '@prisma/client'
+} from '@prisma/photon'
 import { NexusGenFieldTypes } from 'nexus-typegen'
 import { hash, compare } from 'bcryptjs'
 import { sign } from 'jsonwebtoken'
@@ -46,7 +46,7 @@ export const userQuery = extendType({
       type: 'User',
       description: 'Query my user info.',
       resolve: (root, args, ctx) => {
-        return ctx.prisma.users.findOne({
+        return ctx.photon.users.findOne({
           where: { id: getUserId(ctx) },
         }) as Promise<UserType>
       },
@@ -87,7 +87,7 @@ export const userMutation = extendType({
           throw new Error(`Email "${args.email}" has already exist.`)
         }
         const hashedPassword = await hash(args.password, 10)
-        const user = await context.prisma.users.create({
+        const user = await context.photon.users.create({
           data: { ...args, password: hashedPassword } as UserCreateInput,
         })
 
@@ -104,7 +104,7 @@ export const userMutation = extendType({
         password: stringArg({ required: true }),
       },
       resolve: async (parent, args: UserWhereInput, context, info) => {
-        const user = await context.prisma.users.findOne({
+        const user = await context.photon.users.findOne({
           where: { email: args.email } as UserWhereUniqueInput,
         })
         if (!user) {
@@ -133,13 +133,13 @@ async function checkNameOrEmailExist(
 ): Promise<boolean> {
   if (/@/.test(string)) {
     return Boolean(
-      await context.prisma.users.findOne({
+      await context.photon.users.findOne({
         where: { email: string } as UserWhereUniqueInput,
       }),
     )
   } else {
     return Boolean(
-      await context.prisma.users.findOne({
+      await context.photon.users.findOne({
         where: { name: string } as UserWhereUniqueInput,
       }),
     )
