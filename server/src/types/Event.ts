@@ -50,7 +50,7 @@ export const PubEvent = objectType({
 export const eventQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.field('event', {
+    t.field('eventByMe', {
       type: 'Event',
       args: {
         eventId: idArg({ required: true }),
@@ -61,7 +61,7 @@ export const eventQuery = extendType({
         }) as Promise<EventType>
       },
     })
-    t.list.field('events', {
+    t.list.field('eventsByMe', {
       type: 'Event',
       description: 'Get all my events.',
       args: { searchString: stringArg() },
