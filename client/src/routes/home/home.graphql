@@ -1,5 +1,5 @@
-query PubEvents($code: String) {
-  pubEvents(code: $code) {
+query EventCodeOptions($code: String) {
+  eventsByCode(code: $code) {
     id
     code
     name

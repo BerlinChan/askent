@@ -21,8 +21,8 @@ import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import { QueryResult } from "@apollo/react-common";
 import {
   Question,
-  EventByMeQuery,
-  EventByMeQueryVariables,
+  HeaderEventQuery,
+  HeaderEventQueryVariables,
   useUpdateQuestionMutation
 } from "../../../../generated/graphqlHooks";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
@@ -87,7 +87,7 @@ interface Props {
     | "published"
     | "top"
   >;
-  eventByMeQuery: QueryResult<EventByMeQuery, EventByMeQueryVariables>;
+  headerEventQuery: QueryResult<HeaderEventQuery, HeaderEventQueryVariables>;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
@@ -100,13 +100,13 @@ interface Props {
 const QuestionListItem: React.FC<Props> = ({
   question,
   handleMoreClick,
-  eventByMeQuery,
+  headerEventQuery,
   editContent,
   handleEditContentToggle,
   editContentInputRef
 }) => {
   const classes = useStyles();
-  const { data: eventByMeData } = eventByMeQuery;
+  const { data } = headerEventQuery;
   const { formatMessage } = useIntl();
   const [
     updateQuestionMutation,
@@ -284,7 +284,7 @@ const QuestionListItem: React.FC<Props> = ({
                 handleToggle={handleTopClick}
               />
             )}
-            {eventByMeData?.eventByMe.moderation && !question.archived && (
+            {data?.eventById.moderation && !question.archived && (
               <QuestionToggleButton
                 className="questionHover"
                 id={question.id}

@@ -18,7 +18,8 @@ import { useRouteMatch } from "react-router-dom";
 import { RouteTabs } from "../../components/Tabs";
 import SearchIcon from "@material-ui/icons/Search";
 import { useIntl } from "react-intl";
-import { Logo, AuthedAction } from "../../components/Header";
+import { AuthedAction } from "../../components/Header";
+import Logo from "../../components/Logo";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

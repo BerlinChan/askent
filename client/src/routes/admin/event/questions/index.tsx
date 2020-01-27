@@ -20,8 +20,8 @@ import {
   useQuestionDeletedSubscription,
   useDeleteAllUnpublishedQuestionsMutation,
   usePublishAllUnpublishedQuestionsMutation,
-  EventByMeQuery,
-  EventByMeQueryVariables,
+  HeaderEventQuery,
+  HeaderEventQueryVariables,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument
@@ -62,15 +62,15 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventByMeQuery: QueryResult<EventByMeQuery, EventByMeQueryVariables>;
+  headerEventQuery: QueryResult<HeaderEventQuery, HeaderEventQueryVariables>;
 }
 
-const Questions: React.FC<Props> = ({ eventByMeQuery }) => {
+const Questions: React.FC<Props> = ({ headerEventQuery }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const { id } = useParams();
   const [tabIndex, setTabIndex] = React.useState(0);
-  const { data: eventByMeData } = eventByMeQuery;
+  const { data } = headerEventQuery;
   const questionsByEventQuery = useQuestionsByEventQuery({
     variables: { eventId: id as string }
   });
@@ -141,7 +141,7 @@ const Questions: React.FC<Props> = ({ eventByMeQuery }) => {
     setTabIndex(newValue);
   };
   const handleModerationChange = async () => {
-    if (eventByMeData?.eventByMe.moderation) {
+    if (data?.eventById.moderation) {
       setConfirmModeration(true);
     } else {
       await updateEventMutation({
@@ -228,7 +228,7 @@ const Questions: React.FC<Props> = ({ eventByMeQuery }) => {
             labelPlacement="start"
             control={
               <Switch
-                checked={Boolean(eventByMeData?.eventByMe.moderation)}
+                checked={Boolean(data?.eventById.moderation)}
                 onChange={handleModerationChange}
               />
             }
@@ -260,9 +260,9 @@ const Questions: React.FC<Props> = ({ eventByMeQuery }) => {
           />
         </Box>
         <Paper className={classes.gridItemPaper}>
-          {eventByMeData?.eventByMe.moderation ? (
+          {data?.eventById.moderation ? (
             <QuestionList
-              eventByMeQuery={eventByMeQuery}
+              headerEventQuery={headerEventQuery}
               questionsByEventQuery={questionsByEventQuery}
               filter={item => !item.published}
             />
@@ -301,14 +301,14 @@ const Questions: React.FC<Props> = ({ eventByMeQuery }) => {
         <Paper className={classes.gridItemPaper}>
           <TabPanel value={tabIndex} index={0}>
             <QuestionList
-              eventByMeQuery={eventByMeQuery}
+              headerEventQuery={headerEventQuery}
               questionsByEventQuery={questionsByEventQuery}
               filter={item => !item.archived && item.published}
             />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             <QuestionList
-              eventByMeQuery={eventByMeQuery}
+              headerEventQuery={headerEventQuery}
               questionsByEventQuery={questionsByEventQuery}
               filter={item => item.archived && item.published}
             />

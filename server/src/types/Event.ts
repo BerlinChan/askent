@@ -21,21 +21,10 @@ export const Event = objectType({
     t.model.updatedAt()
     t.model.startAt()
     t.model.endAt()
-    t.model.questions()
     t.model.moderation()
-  },
-})
-export const PubEvent = objectType({
-  name: 'PubEvent',
-  description: 'Event for public use.',
-  definition(t) {
-    t.id('id')
-    t.string('code')
-    t.string('name')
-    t.field('startAt', { type: 'DateTime' })
-    t.field('endAt', { type: 'DateTime' })
+    t.model.questions()
 
-    t.list.field('publishedQuestions', {
+    t.list.field('questionAllPublished', {
       type: 'Question',
       resolve: async (root, args, ctx) => {
         const findAllQuestions = await ctx.photon.events
@@ -50,15 +39,17 @@ export const PubEvent = objectType({
 export const eventQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.field('eventByMe', {
+    t.field('eventById', {
       type: 'Event',
       args: {
         eventId: idArg({ required: true }),
       },
-      resolve: (root, { eventId }, context) => {
-        return context.photon.events.findOne({
+      resolve: async (root, { eventId }, context) => {
+        const event = await context.photon.events.findOne({
           where: { id: eventId },
-        }) as Promise<EventType>
+        })
+
+        return event as EventType
       },
     })
     t.list.field('eventsByMe', {
@@ -78,6 +69,18 @@ export const eventQuery = extendType({
         })
       },
     })
+    t.list.field('eventsByCode', {
+      type: 'Event',
+      description: 'Get events by code.',
+      args: { code: stringArg() },
+      resolve: async (root, { code }, context) => {
+        const events = await context.photon.events.findMany({
+          where: { code: { contains: code } },
+        })
+
+        return events
+      },
+    })
     t.field('checkEventCodeExist', {
       type: 'Boolean',
       description: 'Check if a event code has already exist.',
@@ -86,24 +89,6 @@ export const eventQuery = extendType({
       },
       resolve: async (root, { code }, context) => {
         return await checkEventCodeExist(context, code)
-      },
-    })
-    t.list.field('pubEvents', {
-      type: 'PubEvent',
-      description: 'Get all public events.',
-      args: { code: stringArg() },
-      resolve: async (root, { code }, ctx) => {
-        const events = await ctx.photon.events.findMany({
-          where: { code: { contains: code } },
-        })
-
-        return events.map(event => ({
-          id: event.id,
-          code: event.code,
-          name: event.name,
-          startAt: event.startAt,
-          endAt: event.endAt,
-        }))
       },
     })
   },

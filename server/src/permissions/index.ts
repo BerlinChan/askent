@@ -8,34 +8,40 @@ const rules = {
       return Boolean(userId)
     },
   ),
-  isEventAuthor: rule({ cache: 'strict' })(
+  isEventOwner: rule({ cache: 'contextual' })(async ({ id }, args, context) => {
+    const userId = getUserId(context)
+    const owner = await context.photon.events.findOne({ where: { id } }).owner()
+
+    return userId === owner.id
+  }),
+  isEventOwnerByArgId: rule({ cache: 'strict' })(
     async (parent, { eventId }, context) => {
       const userId = getUserId(context)
-      const owner = await context.prisma.events
+      const owner = await context.photon.events
         .findOne({ where: { id: eventId } })
         .owner()
 
       return userId === owner.id
     },
   ),
-  isQuestionAuthor: rule({ cache: 'strict' })(
-    async (parent, { questionId }, context) => {
+  isQuestionAuthor: rule({ cache: 'contextual' })(
+    async ({ id }, args, context) => {
       const userId = getUserId(context)
-      const questionAuthor = await context.prisma.questions
+      const questionAuthor = await context.photon.questions
         .findOne({
-          where: { id: questionId },
+          where: { id },
         })
         .author()
 
       return userId === questionAuthor.id
     },
   ),
-  isQuestionEventOwner: rule({ cache: 'strict' })(
-    async (parent, { questionId }, context) => {
+  isQuestionEventOwner: rule({ cache: 'contextual' })(
+    async ({ id }, args, context) => {
       const userId = getUserId(context)
-      const eventOwner = await context.prisma.questions
+      const eventOwner = await context.photon.questions
         .findOne({
-          where: { id: questionId },
+          where: { id },
         })
         .event()
         .owner()
@@ -48,7 +54,6 @@ const rules = {
 export const permissions = shield({
   Query: {
     me: rules.isAuthenticatedUser,
-    eventByMe: rules.isEventAuthor,
     eventsByMe: rules.isAuthenticatedUser,
     questionsByMe: rules.isAuthenticatedUser,
     questionsByEvent: rules.isAuthenticatedUser,
@@ -56,13 +61,20 @@ export const permissions = shield({
   },
   Mutation: {
     createEvent: rules.isAuthenticatedUser,
-    updateEvent: rules.isEventAuthor,
-    deleteEvent: rules.isEventAuthor,
+    updateEvent: rules.isEventOwnerByArgId,
+    deleteEvent: rules.isEventOwnerByArgId,
 
     createQuestion: rules.isAuthenticatedUser,
     deleteQuestion: or(rules.isQuestionAuthor, rules.isQuestionEventOwner),
-    deleteAllUnpublishedQuestions: rules.isEventAuthor,
-    publishAllUnpublishedQuestions: rules.isEventAuthor,
+    deleteAllUnpublishedQuestions: rules.isEventOwnerByArgId,
+    publishAllUnpublishedQuestions: rules.isEventOwnerByArgId,
+  },
+  Event: {
+    owner: rules.isEventOwner,
+    createdAt: rules.isEventOwner,
+    updatedAt: rules.isEventOwner,
+    moderation: rules.isEventOwner,
+    questions: rules.isEventOwner,
   },
   UpdateQuestionInputType: {
     content: or(rules.isQuestionAuthor, rules.isQuestionEventOwner),

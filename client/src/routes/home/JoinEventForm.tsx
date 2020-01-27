@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import {
   InputAdornment,
   Paper,
@@ -11,7 +12,10 @@ import { ButtonLoading } from "../../components/Form";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { EVENT_CODE_MAX_LENGTH } from "../../constant";
-import { usePubEventsLazyQuery, PubEvent } from "../../generated/graphqlHooks";
+import {
+  useEventCodeOptionsLazyQuery,
+  Event
+} from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -24,44 +28,51 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const JoinEventForm: React.FC = props => {
   const classes = useStyles();
-  const [pubEventsLazyQuery, { data, loading }] = usePubEventsLazyQuery();
+  const history = useHistory();
+  const [
+    eventCodeOptionsLazyQuery,
+    { data, loading }
+  ] = useEventCodeOptionsLazyQuery();
 
   return (
     <Paper>
       <Formik
-        initialValues={{ eventCode: "" }}
+        initialValues={{ code: "", id: "" }}
         validationSchema={Yup.object({
-          eventCode: Yup.string()
+          code: Yup.string()
             .max(EVENT_CODE_MAX_LENGTH)
-            .required()
+            .required(),
+          id: Yup.string().required()
         })}
         onSubmit={async values => {
-          console.log("join event:", values);
+          history.push(`/event/${values.id}/login`);
         }}
       >
         {formProps => (
           <Form className={classes.joinForm}>
             <Autocomplete
               clearOnEscape
-              id="eventCode"
+              id="code"
+              onOpen={() => eventCodeOptionsLazyQuery()}
               onInputChange={(event, value, reason) => {
-                pubEventsLazyQuery({
+                eventCodeOptionsLazyQuery({
                   variables: { code: value }
                 });
               }}
               onChange={(
                 event: React.ChangeEvent<{}>,
                 newValue: Pick<
-                  PubEvent,
+                  Event,
                   "id" | "code" | "name" | "startAt" | "endAt"
                 > | null
               ) => {
-                formProps.setTouched({ eventCode: true });
-                formProps.setFieldValue("eventCode", newValue?.code || "");
+                formProps.setTouched({ code: true, id: true });
+                formProps.setFieldValue("id", newValue?.id || "");
+                formProps.setFieldValue("code", newValue?.code || "");
               }}
-              getOptionSelected={(option, value) => option.code === value.code}
+              getOptionSelected={(option, value) => option.id === value.id}
               getOptionLabel={option => option.code}
-              options={data?.pubEvents}
+              options={data?.eventsByCode}
               loading={loading}
               renderInput={params => (
                 <TextField
@@ -71,11 +82,11 @@ const JoinEventForm: React.FC = props => {
                   variant="outlined"
                   margin="normal"
                   error={Boolean(
-                    formProps.touched.eventCode && formProps.errors.eventCode
+                    formProps.touched.code && formProps.errors.code
                   )}
                   helperText={
-                    formProps.touched.eventCode && formProps.errors.eventCode
-                      ? formProps.errors.eventCode
+                    formProps.touched.code && formProps.errors.code
+                      ? formProps.errors.code
                       : " "
                   }
                   InputProps={{

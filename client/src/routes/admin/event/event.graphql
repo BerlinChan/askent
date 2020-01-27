@@ -1,5 +1,5 @@
-query EventByMe($eventId: ID!) {
-  eventByMe(eventId: $eventId) {
+query HeaderEvent($eventId: ID!) {
+  eventById(eventId: $eventId) {
     id
     name
     code

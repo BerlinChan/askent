@@ -121,8 +121,8 @@
 
 "@prisma/sdk@0.0.172":
   version "0.0.172"
-  resolved "https://registry.yarnpkg.com/@prisma/sdk/-/sdk-0.0.172.tgz#42426d4c37ce46ed108cbeb60bcb3544b9f61642"
-  integrity sha512-XrfPOKTaW6Hh1pQZWqOWA5bN5M8evY5nqGMTaG0i2qSxNyannG+5PaVOy3DxshSDb27e2X0dt+gFbis+hy19fQ==
+  resolved "https://registry.npm.taobao.org/@prisma/sdk/download/@prisma/sdk-0.0.172.tgz#42426d4c37ce46ed108cbeb60bcb3544b9f61642"
+  integrity sha1-QkJtTDfORu0QjL62C8s1RLn2FkI=
   dependencies:
     "@apexearth/copy" "^1.4.4"
     "@prisma/engine-core" "2.0.41"
@@ -460,8 +460,8 @@ aggregate-error@^3.0.0:
 
 ansi-escapes@^4.2.1:
   version "4.3.0"
-  resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-4.3.0.tgz#a4ce2b33d6b214b7950d8595c212f12ac9cc569d"
-  integrity sha512-EiYhwo0v255HUL6eDyuLrXEkTi7WwVCLAw+SeOQ7M7qdun1z1pum4DEm/nuqIVbPvi9RPPc9k9LbyBv6H0DwVg==
+  resolved "https://registry.npm.taobao.org/ansi-escapes/download/ansi-escapes-4.3.0.tgz#a4ce2b33d6b214b7950d8595c212f12ac9cc569d"
+  integrity sha1-pM4rM9ayFLeVDYWVwhLxKsnMVp0=
   dependencies:
     type-fest "^0.8.1"
 
@@ -882,8 +882,8 @@ cors@2.8.5, cors@^2.8.4:
 
 create-nexus-type@1.1.4:
   version "1.1.4"
-  resolved "https://registry.yarnpkg.com/create-nexus-type/-/create-nexus-type-1.1.4.tgz#6149f77733cb05c93fcc1b5dbd22b5376a065b7a"
-  integrity sha512-dsZGZWskJwt56KKk0dliSNvap3BqIAzl84sKr3qcujY/svRKkD6oBSMFyk4yz6EygRrxmw2SKHjX/+7RMTwfiw==
+  resolved "https://registry.npm.taobao.org/create-nexus-type/download/create-nexus-type-1.1.4.tgz#6149f77733cb05c93fcc1b5dbd22b5376a065b7a"
+  integrity sha1-YUn3dzPLBck/zBtdvSK1N2oGW3o=
   dependencies:
     arg "^4.1.2"
     pluralize "^8.0.0"
@@ -2615,8 +2615,8 @@ supports-color@^7.0.0, supports-color@^7.1.0:
 
 supports-hyperlinks@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.yarnpkg.com/supports-hyperlinks/-/supports-hyperlinks-2.0.0.tgz#b1b94a159e9df00b0a554b2d5f0e0a89690334b0"
-  integrity sha512-bFhn0MQ8qefLyJ3K7PpHiPUTuTVPWw6RXfaMeV6xgJLXtBbszyboz1bvGTVv4R0YpQm2DqlXXn0fFHhxUHVE5w==
+  resolved "https://registry.npm.taobao.org/supports-hyperlinks/download/supports-hyperlinks-2.0.0.tgz#b1b94a159e9df00b0a554b2d5f0e0a89690334b0"
+  integrity sha1-sblKFZ6d8AsKVUstXw4KiWkDNLA=
   dependencies:
     has-flag "^4.0.0"
     supports-color "^7.0.0"
@@ -2670,8 +2670,8 @@ tempy@^0.3.0:
 
 terminal-link@^2.1.1:
   version "2.1.1"
-  resolved "https://registry.yarnpkg.com/terminal-link/-/terminal-link-2.1.1.tgz#14a64a27ab3c0df933ea546fba55f2d078edc994"
-  integrity sha512-un0FmiRUQNr5PJqy9kP7c40F5BOfpGlYTrxonDChEZB7pzZxRNp/bt+ymiy9/npwXya9KH99nJ/GXFIiUkYGFQ==
+  resolved "https://registry.npm.taobao.org/terminal-link/download/terminal-link-2.1.1.tgz#14a64a27ab3c0df933ea546fba55f2d078edc994"
+  integrity sha1-FKZKJ6s8Dfkz6lRvulXy0HjtyZQ=
   dependencies:
     ansi-escapes "^4.2.1"
     supports-hyperlinks "^2.0.0"
