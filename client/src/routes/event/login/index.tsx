@@ -10,7 +10,12 @@ import {
   fade
 } from "@material-ui/core/styles";
 import { FormattedMessage, FormattedDate } from "react-intl";
-import { useEventForLoginQuery } from "../../../generated/graphqlHooks";
+import {
+  useEventForLoginQuery,
+  useLoginAudienceMutation,
+  useIsEventAudienceLazyQuery,
+  useJoinEventMutation
+} from "../../../generated/graphqlHooks";
 import { useFingerprint } from "../../../hooks";
 import useToken from "../../../hooks/useToken";
 
@@ -35,20 +40,46 @@ const EventLogin: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
   let { id } = useParams();
-  const { data, loading } = useEventForLoginQuery({
+  const { data, loading: eventForLoginLoading } = useEventForLoginQuery({
     variables: { eventId: id as string }
   });
+  const [
+    loginAudienceMutation,
+    { loading: loginAudienceLoading }
+  ] = useLoginAudienceMutation();
+  const [
+    isEventAudienceLazyQuery,
+    { data: isEventAudienceData }
+  ] = useIsEventAudienceLazyQuery();
+  const [
+    joinEventMutation,
+    { loading: joinEventLoading }
+  ] = useJoinEventMutation();
   const fingerprint = useFingerprint();
-  const { token } = useToken();
+  const { token, setToken } = useToken();
 
   React.useEffect(() => {
-    if (token) {
-    } else {
-    }
+    (async () => {
+      if (token.audienceAuthToken) {
+        await isEventAudienceLazyQuery({
+          variables: { eventId: id as string }
+        });
+        if (isEventAudienceData?.isEventAudience) {
+          history.replace(`/event/${id}/questions`);
+        }
+      }
+    })();
   });
 
-  const handleEventLogin = () => {
-    history.replace("/");
+  const handleEventLogin = async () => {
+    if (!token.audienceAuthToken) {
+      const { data } = await loginAudienceMutation({
+        variables: { fingerprint }
+      });
+      setToken({ audienceAuthToken: data?.loginAudience.token });
+    }
+    await joinEventMutation({ variables: { eventId: id as string } });
+    history.replace(`/event/${id}/questions`);
   };
 
   return (
@@ -73,7 +104,9 @@ const EventLogin: React.FC = () => {
         <ButtonLoading
           variant="contained"
           color="primary"
-          loading={loading}
+          loading={
+            eventForLoginLoading || loginAudienceLoading || joinEventLoading
+          }
           onClick={handleEventLogin}
         >
           <FormattedMessage id="Join_event" defaultMessage="Join event" />

@@ -13,7 +13,7 @@ import {
   User,
   QuestionCreateInput,
 } from '@prisma/photon'
-import { getUserId } from '../utils'
+import { getAdminUserId } from '../utils'
 import { withFilter } from 'apollo-server-express'
 
 export const Question = objectType({
@@ -65,7 +65,7 @@ export const questionQuery = extendType({
       },
       resolve: (root, args, ctx) => {
         return ctx.photon.questions.findMany({
-          where: { author: { id: getUserId(ctx) } },
+          where: { author: { id: getAdminUserId(ctx) } },
         })
       },
     })
@@ -111,7 +111,7 @@ export const questionMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { username, content, eventId }, ctx) => {
-        const userId = getUserId(ctx)
+        const userId = getAdminUserId(ctx)
         const event = await ctx.photon.events.findOne({
           where: { id: eventId },
         })
@@ -258,7 +258,7 @@ export const questionMutation = extendType({
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
-        const userId = getUserId(ctx)
+        const userId = getAdminUserId(ctx)
         const votedUsers: User[] = await ctx.photon.questions
           .findOne({ where: { id: questionId } })
           .votedUsers({ where: { id: userId } })

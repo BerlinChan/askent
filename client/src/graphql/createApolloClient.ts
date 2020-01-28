@@ -17,8 +17,8 @@ const authMiddleware = setContext((operation, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: localStorage.getItem(AUTH_TOKEN),
-      AuthorizationAudience: localStorage.getItem(AUDIENCE_AUTH_TOKEN)
+      Authorization: localStorage.getItem(AUTH_TOKEN) || "",
+      AuthorizationAudience: localStorage.getItem(AUDIENCE_AUTH_TOKEN) || ""
     }
   };
 });

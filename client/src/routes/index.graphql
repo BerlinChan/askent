@@ -1,6 +1,7 @@
 query Me{
     me{
         id
+        role
         name
         email
     }

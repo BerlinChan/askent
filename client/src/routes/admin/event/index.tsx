@@ -14,7 +14,7 @@ const PollsComponent = loadable(() => import("./polls"), {
   fallback: <Loading />
 });
 
-const Event: React.FC = () => {
+const EventAdmin: React.FC = () => {
   const { path } = useRouteMatch();
   const { id } = useParams();
   // TODO: generate short id for event
@@ -40,4 +40,4 @@ const Event: React.FC = () => {
   );
 };
 
-export default Event;
+export default EventAdmin;

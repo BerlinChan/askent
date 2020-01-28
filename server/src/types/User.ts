@@ -7,9 +7,8 @@ import {
 } from '@prisma/photon'
 import { NexusGenFieldTypes } from 'nexus-typegen'
 import { hash, compare } from 'bcryptjs'
-import { sign } from 'jsonwebtoken'
 import { Context } from '../context'
-import { getUserId } from '../utils'
+import { getAdminUserId, signToken } from '../utils'
 
 export const User = objectType({
   name: 'User',
@@ -18,10 +17,12 @@ export const User = objectType({
     t.model.createdAt()
     t.model.updatedAt()
     t.model.lastLoginAt()
+    t.model.role()
     t.model.name()
     t.model.email()
     t.model.events()
     t.model.questions()
+    // t.model.fingerprint()
     // t.model.password()
   },
 })
@@ -47,7 +48,7 @@ export const userQuery = extendType({
       description: 'Query my user info.',
       resolve: (root, args, ctx) => {
         return ctx.photon.users.findOne({
-          where: { id: getUserId(ctx) },
+          where: { id: getAdminUserId(ctx) },
         }) as Promise<UserType>
       },
     })
@@ -82,17 +83,21 @@ export const userMutation = extendType({
       },
       resolve: async (root, args, ctx, info) => {
         if (await checkNameOrEmailExist(ctx, args.name)) {
-          throw new Error(`Name "${args.name}" has already exist.`)
+          throw new Error(ERROR_MESSAGE.nameExist(args.name))
         } else if (await checkNameOrEmailExist(ctx, args.email)) {
-          throw new Error(`Email "${args.email}" has already exist.`)
+          throw new Error(ERROR_MESSAGE.emailExist(args.email))
         }
         const hashedPassword = await hash(args.password, 10)
         const user = await ctx.photon.users.create({
-          data: { ...args, password: hashedPassword } as UserCreateInput,
+          data: {
+            ...args,
+            password: hashedPassword,
+            role: 'Admin',
+          } as UserCreateInput,
         })
 
         return {
-          token: sign({ userId: user.id }, process.env.JWT_SECRET as string),
+          token: signToken({ userId: user.id, role: user.role }),
           user,
         }
       },
@@ -112,14 +117,39 @@ export const userMutation = extendType({
         }
         const passwordValid = await compare(
           args.password as string,
-          user.password,
+          user.password as string,
         )
         if (!passwordValid) {
           throw new Error('Invalid password')
         }
 
         return {
-          token: sign({ userId: user.id }, process.env.JWT_SECRET as string),
+          token: signToken({ userId: user.id, role: user.role }),
+          user,
+        }
+      },
+    })
+    t.field('loginAudience', {
+      type: 'AuthPayload',
+      description: `Audience 登陆。
+      若 fingerprint 的 User 已存在则返回 token，
+      若 fingerprint 的 User 不存在则 create 并返回 token`,
+      args: { fingerprint: stringArg({ required: true }) },
+      resolve: async (root, { fingerprint }, ctx) => {
+        let user = await ctx.photon.users.findOne({
+          where: { fingerprint },
+        })
+        if (!user) {
+          user = await ctx.photon.users.create({
+            data: {
+              fingerprint,
+              role: 'Audience',
+            },
+          })
+        }
+
+        return {
+          token: signToken({ userId: user.id, role: user.role }),
           user,
         }
       },
@@ -144,4 +174,21 @@ async function checkNameOrEmailExist(
       }),
     )
   }
+}
+async function checkFingerprintExist(
+  ctx: Context,
+  fingerprint: string,
+): Promise<boolean> {
+  return Boolean(
+    await ctx.photon.users.findOne({
+      where: { fingerprint },
+    }),
+  )
+}
+
+const ERROR_MESSAGE = {
+  nameExist: (name: string) => `Name "${name}" has already exist.`,
+  emailExist: (email: string) => `Email "${email}" has already exist.`,
+  fingerprintExist: (fingerprint: string) =>
+    `Fingerprint "${fingerprint}" has already exist.`,
 }

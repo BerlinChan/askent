@@ -6,9 +6,10 @@ import {
   idArg,
   booleanArg,
 } from 'nexus'
-import { getUserId } from '../utils'
+import { getAdminUserId, getAudienceUserId } from '../utils'
 import { Context } from '../context'
 import { Event as EventType } from '@prisma/photon'
+import { connect } from 'http2'
 
 export const Event = objectType({
   name: 'Event',
@@ -69,7 +70,7 @@ export const eventQuery = extendType({
       description: 'Get all my events.',
       args: { searchString: stringArg() },
       resolve: async (root, args, ctx) => {
-        const userId = getUserId(ctx)
+        const userId = getAdminUserId(ctx)
         return ctx.photon.events.findMany({
           where: {
             owner: { id: userId },
@@ -103,6 +104,18 @@ export const eventQuery = extendType({
         return await checkEventCodeExist(ctx, code)
       },
     })
+    t.field('isEventAudience', {
+      type: 'Boolean',
+      args: { eventId: idArg({ required: true }) },
+      resolve: async (root, { eventId }, ctx) => {
+        const audienceId = getAudienceUserId(ctx)
+        const audiences = await ctx.photon.events
+          .findOne({ where: { id: eventId } })
+          .audiences()
+
+        return Boolean(audiences.find(user => user.id === audienceId))
+      },
+    })
   },
 })
 
@@ -121,7 +134,7 @@ export const eventMutation = extendType({
         if (await checkEventCodeExist(ctx, code)) {
           throw new Error(`Code "${code}" has already exist.`)
         }
-        const userId = getUserId(ctx)
+        const userId = getAdminUserId(ctx)
         return ctx.photon.events.create({
           data: {
             owner: { connect: { id: userId } },
@@ -188,12 +201,15 @@ export const eventMutation = extendType({
       description: `加入活动。`,
       args: {
         eventId: idArg({ required: true }),
-        fingerprint: stringArg({ required: true }),
       },
-      resolve: (root, args, ctx) => {
-        const userId = getUserId(ctx)
-        if (userId) {
-        }
+      resolve: async (root, { eventId }, ctx) => {
+        const userId = getAudienceUserId(ctx)
+        const event = await ctx.photon.events.update({
+          where: { id: eventId },
+          data: { audiences: { connect: { id: userId } } },
+        })
+
+        return event
       },
     })
   },

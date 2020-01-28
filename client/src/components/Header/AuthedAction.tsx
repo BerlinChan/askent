@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: theme.typography.pxToRem(14),
       fontWeight: theme.typography.fontWeightBold
     },
-    name: {
+    role: {
       fontSize: theme.typography.pxToRem(14)
     }
   })
@@ -50,10 +50,10 @@ export const AuthedAction: React.FC = () => {
     <React.Fragment>
       <Box className={classes.userInfo}>
         <Typography className={classes.email}>{userData?.me.email}</Typography>
-        <Typography className={classes.name}>{userData?.me.name}</Typography>
+        <Typography className={classes.role}>{userData?.me.role}</Typography>
       </Box>
       <IconButton size="small" onClick={handleMenuOpen}>
-        <Avatar alt={userData?.me.name} src="/broken-image.jpg" />
+        <Avatar alt={userData?.me.name as string} src="/broken-image.jpg" />
       </IconButton>
       <Menu
         keepMounted

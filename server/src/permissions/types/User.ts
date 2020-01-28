@@ -1,10 +1,15 @@
 import { rule } from 'graphql-shield'
-import { getUserId } from '../../utils'
+import { getAdminUserId, getAudienceUserId } from '../../utils'
 
 export const isAuthenticatedUser = rule({ cache: 'contextual' })(
-  (parent, args, context) => {
-    const userId = getUserId(context)
+  (parent, args, ctx) => {
+    const userId = getAdminUserId(ctx)
     return Boolean(userId)
+  },
+)
+export const isAuthenticatedAudience = rule({ cache: 'contextual' })(
+  (parent, args, ctx) => {
+    return Boolean(getAudienceUserId(ctx))
   },
 )
 
