@@ -1,4 +1,4 @@
-import { objectType, extendType, stringArg } from 'nexus'
+import { objectType, extendType, stringArg, idArg } from 'nexus'
 import {
   User as UserType,
   UserCreateInput,
@@ -80,14 +80,14 @@ export const userMutation = extendType({
         email: stringArg({ required: true, description: 'User Email' }),
         password: stringArg({ required: true }),
       },
-      resolve: async (root, args, context, info) => {
-        if (await checkNameOrEmailExist(context, args.name)) {
+      resolve: async (root, args, ctx, info) => {
+        if (await checkNameOrEmailExist(ctx, args.name)) {
           throw new Error(`Name "${args.name}" has already exist.`)
-        } else if (await checkNameOrEmailExist(context, args.email)) {
+        } else if (await checkNameOrEmailExist(ctx, args.email)) {
           throw new Error(`Email "${args.email}" has already exist.`)
         }
         const hashedPassword = await hash(args.password, 10)
-        const user = await context.photon.users.create({
+        const user = await ctx.photon.users.create({
           data: { ...args, password: hashedPassword } as UserCreateInput,
         })
 
@@ -103,8 +103,8 @@ export const userMutation = extendType({
         email: stringArg({ required: true, description: 'User Email' }),
         password: stringArg({ required: true }),
       },
-      resolve: async (parent, args: UserWhereInput, context, info) => {
-        const user = await context.photon.users.findOne({
+      resolve: async (parent, args: UserWhereInput, ctx, info) => {
+        const user = await ctx.photon.users.findOne({
           where: { email: args.email } as UserWhereUniqueInput,
         })
         if (!user) {
@@ -128,18 +128,18 @@ export const userMutation = extendType({
 })
 
 async function checkNameOrEmailExist(
-  context: Context,
+  ctx: Context,
   string: string,
 ): Promise<boolean> {
   if (/@/.test(string)) {
     return Boolean(
-      await context.photon.users.findOne({
+      await ctx.photon.users.findOne({
         where: { email: string } as UserWhereUniqueInput,
       }),
     )
   } else {
     return Boolean(
-      await context.photon.users.findOne({
+      await ctx.photon.users.findOne({
         where: { name: string } as UserWhereUniqueInput,
       }),
     )

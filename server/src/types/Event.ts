@@ -17,6 +17,7 @@ export const Event = objectType({
     t.model.code()
     t.model.name()
     t.model.owner()
+    t.model.audiences()
     t.model.createdAt()
     t.model.updatedAt()
     t.model.startAt()
@@ -33,6 +34,17 @@ export const Event = objectType({
         return findAllQuestions.filter(item => item.published)
       },
     })
+    t.int('audienceCount', {
+      resolve: async ({ id }, args, ctx) => {
+        const audiences = await ctx.photon.events
+          .findOne({
+            where: { id },
+          })
+          .audiences()
+
+        return audiences.length
+      },
+    })
   },
 })
 
@@ -44,8 +56,8 @@ export const eventQuery = extendType({
       args: {
         eventId: idArg({ required: true }),
       },
-      resolve: async (root, { eventId }, context) => {
-        const event = await context.photon.events.findOne({
+      resolve: async (root, { eventId }, ctx) => {
+        const event = await ctx.photon.events.findOne({
           where: { id: eventId },
         })
 
@@ -56,9 +68,9 @@ export const eventQuery = extendType({
       type: 'Event',
       description: 'Get all my events.',
       args: { searchString: stringArg() },
-      resolve: async (root, args, context) => {
-        const userId = getUserId(context)
-        return context.photon.events.findMany({
+      resolve: async (root, args, ctx) => {
+        const userId = getUserId(ctx)
+        return ctx.photon.events.findMany({
           where: {
             owner: { id: userId },
             OR: [
@@ -73,8 +85,8 @@ export const eventQuery = extendType({
       type: 'Event',
       description: 'Get events by code.',
       args: { code: stringArg() },
-      resolve: async (root, { code }, context) => {
-        const events = await context.photon.events.findMany({
+      resolve: async (root, { code }, ctx) => {
+        const events = await ctx.photon.events.findMany({
           where: { code: { contains: code } },
         })
 
@@ -87,8 +99,8 @@ export const eventQuery = extendType({
       args: {
         code: stringArg({ required: true }),
       },
-      resolve: async (root, { code }, context) => {
-        return await checkEventCodeExist(context, code)
+      resolve: async (root, { code }, ctx) => {
+        return await checkEventCodeExist(ctx, code)
       },
     })
   },
@@ -131,16 +143,16 @@ export const eventMutation = extendType({
         endAt: arg({ type: 'DateTime', nullable: true }),
         moderation: booleanArg({ nullable: true }),
       },
-      resolve: async (root, args, context) => {
-        await checkEventExist(context, args.eventId)
-        const findEvent = await context.photon.events.findOne({
+      resolve: async (root, args, ctx) => {
+        await checkEventExist(ctx, args.eventId)
+        const findEvent = await ctx.photon.events.findOne({
           where: { id: args.eventId },
           select: { code: true },
         })
         if (
           args.code &&
           args.code !== findEvent?.code &&
-          (await checkEventCodeExist(context, args.code))
+          (await checkEventCodeExist(ctx, args.code))
         ) {
           throw new Error(`Code "${args.code}" has already exist.`)
         }
@@ -155,7 +167,7 @@ export const eventMutation = extendType({
             : {},
         )
 
-        return context.photon.events.update({
+        return ctx.photon.events.update({
           where: { id: args.eventId },
           data: event,
         })
@@ -166,23 +178,36 @@ export const eventMutation = extendType({
       args: {
         eventId: idArg({ required: true }),
       },
-      resolve: async (root, args, context) => {
-        await checkEventExist(context, args.eventId as string)
-        return context.photon.events.delete({ where: { id: args.eventId } })
+      resolve: async (root, args, ctx) => {
+        await checkEventExist(ctx, args.eventId as string)
+        return ctx.photon.events.delete({ where: { id: args.eventId } })
+      },
+    })
+    t.field('joinEvent', {
+      type: 'Event',
+      description: `加入活动。`,
+      args: {
+        eventId: idArg({ required: true }),
+        fingerprint: stringArg({ required: true }),
+      },
+      resolve: (root, args, ctx) => {
+        const userId = getUserId(ctx)
+        if (userId) {
+        }
       },
     })
   },
 })
 
-async function checkEventCodeExist(context: Context, code: string) {
-  return Boolean(await context.photon.events.findOne({ where: { code } }))
+async function checkEventCodeExist(ctx: Context, code: string) {
+  return Boolean(await ctx.photon.events.findOne({ where: { code } }))
 }
 
 async function checkEventExist(
-  context: Context,
+  ctx: Context,
   eventId: EventType['id'],
 ): Promise<boolean> {
-  const findEvent = await context.photon.events.findOne({
+  const findEvent = await ctx.photon.events.findOne({
     where: { id: eventId },
   })
   if (!findEvent) {

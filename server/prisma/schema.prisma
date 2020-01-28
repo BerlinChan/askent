@@ -29,6 +29,7 @@ model Event {
   code       String     @unique
   name       String
   owner      User
+  audiences  User[]     @relation(name: "EventAudiencesToUserTable")
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   startAt    DateTime
@@ -45,7 +46,7 @@ model Question {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   content    String
-  votedUsers User[]   @relation(name: "questionVotedUsersRelation")
+  votedUsers User[]   @relation(name: "VotedUsersUserTable")
   star       Boolean  @default(false)
   archived   Boolean  @default(false)
   published  Boolean  @default(true)

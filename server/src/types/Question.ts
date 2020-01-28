@@ -63,9 +63,9 @@ export const questionQuery = extendType({
       args: {
         // TODO: pagination
       },
-      resolve: (root, args, context) => {
-        return context.photon.questions.findMany({
-          where: { author: { id: getUserId(context) } },
+      resolve: (root, args, ctx) => {
+        return ctx.photon.questions.findMany({
+          where: { author: { id: getUserId(ctx) } },
         })
       },
     })
@@ -79,8 +79,8 @@ export const questionQuery = extendType({
         published: booleanArg(),
         top: booleanArg(),
       },
-      resolve: (root, args, context) => {
-        return context.photon.questions.findMany({
+      resolve: (root, args, ctx) => {
+        return ctx.photon.questions.findMany({
           where: {
             event: { id: args.eventId },
             star: args.star,
@@ -257,12 +257,12 @@ export const questionMutation = extendType({
       args: {
         questionId: idArg({ required: true }),
       },
-      resolve: async (root, { questionId }, context) => {
-        const userId = getUserId(context)
-        const votedUsers: User[] = await context.photon.questions
+      resolve: async (root, { questionId }, ctx) => {
+        const userId = getUserId(ctx)
+        const votedUsers: User[] = await ctx.photon.questions
           .findOne({ where: { id: questionId } })
           .votedUsers({ where: { id: userId } })
-        return context.photon.questions.update({
+        return ctx.photon.questions.update({
           where: { id: questionId },
           data: {
             votedUsers: votedUsers.length
@@ -280,12 +280,12 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
   {
     type: 'Question',
     args: { eventId: idArg({ required: true }) },
-    resolve: (payload, args, context) => {
+    resolve: (payload, args, ctx) => {
       return payload.questionAdded
     },
     subscribe: withFilter(
       (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_ADDED']),
-      (payload, args, context) => payload.eventId === args.eventId,
+      (payload, args, ctx) => payload.eventId === args.eventId,
     ),
   },
 )
@@ -300,7 +300,7 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
     },
     subscribe: withFilter(
       (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_UPDATED']),
-      (payload, args, context) => payload.eventId === args.eventId,
+      (payload, args, ctx) => payload.eventId === args.eventId,
     ),
   },
 )
@@ -314,7 +314,7 @@ export const questionDeletedSubscription = subscriptionField<'questionDeleted'>(
     },
     subscribe: withFilter(
       (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_DELETED']),
-      (payload, args, context) => payload.eventId === args.eventId,
+      (payload, args, ctx) => payload.eventId === args.eventId,
     ),
   },
 )

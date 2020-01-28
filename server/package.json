@@ -35,7 +35,7 @@
     "@types/jsonwebtoken": "8.3.7",
     "@types/node": "13.5.0",
     "@types/node-fetch": "2.5.4",
-    "@types/ramda": "^0.26.40",
+    "@types/ramda": "types/npm-ramda#dist",
     "create-nexus-type": "1.1.4",
     "prisma2": "2.0.0-preview019",
     "ts-node": "8.6.2",
