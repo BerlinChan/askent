@@ -41,6 +41,12 @@ const EventLogin: React.FC = () => {
   const fingerprint = useFingerprint();
   const { token } = useToken();
 
+  React.useEffect(() => {
+    if (token) {
+    } else {
+    }
+  });
+
   const handleEventLogin = () => {
     history.replace("/");
   };

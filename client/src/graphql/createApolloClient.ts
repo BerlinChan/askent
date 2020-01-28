@@ -8,17 +8,17 @@ import { HttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { resolvers, typeDefs } from "./resolvers";
 import config from "../config";
-import { AUTH_TOKEN } from "../constant";
+import { AUTH_TOKEN, AUDIENCE_AUTH_TOKEN } from "../constant";
 
 // TODO: refactor to createChache, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
-// Doc: https://www.apollographql.com/docs/react/caching/cache-interaction/#cache-persistence
 const cache = new InMemoryCache();
 
 const authMiddleware = setContext((operation, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: localStorage.getItem(AUTH_TOKEN)
+      Authorization: localStorage.getItem(AUTH_TOKEN),
+      AuthorizationAudience: localStorage.getItem(AUDIENCE_AUTH_TOKEN)
     }
   };
 });
