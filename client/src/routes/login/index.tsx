@@ -7,6 +7,7 @@ import { FTextField, ButtonLoading } from "../../components/Form";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useLoginMutation } from "../../generated/graphqlHooks";
 import { AUTH_TOKEN } from "../../constant";
+import useToken from "../../hooks/useToken";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,6 +29,7 @@ const Login: React.FC = () => {
   const classes = useStyles();
   const [loginMutation, { loading }] = useLoginMutation();
   const history = useHistory();
+  const { setToken } = useToken();
 
   return (
     <Box className={classes.signupBox}>
@@ -43,7 +45,7 @@ const Login: React.FC = () => {
         })}
         onSubmit={async values => {
           const { data } = await loginMutation({ variables: values });
-          localStorage.setItem(AUTH_TOKEN, data?.login.token as string);
+          setToken({ authToken: data?.login.token });
           history.replace("/admin");
         }}
       >

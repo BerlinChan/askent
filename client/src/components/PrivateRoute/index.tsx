@@ -1,18 +1,18 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { RouteProps } from "react-router";
-import { AUTH_TOKEN } from "../../constant";
+import useToken from "../../hooks/useToken";
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
 const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
-  const token = localStorage.getItem(AUTH_TOKEN);
+  const { token } = useToken();
 
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        token ? (
+        token.authToken ? (
           children
         ) : (
           <Redirect

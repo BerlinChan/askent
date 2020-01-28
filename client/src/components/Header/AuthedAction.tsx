@@ -14,7 +14,7 @@ import { useMeQuery } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import HomeIcon from "@material-ui/icons/Home";
-import { AUTH_TOKEN } from "../../constant";
+import useToken from "../../hooks/useToken";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,6 +36,7 @@ export const AuthedAction: React.FC = () => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
+  const { removeToken } = useToken();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(event.currentTarget);
@@ -81,7 +82,7 @@ export const AuthedAction: React.FC = () => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            localStorage.removeItem(AUTH_TOKEN);
+            removeToken();
             history.replace("/");
             handleMenuClose();
           }}

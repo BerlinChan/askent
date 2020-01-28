@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Fingerprint2 from "fingerprintjs2";
 
 export default function useFingerprint() {

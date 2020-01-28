@@ -4,7 +4,7 @@ import PrivateRoute from "../components/PrivateRoute";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../components/Loading";
 import Providers from "../components/Providers";
-import { AUTH_TOKEN } from "../constant";
+import useToken from "../hooks/useToken";
 
 const HomeComponent = loadable(() => import("./home"), {
   fallback: <Loading />
@@ -35,7 +35,7 @@ const Error404Component = loadable(() => import("./error/404"), {
 });
 
 const Router = () => {
-  const token = localStorage.getItem(AUTH_TOKEN);
+  const { token } = useToken();
 
   return (
     <Providers>
@@ -43,10 +43,10 @@ const Router = () => {
         <Switch>
           <Route exact path="/" component={HomeComponent} />
           <Route path="/login">
-            {token ? <Redirect to="/admin" /> : <LoginComponent />}
+            {token.authToken ? <Redirect to="/admin" /> : <LoginComponent />}
           </Route>
           <Route path="/signup">
-            {token ? <Redirect to="/admin" /> : <SignupComponent />}
+            {token.authToken ? <Redirect to="/admin" /> : <SignupComponent />}
           </Route>
 
           <Redirect exact path="/admin" to="/admin/events" />

@@ -12,6 +12,7 @@ import {
 import { FormattedMessage, FormattedDate } from "react-intl";
 import { useEventForLoginQuery } from "../../../generated/graphqlHooks";
 import { useFingerprint } from "../../../hooks";
+import useToken from "../../../hooks/useToken";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,6 +39,7 @@ const EventLogin: React.FC = () => {
     variables: { eventId: id as string }
   });
   const fingerprint = useFingerprint();
+  const { token } = useToken();
 
   const handleEventLogin = () => {
     history.replace("/");
