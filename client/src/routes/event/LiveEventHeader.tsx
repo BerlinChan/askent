@@ -11,15 +11,28 @@ import {
 import { QueryResult } from "@apollo/react-common";
 import AppBarElevationScroll from "../../components/AppBarElevationScroll";
 import { AudienceAction } from "../../components/Header";
+import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
+import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
+import EqualizerIcon from "@material-ui/icons/Equalizer";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    toolbarRegular: {
+      minHeight: 56
+    },
     left: {
       display: "flex"
     },
     right: {
       display: "flex",
       justifyContent: "flex-end"
+    },
+    tabRoot: {
+      minHeight: 56
+    },
+    tabIcon: {
+      verticalAlign: "middle",
+      marginRight: theme.spacing(1)
     }
   })
 );
@@ -37,7 +50,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventQuery, body }) => {
   return (
     <React.Fragment>
       <AppBarElevationScroll>
-        <Toolbar>
+        <Toolbar classes={{ regular: classes.toolbarRegular }}>
           <Grid container>
             <Grid item xs={3} className={classes.left}>
               <IconButton color="inherit">
@@ -52,10 +65,44 @@ const LiveEventHeader: React.FC<Props> = ({ eventQuery, body }) => {
                 centered
                 indicatorColor="secondary"
                 textColor="inherit"
+                tabClasses={{ root: classes.tabRoot }}
                 tabs={[
-                  { label: "提问", to: `${url}/questions` },
-                  { label: "点子", to: `${url}/ideas` },
-                  { label: "投票", to: `${url}/polls` }
+                  {
+                    label: (
+                      <Typography>
+                        <QuestionAnswerIcon
+                          fontSize="small"
+                          className={classes.tabIcon}
+                        />
+                        提问
+                      </Typography>
+                    ),
+                    to: `${url}/questions`
+                  },
+                  {
+                    label: (
+                      <Typography>
+                        <EmojiObjectsIcon
+                          fontSize="small"
+                          className={classes.tabIcon}
+                        />
+                        点子
+                      </Typography>
+                    ),
+                    to: `${url}/ideas`
+                  },
+                  {
+                    label: (
+                      <Typography>
+                        <EqualizerIcon
+                          fontSize="small"
+                          className={classes.tabIcon}
+                        />
+                        投票
+                      </Typography>
+                    ),
+                    to: `${url}/polls`
+                  }
                 ]}
               />
             </Grid>
