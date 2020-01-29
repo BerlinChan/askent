@@ -4,7 +4,7 @@ import { Box, Toolbar, Container } from "@material-ui/core";
 import AppBarElevationScroll from "../../components/AppBarElevationScroll";
 import { UnauthAction, AuthedAction } from "../../components/Header";
 import Logo from "../../components/Logo";
-import useToken from "../../hooks/useToken";
+import { useToken } from "../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

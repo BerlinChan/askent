@@ -16,8 +16,7 @@ import {
   useIsEventAudienceLazyQuery,
   useJoinEventMutation
 } from "../../../generated/graphqlHooks";
-import { useFingerprint } from "../../../hooks";
-import useToken from "../../../hooks/useToken";
+import { useFingerprint, useToken } from "../../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -97,7 +96,7 @@ const EventLogin: React.FC = () => {
         <Typography paragraph variant="h6">
           {data?.eventById.code}
         </Typography>
-        <Typography paragraph>
+        <Typography paragraph color="textSecondary">
           <FormattedDate value={data?.eventById.startAt} /> ~
           <FormattedDate value={data?.eventById.endAt} />
         </Typography>

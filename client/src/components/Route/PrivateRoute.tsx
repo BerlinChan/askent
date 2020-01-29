@@ -1,11 +1,11 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { RouteProps } from "react-router";
-import useToken from "../../hooks/useToken";
+import { useToken } from "../../hooks";
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
+export const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
   const { token } = useToken();
 
   return (
@@ -26,5 +26,3 @@ const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
     />
   );
 };
-
-export default PrivateRoute;

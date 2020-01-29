@@ -1,2 +1,2 @@
 export { AudienceRoute } from "./AudienceRoute";
-//TODO: move PrivateRoute
+export { PrivateRoute } from "./PrivateRoute";

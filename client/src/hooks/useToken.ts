@@ -3,7 +3,7 @@ import { AUTH_TOKEN, AUDIENCE_AUTH_TOKEN } from "../constant";
 
 type Token = { authToken?: string; audienceAuthToken?: string };
 
-export default function useToken() {
+export function useToken() {
   const [token, setTokenState] = useState<Token>({
     authToken: localStorage.getItem(AUTH_TOKEN) || "",
     audienceAuthToken: localStorage.getItem(AUDIENCE_AUTH_TOKEN) || ""

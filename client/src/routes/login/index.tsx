@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import { FTextField, ButtonLoading } from "../../components/Form";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useLoginMutation } from "../../generated/graphqlHooks";
-import useToken from "../../hooks/useToken";
+import { useToken } from "../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

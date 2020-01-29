@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 
-const EventQuestions: React.FC = () => {
+const LiveQuestions: React.FC = () => {
   let { id } = useParams();
 
   return (
@@ -13,4 +13,4 @@ const EventQuestions: React.FC = () => {
   );
 };
 
-export default EventQuestions;
+export default LiveQuestions;

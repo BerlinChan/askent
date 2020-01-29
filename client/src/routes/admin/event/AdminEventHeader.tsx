@@ -14,8 +14,8 @@ import {
 import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import {
-  HeaderEventQuery,
-  HeaderEventQueryVariables
+  AdminEventQuery,
+  AdminEventQueryVariables
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { FormattedDate } from "react-intl";
@@ -40,14 +40,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  headerEventQuery: QueryResult<HeaderEventQuery, HeaderEventQueryVariables>;
+  eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
 }
 
-const EventHeader: React.FC<Props> = ({ headerEventQuery }) => {
+const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const history = useHistory();
   let { url } = useRouteMatch();
-  const { data, loading } = headerEventQuery;
+  const { data, loading } = eventQuery;
 
   return (
     <AppBar position="static" elevation={2}>
@@ -109,4 +109,4 @@ const EventHeader: React.FC<Props> = ({ headerEventQuery }) => {
   );
 };
 
-export default EventHeader;
+export default AdminEventHeader;

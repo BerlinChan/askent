@@ -1,4 +1,4 @@
-query HeaderEvent($eventId: ID!) {
+query AdminEvent($eventId: ID!) {
   eventById(eventId: $eventId) {
     id
     name
@@ -6,6 +6,7 @@ query HeaderEvent($eventId: ID!) {
     startAt
     endAt
     moderation
+    audienceCount
   }
 }
 

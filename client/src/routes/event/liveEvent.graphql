@@ -1,0 +1,10 @@
+query LiveEvent($eventId: ID!) {
+  eventById(eventId: $eventId) {
+    id
+    name
+    code
+    startAt
+    endAt
+    audienceCount
+  }
+}

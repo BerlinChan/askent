@@ -1,2 +1,2 @@
-export { default as useFingerprint } from "./useFingerprint";
-//TODO: move useToken
+export { useFingerprint } from "./useFingerprint";
+export { useToken } from "./useToken";

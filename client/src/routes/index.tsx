@@ -1,10 +1,10 @@
 import React from "react";
 import loadable from "@loadable/component";
-import PrivateRoute from "../components/PrivateRoute";
+import { PrivateRoute } from "../components/Route";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../components/Loading";
 import Providers from "../components/Providers";
-import useToken from "../hooks/useToken";
+import { useToken } from "../hooks";
 
 const HomeComponent = loadable(() => import("./home"), {
   fallback: <Loading />

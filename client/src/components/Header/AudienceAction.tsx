@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const AuthedAction: React.FC = () => {
+export const AudienceAction: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const { data: userData } = useMeQuery();

@@ -20,8 +20,8 @@ import {
   useQuestionDeletedSubscription,
   useDeleteAllUnpublishedQuestionsMutation,
   usePublishAllUnpublishedQuestionsMutation,
-  HeaderEventQuery,
-  HeaderEventQueryVariables,
+  AdminEventQuery,
+  AdminEventQueryVariables,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument
@@ -62,15 +62,15 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  headerEventQuery: QueryResult<HeaderEventQuery, HeaderEventQueryVariables>;
+  eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
 }
 
-const Questions: React.FC<Props> = ({ headerEventQuery }) => {
+const Questions: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const { id } = useParams();
   const [tabIndex, setTabIndex] = React.useState(0);
-  const { data } = headerEventQuery;
+  const { data } = eventQuery;
   const questionsByEventQuery = useQuestionsByEventQuery({
     variables: { eventId: id as string }
   });
@@ -262,7 +262,7 @@ const Questions: React.FC<Props> = ({ headerEventQuery }) => {
         <Paper className={classes.gridItemPaper}>
           {data?.eventById.moderation ? (
             <QuestionList
-              headerEventQuery={headerEventQuery}
+              eventQuery={eventQuery}
               questionsByEventQuery={questionsByEventQuery}
               filter={item => !item.published}
             />
@@ -301,14 +301,14 @@ const Questions: React.FC<Props> = ({ headerEventQuery }) => {
         <Paper className={classes.gridItemPaper}>
           <TabPanel value={tabIndex} index={0}>
             <QuestionList
-              headerEventQuery={headerEventQuery}
+              eventQuery={eventQuery}
               questionsByEventQuery={questionsByEventQuery}
               filter={item => !item.archived && item.published}
             />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             <QuestionList
-              headerEventQuery={headerEventQuery}
+              eventQuery={eventQuery}
               questionsByEventQuery={questionsByEventQuery}
               filter={item => item.archived && item.published}
             />

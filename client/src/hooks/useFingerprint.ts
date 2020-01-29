@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Fingerprint2 from "fingerprintjs2";
 
-export default function useFingerprint() {
+export function useFingerprint() {
   const [fingerprint, setFingerprint] = useState<string>("");
 
   useEffect(() => {
