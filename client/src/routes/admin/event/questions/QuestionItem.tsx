@@ -20,7 +20,7 @@ import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import { QueryResult } from "@apollo/react-common";
 import {
-  Question,
+  QuestionFieldsFragment,
   AdminEventQuery,
   AdminEventQueryVariables,
   useUpdateQuestionMutation
@@ -39,7 +39,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
-import { TextField } from 'formik-material-ui';
+import { TextField } from "formik-material-ui";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -76,18 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  question: Pick<
-    Question,
-    | "id"
-    | "updatedAt"
-    | "voteCount"
-    | "username"
-    | "content"
-    | "star"
-    | "archived"
-    | "published"
-    | "top"
-  >;
+  question: QuestionFieldsFragment;
   eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -148,13 +137,16 @@ const QuestionListItem: React.FC<Props> = ({
       divider
     >
       <ListItemAvatar>
-        <Avatar src="/static/images/avatar/1.jpg" />
+        <Avatar
+          alt={question.author?.name as string}
+          src="/static/images/avatar/1.jpg"
+        />
       </ListItemAvatar>
       <ListItemText
         primary={
           <Typography component="span" variant="body2" color="textPrimary">
-            {question.username ? (
-              question.username
+            {question.author?.name ? (
+              question.author?.name
             ) : (
               <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
             )}

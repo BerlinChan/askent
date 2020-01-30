@@ -1,11 +1,11 @@
 import { rule, or } from 'graphql-shield'
-import { getAdminUserId } from '../../utils'
-import { isAuthenticatedUser } from './User'
+import { getAdminUserId ,getAudienceUserId} from '../../utils'
+import { isAuthenticatedUser,isAuthenticatedAudience } from './User'
 import { isEventOwnerByArgId } from './Event'
 
 export const isQuestionAuthor = rule({ cache: 'contextual' })(
   async ({ id }, args, context) => {
-    const userId = getAdminUserId(context)
+    const userId = getAudienceUserId(context)
     const questionAuthor = await context.photon.questions
       .findOne({
         where: { id },
@@ -32,11 +32,11 @@ export const isQuestionEventOwner = rule({ cache: 'contextual' })(
 
 export default {
   Query: {
-    questionsByMe: isAuthenticatedUser,
-    questionsByEvent: isAuthenticatedUser,
+    questionsByMe: isAuthenticatedAudience,
+    questionsByEvent: or(isAuthenticatedUser,isAuthenticatedAudience),
   },
   Mutation: {
-    createQuestion: isAuthenticatedUser,
+    createQuestion: isAuthenticatedAudience,
     deleteQuestion: or(isQuestionAuthor, isQuestionEventOwner),
     deleteAllUnpublishedQuestions: isEventOwnerByArgId,
     publishAllUnpublishedQuestions: isEventOwnerByArgId,

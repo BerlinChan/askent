@@ -10,8 +10,10 @@ import {
   fade
 } from "@material-ui/core/styles";
 import { FormattedMessage, FormattedDate } from "react-intl";
+import { QueryResult } from "@apollo/react-common";
 import {
-  useEventForLoginQuery,
+  LiveEventQuery,
+  LiveEventQueryVariables,
   useLoginAudienceMutation,
   useIsEventAudienceLazyQuery,
   useJoinEventMutation
@@ -35,13 +37,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const EventLogin: React.FC = () => {
+interface Props {
+  eventQuery: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
+}
+
+const EventLogin: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const history = useHistory();
   let { id } = useParams();
-  const { data, loading: eventForLoginLoading } = useEventForLoginQuery({
-    variables: { eventId: id as string }
-  });
+  const { data, loading: eventForLoginLoading } = eventQuery;
   const [
     loginAudienceMutation,
     { loading: loginAudienceLoading }

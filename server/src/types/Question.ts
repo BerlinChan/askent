@@ -13,7 +13,7 @@ import {
   User,
   QuestionCreateInput,
 } from '@prisma/photon'
-import { getAdminUserId } from '../utils'
+import { getAdminUserId, getAudienceUserId } from '../utils'
 import { withFilter } from 'apollo-server-express'
 
 export const Question = objectType({
@@ -22,7 +22,6 @@ export const Question = objectType({
     t.model.id()
     t.model.event()
     t.model.author()
-    t.model.username()
     t.model.createdAt()
     t.model.updatedAt()
     t.model.content()
@@ -88,7 +87,7 @@ export const questionQuery = extendType({
             published: args.published,
             top: args.top,
             OR: [
-              { username: { contains: args.searchString } },
+              { author: { name: { contains: args.searchString } } },
               { content: { contains: args.searchString } },
             ],
           },
@@ -103,38 +102,23 @@ export const questionMutation = extendType({
   definition(t) {
     t.field('createQuestion', {
       type: 'Question',
-      // TODO: 匿名用户分配临时用户，记录客户端唯一标识防止滥用
-      description: '暂登录用户可用',
+      description: 'Create question',
       args: {
-        username: stringArg({ nullable: true }),
-        content: stringArg({ required: true }),
         eventId: idArg({ required: true }),
+        content: stringArg({ required: true }),
       },
-      resolve: async (root, { username, content, eventId }, ctx) => {
-        const userId = getAdminUserId(ctx)
+      resolve: async (root, { eventId, content }, ctx) => {
+        const userId = getAudienceUserId(ctx)
         const event = await ctx.photon.events.findOne({
           where: { id: eventId },
         })
-        let question: QuestionCreateInput = {
-          published: !event?.moderation,
-          content,
-          event: { connect: { id: eventId } },
-        }
-        if (userId) {
-          const findUser = await ctx.photon.users.findOne({
-            where: { id: userId },
-          })
-          question = {
-            ...question,
-            author: { connect: { id: userId } },
-            username: findUser?.name,
-          }
-        } else if (username) {
-          question.username = username
-        }
-
         const newQuestion = await ctx.photon.questions.create({
-          data: question,
+          data: {
+            published: !event?.moderation,
+            content,
+            event: { connect: { id: eventId } },
+            author: { connect: { id: userId } },
+          },
         })
 
         ctx.pubsub.publish('QUESTION_ADDED', {

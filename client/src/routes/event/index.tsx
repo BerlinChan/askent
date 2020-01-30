@@ -30,7 +30,9 @@ const Event: React.FC = () => {
   return (
     <Switch>
       <Redirect exact path={`${path}`} to={`${path}/login`} />
-      <Route path={`${path}/login`} component={EventLoginComponent} />
+      <Route path={`${path}/login`}>
+        <EventLoginComponent eventQuery={liveEventQuery} />
+      </Route>
 
       <Layout
         header={<LiveEventHeader eventQuery={liveEventQuery} />}

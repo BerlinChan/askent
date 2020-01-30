@@ -1,13 +1,3 @@
-query EventForLogin($eventId: ID!) {
-  eventById(eventId: $eventId) {
-    id
-    name
-    code
-    startAt
-    endAt
-  }
-}
-
 mutation LoginAudience($fingerprint: String!) {
   loginAudience(fingerprint: $fingerprint) {
     token
