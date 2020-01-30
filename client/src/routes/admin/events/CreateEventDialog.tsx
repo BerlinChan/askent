@@ -12,11 +12,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import {
-  FTextField,
-  FDatePicker,
-  ButtonLoading
-} from "../../../components/Form";
+import { ButtonLoading } from "../../../components/Form";
 import { add } from "date-fns";
 import {
   useCheckEventCodeExistLazyQuery,
@@ -24,6 +20,8 @@ import {
 } from "../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
 import { EVENT_CODE_MAX_LENGTH } from "../../../constant";
+import { TextField } from "formik-material-ui";
+import { DatePicker } from 'formik-material-ui-pickers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -113,7 +111,7 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
             <FormattedMessage id="CREAT_EVENT" />
           </DialogTitle>
           <DialogContent>
-            <FTextField
+            <TextField
               autoFocus
               fullWidth
               id="name"
@@ -122,7 +120,7 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
               margin="normal"
             />
             <Box className={classes.dateRange}>
-              <FDatePicker
+              <DatePicker
                 id="startAt"
                 name="startAt"
                 label="Start date"
@@ -132,7 +130,7 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
                 disableToolbar
                 disablePast
               />
-              <FDatePicker
+              <DatePicker
                 id="endAt"
                 name="endAt"
                 label="End date"
@@ -143,7 +141,7 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
                 disablePast
               />
             </Box>
-            <FTextField
+            <TextField
               fullWidth
               id="code"
               name="code"

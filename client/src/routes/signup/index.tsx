@@ -7,10 +7,11 @@ import {
   useSignupMutation,
   useCheckNameOrEmailExistLazyQuery
 } from "../../generated/graphqlHooks";
-import { FTextField, ButtonLoading } from "../../components/Form";
+import { ButtonLoading } from "../../components/Form";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { FormattedMessage } from "react-intl";
+import { TextField } from "formik-material-ui";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -115,7 +116,7 @@ const Signup: React.FC = () => {
         <Form className={classes.form}>
           <Card className={classes.card}>
             <CardContent>
-              <FTextField
+              <TextField
                 autoFocus
                 id="name"
                 name="name"
@@ -124,7 +125,7 @@ const Signup: React.FC = () => {
                 margin="normal"
                 disabled={loading}
               />
-              <FTextField
+              <TextField
                 id="email"
                 name="email"
                 fullWidth
@@ -133,7 +134,7 @@ const Signup: React.FC = () => {
                 margin="normal"
                 disabled={loading}
               />
-              <FTextField
+              <TextField
                 id="password"
                 name="password"
                 fullWidth
@@ -142,7 +143,7 @@ const Signup: React.FC = () => {
                 margin="normal"
                 disabled={loading}
               />
-              <FTextField
+              <TextField
                 id="repeatPassword"
                 name="repeatPassword"
                 fullWidth

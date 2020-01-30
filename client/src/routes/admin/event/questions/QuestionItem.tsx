@@ -37,8 +37,9 @@ import QuestionToggleButton, {
 } from "./QuestionToggleButton";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { FTextField, ButtonLoading } from "../../../../components/Form";
+import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
+import { TextField } from 'formik-material-ui';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -203,7 +204,7 @@ const QuestionListItem: React.FC<Props> = ({
         >
           {formProps => (
             <Form className={classes.editContentForm}>
-              <FTextField
+              <TextField
                 inputRef={editContentInputRef}
                 fullWidth
                 id="content"

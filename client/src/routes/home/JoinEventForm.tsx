@@ -67,8 +67,10 @@ const JoinEventForm: React.FC = props => {
                 > | null
               ) => {
                 formProps.setTouched({ code: true, id: true });
-                formProps.setFieldValue("id", newValue?.id || "");
-                formProps.setFieldValue("code", newValue?.code || "");
+                formProps.setValues({
+                  code: newValue?.code || "",
+                  id: newValue?.id || ""
+                });
               }}
               getOptionSelected={(option, value) => option.id === value.id}
               getOptionLabel={option => option.code}

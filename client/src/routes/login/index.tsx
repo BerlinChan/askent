@@ -3,10 +3,11 @@ import { useHistory } from "react-router-dom";
 import { Box, Card, CardActions, CardContent } from "@material-ui/core";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { FTextField, ButtonLoading } from "../../components/Form";
+import { ButtonLoading } from "../../components/Form";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useLoginMutation } from "../../generated/graphqlHooks";
 import { useToken } from "../../hooks";
+import { TextField } from "formik-material-ui";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,7 +52,7 @@ const Login: React.FC = () => {
         <Form className={classes.form}>
           <Card className={classes.card}>
             <CardContent>
-              <FTextField
+              <TextField
                 autoFucous
                 fullWidth
                 id="email"
@@ -60,7 +61,7 @@ const Login: React.FC = () => {
                 type="email"
                 margin="normal"
               />
-              <FTextField
+              <TextField
                 fullWidth
                 id="password"
                 name="password"
