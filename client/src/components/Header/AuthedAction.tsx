@@ -90,7 +90,7 @@ export const AuthedAction: React.FC = () => {
           <ListItemIcon>
             <ExitToAppIcon fontSize="small" />
           </ListItemIcon>
-          <FormattedMessage id="Logout" defaultMessage="Logout" />
+          <FormattedMessage id="Log_out" defaultMessage="Log out" />
         </MenuItem>
       </Menu>
     </React.Fragment>

@@ -9,6 +9,7 @@ import {
 import Loading from "../../components/Loading";
 import loadable from "@loadable/component";
 import { AudienceRoute } from "../../components/Route";
+import Layout from "../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
 import { useLiveEventQuery } from "../../generated/graphqlHooks";
 
@@ -31,8 +32,8 @@ const Event: React.FC = () => {
       <Redirect exact path={`${path}`} to={`${path}/login`} />
       <Route path={`${path}/login`} component={EventLoginComponent} />
 
-      <LiveEventHeader
-        eventQuery={liveEventQuery}
+      <Layout
+        header={<LiveEventHeader eventQuery={liveEventQuery} />}
         body={
           <Switch>
             <AudienceRoute path={`${path}/questions`}>

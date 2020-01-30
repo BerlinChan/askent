@@ -25,7 +25,7 @@ const AdminEvent: React.FC = () => {
   return (
     <Layout
       header={<AdminEventHeader eventQuery={adminEventQuery} />}
-      body={
+      boxScrollBody={
         <Switch>
           <Redirect exact path={`${path}`} to={`${path}/questions`} />
           <PrivateRoute path={`${path}/questions`}>
