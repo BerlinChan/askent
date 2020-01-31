@@ -6538,6 +6538,16 @@ form-data@~2.3.2:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
+formik-material-ui-pickers@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.npm.taobao.org/formik-material-ui-pickers/download/formik-material-ui-pickers-0.0.4.tgz#7b532e3c36747ee6a1e98bd8bf7033dc01ed3258"
+  integrity sha1-e1MuPDZ0fuah6YvYv3Az3AHtMlg=
+
+formik-material-ui@^2.0.0-alpha.3:
+  version "2.0.0-alpha.3"
+  resolved "https://registry.npm.taobao.org/formik-material-ui/download/formik-material-ui-2.0.0-alpha.3.tgz#1f5e4d98068686fa1c1c0cf54e75b51e92b14981"
+  integrity sha1-H15NmAaGhvocHAz1TnW1HpKxSYE=
+
 formik@2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/formik/-/formik-2.1.2.tgz#573f63383d35461c607dad717ea9417e6c192682"

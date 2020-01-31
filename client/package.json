@@ -20,6 +20,8 @@
     "apollo-link-ws": "1.0.19",
     "date-fns": "2.9.0",
     "fingerprintjs2": "^2.1.0",
+    "formik-material-ui": "^2.0.0-alpha.3",
+    "formik-material-ui-pickers": "^0.0.4",
     "formik": "2.1.2",
     "graphql-tag": "2.10.1",
     "notistack": "0.9.7",

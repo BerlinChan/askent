@@ -53,7 +53,7 @@ const Login: React.FC = () => {
           <Card className={classes.card}>
             <CardContent>
               <TextField
-                autoFucous
+                autoFocus
                 fullWidth
                 id="email"
                 name="email"
