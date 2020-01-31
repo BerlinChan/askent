@@ -20,9 +20,9 @@ import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import { QueryResult } from "@apollo/react-common";
 import {
-  Question,
-  EventByMeQuery,
-  EventByMeQueryVariables,
+  QuestionFieldsFragment,
+  AdminEventQuery,
+  AdminEventQueryVariables,
   useUpdateQuestionMutation
 } from "../../../../generated/graphqlHooks";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
@@ -37,8 +37,9 @@ import QuestionToggleButton, {
 } from "./QuestionToggleButton";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { FTextField, ButtonLoading } from "../../../../components/Form";
+import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
+import { TextField } from "formik-material-ui";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,19 +76,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  question: Pick<
-    Question,
-    | "id"
-    | "updatedAt"
-    | "voteCount"
-    | "username"
-    | "content"
-    | "star"
-    | "archived"
-    | "published"
-    | "top"
-  >;
-  eventByMeQuery: QueryResult<EventByMeQuery, EventByMeQueryVariables>;
+  question: QuestionFieldsFragment;
+  eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
@@ -100,13 +90,13 @@ interface Props {
 const QuestionListItem: React.FC<Props> = ({
   question,
   handleMoreClick,
-  eventByMeQuery,
+  eventQuery,
   editContent,
   handleEditContentToggle,
   editContentInputRef
 }) => {
   const classes = useStyles();
-  const { data: eventByMeData } = eventByMeQuery;
+  const { data } = eventQuery;
   const { formatMessage } = useIntl();
   const [
     updateQuestionMutation,
@@ -147,13 +137,16 @@ const QuestionListItem: React.FC<Props> = ({
       divider
     >
       <ListItemAvatar>
-        <Avatar src="/static/images/avatar/1.jpg" />
+        <Avatar
+          alt={question.author?.name as string}
+          src="/static/images/avatar/1.jpg"
+        />
       </ListItemAvatar>
       <ListItemText
         primary={
           <Typography component="span" variant="body2" color="textPrimary">
-            {question.username ? (
-              question.username
+            {question.author?.name ? (
+              question.author?.name
             ) : (
               <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
             )}
@@ -203,7 +196,7 @@ const QuestionListItem: React.FC<Props> = ({
         >
           {formProps => (
             <Form className={classes.editContentForm}>
-              <FTextField
+              <TextField
                 inputRef={editContentInputRef}
                 fullWidth
                 id="content"
@@ -284,7 +277,7 @@ const QuestionListItem: React.FC<Props> = ({
                 handleToggle={handleTopClick}
               />
             )}
-            {eventByMeData?.eventByMe.moderation && !question.archived && (
+            {data?.eventById.moderation && !question.archived && (
               <QuestionToggleButton
                 className="questionHover"
                 id={question.id}

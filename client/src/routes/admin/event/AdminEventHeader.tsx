@@ -14,8 +14,8 @@ import {
 import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import {
-  EventByMeQuery,
-  EventByMeQueryVariables
+  AdminEventQuery,
+  AdminEventQueryVariables
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { FormattedDate } from "react-intl";
@@ -40,14 +40,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventByMeQuery: QueryResult<EventByMeQuery, EventByMeQueryVariables>;
+  eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
 }
 
-const EventHeader: React.FC<Props> = ({ eventByMeQuery }) => {
+const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const history = useHistory();
   let { url } = useRouteMatch();
-  const { data: eventByMeData, loading } = eventByMeQuery;
+  const { data, loading } = eventQuery;
 
   return (
     <AppBar position="static" elevation={2}>
@@ -69,20 +69,20 @@ const EventHeader: React.FC<Props> = ({ eventByMeQuery }) => {
                 </IconButton>
                 <Box>
                   <Typography color="inherit">
-                    {eventByMeData?.eventByMe.name}
+                    {data?.eventById.name}
                   </Typography>
                   <Typography color="inherit">
-                    <FormattedDate value={eventByMeData?.eventByMe.startAt} /> ~{" "}
-                    <FormattedDate value={eventByMeData?.eventByMe.endAt} />
+                    <FormattedDate value={data?.eventById.startAt} /> ~{" "}
+                    <FormattedDate value={data?.eventById.endAt} />
                   </Typography>
                 </Box>
               </Box>
               <Box>
                 <Typography color="inherit">
-                  #{eventByMeData?.eventByMe.code}
+                  #{data?.eventById.code}
                 </Typography>
                 <Typography color="inherit">
-                  #{eventByMeData?.eventByMe.code}
+                  #{data?.eventById.code}
                 </Typography>
               </Box>
               <Box className={classes.actions}>
@@ -109,4 +109,4 @@ const EventHeader: React.FC<Props> = ({ eventByMeQuery }) => {
   );
 };
 
-export default EventHeader;
+export default AdminEventHeader;

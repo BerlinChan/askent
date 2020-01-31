@@ -13,7 +13,8 @@ import {
 import { useMeQuery } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import HomeIcon from "@material-ui/icons/Home";
+import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
+import PersonIcon from "@material-ui/icons/Person";
 import { useToken } from "../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const AuthedAction: React.FC = () => {
+export const AudienceAction: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const { data: userData } = useMeQuery();
@@ -71,14 +72,26 @@ export const AuthedAction: React.FC = () => {
       >
         <MenuItem
           onClick={() => {
-            history.replace("/admin");
             handleMenuClose();
           }}
         >
           <ListItemIcon>
-            <HomeIcon fontSize="small" />
+            <PersonIcon fontSize="small" />
           </ListItemIcon>
-          <FormattedMessage id="Events" defaultMessage="Events" />
+          <FormattedMessage
+            id="Edit_my_profile"
+            defaultMessage="Edit my profile"
+          />
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+          }}
+        >
+          <ListItemIcon>
+            <QuestionAnswerIcon fontSize="small" />
+          </ListItemIcon>
+          <FormattedMessage id="My_questions" defaultMessage="My questions" />
         </MenuItem>
         <MenuItem
           onClick={() => {

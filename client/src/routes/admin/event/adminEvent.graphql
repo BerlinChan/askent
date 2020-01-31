@@ -1,11 +1,12 @@
-query EventByMe($eventId: ID!) {
-  eventByMe(eventId: $eventId) {
+query AdminEvent($eventId: ID!) {
+  eventById(eventId: $eventId) {
     id
     name
     code
     startAt
     endAt
     moderation
+    audienceCount
   }
 }
 

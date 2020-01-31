@@ -4,6 +4,7 @@ import { Container, Box } from "@material-ui/core";
 
 interface Props {
   header?: React.ReactElement;
+  boxScrollBody?: React.ReactElement;
   body?: React.ReactElement;
 }
 
@@ -26,17 +27,20 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Layout: React.FC<Props> = ({ header, body }) => {
+const Layout: React.FC<Props> = ({ header, boxScrollBody, body }) => {
   const classes = useStyles();
 
   return (
     <Box className={classes.layoutBox}>
-      {header && header}
-      <Box className={classes.bodyRoutesBox}>
-        <Container maxWidth="lg" className={classes.bodyContainer}>
-          {body && body}
-        </Container>
-      </Box>
+      {header}
+      {boxScrollBody && (
+        <Box className={classes.bodyRoutesBox}>
+          <Container maxWidth="lg" className={classes.bodyContainer}>
+            {boxScrollBody}
+          </Container>
+        </Box>
+      )}
+      {body}
     </Box>
   );
 };

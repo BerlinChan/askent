@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "formik-material-ui": "^2.0.0-alpha.3",
+    "formik-material-ui-pickers": "^0.0.4"
+  }
+}

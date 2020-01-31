@@ -6,9 +6,10 @@ import {
   idArg,
   booleanArg,
 } from 'nexus'
-import { getUserId } from '../utils'
+import { getAdminUserId, getAudienceUserId } from '../utils'
 import { Context } from '../context'
-import { Event as EventType } from '@prisma/client'
+import { Event as EventType } from '@prisma/photon'
+import { connect } from 'http2'
 
 export const Event = objectType({
   name: 'Event',
@@ -17,31 +18,32 @@ export const Event = objectType({
     t.model.code()
     t.model.name()
     t.model.owner()
+    t.model.audiences()
     t.model.createdAt()
     t.model.updatedAt()
     t.model.startAt()
     t.model.endAt()
-    t.model.questions()
     t.model.moderation()
-  },
-})
-export const PubEvent = objectType({
-  name: 'PubEvent',
-  description: 'Event for public use.',
-  definition(t) {
-    t.id('id')
-    t.string('code')
-    t.string('name')
-    t.field('startAt', { type: 'DateTime' })
-    t.field('endAt', { type: 'DateTime' })
+    t.model.questions()
 
-    t.list.field('publishedQuestions', {
+    t.list.field('questionAllPublished', {
       type: 'Question',
       resolve: async (root, args, ctx) => {
-        const findAllQuestions = await ctx.prisma.events
+        const findAllQuestions = await ctx.photon.events
           .findOne({ where: { id: root.id } })
           .questions()
         return findAllQuestions.filter(item => item.published)
+      },
+    })
+    t.int('audienceCount', {
+      resolve: async ({ id }, args, ctx) => {
+        const audiences = await ctx.photon.events
+          .findOne({
+            where: { id },
+          })
+          .audiences()
+
+        return audiences.length
       },
     })
   },
@@ -50,24 +52,26 @@ export const PubEvent = objectType({
 export const eventQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.field('eventByMe', {
+    t.field('eventById', {
       type: 'Event',
       args: {
         eventId: idArg({ required: true }),
       },
-      resolve: (root, { eventId }, context) => {
-        return context.prisma.events.findOne({
+      resolve: async (root, { eventId }, ctx) => {
+        const event = await ctx.photon.events.findOne({
           where: { id: eventId },
-        }) as Promise<EventType>
+        })
+
+        return event as EventType
       },
     })
     t.list.field('eventsByMe', {
       type: 'Event',
       description: 'Get all my events.',
       args: { searchString: stringArg() },
-      resolve: async (root, args, context) => {
-        const userId = getUserId(context)
-        return context.prisma.events.findMany({
+      resolve: async (root, args, ctx) => {
+        const userId = getAdminUserId(ctx)
+        return ctx.photon.events.findMany({
           where: {
             owner: { id: userId },
             OR: [
@@ -78,32 +82,38 @@ export const eventQuery = extendType({
         })
       },
     })
+    t.list.field('eventsByCode', {
+      type: 'Event',
+      description: 'Get events by code.',
+      args: { code: stringArg() },
+      resolve: async (root, { code }, ctx) => {
+        const events = await ctx.photon.events.findMany({
+          where: { code: { contains: code } },
+        })
+
+        return events
+      },
+    })
     t.field('checkEventCodeExist', {
       type: 'Boolean',
       description: 'Check if a event code has already exist.',
       args: {
         code: stringArg({ required: true }),
       },
-      resolve: async (root, { code }, context) => {
-        return await checkEventCodeExist(context, code)
+      resolve: async (root, { code }, ctx) => {
+        return await checkEventCodeExist(ctx, code)
       },
     })
-    t.list.field('pubEvents', {
-      type: 'PubEvent',
-      description: 'Get all public events.',
-      args: { code: stringArg() },
-      resolve: async (root, { code }, ctx) => {
-        const events = await ctx.prisma.events.findMany({
-          where: { code: { contains: code } },
-        })
+    t.field('isEventAudience', {
+      type: 'Boolean',
+      args: { eventId: idArg({ required: true }) },
+      resolve: async (root, { eventId }, ctx) => {
+        const audienceId = getAudienceUserId(ctx)
+        const audiences = await ctx.photon.events
+          .findOne({ where: { id: eventId } })
+          .audiences()
 
-        return events.map(event => ({
-          id: event.id,
-          code: event.code,
-          name: event.name,
-          startAt: event.startAt,
-          endAt: event.endAt,
-        }))
+        return Boolean(audiences.find(user => user.id === audienceId))
       },
     })
   },
@@ -124,8 +134,8 @@ export const eventMutation = extendType({
         if (await checkEventCodeExist(ctx, code)) {
           throw new Error(`Code "${code}" has already exist.`)
         }
-        const userId = getUserId(ctx)
-        return ctx.prisma.events.create({
+        const userId = getAdminUserId(ctx)
+        return ctx.photon.events.create({
           data: {
             owner: { connect: { id: userId } },
             code,
@@ -146,16 +156,16 @@ export const eventMutation = extendType({
         endAt: arg({ type: 'DateTime', nullable: true }),
         moderation: booleanArg({ nullable: true }),
       },
-      resolve: async (root, args, context) => {
-        await checkEventExist(context, args.eventId)
-        const findEvent = await context.prisma.events.findOne({
+      resolve: async (root, args, ctx) => {
+        await checkEventExist(ctx, args.eventId)
+        const findEvent = await ctx.photon.events.findOne({
           where: { id: args.eventId },
           select: { code: true },
         })
         if (
           args.code &&
           args.code !== findEvent?.code &&
-          (await checkEventCodeExist(context, args.code))
+          (await checkEventCodeExist(ctx, args.code))
         ) {
           throw new Error(`Code "${args.code}" has already exist.`)
         }
@@ -170,7 +180,7 @@ export const eventMutation = extendType({
             : {},
         )
 
-        return context.prisma.events.update({
+        return ctx.photon.events.update({
           where: { id: args.eventId },
           data: event,
         })
@@ -181,23 +191,39 @@ export const eventMutation = extendType({
       args: {
         eventId: idArg({ required: true }),
       },
-      resolve: async (root, args, context) => {
-        await checkEventExist(context, args.eventId as string)
-        return context.prisma.events.delete({ where: { id: args.eventId } })
+      resolve: async (root, args, ctx) => {
+        await checkEventExist(ctx, args.eventId as string)
+        return ctx.photon.events.delete({ where: { id: args.eventId } })
+      },
+    })
+    t.field('joinEvent', {
+      type: 'Event',
+      description: `加入活动。`,
+      args: {
+        eventId: idArg({ required: true }),
+      },
+      resolve: async (root, { eventId }, ctx) => {
+        const userId = getAudienceUserId(ctx)
+        const event = await ctx.photon.events.update({
+          where: { id: eventId },
+          data: { audiences: { connect: { id: userId } } },
+        })
+
+        return event
       },
     })
   },
 })
 
-async function checkEventCodeExist(context: Context, code: string) {
-  return Boolean(await context.prisma.events.findOne({ where: { code } }))
+async function checkEventCodeExist(ctx: Context, code: string) {
+  return Boolean(await ctx.photon.events.findOne({ where: { code } }))
 }
 
 async function checkEventExist(
-  context: Context,
+  ctx: Context,
   eventId: EventType['id'],
 ): Promise<boolean> {
-  const findEvent = await context.prisma.events.findOne({
+  const findEvent = await ctx.photon.events.findOne({
     where: { id: eventId },
   })
   if (!findEvent) {

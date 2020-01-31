@@ -2,8 +2,9 @@ import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Box, Toolbar, Container } from "@material-ui/core";
 import AppBarElevationScroll from "../../components/AppBarElevationScroll";
-import { Logo, UnauthAction, AuthedAction } from "../../components/Header";
-import { AUTH_TOKEN } from "../../constant";
+import { UnauthAction, AuthedAction } from "../../components/Header";
+import Logo from "../../components/Logo";
+import { useToken } from "../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function HomeHeader() {
   const classes = useStyles();
-  const token = localStorage.getItem(AUTH_TOKEN);
+  const { token } = useToken();
 
   return (
     <AppBarElevationScroll>
@@ -29,7 +30,7 @@ export default function HomeHeader() {
         <Toolbar className={classes.toolbar}>
           <Logo />
           <Box className={classes.actions}>
-            {token ? <AuthedAction /> : <UnauthAction />}
+            {token.authToken ? <AuthedAction /> : <UnauthAction />}
           </Box>
         </Toolbar>
       </Container>

@@ -1,15 +1,14 @@
-import { objectType, extendType, stringArg } from 'nexus'
+import { objectType, extendType, stringArg, idArg } from 'nexus'
 import {
   User as UserType,
   UserCreateInput,
   UserWhereUniqueInput,
   UserWhereInput,
-} from '@prisma/client'
+} from '@prisma/photon'
 import { NexusGenFieldTypes } from 'nexus-typegen'
 import { hash, compare } from 'bcryptjs'
-import { sign } from 'jsonwebtoken'
 import { Context } from '../context'
-import { getUserId } from '../utils'
+import { getAdminUserId, signToken } from '../utils'
 
 export const User = objectType({
   name: 'User',
@@ -18,10 +17,12 @@ export const User = objectType({
     t.model.createdAt()
     t.model.updatedAt()
     t.model.lastLoginAt()
+    t.model.role()
     t.model.name()
     t.model.email()
     t.model.events()
     t.model.questions()
+    // t.model.fingerprint()
     // t.model.password()
   },
 })
@@ -46,8 +47,8 @@ export const userQuery = extendType({
       type: 'User',
       description: 'Query my user info.',
       resolve: (root, args, ctx) => {
-        return ctx.prisma.users.findOne({
-          where: { id: getUserId(ctx) },
+        return ctx.photon.users.findOne({
+          where: { id: getAdminUserId(ctx) },
         }) as Promise<UserType>
       },
     })
@@ -80,19 +81,23 @@ export const userMutation = extendType({
         email: stringArg({ required: true, description: 'User Email' }),
         password: stringArg({ required: true }),
       },
-      resolve: async (root, args, context, info) => {
-        if (await checkNameOrEmailExist(context, args.name)) {
-          throw new Error(`Name "${args.name}" has already exist.`)
-        } else if (await checkNameOrEmailExist(context, args.email)) {
-          throw new Error(`Email "${args.email}" has already exist.`)
+      resolve: async (root, args, ctx, info) => {
+        if (await checkNameOrEmailExist(ctx, args.name)) {
+          throw new Error(ERROR_MESSAGE.nameExist(args.name))
+        } else if (await checkNameOrEmailExist(ctx, args.email)) {
+          throw new Error(ERROR_MESSAGE.emailExist(args.email))
         }
         const hashedPassword = await hash(args.password, 10)
-        const user = await context.prisma.users.create({
-          data: { ...args, password: hashedPassword } as UserCreateInput,
+        const user = await ctx.photon.users.create({
+          data: {
+            ...args,
+            password: hashedPassword,
+            role: 'Admin',
+          } as UserCreateInput,
         })
 
         return {
-          token: sign({ userId: user.id }, process.env.JWT_SECRET as string),
+          token: signToken({ userId: user.id, role: user.role }),
           user,
         }
       },
@@ -103,8 +108,8 @@ export const userMutation = extendType({
         email: stringArg({ required: true, description: 'User Email' }),
         password: stringArg({ required: true }),
       },
-      resolve: async (parent, args: UserWhereInput, context, info) => {
-        const user = await context.prisma.users.findOne({
+      resolve: async (parent, args: UserWhereInput, ctx, info) => {
+        const user = await ctx.photon.users.findOne({
           where: { email: args.email } as UserWhereUniqueInput,
         })
         if (!user) {
@@ -112,14 +117,39 @@ export const userMutation = extendType({
         }
         const passwordValid = await compare(
           args.password as string,
-          user.password,
+          user.password as string,
         )
         if (!passwordValid) {
           throw new Error('Invalid password')
         }
 
         return {
-          token: sign({ userId: user.id }, process.env.JWT_SECRET as string),
+          token: signToken({ userId: user.id, role: user.role }),
+          user,
+        }
+      },
+    })
+    t.field('loginAudience', {
+      type: 'AuthPayload',
+      description: `Audience 登陆。
+      若 fingerprint 的 User 已存在则返回 token，
+      若 fingerprint 的 User 不存在则 create 并返回 token`,
+      args: { fingerprint: stringArg({ required: true }) },
+      resolve: async (root, { fingerprint }, ctx) => {
+        let user = await ctx.photon.users.findOne({
+          where: { fingerprint },
+        })
+        if (!user) {
+          user = await ctx.photon.users.create({
+            data: {
+              fingerprint,
+              role: 'Audience',
+            },
+          })
+        }
+
+        return {
+          token: signToken({ userId: user.id, role: user.role }),
           user,
         }
       },
@@ -128,20 +158,37 @@ export const userMutation = extendType({
 })
 
 async function checkNameOrEmailExist(
-  context: Context,
+  ctx: Context,
   string: string,
 ): Promise<boolean> {
   if (/@/.test(string)) {
     return Boolean(
-      await context.prisma.users.findOne({
+      await ctx.photon.users.findOne({
         where: { email: string } as UserWhereUniqueInput,
       }),
     )
   } else {
     return Boolean(
-      await context.prisma.users.findOne({
+      await ctx.photon.users.findOne({
         where: { name: string } as UserWhereUniqueInput,
       }),
     )
   }
+}
+async function checkFingerprintExist(
+  ctx: Context,
+  fingerprint: string,
+): Promise<boolean> {
+  return Boolean(
+    await ctx.photon.users.findOne({
+      where: { fingerprint },
+    }),
+  )
+}
+
+const ERROR_MESSAGE = {
+  nameExist: (name: string) => `Name "${name}" has already exist.`,
+  emailExist: (email: string) => `Email "${email}" has already exist.`,
+  fingerprintExist: (fingerprint: string) =>
+    `Fingerprint "${fingerprint}" has already exist.`,
 }

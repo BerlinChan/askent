@@ -3,10 +3,11 @@ import { useHistory } from "react-router-dom";
 import { Box, Card, CardActions, CardContent } from "@material-ui/core";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { FTextField, ButtonLoading } from "../../components/Form";
+import { ButtonLoading } from "../../components/Form";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useLoginMutation } from "../../generated/graphqlHooks";
-import { AUTH_TOKEN } from "../../constant";
+import { useToken } from "../../hooks";
+import { TextField } from "formik-material-ui";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,6 +29,7 @@ const Login: React.FC = () => {
   const classes = useStyles();
   const [loginMutation, { loading }] = useLoginMutation();
   const history = useHistory();
+  const { setToken } = useToken();
 
   return (
     <Box className={classes.signupBox}>
@@ -43,14 +45,14 @@ const Login: React.FC = () => {
         })}
         onSubmit={async values => {
           const { data } = await loginMutation({ variables: values });
-          localStorage.setItem(AUTH_TOKEN, data?.login.token as string);
+          setToken({ authToken: data?.login.token });
           history.replace("/admin");
         }}
       >
         <Form className={classes.form}>
           <Card className={classes.card}>
             <CardContent>
-              <FTextField
+              <TextField
                 autoFucous
                 fullWidth
                 id="email"
@@ -59,7 +61,7 @@ const Login: React.FC = () => {
                 type="email"
                 margin="normal"
               />
-              <FTextField
+              <TextField
                 fullWidth
                 id="password"
                 name="password"

@@ -2,7 +2,6 @@ fragment QuestionFields on Question {
   id
   updatedAt
   voteCount
-  username
   content
   star
   archived
@@ -10,6 +9,7 @@ fragment QuestionFields on Question {
   top
   author {
     id
+    name
   }
 }
 

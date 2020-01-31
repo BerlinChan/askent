@@ -1,13 +1,19 @@
 import React from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { TabsProps, Tabs, Tab } from "@material-ui/core";
+import { TabsProps, Tabs, Tab, TabClassKey } from "@material-ui/core";
 
 interface Props {
-  tabs: Array<{ label: string; to: string }>;
+  tabs: Array<{
+    label: React.ReactNode;
+    to: string;
+    icon?: string | React.ReactElement;
+  }>;
+  tabClasses?: Partial<Record<TabClassKey, string>> | undefined;
 }
 
 export const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
   tabs,
+  tabClasses,
   ...props
 }) => {
   let { pathname } = useLocation();
@@ -27,7 +33,12 @@ export const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
       {...props}
     >
       {tabs.map((tabItem, index) => (
-        <Tab label={tabItem.label} key={index} />
+        <Tab
+          key={index}
+          label={tabItem.label}
+          icon={tabItem.icon}
+          classes={tabClasses}
+        />
       ))}
     </Tabs>
   );

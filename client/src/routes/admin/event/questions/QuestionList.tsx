@@ -13,8 +13,8 @@ import {
   Question,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
-  EventByMeQuery,
-  EventByMeQueryVariables,
+  AdminEventQuery,
+  AdminEventQueryVariables,
   useDeleteQuestionMutation,
   QuestionsByEventDocument
 } from "../../../../generated/graphqlHooks";
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventByMeQuery: QueryResult<EventByMeQuery, EventByMeQueryVariables>;
+  eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
   questionsByEventQuery: QueryResult<
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables
@@ -42,7 +42,7 @@ interface Props {
 }
 
 const QuestionList: React.FC<Props> = ({
-  eventByMeQuery,
+  eventQuery,
   questionsByEventQuery,
   filter = () => true
 }) => {
@@ -86,12 +86,12 @@ const QuestionList: React.FC<Props> = ({
           QuestionsByEventQueryVariables
         >({
           query: QuestionsByEventDocument,
-          variables: { eventId: eventByMeQuery.data?.eventByMe.id as string }
+          variables: { eventId: eventQuery.data?.eventById.id as string }
         });
         cache.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>(
           {
             query: QuestionsByEventDocument,
-            variables: { eventId: eventByMeQuery.data?.eventByMe.id as string },
+            variables: { eventId: eventQuery.data?.eventById.id as string },
             data: {
               questionsByEvent: (questions?.questionsByEvent || []).filter(
                 item => item.id !== mutationResult.data?.deleteQuestion.id
@@ -125,7 +125,7 @@ const QuestionList: React.FC<Props> = ({
             <QuestionItem
               key={index}
               question={item}
-              eventByMeQuery={eventByMeQuery}
+              eventQuery={eventQuery}
               handleMoreClick={handleMoreClick}
               editContent={editContentIds.includes(item.id)}
               handleEditContentToggle={handleEditContentToggle}

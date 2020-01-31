@@ -1,0 +1,11 @@
+mutation CreateQuestion($eventId: ID!, $content: String!) {
+  createQuestion(eventId: $eventId, content: $content) {
+    id
+    createdAt
+    updatedAt
+    content
+    published
+    top
+    voteCount
+  }
+}
