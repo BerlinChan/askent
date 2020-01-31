@@ -1,12 +1,12 @@
-import { Photon } from '@prisma/photon'
+import { PrismaClient } from '@prisma/client'
 import { PubSub } from 'apollo-server-express'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 
-const photon = new Photon()
+const prisma = new PrismaClient()
 const pubsub = new PubSub()
 
 export interface Context extends ExpressContext {
-  photon: Photon
+  prisma: PrismaClient
   pubsub: PubSub
 }
 
@@ -15,5 +15,5 @@ export function createContext({
   res,
   connection,
 }: ExpressContext): Context {
-  return { photon, pubsub, req, res, connection }
+  return { prisma, pubsub, req, res, connection }
 }
