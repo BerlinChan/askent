@@ -1,4 +1,4 @@
-import { rule } from 'graphql-shield'
+import { rule, or } from 'graphql-shield'
 import { getAdminUserId } from '../../utils'
 import { isAuthenticatedUser, isAuthenticatedAudience } from './User'
 
@@ -40,5 +40,8 @@ export default {
     createdAt: isEventOwner,
     updatedAt: isEventOwner,
     questions: isEventOwner,
+    questionsForLive: isAuthenticatedAudience,
+    questionCountForLive: isAuthenticatedAudience,
+    audienceCount: or(isEventOwner, isAuthenticatedAudience),
   },
 }

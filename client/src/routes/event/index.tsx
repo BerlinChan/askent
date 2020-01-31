@@ -11,7 +11,7 @@ import loadable from "@loadable/component";
 import { AudienceRoute } from "../../components/Route";
 import Layout from "../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
-import { useLiveEventQuery } from "../../generated/graphqlHooks";
+import { useEventForLoginQuery } from "../../generated/graphqlHooks";
 
 const EventLoginComponent = loadable(() => import("./login"), {
   fallback: <Loading />
@@ -23,7 +23,7 @@ const LiveQuestionsComponent = loadable(() => import("./questions"), {
 const Event: React.FC = () => {
   let { path } = useRouteMatch();
   let { id } = useParams();
-  const liveEventQuery = useLiveEventQuery({
+  const eventForLoginQuery = useEventForLoginQuery({
     variables: { eventId: id as string }
   });
 
@@ -31,11 +31,11 @@ const Event: React.FC = () => {
     <Switch>
       <Redirect exact path={`${path}`} to={`${path}/login`} />
       <Route path={`${path}/login`}>
-        <EventLoginComponent eventQuery={liveEventQuery} />
+        <EventLoginComponent eventQuery={eventForLoginQuery} />
       </Route>
 
       <Layout
-        header={<LiveEventHeader eventQuery={liveEventQuery} />}
+        header={<LiveEventHeader eventQuery={eventForLoginQuery} />}
         body={
           <Switch>
             <AudienceRoute path={`${path}/questions`}>

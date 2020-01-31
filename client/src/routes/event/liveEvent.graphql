@@ -1,3 +1,13 @@
+query EventForLogin($eventId: ID!) {
+  eventById(eventId: $eventId) {
+    id
+    name
+    code
+    startAt
+    endAt
+  }
+}
+
 query LiveEvent($eventId: ID!) {
   eventById(eventId: $eventId) {
     id
@@ -7,5 +17,17 @@ query LiveEvent($eventId: ID!) {
     endAt
     moderation
     audienceCount
+    questionCountForLive
+    questionsForLive {
+      id
+      content
+      voteCount
+      top
+      published
+      author {
+        id
+        name
+      }
+    }
   }
 }

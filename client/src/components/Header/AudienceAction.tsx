@@ -10,7 +10,7 @@ import {
   MenuItem,
   ListItemIcon
 } from "@material-ui/core";
-import { useMeQuery } from "../../generated/graphqlHooks";
+import { useMeAudienceQuery } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
@@ -19,8 +19,13 @@ import { useToken } from "../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    userInfo: {},
-    email: {
+    userInfo: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      marginRight: theme.spacing(1)
+    },
+    name: {
       fontSize: theme.typography.pxToRem(14),
       fontWeight: theme.typography.fontWeightBold
     },
@@ -33,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const AudienceAction: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
-  const { data: userData } = useMeQuery();
+  const { data: userData } = useMeAudienceQuery();
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
@@ -50,15 +55,27 @@ export const AudienceAction: React.FC = () => {
   return (
     <React.Fragment>
       <Box className={classes.userInfo}>
-        <Typography className={classes.email}>{userData?.me.email}</Typography>
-        <Typography className={classes.role}>{userData?.me.role}</Typography>
+        <Typography className={classes.name}>
+          {userData?.meAudience.name ? (
+            userData?.meAudience.name
+          ) : (
+            <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
+          )}
+        </Typography>
+        <Typography className={classes.role}>
+          {userData?.meAudience.role}
+        </Typography>
       </Box>
       <IconButton size="small" onClick={handleMenuOpen}>
-        <Avatar alt={userData?.me.name as string} src="/broken-image.jpg" />
+        <Avatar
+          alt={userData?.meAudience.name as string}
+          src="/broken-image.jpg"
+        />
       </IconButton>
       <Menu
         keepMounted
         anchorEl={menuAnchorEl}
+        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right"

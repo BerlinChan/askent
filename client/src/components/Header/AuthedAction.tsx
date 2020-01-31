@@ -18,7 +18,12 @@ import { useToken } from "../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    userInfo: {},
+    userInfo: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      marginRight: theme.spacing(1),
+    },
     email: {
       fontSize: theme.typography.pxToRem(14),
       fontWeight: theme.typography.fontWeightBold
@@ -58,6 +63,7 @@ export const AuthedAction: React.FC = () => {
       <Menu
         keepMounted
         anchorEl={menuAnchorEl}
+        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right"

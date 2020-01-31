@@ -137,6 +137,7 @@ const QuestionList: React.FC<Props> = ({
       <Menu
         MenuListProps={{ dense: true }}
         anchorEl={moreMenu.anchorEl}
+        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right"

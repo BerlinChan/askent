@@ -38,7 +38,13 @@ const Providers: React.FC<Props> = props => {
 
   return (
     <ApolloProvider client={apolloClient}>
-      <IntlProvider locale={locale} messages={messages[locale]}>
+      <IntlProvider
+        locale={locale}
+        messages={messages[locale]}
+        onError={err => {
+          // TODO: disable all i18n error before translation
+        }}
+      >
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <SnackbarProvider>

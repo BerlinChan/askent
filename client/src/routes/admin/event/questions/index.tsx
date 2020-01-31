@@ -10,7 +10,6 @@ import {
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
-import TabPanel from "../../../../components/TabPanel";
 import SearchIcon from "@material-ui/icons/Search";
 import {
   useQuestionsByEventQuery,
@@ -30,6 +29,7 @@ import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
 import Confirm from "../../../../components/Confirm";
 import { SubTabs, SubTab } from "../../../../components/Tabs";
+import TabPanel from "../../../../components/TabPanel";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: "column",
       height: "100%"
     },
-    reviewActions: {
+    listActions: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
@@ -220,7 +220,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   return (
     <Grid container spacing={3} className={classes.questionsGrid}>
       <Grid item sm={6} className={classes.gridItem}>
-        <Box className={classes.reviewActions}>
+        <Box className={classes.listActions}>
           <Typography color="textSecondary">
             <FormattedMessage id="ForReview" defaultMessage="For view" />
           </Typography>
@@ -279,7 +279,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         </Paper>
       </Grid>
       <Grid item sm={6} className={classes.gridItem}>
-        <Box className={classes.reviewActions}>
+        <Box className={classes.listActions}>
           <SubTabs value={tabIndex} onChange={handleTabsChange}>
             <SubTab
               label={formatMessage({

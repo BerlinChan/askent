@@ -16,8 +16,8 @@ import {
 import { RouteTabs } from "../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
 import {
-  LiveEventQuery,
-  LiveEventQueryVariables
+  EventForLoginQuery,
+  EventForLoginQueryVariables
 } from "../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import AppBarElevationScroll from "../../components/AppBarElevationScroll";
@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQuery: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
+  eventQuery: QueryResult<EventForLoginQuery, EventForLoginQueryVariables>;
 }
 
 const LiveEventHeader: React.FC<Props> = ({ eventQuery }) => {

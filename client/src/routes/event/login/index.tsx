@@ -12,10 +12,10 @@ import {
 import { FormattedMessage, FormattedDate } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
 import {
-  LiveEventQuery,
-  LiveEventQueryVariables,
+  EventForLoginQuery,
+  EventForLoginQueryVariables,
   useLoginAudienceMutation,
-  useIsEventAudienceLazyQuery,
+  useIsEventAudienceQuery,
   useJoinEventMutation
 } from "../../../generated/graphqlHooks";
 import { useFingerprint, useToken } from "../../../hooks";
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQuery: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
+  eventQuery: QueryResult<EventForLoginQuery, EventForLoginQueryVariables>;
 }
 
 const EventLogin: React.FC<Props> = ({ eventQuery }) => {
@@ -50,10 +50,9 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
     loginAudienceMutation,
     { loading: loginAudienceLoading }
   ] = useLoginAudienceMutation();
-  const [
-    isEventAudienceLazyQuery,
-    { data: isEventAudienceData }
-  ] = useIsEventAudienceLazyQuery();
+  const { data: isEventAudienceData } = useIsEventAudienceQuery({
+    variables: { eventId: id as string }
+  });
   const [
     joinEventMutation,
     { loading: joinEventLoading }
@@ -62,18 +61,11 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
   const { token, setToken } = useToken();
 
   React.useEffect(() => {
-    (async () => {
-      if (token.audienceAuthToken) {
-        await isEventAudienceLazyQuery({
-          variables: { eventId: id as string }
-        });
-        if (isEventAudienceData?.isEventAudience) {
-          history.replace(`/event/${id}/questions`);
-        }
+    if (token.audienceAuthToken) {
+      if (isEventAudienceData?.isEventAudience) {
+        history.replace(`/event/${id}/questions`);
       }
-    })();
-
-    //TODO: cancel promise to avoid react useEffect error after component unmounted
+    }
   });
 
   const handleEventLogin = async () => {

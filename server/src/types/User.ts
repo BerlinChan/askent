@@ -8,7 +8,7 @@ import {
 import { NexusGenFieldTypes } from 'nexus-typegen'
 import { hash, compare } from 'bcryptjs'
 import { Context } from '../context'
-import { getAdminUserId, signToken } from '../utils'
+import { getAdminUserId, signToken, getAudienceUserId } from '../utils'
 
 export const User = objectType({
   name: 'User',
@@ -49,6 +49,15 @@ export const userQuery = extendType({
       resolve: (root, args, ctx) => {
         return ctx.photon.users.findOne({
           where: { id: getAdminUserId(ctx) },
+        }) as Promise<UserType>
+      },
+    })
+    t.field('meAudience', {
+      type: 'User',
+      description: 'Query my audience user info.',
+      resolve: (root, args, ctx) => {
+        return ctx.photon.users.findOne({
+          where: { id: getAudienceUserId(ctx) },
         }) as Promise<UserType>
       },
     })

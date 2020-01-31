@@ -1,8 +1,17 @@
-query Me{
-    me{
-        id
-        role
-        name
-        email
-    }
+query Me {
+  me {
+    id
+    role
+    name
+    email
+  }
+}
+
+query MeAudience {
+  meAudience {
+    id
+    role
+    name
+    email
+  }
 }

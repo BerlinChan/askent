@@ -9,7 +9,6 @@ import {
 import { getAdminUserId, getAudienceUserId } from '../utils'
 import { Context } from '../context'
 import { Event as EventType } from '@prisma/photon'
-import { connect } from 'http2'
 
 export const Event = objectType({
   name: 'Event',
@@ -26,13 +25,27 @@ export const Event = objectType({
     t.model.moderation()
     t.model.questions()
 
-    t.list.field('questionAllPublished', {
+    t.list.field('questionsForLive', {
       type: 'Question',
       resolve: async (root, args, ctx) => {
+        const userId = getAudienceUserId(ctx)
         const findAllQuestions = await ctx.photon.events
           .findOne({ where: { id: root.id } })
-          .questions()
-        return findAllQuestions.filter(item => item.published)
+          .questions({ include: { author: true } })
+        return findAllQuestions.filter(
+          item => item.published || item.author?.id === userId,
+        )
+      },
+    })
+    t.int('questionCountForLive', {
+      resolve: async (root, args, ctx) => {
+        const userId = getAudienceUserId(ctx)
+        const findAllQuestions = await ctx.photon.events
+          .findOne({ where: { id: root.id } })
+          .questions({ include: { author: true } })
+        return findAllQuestions.filter(
+          item => item.published || item.author?.id === userId,
+        ).length
       },
     })
     t.int('audienceCount', {

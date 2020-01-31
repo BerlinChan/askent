@@ -11,7 +11,6 @@ import {
 import {
   Question as QuestionType,
   User,
-  QuestionCreateInput,
 } from '@prisma/photon'
 import { getAdminUserId, getAudienceUserId } from '../utils'
 import { withFilter } from 'apollo-server-express'
