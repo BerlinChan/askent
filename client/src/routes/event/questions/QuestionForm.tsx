@@ -74,11 +74,12 @@ const QuestionForm: React.FC = () => {
           .max(QUESTION_CONTENT_MAX_LENGTH)
           .required()
       })}
-      onSubmit={async values => {
+      onSubmit={async (values, formikBag) => {
         await createQuestionMutation({
           variables: { eventId: id as string, content: values.question }
         });
         setExpanded(false);
+        formikBag.resetForm();
       }}
     >
       {formProps => (

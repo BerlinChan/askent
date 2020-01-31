@@ -39,7 +39,6 @@ export default {
     audiences: isEventOwner,
     createdAt: isEventOwner,
     updatedAt: isEventOwner,
-    moderation: isEventOwner,
     questions: isEventOwner,
   },
 }

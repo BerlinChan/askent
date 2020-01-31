@@ -72,6 +72,8 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
         }
       }
     })();
+
+    //TODO: cancel promise to avoid react useEffect error after component unmounted
   });
 
   const handleEventLogin = async () => {

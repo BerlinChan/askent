@@ -5,6 +5,7 @@ query LiveEvent($eventId: ID!) {
     code
     startAt
     endAt
+    moderation
     audienceCount
   }
 }
