@@ -4,7 +4,7 @@ import {
   UserCreateInput,
   UserWhereUniqueInput,
   UserWhereInput,
-} from '@prisma/photon'
+} from '@prisma/client'
 import { NexusGenFieldTypes } from 'nexus-typegen'
 import { hash, compare } from 'bcryptjs'
 import { Context } from '../context'
@@ -47,7 +47,7 @@ export const userQuery = extendType({
       type: 'User',
       description: 'Query my user info.',
       resolve: (root, args, ctx) => {
-        return ctx.photon.users.findOne({
+        return ctx.prisma.user.findOne({
           where: { id: getAdminUserId(ctx) },
         }) as Promise<UserType>
       },
@@ -88,7 +88,7 @@ export const userMutation = extendType({
           throw new Error(ERROR_MESSAGE.emailExist(args.email))
         }
         const hashedPassword = await hash(args.password, 10)
-        const user = await ctx.photon.users.create({
+        const user = await ctx.prisma.user.create({
           data: {
             ...args,
             password: hashedPassword,
@@ -109,7 +109,7 @@ export const userMutation = extendType({
         password: stringArg({ required: true }),
       },
       resolve: async (parent, args: UserWhereInput, ctx, info) => {
-        const user = await ctx.photon.users.findOne({
+        const user = await ctx.prisma.user.findOne({
           where: { email: args.email } as UserWhereUniqueInput,
         })
         if (!user) {
@@ -136,11 +136,11 @@ export const userMutation = extendType({
       若 fingerprint 的 User 不存在则 create 并返回 token`,
       args: { fingerprint: stringArg({ required: true }) },
       resolve: async (root, { fingerprint }, ctx) => {
-        let user = await ctx.photon.users.findOne({
+        let user = await ctx.prisma.user.findOne({
           where: { fingerprint },
         })
         if (!user) {
-          user = await ctx.photon.users.create({
+          user = await ctx.prisma.user.create({
             data: {
               fingerprint,
               role: 'Audience',
@@ -163,13 +163,13 @@ async function checkNameOrEmailExist(
 ): Promise<boolean> {
   if (/@/.test(string)) {
     return Boolean(
-      await ctx.photon.users.findOne({
+      await ctx.prisma.user.findOne({
         where: { email: string } as UserWhereUniqueInput,
       }),
     )
   } else {
     return Boolean(
-      await ctx.photon.users.findOne({
+      await ctx.prisma.user.findOne({
         where: { name: string } as UserWhereUniqueInput,
       }),
     )
@@ -180,7 +180,7 @@ async function checkFingerprintExist(
   fingerprint: string,
 ): Promise<boolean> {
   return Boolean(
-    await ctx.photon.users.findOne({
+    await ctx.prisma.user.findOne({
       where: { fingerprint },
     }),
   )

@@ -8,11 +8,7 @@ import {
   booleanArg,
   subscriptionField,
 } from 'nexus'
-import {
-  Question as QuestionType,
-  User,
-  QuestionCreateInput,
-} from '@prisma/photon'
+import { Question as QuestionType, User } from '@prisma/client'
 import { getAdminUserId, getAudienceUserId } from '../utils'
 import { withFilter } from 'apollo-server-express'
 
@@ -33,7 +29,7 @@ export const Question = objectType({
 
     t.int('voteCount', {
       async resolve({ id }, _args, ctx) {
-        const users = await ctx.photon.questions
+        const users = await ctx.prisma.questions
           .findOne({ where: { id } })
           .votedUsers()
 
@@ -63,7 +59,7 @@ export const questionQuery = extendType({
         // TODO: pagination
       },
       resolve: (root, args, ctx) => {
-        return ctx.photon.questions.findMany({
+        return ctx.prisma.question.findMany({
           where: { author: { id: getAdminUserId(ctx) } },
         })
       },
@@ -79,7 +75,7 @@ export const questionQuery = extendType({
         top: booleanArg(),
       },
       resolve: (root, args, ctx) => {
-        return ctx.photon.questions.findMany({
+        return ctx.prisma.question.findMany({
           where: {
             event: { id: args.eventId },
             star: args.star,
@@ -109,10 +105,10 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { eventId, content }, ctx) => {
         const userId = getAudienceUserId(ctx)
-        const event = await ctx.photon.events.findOne({
+        const event = await ctx.prisma.event.findOne({
           where: { id: eventId },
         })
-        const newQuestion = await ctx.photon.questions.create({
+        const newQuestion = await ctx.prisma.question.create({
           data: {
             published: !event?.moderation,
             content,
@@ -137,7 +133,7 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { input }, ctx) => {
         const { content, questionId, published, archived, star, top } = input
-        const findQuestion = await ctx.photon.questions.findOne({
+        const findQuestion = await ctx.prisma.question.findOne({
           where: { id: questionId },
           include: { event: true },
         })
@@ -148,11 +144,11 @@ export const questionMutation = extendType({
         // can only top one question at a time
         let topQuestion: Array<QuestionType> = []
         if (top) {
-          topQuestion = await ctx.photon.questions.findMany({
+          topQuestion = await ctx.prisma.question.findMany({
             where: { top: true },
           })
           topQuestion = topQuestion.map(item => ({ ...item, top: false }))
-          await ctx.photon.questions.updateMany({
+          await ctx.prisma.question.updateMany({
             where: { top: true },
             data: { top: false },
           })
@@ -165,7 +161,7 @@ export const questionMutation = extendType({
             ? { top: false, star: false, archived: false }
             : {},
         )
-        const currentTopQuestion = await ctx.photon.questions.update({
+        const currentTopQuestion = await ctx.prisma.question.update({
           where: { id: questionId },
           data: question,
         })
@@ -186,7 +182,7 @@ export const questionMutation = extendType({
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
-        const findQuestion = await ctx.photon.questions.findOne({
+        const findQuestion = await ctx.prisma.question.findOne({
           where: { id: questionId },
           include: { event: true },
         })
@@ -194,7 +190,7 @@ export const questionMutation = extendType({
           throw new Error(ERROR_MESSAGE.noQuestionId(questionId))
         }
 
-        const response = await ctx.photon.questions.delete({
+        const response = await ctx.prisma.question.delete({
           where: { id: questionId },
         })
 
@@ -213,7 +209,7 @@ export const questionMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
-        const { count } = await ctx.photon.questions.deleteMany({
+        const { count } = await ctx.prisma.question.deleteMany({
           where: { event: { id: eventId }, published: false },
         })
 
@@ -227,7 +223,7 @@ export const questionMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
-        const { count } = await ctx.photon.questions.updateMany({
+        const { count } = await ctx.prisma.question.updateMany({
           where: { event: { id: eventId }, published: false },
           data: { published: true },
         })
@@ -243,10 +239,10 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { questionId }, ctx) => {
         const userId = getAdminUserId(ctx)
-        const votedUsers: User[] = await ctx.photon.questions
+        const votedUsers: User[] = await ctx.prisma.questions
           .findOne({ where: { id: questionId } })
           .votedUsers({ where: { id: userId } })
-        return ctx.photon.questions.update({
+        return ctx.prisma.question.update({
           where: { id: questionId },
           data: {
             votedUsers: votedUsers.length

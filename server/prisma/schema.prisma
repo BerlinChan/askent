@@ -8,8 +8,8 @@ datasource db {
   enabled  = true
 }
 
-generator photon {
-  provider = "photonjs"
+generator client {
+  provider = "prisma-client-js"
 }
 
 model User {
