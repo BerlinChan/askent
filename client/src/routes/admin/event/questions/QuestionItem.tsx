@@ -16,8 +16,6 @@ import {
   FormattedDate,
   FormattedTime
 } from "react-intl";
-import AccessTimeIcon from "@material-ui/icons/AccessTime";
-import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import { QueryResult } from "@apollo/react-common";
 import {
   QuestionFieldsFragment,
@@ -25,6 +23,8 @@ import {
   AdminEventQueryVariables,
   useUpdateQuestionMutation
 } from "../../../../generated/graphqlHooks";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import UnarchiveIcon from "@material-ui/icons/Unarchive";

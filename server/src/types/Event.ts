@@ -29,23 +29,30 @@ export const Event = objectType({
       type: 'Question',
       resolve: async (root, args, ctx) => {
         const userId = getAudienceUserId(ctx)
-        const findAllQuestions = await ctx.photon.events
-          .findOne({ where: { id: root.id } })
-          .questions({ include: { author: true } })
-        return findAllQuestions.filter(
-          item => item.published || item.author?.id === userId,
-        )
+        const questionsForLive = await ctx.photon.questions.findMany({
+          where: {
+            event: { id: root.id },
+            OR: [{ author: { id: userId } }, { published: true }],
+            archived: false,
+          },
+        })
+
+        return questionsForLive
       },
     })
     t.int('questionCountForLive', {
       resolve: async (root, args, ctx) => {
         const userId = getAudienceUserId(ctx)
-        const findAllQuestions = await ctx.photon.events
-          .findOne({ where: { id: root.id } })
-          .questions({ include: { author: true } })
-        return findAllQuestions.filter(
-          item => item.published || item.author?.id === userId,
-        ).length
+        const questionsForLive = await ctx.photon.questions.findMany({
+          where: {
+            event: { id: root.id },
+            OR: [{ author: { id: userId } }, { published: true }],
+            archived: false,
+          },
+        })
+
+        //TODO:aggregate count not yet implemented, https://github.com/prisma/prisma-client-js/issues/5
+        return questionsForLive.length
       },
     })
     t.int('audienceCount', {

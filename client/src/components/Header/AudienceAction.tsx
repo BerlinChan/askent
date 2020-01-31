@@ -112,7 +112,7 @@ export const AudienceAction: React.FC = () => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            removeToken();
+            removeToken('audienceAuthToken');
             history.replace("/");
             handleMenuClose();
           }}

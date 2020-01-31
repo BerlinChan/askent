@@ -16,8 +16,8 @@ import {
 import { RouteTabs } from "../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
 import {
-  EventForLoginQuery,
-  EventForLoginQueryVariables
+  LiveEventQuery,
+  LiveEventQueryVariables
 } from "../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import AppBarElevationScroll from "../../components/AppBarElevationScroll";
@@ -61,13 +61,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQuery: QueryResult<EventForLoginQuery, EventForLoginQueryVariables>;
+  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
 }
 
-const LiveEventHeader: React.FC<Props> = ({ eventQuery }) => {
+const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
   const classes = useStyles();
   let { url } = useRouteMatch();
-  const { data } = eventQuery;
+  const { data } = eventQueryResult;
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AUTH_TOKEN, AUDIENCE_AUTH_TOKEN } from "../constant";
 
+type TokenKey = "authToken" | "audienceAuthToken";
 type Token = { authToken?: string; audienceAuthToken?: string };
 
 export function useToken() {
@@ -18,11 +19,20 @@ export function useToken() {
     }
     setTokenState(Object.assign({}, token, newToken));
   }
-  function removeToken() {
+  function removeToken(key: TokenKey) {
+    if (key === "audienceAuthToken") {
+      localStorage.removeItem(AUDIENCE_AUTH_TOKEN);
+      setTokenState(Object.assign({}, token, { audienceAuthToken: "" }));
+    } else if (key === "authToken") {
+      localStorage.removeItem(AUTH_TOKEN);
+      setTokenState(Object.assign({}, token, { authToken: "" }));
+    }
+  }
+  function clearToken() {
     localStorage.removeItem(AUTH_TOKEN);
     localStorage.removeItem(AUDIENCE_AUTH_TOKEN);
     setTokenState({ authToken: "", audienceAuthToken: "" });
   }
 
-  return { token, setToken, removeToken };
+  return { token, setToken, removeToken, clearToken };
 }

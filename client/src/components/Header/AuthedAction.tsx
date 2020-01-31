@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
-      marginRight: theme.spacing(1),
+      marginRight: theme.spacing(1)
     },
     email: {
       fontSize: theme.typography.pxToRem(14),
@@ -88,7 +88,7 @@ export const AuthedAction: React.FC = () => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            removeToken();
+            removeToken("authToken");
             history.replace("/");
             handleMenuClose();
           }}
