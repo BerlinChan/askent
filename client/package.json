@@ -71,7 +71,7 @@
     "@graphql-codegen/typescript-react-apollo": "1.11.2",
     "@types/fingerprintjs2": "^2.0.0",
     "ts-node": "8.6.2",
-    "@testing-library/jest-dom": "5.0.2",
+    "@testing-library/jest-dom": "5.1.0",
     "@testing-library/react": "9.4.0",
     "@testing-library/user-event": "8.0.4"
   }
