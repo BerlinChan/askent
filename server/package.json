@@ -37,7 +37,7 @@
     "@types/node-fetch": "2.5.4",
     "@types/ramda": "types/npm-ramda#dist",
     "create-nexus-type": "1.1.4",
-    "prisma2": "2.0.0-preview019",
+    "prisma2": "2.0.0-preview021",
     "ts-node": "8.6.2",
     "ts-node-dev": "1.0.0-pre.44",
     "typescript": "3.7.5"
