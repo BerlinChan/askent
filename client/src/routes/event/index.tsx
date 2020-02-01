@@ -14,7 +14,8 @@ import Layout from "../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
 import {
   useEventForLoginQuery,
-  useLiveEventLazyQuery
+  useLiveEventLazyQuery,
+  useMeAudienceLazyQuery
 } from "../../generated/graphqlHooks";
 
 const EventLoginComponent = loadable(() => import("./login"), {
@@ -32,9 +33,11 @@ const Event: React.FC = () => {
     variables: { eventId: id as string }
   });
   const [liveEventLazyQuery, liveEventQueryResult] = useLiveEventLazyQuery();
+  const [meAudienceLazyQuery, meAudienceQueryResult] = useMeAudienceLazyQuery();
 
   React.useEffect(() => {
     if (!pathname.endsWith("/login")) {
+      meAudienceLazyQuery();
       liveEventLazyQuery({ variables: { eventId: id as string } });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,11 +51,19 @@ const Event: React.FC = () => {
       </Route>
 
       <Layout
-        header={<LiveEventHeader eventQueryResult={liveEventQueryResult} />}
+        header={
+          <LiveEventHeader
+            userQueryResult={meAudienceQueryResult}
+            eventQueryResult={liveEventQueryResult}
+          />
+        }
         body={
           <Switch>
             <AudienceRoute path={`${path}/questions`}>
-              <LiveQuestionsComponent eventQueryResult={liveEventQueryResult} />
+              <LiveQuestionsComponent
+                userQueryResult={meAudienceQueryResult}
+                eventQueryResult={liveEventQueryResult}
+              />
             </AudienceRoute>
           </Switch>
         }

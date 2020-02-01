@@ -10,7 +10,11 @@ import {
   MenuItem,
   ListItemIcon
 } from "@material-ui/core";
-import { useMeAudienceQuery } from "../../generated/graphqlHooks";
+import { QueryResult } from "@apollo/react-common";
+import {
+  MeAudienceQuery,
+  MeAudienceQueryVariables
+} from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
@@ -35,10 +39,14 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const AudienceAction: React.FC = () => {
+interface Props {
+  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+}
+
+export const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
   const classes = useStyles();
   const history = useHistory();
-  const { data: userData } = useMeAudienceQuery();
+  const { data: userData } = userQueryResult;
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
@@ -112,7 +120,7 @@ export const AudienceAction: React.FC = () => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            removeToken('audienceAuthToken');
+            removeToken("audienceAuthToken");
             history.replace("/");
             handleMenuClose();
           }}

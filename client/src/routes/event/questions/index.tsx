@@ -7,6 +7,8 @@ import TabPanel from "../../../components/TabPanel";
 import { SubTabs, SubTab } from "../../../components/Tabs";
 import { QueryResult } from "@apollo/react-common";
 import {
+  MeAudienceQuery,
+  MeAudienceQueryVariables,
   LiveEventQuery,
   LiveEventQueryVariables
 } from "../../../generated/graphqlHooks";
@@ -35,10 +37,11 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
   eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
 }
 
-const LiveQuestions: React.FC<Props> = ({ eventQueryResult }) => {
+const LiveQuestions: React.FC<Props> = ({ userQueryResult,eventQueryResult }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [tabIndex, setTabIndex] = React.useState(0);
@@ -84,7 +87,10 @@ const LiveQuestions: React.FC<Props> = ({ eventQueryResult }) => {
       </Box>
       <Paper className={classes.panelPaper}>
         <TabPanel value={tabIndex} index={0}>
-          <QuestionList eventQueryResult={eventQueryResult} />
+          <QuestionList
+            userQueryResult={userQueryResult}
+            eventQueryResult={eventQueryResult}
+          />
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
           Recent

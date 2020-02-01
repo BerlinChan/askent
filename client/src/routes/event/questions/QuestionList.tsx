@@ -10,6 +10,8 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/react-common";
 import {
+  MeAudienceQuery,
+  MeAudienceQueryVariables,
   LiveEventQuery,
   LiveEventQueryVariables,
   useDeleteQuestionMutation
@@ -26,10 +28,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
   eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
 }
 
-const QuestionList: React.FC<Props> = ({ eventQueryResult }) => {
+const QuestionList: React.FC<Props> = ({
+  userQueryResult,
+  eventQueryResult
+}) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [moreMenu, setMoreMenu] = React.useState<{
@@ -87,6 +93,7 @@ const QuestionList: React.FC<Props> = ({ eventQueryResult }) => {
             <QuestionItem
               key={index}
               question={item}
+              userQueryResult={userQueryResult}
               handleMoreClick={handleMoreClick}
               editContent={editContentIds.includes(item.id)}
               handleEditContentToggle={handleEditContentToggle}

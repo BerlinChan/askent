@@ -27,6 +27,7 @@ export function useToken() {
       localStorage.removeItem(AUTH_TOKEN);
       setTokenState(Object.assign({}, token, { authToken: "" }));
     }
+    //TODO: Reset store on logout, https://www.apollographql.com/docs/react/networking/authentication/#reset-store-on-logout
   }
   function clearToken() {
     localStorage.removeItem(AUTH_TOKEN);

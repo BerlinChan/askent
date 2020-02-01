@@ -16,6 +16,8 @@ import {
 import { RouteTabs } from "../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
 import {
+  MeAudienceQuery,
+  MeAudienceQueryVariables,
   LiveEventQuery,
   LiveEventQueryVariables
 } from "../../generated/graphqlHooks";
@@ -62,10 +64,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
   eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
 }
 
-const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
+const LiveEventHeader: React.FC<Props> = ({
+  userQueryResult,
+  eventQueryResult
+}) => {
   const classes = useStyles();
   let { url } = useRouteMatch();
   const { data } = eventQueryResult;
@@ -135,7 +141,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
               />
             </Grid>
             <Grid item xs={3} className={classes.right}>
-              <AudienceAction />
+              <AudienceAction userQueryResult={userQueryResult} />
             </Grid>
           </Grid>
         </Toolbar>

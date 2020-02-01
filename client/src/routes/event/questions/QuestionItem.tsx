@@ -11,7 +11,10 @@ import {
 } from "@material-ui/core";
 import { FormattedMessage, FormattedTime, FormattedDate } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { QueryResult } from "@apollo/react-common";
 import {
+  MeAudienceQuery,
+  MeAudienceQueryVariables,
   useVoteQuestionMutation,
   LiveQuestionFieldsFragment,
   useUpdateQuestionMutation
@@ -34,8 +37,8 @@ const useStyles = makeStyles((theme: Theme) =>
     moreButton: { float: "right" },
     questionActionBox: {
       position: "absolute",
-      top: 0,
-      right: 8
+      top: theme.spacing(1),
+      right: theme.spacing(1)
     },
     thumbUpButton: {
       height: 24,
@@ -56,6 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
   question: LiveQuestionFieldsFragment;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -67,6 +71,7 @@ interface Props {
 }
 
 const QuestionItem: React.FC<Props> = ({
+  userQueryResult,
   question,
   handleMoreClick,
   editContent,
@@ -183,13 +188,15 @@ const QuestionItem: React.FC<Props> = ({
         <React.Fragment>
           <Typography className={classes.questionContent} variant="body1">
             {question.content}
-            <IconButton
-              className={classes.moreButton}
-              size="small"
-              onClick={e => handleMoreClick(e, question.id)}
-            >
-              <MoreHorizIcon fontSize="inherit" />
-            </IconButton>
+            {question.author?.id === userQueryResult.data?.meAudience.id && (
+              <IconButton
+                className={classes.moreButton}
+                size="small"
+                onClick={e => handleMoreClick(e, question.id)}
+              >
+                <MoreHorizIcon fontSize="inherit" />
+              </IconButton>
+            )}
           </Typography>
           <Box className={classes.questionActionBox}>
             <Button
