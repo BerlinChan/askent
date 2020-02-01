@@ -37,7 +37,7 @@ const Event: React.FC = () => {
     if (!pathname.endsWith("/login")) {
       liveEventLazyQuery({ variables: { eventId: id as string } });
     }
-  }, [id]);
+  }, [pathname]);
 
   return (
     <Switch>

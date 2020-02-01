@@ -8,12 +8,10 @@ import {
   booleanArg,
   subscriptionField,
 } from 'nexus'
-import {
-  Question as QuestionType,
-  User,
-} from '@prisma/photon'
+import { Question as QuestionType, User } from '@prisma/photon'
 import { getAdminUserId, getAudienceUserId } from '../utils'
 import { withFilter } from 'apollo-server-express'
+import { Context } from '../context'
 
 export const Question = objectType({
   name: 'Question',
@@ -30,6 +28,11 @@ export const Question = objectType({
     t.model.top()
     // t.model.votedUsers()
 
+    t.boolean('voted', {
+      resolve: (root, args, ctx) => {
+        return getVoted(ctx, root.id)
+      },
+    })
     t.int('voteCount', {
       async resolve({ id }, _args, ctx) {
         const users = await ctx.photon.questions
@@ -236,19 +239,18 @@ export const questionMutation = extendType({
     })
     t.field('voteQuestion', {
       type: 'Question',
-      description: 'Vote for a question.',
+      description: 'Vote a question.',
       args: {
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
-        const userId = getAdminUserId(ctx)
-        const votedUsers: User[] = await ctx.photon.questions
-          .findOne({ where: { id: questionId } })
-          .votedUsers({ where: { id: userId } })
+        const userId = getAudienceUserId(ctx)
+        const voted = await getVoted(ctx, questionId)
+
         return ctx.photon.questions.update({
           where: { id: questionId },
           data: {
-            votedUsers: votedUsers.length
+            votedUsers: voted
               ? { disconnect: { id: userId } }
               : { connect: { id: userId } },
           },
@@ -304,4 +306,14 @@ export const questionDeletedSubscription = subscriptionField<'questionDeleted'>(
 
 const ERROR_MESSAGE = {
   noQuestionId: (questionId: string) => `No question for id: ${questionId}`,
+}
+
+async function getVoted(ctx: Context, questionId: string) {
+  const userId = getAudienceUserId(ctx)
+  if (!userId) return false
+  const audiences: User[] = await ctx.photon.questions
+    .findOne({ where: { id: questionId } })
+    .votedUsers({ where: { id: userId } })
+
+  return Boolean(audiences.length)
 }

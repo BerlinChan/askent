@@ -1,11 +1,26 @@
+fragment LiveQuestionFields on Question {
+  id
+  createdAt
+  updatedAt
+  content
+  published
+  top
+  voted
+  voteCount
+  author {
+    id
+    name
+  }
+}
+
 mutation CreateQuestion($eventId: ID!, $content: String!) {
   createQuestion(eventId: $eventId, content: $content) {
-    id
-    createdAt
-    updatedAt
-    content
-    published
-    top
-    voteCount
+    ...LiveQuestionFields
+  }
+}
+
+mutation VoteQuestion($questionId: ID!) {
+  voteQuestion(questionId: $questionId) {
+    ...LiveQuestionFields
   }
 }

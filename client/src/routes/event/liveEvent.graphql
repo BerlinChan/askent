@@ -19,16 +19,7 @@ query LiveEvent($eventId: ID!) {
     audienceCount
     questionCountForLive
     questionsForLive {
-      id
-      updatedAt
-      content
-      voteCount
-      top
-      published
-      author {
-        id
-        name
-      }
+      ...LiveQuestionFields
     }
   }
 }

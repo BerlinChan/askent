@@ -3,9 +3,9 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Container, Box } from "@material-ui/core";
 
 interface Props {
-  header?: React.ReactElement;
-  boxScrollBody?: React.ReactElement;
-  body?: React.ReactElement;
+  header: React.ReactElement;
+  body: React.ReactElement;
+  scrollBoxBody?: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: "column",
       height: "100vh"
     },
-    bodyRoutesBox: {
+    scrollBox: {
       overflowX: "hidden",
       overflowY: "auto",
       height: "100%"
@@ -27,21 +27,27 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Layout: React.FC<Props> = ({ header, boxScrollBody, body }) => {
+const Layout: React.FC<Props> = ({ header, scrollBoxBody, body }) => {
   const classes = useStyles();
 
   return (
-    <Box className={classes.layoutBox}>
-      {header}
-      {boxScrollBody && (
-        <Box className={classes.bodyRoutesBox}>
-          <Container maxWidth="lg" className={classes.bodyContainer}>
-            {boxScrollBody}
-          </Container>
+    <React.Fragment>
+      {scrollBoxBody ? (
+        <Box className={classes.layoutBox}>
+          {header}
+          <Box className={classes.scrollBox}>
+            <Container maxWidth="lg" className={classes.bodyContainer}>
+              {body}
+            </Container>
+          </Box>
         </Box>
+      ) : (
+        <React.Fragment>
+          {header}
+          {body}
+        </React.Fragment>
       )}
-      {body}
-    </Box>
+    </React.Fragment>
   );
 };
 

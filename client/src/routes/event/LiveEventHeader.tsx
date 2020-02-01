@@ -36,7 +36,8 @@ const useStyles = makeStyles((theme: Theme) =>
       minHeight: 56
     },
     left: {
-      display: "flex"
+      display: "flex",
+      alignItems: "center"
     },
     right: {
       display: "flex",
