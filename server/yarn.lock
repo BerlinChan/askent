@@ -884,10 +884,10 @@ cors@2.8.5, cors@^2.8.4:
     object-assign "^4"
     vary "^1"
 
-create-nexus-type@1.1.4:
-  version "1.1.4"
-  resolved "https://registry.npm.taobao.org/create-nexus-type/download/create-nexus-type-1.1.4.tgz#6149f77733cb05c93fcc1b5dbd22b5376a065b7a"
-  integrity sha1-YUn3dzPLBck/zBtdvSK1N2oGW3o=
+create-nexus-type@1.1.7:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/create-nexus-type/-/create-nexus-type-1.1.7.tgz#b39742ac8d350ed10e77a10923a9ac860b8fdc36"
+  integrity sha512-mItdDcadmI6NJZxXsWGsb0Y15PXE642jZaT195PC/qsV/qVgylGENNihCo6Luni3fUJvhLQ8mgeROLRUCWwXvQ==
   dependencies:
     arg "^4.1.2"
     pluralize "^8.0.0"
