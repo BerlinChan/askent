@@ -41,7 +41,10 @@ interface Props {
   eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
 }
 
-const LiveQuestions: React.FC<Props> = ({ userQueryResult,eventQueryResult }) => {
+const LiveQuestions: React.FC<Props> = ({
+  userQueryResult,
+  eventQueryResult
+}) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [tabIndex, setTabIndex] = React.useState(0);

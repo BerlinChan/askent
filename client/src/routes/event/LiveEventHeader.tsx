@@ -2,6 +2,7 @@ import React from "react";
 import { useRouteMatch } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
+  Box,
   Grid,
   Typography,
   Toolbar,
@@ -27,7 +28,7 @@ import { AudienceAction } from "../../components/Header";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, FormattedDate } from "react-intl";
 
 const drawerWidth = 240;
 
@@ -59,6 +60,9 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerPaper: {
       paddingTop: 56,
       width: drawerWidth
+    },
+    drawerInfo: {
+      margin: theme.spacing(1, 2)
     }
   })
 );
@@ -154,15 +158,29 @@ const LiveEventHeader: React.FC<Props> = ({
         open={open}
         classes={{ paper: classes.drawerPaper }}
       >
+        <Box className={classes.drawerInfo}>
+          <Typography>{data?.eventById.name}</Typography>
+          <Typography variant="body2">
+            <FormattedDate value={data?.eventById.startAt} />
+            {" ~ "}
+            <FormattedDate value={data?.eventById.endAt} />
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            # {data?.eventById.code}
+          </Typography>
+        </Box>
+        <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem button key={index}>
-              <ListItemIcon>
-                <QuestionAnswerIcon />
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          {["Live interaction", "Switch event", "About Askent"].map(
+            (text, index) => (
+              <ListItem button key={index}>
+                <ListItemIcon>
+                  <QuestionAnswerIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            )
+          )}
         </List>
         <Divider />
       </Drawer>
