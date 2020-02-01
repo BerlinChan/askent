@@ -37,6 +37,7 @@ const Event: React.FC = () => {
     if (!pathname.endsWith("/login")) {
       liveEventLazyQuery({ variables: { eventId: id as string } });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (

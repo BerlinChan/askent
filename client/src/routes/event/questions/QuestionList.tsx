@@ -1,49 +1,27 @@
 import React from "react";
 import {
-  Box,
-  Typography,
-  Avatar,
-  Button,
   List,
-  ListItem,
+  ListItemIcon,
   ListItemText,
-  ListItemAvatar
+  Menu,
+  MenuItem
 } from "@material-ui/core";
-import { FormattedMessage, FormattedTime, FormattedDate } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/react-common";
 import {
   LiveEventQuery,
   LiveEventQueryVariables,
-  useVoteQuestionMutation
+  useDeleteQuestionMutation
 } from "../../../generated/graphqlHooks";
-import ThumbUpIcon from "@material-ui/icons/ThumbUp";
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
+import Confirm from "../../../components/Confirm";
+import EditIcon from "@material-ui/icons/Edit";
+import QuestionItem from "./QuestionItem";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    list: {},
-    listItem: {
-      flexWrap: "wrap",
-      position: "relative"
-    },
-    questionContent: { width: "100%" },
-    questionActionBox: {
-      position: "absolute",
-      top: 0,
-      right: 8
-    },
-    thumbUpButton: {
-      height: 24,
-      padding: theme.spacing(0, 1),
-      borderRadius: 12
-    },
-    voteCount: {
-      fontSize: 12
-    },
-    thumbUpIcon: {
-      fontSize: 12,
-      marginLeft: theme.spacing(1)
-    }
+    list: {}
   })
 );
 
@@ -53,73 +31,121 @@ interface Props {
 
 const QuestionList: React.FC<Props> = ({ eventQueryResult }) => {
   const classes = useStyles();
-  const [
-    voteQuestionMutation,
-    { loading: voteLoading }
-  ] = useVoteQuestionMutation();
+  const { formatMessage } = useIntl();
+  const [moreMenu, setMoreMenu] = React.useState<{
+    anchorEl: null | HTMLElement;
+    id: string;
+  }>({ anchorEl: null, id: "" });
+  const [deleteConfirm, setDeleteConfirm] = React.useState({
+    open: false,
+    id: ""
+  });
+  const [deleteQuestionMutation] = useDeleteQuestionMutation();
+  const editContentInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleThumbUpClick = (questionId: string) => {
-    voteQuestionMutation({ variables: { questionId } });
+  const handleMoreClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    setMoreMenu({ anchorEl: event.currentTarget, id });
+  };
+  const handleMoreClose = () => {
+    setMoreMenu({ anchorEl: null, id: "" });
+  };
+
+  const handleOpenDelete = (id: string) => {
+    setDeleteConfirm({ open: true, id });
+  };
+  const handleCloseDelete = () => {
+    setDeleteConfirm({ open: false, id: "" });
+    handleMoreClose();
+  };
+  const handleDelete = async () => {
+    await deleteQuestionMutation({
+      variables: { questionId: deleteConfirm.id }
+    });
+    handleCloseDelete();
+  };
+  const [editContentIds, setEditContentIds] = React.useState<Array<string>>([]);
+  const handleEditContentToggle = (id: string) => {
+    const findId = editContentIds.find(item => item === id);
+    setEditContentIds(
+      findId
+        ? editContentIds.filter(item => item !== id)
+        : editContentIds.concat([id])
+    );
+    handleMoreClose();
+    setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
 
   return (
-    <List className={classes.list} disablePadding>
-      {eventQueryResult.data?.eventById.questionsForLive.map(
-        (question, index) => (
-          <ListItem
-            key={index}
-            className={classes.listItem}
-            alignItems="flex-start"
-            divider
-          >
-            <ListItemAvatar>
-              <Avatar
-                alt={question.author?.name as string}
-                src="/static/images/avatar/1.jpg"
-              />
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Typography variant="body2" color="textPrimary">
-                  {question.author?.name ? (
-                    question.author?.name
-                  ) : (
-                    <FormattedMessage
-                      id="Anonymous"
-                      defaultMessage="Anonymous"
-                    />
-                  )}
-                </Typography>
-              }
-              secondary={
-                <Typography variant="body2" color="textSecondary">
-                  <FormattedDate value={question.updatedAt} />
-                  {", "}
-                  <FormattedTime value={question.updatedAt} />
-                </Typography>
-              }
+    <React.Fragment>
+      <List className={classes.list} disablePadding>
+        {eventQueryResult.data?.eventById.questionsForLive
+          .sort((a, b) => (b.top ? 1 : -1))
+          .map((item, index) => (
+            <QuestionItem
+              key={index}
+              question={item}
+              handleMoreClick={handleMoreClick}
+              editContent={editContentIds.includes(item.id)}
+              handleEditContentToggle={handleEditContentToggle}
+              editContentInputRef={editContentInputRef}
             />
-            <Typography className={classes.questionContent} variant="body1">
-              {question.content}
-            </Typography>
-            <Box className={classes.questionActionBox}>
-              <Button
-                variant="outlined"
-                color={question.voted ? "primary" : "default"}
-                classes={{ root: classes.thumbUpButton }}
-                disabled={voteLoading}
-                onClick={() => handleThumbUpClick(question.id)}
-              >
-                <Typography color="inherit" className={classes.voteCount}>
-                  {question.voteCount}
-                </Typography>
-                <ThumbUpIcon color="inherit" className={classes.thumbUpIcon} />
-              </Button>
-            </Box>
-          </ListItem>
-        )
-      )}
-    </List>
+          ))}
+      </List>
+
+      <Menu
+        MenuListProps={{ dense: true }}
+        anchorEl={moreMenu.anchorEl}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right"
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+        open={Boolean(moreMenu.anchorEl)}
+        onClose={handleMoreClose}
+      >
+        <MenuItem onClick={() => handleEditContentToggle(moreMenu.id)}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary={formatMessage({
+              id: "Edit",
+              defaultMessage: "Edit"
+            })}
+          />
+        </MenuItem>
+        <MenuItem onClick={() => handleOpenDelete(moreMenu.id)}>
+          <ListItemIcon>
+            <DeleteForeverIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary={formatMessage({
+              id: "Delete",
+              defaultMessage: "Delete"
+            })}
+          />
+        </MenuItem>
+      </Menu>
+      <Confirm
+        open={deleteConfirm.open}
+        contentText={
+          <FormattedMessage
+            id="Delete_this_question?"
+            defaultMessage="Delete this question?"
+          />
+        }
+        okText={<FormattedMessage id="Delete" defaultMessage="Delete" />}
+        onCancel={handleCloseDelete}
+        onOk={handleDelete}
+      />
+    </React.Fragment>
   );
 };
 

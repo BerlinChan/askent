@@ -15,7 +15,7 @@ import {
   EventForLoginQuery,
   EventForLoginQueryVariables,
   useLoginAudienceMutation,
-  useIsEventAudienceQuery,
+  useIsEventAudienceLazyQuery,
   useJoinEventMutation
 } from "../../../generated/graphqlHooks";
 import { useFingerprint, useToken } from "../../../hooks";
@@ -50,9 +50,10 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
     loginAudienceMutation,
     { loading: loginAudienceLoading }
   ] = useLoginAudienceMutation();
-  const { data: isEventAudienceData } = useIsEventAudienceQuery({
-    variables: { eventId: id as string }
-  });
+  const [
+    isEventAudienceLazyQuery,
+    { data: isEventAudienceData }
+  ] = useIsEventAudienceLazyQuery();
   const [
     joinEventMutation,
     { loading: joinEventLoading }
@@ -61,12 +62,18 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
   const { token, setToken } = useToken();
 
   React.useEffect(() => {
-    if (token.audienceAuthToken) {
-      if (isEventAudienceData?.isEventAudience) {
-        history.replace(`/event/${id}/questions`);
+    (async () => {
+      if (token.audienceAuthToken) {
+        await isEventAudienceLazyQuery({
+          variables: { eventId: id as string }
+        });
+        if (isEventAudienceData?.isEventAudience) {
+          history.replace(`/event/${id}/questions`);
+        }
       }
-    }
-  });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleEventLogin = async () => {
     if (!token.audienceAuthToken) {

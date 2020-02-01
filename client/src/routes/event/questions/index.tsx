@@ -26,7 +26,11 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: "nowrap",
       marginTop: theme.spacing(1)
     },
-    panelPaper: {}
+    panelPaper: {},
+    bottomLogoBox: {
+      textAlign: "center",
+      margin: theme.spacing(2)
+    }
   })
 );
 
@@ -44,7 +48,7 @@ const LiveQuestions: React.FC<Props> = ({ eventQueryResult }) => {
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="sm">
       <Typography
         variant="subtitle1"
         color="textSecondary"
@@ -83,10 +87,10 @@ const LiveQuestions: React.FC<Props> = ({ eventQueryResult }) => {
           <QuestionList eventQueryResult={eventQueryResult} />
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
-          Popular
+          Recent
         </TabPanel>
       </Paper>
-      <Box textAlign="center">
+      <Box className={classes.bottomLogoBox}>
         <Logo />
       </Box>
     </Container>

@@ -84,7 +84,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const [confirmModeration, setConfirmModeration] = React.useState(false);
 
   // subscriptions
-  const questionAddedSubscription = useQuestionAddedSubscription({
+  useQuestionAddedSubscription({
     variables: { eventId: id as string },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const questions = client.readQuery<
@@ -110,10 +110,10 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       });
     }
   });
-  const questionUpdatedSubscription = useQuestionUpdatedSubscription({
+  useQuestionUpdatedSubscription({
     variables: { eventId: id as string }
   });
-  const questionDeletedSubscription = useQuestionDeletedSubscription({
+  useQuestionDeletedSubscription({
     variables: { eventId: id as string },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const questions = client.readQuery<
