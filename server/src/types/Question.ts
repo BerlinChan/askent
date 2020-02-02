@@ -171,14 +171,14 @@ export const questionMutation = extendType({
           where: { id: questionId },
           data: question,
         })
-        const response = [currentTopQuestion].concat(topQuestion)
+        const updateQuestions = [currentTopQuestion].concat(topQuestion)
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: findQuestion?.event.id,
-          questionUpdated: response,
+          questionUpdated: updateQuestions,
         })
 
-        return response
+        return updateQuestions
       },
     })
     t.field('deleteQuestion', {
@@ -247,14 +247,22 @@ export const questionMutation = extendType({
         const userId = getAudienceUserId(ctx)
         const voted = await getVoted(ctx, questionId)
 
-        return ctx.photon.questions.update({
+        const updateQuestion = await ctx.photon.questions.update({
           where: { id: questionId },
+          include: { event: true },
           data: {
             votedUsers: voted
               ? { disconnect: { id: userId } }
               : { connect: { id: userId } },
           },
         })
+
+        ctx.pubsub.publish('QUESTION_UPDATED', {
+          eventId: updateQuestion.event.id,
+          questionUpdated: [updateQuestion],
+        })
+
+        return updateQuestion
       },
     })
   },
