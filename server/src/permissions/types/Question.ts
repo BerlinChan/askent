@@ -6,7 +6,7 @@ import { isEventOwnerByArgId } from './Event'
 export const isQuestionAuthor = rule({ cache: 'contextual' })(
   async ({ id }, args, context) => {
     const userId = getAudienceUserId(context)
-    const questionAuthor = await context.photon.questions
+    const questionAuthor = await context.prisma.question
       .findOne({
         where: { id },
       })
@@ -30,7 +30,7 @@ export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
 export const isQuestionEventOwner = rule({ cache: 'contextual' })(
   async ({ id }, args, context) => {
     const userId = getAdminUserId(context)
-    const eventOwner = await context.photon.questions
+    const eventOwner = await context.prisma.question
       .findOne({
         where: { id },
       })

@@ -14,8 +14,8 @@ export const schema = makeSchema({
         contextType: 'Context.Context',
         sources: [
             {
-                source: '@prisma/photon',
-                alias: 'photon',
+                source: '@prisma/client',
+                alias: 'prisma',
             },
             {
                 source: require.resolve('./context'),

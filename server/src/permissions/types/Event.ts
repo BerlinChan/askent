@@ -5,7 +5,7 @@ import { isAuthenticatedUser, isAuthenticatedAudience } from './User'
 export const isEventOwner = rule({ cache: 'contextual' })(
   async ({ id }, args, context) => {
     const userId = getAdminUserId(context)
-    const owner = await context.photon.events.findOne({ where: { id } }).owner()
+    const owner = await context.prisma.event.findOne({ where: { id } }).owner()
 
     return userId === owner.id
   },
@@ -14,7 +14,7 @@ export const isEventOwner = rule({ cache: 'contextual' })(
 export const isEventOwnerByArgId = rule({ cache: 'strict' })(
   async (parent, { eventId }, context) => {
     const userId = getAdminUserId(context)
-    const owner = await context.photon.events
+    const owner = await context.prisma.event
       .findOne({ where: { id: eventId } })
       .owner()
 
