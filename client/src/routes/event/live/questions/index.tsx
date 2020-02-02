@@ -111,12 +111,11 @@ const LiveQuestions: React.FC<Props> = ({
         query: LiveQuestionsByEventDocument,
         variables: { eventId: id as string },
         data: {
-          liveQuestionsByEvent: (
-            questions?.liveQuestionsByEvent || []
-          ).filter(questionItem =>
-            (subscriptionData.data?.questionsDeleted || [])
-              .map(deletedItem => deletedItem.id)
-              .includes(questionItem.id)
+          liveQuestionsByEvent: (questions?.liveQuestionsByEvent || []).filter(
+            questionItem =>
+              !(subscriptionData.data?.questionsDeleted || [])
+                .map(deletedItem => deletedItem.id)
+                .includes(questionItem.id)
           )
         }
       });

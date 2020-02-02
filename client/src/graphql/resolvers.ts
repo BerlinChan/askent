@@ -17,7 +17,7 @@ export const typeDefs = gql`
 
 export const resolvers: Resolvers = {
   Mutation: {
-    packageInfo: (parent, args, context) => {
+    packageInfo: (parent, args, ctx) => {
       console.log(args);
       return args;
     }

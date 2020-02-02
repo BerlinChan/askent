@@ -25,7 +25,7 @@ export function getAdminUserId(context: Context) {
 }
 
 export function getAudienceUserId(context: Context) {
-  const token = context.req.headers.authorizationaudience as string
+  const token = context.req?.headers.authorizationaudience as string
   if (token) {
     const verifiedToken = verify(
       token,

@@ -122,17 +122,16 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         variables: { eventId: id as string }
       });
 
-      // merge
+      // remove
       client.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>({
         query: QuestionsByEventDocument,
         variables: { eventId: id as string },
         data: {
-          questionsByEvent: (
-            questions?.questionsByEvent || []
-          ).filter(questionItem =>
-            (subscriptionData.data?.questionsDeleted || [])
-              .map(deletedItem => deletedItem.id)
-              .includes(questionItem.id)
+          questionsByEvent: (questions?.questionsByEvent || []).filter(
+            questionItem =>
+              !(subscriptionData.data?.questionsDeleted || [])
+                .map(deletedItem => deletedItem.id)
+                .includes(questionItem.id)
           )
         }
       });

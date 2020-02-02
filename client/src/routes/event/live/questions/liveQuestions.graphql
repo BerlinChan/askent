@@ -31,7 +31,6 @@ mutation VoteQuestion($questionId: ID!) {
   }
 }
 
-
 subscription LiveQuestionAdded($eventId: ID!) {
   questionAdded(eventId: $eventId) {
     ...LiveQuestionFields

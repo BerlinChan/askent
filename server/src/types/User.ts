@@ -56,7 +56,7 @@ export const userQuery = extendType({
       type: 'User',
       description: 'Query my audience user info.',
       resolve: (root, args, ctx) => {
-        return ctx.photon.users.findOne({
+        return ctx.prisma.user.findOne({
           where: { id: getAudienceUserId(ctx) },
         }) as Promise<UserType>
       },

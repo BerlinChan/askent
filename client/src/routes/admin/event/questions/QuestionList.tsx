@@ -72,10 +72,10 @@ const QuestionList: React.FC<Props> = ({
 
   const handleOpenDelete = (id: string) => {
     setDeleteConfirm({ open: true, id });
+    handleMoreClose();
   };
   const handleCloseDelete = () => {
     setDeleteConfirm({ open: false, id: "" });
-    handleMoreClose();
   };
   const handleDelete = async () => {
     await deleteQuestionMutation({

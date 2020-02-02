@@ -4,9 +4,9 @@ import { isAuthenticatedUser, isAuthenticatedAudience } from './User'
 import { isEventOwnerByArgId } from './Event'
 
 export const isQuestionAuthor = rule({ cache: 'contextual' })(
-  async ({ id }, args, context) => {
-    const userId = getAudienceUserId(context)
-    const questionAuthor = await context.prisma.question
+  async ({ id }, args, ctx) => {
+    const userId = getAudienceUserId(ctx)
+    const questionAuthor = await ctx.prisma.question
       .findOne({
         where: { id },
       })
@@ -16,9 +16,9 @@ export const isQuestionAuthor = rule({ cache: 'contextual' })(
   },
 )
 export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
-  async (root, args, context) => {
-    const userId = getAudienceUserId(context)
-    const questionAuthor = await context.photon.questions
+  async (root, args, ctx) => {
+    const userId = getAudienceUserId(ctx)
+    const questionAuthor = await ctx.prisma.question
       .findOne({
         where: { id: args.questionId },
       })
@@ -28,9 +28,9 @@ export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
   },
 )
 export const isQuestionEventOwner = rule({ cache: 'contextual' })(
-  async ({ id }, args, context) => {
-    const userId = getAdminUserId(context)
-    const eventOwner = await context.prisma.question
+  async ({ id }, args, ctx) => {
+    const userId = getAdminUserId(ctx)
+    const eventOwner = await ctx.prisma.question
       .findOne({
         where: { id },
       })
@@ -41,9 +41,9 @@ export const isQuestionEventOwner = rule({ cache: 'contextual' })(
   },
 )
 export const isQuestionEventOwnerByArg = rule({ cache: 'strict' })(
-  async (root, args, context) => {
-    const userId = getAdminUserId(context)
-    const eventOwner = await context.photon.questions
+  async (root, args, ctx) => {
+    const userId = getAdminUserId(ctx)
+    const eventOwner = await ctx.prisma.question
       .findOne({
         where: { id: args.questionId },
       })
@@ -54,9 +54,9 @@ export const isQuestionEventOwnerByArg = rule({ cache: 'strict' })(
   },
 )
 export const isQuestionEventAudienceByArg = rule({ cache: 'strict' })(
-  async (root, args, context) => {
-    const userId = getAudienceUserId(context)
-    const audience = await context.photon.questions
+  async (root, args, ctx) => {
+    const userId = getAudienceUserId(ctx)
+    const audience = await ctx.prisma.question
       .findOne({ where: { id: args.questionId } })
       .event()
       .audiences({ where: { id: userId } })
