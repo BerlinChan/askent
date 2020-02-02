@@ -12,14 +12,14 @@ import {
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
-import { ButtonLoading } from "../../../components/Form";
+import { ButtonLoading } from "../../../../components/Form";
 import { InputBase } from "formik-material-ui";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { QUESTION_CONTENT_MAX_LENGTH } from "../../../constant";
+import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
-import { useCreateQuestionMutation } from "../../../generated/graphqlHooks";
+import { useCreateQuestionMutation } from "../../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

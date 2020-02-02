@@ -18,13 +18,13 @@ import {
   useVoteQuestionMutation,
   LiveQuestionFieldsFragment,
   useUpdateQuestionMutation
-} from "../../../generated/graphqlHooks";
+} from "../../../../generated/graphqlHooks";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { ButtonLoading } from "../../../components/Form";
-import { QUESTION_CONTENT_MAX_LENGTH } from "../../../constant";
+import { ButtonLoading } from "../../../../components/Form";
+import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
 import { TextField } from "formik-material-ui";
 
 const useStyles = makeStyles((theme: Theme) =>

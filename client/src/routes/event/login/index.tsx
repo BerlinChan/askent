@@ -68,7 +68,7 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
           variables: { eventId: id as string }
         });
         if (isEventAudienceData?.isEventAudience) {
-          history.replace(`/event/${id}/questions`);
+          history.replace(`/event/${id}/live/questions`);
         }
       }
     })();
@@ -83,7 +83,7 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
       setToken({ audienceAuthToken: data?.loginAudience.token });
     }
     await joinEventMutation({ variables: { eventId: id as string } });
-    history.replace(`/event/${id}/questions`);
+    history.replace(`/event/${id}/live/questions`);
   };
 
   return (

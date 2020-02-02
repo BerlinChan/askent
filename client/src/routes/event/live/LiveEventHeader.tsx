@@ -14,17 +14,17 @@ import {
   ListItemText,
   Divider
 } from "@material-ui/core";
-import { RouteTabs } from "../../components/Tabs";
+import { RouteTabs } from "../../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
 import {
   MeAudienceQuery,
   MeAudienceQueryVariables,
   LiveEventQuery,
   LiveEventQueryVariables
-} from "../../generated/graphqlHooks";
+} from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
-import AppBarElevationScroll from "../../components/AppBarElevationScroll";
-import { AudienceAction } from "../../components/Header";
+import AppBarElevationScroll from "../../../components/AppBarElevationScroll";
+import { AudienceAction } from "../../../components/Header";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import EqualizerIcon from "@material-ui/icons/Equalizer";

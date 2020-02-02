@@ -3,16 +3,16 @@ import { Box, Typography, Container, Paper } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
-import TabPanel from "../../../components/TabPanel";
-import { SubTabs, SubTab } from "../../../components/Tabs";
+import TabPanel from "../../../../components/TabPanel";
+import { SubTabs, SubTab } from "../../../../components/Tabs";
 import { QueryResult } from "@apollo/react-common";
 import {
   MeAudienceQuery,
   MeAudienceQueryVariables,
   LiveEventQuery,
   LiveEventQueryVariables
-} from "../../../generated/graphqlHooks";
-import Logo from "../../../components/Logo";
+} from "../../../../generated/graphqlHooks";
+import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
 
 const useStyles = makeStyles((theme: Theme) =>

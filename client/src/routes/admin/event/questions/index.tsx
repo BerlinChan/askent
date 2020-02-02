@@ -129,8 +129,12 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         query: QuestionsByEventDocument,
         variables: { eventId: id as string },
         data: {
-          questionsByEvent: (questions?.questionsByEvent || []).filter(
-            item => item.id !== subscriptionData.data?.questionDeleted.id
+          questionsByEvent: (
+            questions?.questionsByEvent || []
+          ).filter(questionItem =>
+            (subscriptionData.data?.questionsDeleted || [])
+              .map(deletedItem => deletedItem.id)
+              .includes(questionItem.id)
           )
         }
       });

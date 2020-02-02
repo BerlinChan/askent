@@ -175,7 +175,7 @@ export const questionMutation = extendType({
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: findQuestion?.event.id,
-          questionUpdated: updateQuestions,
+          questionsUpdated: updateQuestions,
         })
 
         return updateQuestions
@@ -202,7 +202,7 @@ export const questionMutation = extendType({
 
         ctx.pubsub.publish('QUESTION_DELETED', {
           eventId: findQuestion?.event.id,
-          questionDeleted: response,
+          questionsDeleted: [response],
         })
 
         return response
@@ -259,7 +259,7 @@ export const questionMutation = extendType({
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: updateQuestion.event.id,
-          questionUpdated: [updateQuestion],
+          questionsUpdated: [updateQuestion],
         })
 
         return updateQuestion
@@ -282,14 +282,14 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
     ),
   },
 )
-export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
-  'questionUpdated',
+export const questionUpdatedSubscription = subscriptionField<'questionsUpdated'>(
+  'questionsUpdated',
   {
     type: 'Question',
     list: true,
     args: { eventId: idArg({ required: true }) },
     resolve: payload => {
-      return payload.questionUpdated
+      return payload.questionsUpdated
     },
     subscribe: withFilter(
       (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_UPDATED']),
@@ -297,13 +297,14 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
     ),
   },
 )
-export const questionDeletedSubscription = subscriptionField<'questionDeleted'>(
-  'questionDeleted',
+export const questionDeletedSubscription = subscriptionField<'questionsDeleted'>(
+  'questionsDeleted',
   {
     type: 'Question',
+    list: true,
     args: { eventId: idArg({ required: true }) },
     resolve: payload => {
-      return payload.questionDeleted
+      return payload.questionsDeleted
     },
     subscribe: withFilter(
       (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_DELETED']),
