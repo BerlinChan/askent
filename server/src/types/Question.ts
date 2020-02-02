@@ -247,7 +247,7 @@ export const questionMutation = extendType({
         const userId = getAudienceUserId(ctx)
         const voted = await getVoted(ctx, questionId)
 
-        const updateQuestion = await ctx.prisma.questions.update({
+        const updateQuestion = await ctx.prisma.question.update({
           where: { id: questionId },
           include: { event: true },
           data: {
