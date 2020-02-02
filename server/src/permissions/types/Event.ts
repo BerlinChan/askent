@@ -40,8 +40,7 @@ export default {
     createdAt: isEventOwner,
     updatedAt: isEventOwner,
     questions: isEventOwner,
-    questionsForLive: isAuthenticatedAudience,
-    questionCountForLive: isAuthenticatedAudience,
+    liveQuestionCount: isAuthenticatedAudience,
     audienceCount: or(isEventOwner, isAuthenticatedAudience),
   },
 }

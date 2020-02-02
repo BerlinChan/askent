@@ -68,7 +68,8 @@ export const isQuestionEventAudienceByArg = rule({ cache: 'strict' })(
 export default {
   Query: {
     questionsByMe: isAuthenticatedAudience,
-    questionsByEvent: or(isAuthenticatedUser, isAuthenticatedAudience),
+    questionsByEvent: isAuthenticatedUser,
+    liveQuestionsByEvent: isAuthenticatedAudience,
   },
   Mutation: {
     createQuestion: isAuthenticatedAudience,

@@ -17,9 +17,6 @@ query LiveEvent($eventId: ID!) {
     endAt
     moderation
     audienceCount
-    questionCountForLive
-    questionsForLive {
-      ...LiveQuestionFields
-    }
+    liveQuestionCount
   }
 }

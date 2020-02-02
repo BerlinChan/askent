@@ -96,6 +96,22 @@ export const questionQuery = extendType({
         })
       },
     })
+    t.list.field('liveQuestionsByEvent', {
+      type: 'Question',
+      args: { eventId: idArg({ required: true }) },
+      resolve: async (root, { eventId }, ctx) => {
+        const userId = getAudienceUserId(ctx)
+        const liveQuestions = await ctx.prisma.question.findMany({
+          where: {
+            event: { id: eventId },
+            OR: [{ author: { id: userId } }, { published: true }],
+            archived: false,
+          },
+        })
+
+        return liveQuestions
+      },
+    })
   },
 })
 
@@ -282,36 +298,34 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
     ),
   },
 )
-export const questionUpdatedSubscription = subscriptionField<'questionsUpdated'>(
-  'questionsUpdated',
-  {
-    type: 'Question',
-    list: true,
-    args: { eventId: idArg({ required: true }) },
-    resolve: payload => {
-      return payload.questionsUpdated
-    },
-    subscribe: withFilter(
-      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_UPDATED']),
-      (payload, args, ctx) => payload.eventId === args.eventId,
-    ),
+export const questionUpdatedSubscription = subscriptionField<
+  'questionsUpdated'
+>('questionsUpdated', {
+  type: 'Question',
+  list: true,
+  args: { eventId: idArg({ required: true }) },
+  resolve: payload => {
+    return payload.questionsUpdated
   },
-)
-export const questionDeletedSubscription = subscriptionField<'questionsDeleted'>(
-  'questionsDeleted',
-  {
-    type: 'Question',
-    list: true,
-    args: { eventId: idArg({ required: true }) },
-    resolve: payload => {
-      return payload.questionsDeleted
-    },
-    subscribe: withFilter(
-      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_DELETED']),
-      (payload, args, ctx) => payload.eventId === args.eventId,
-    ),
+  subscribe: withFilter(
+    (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_UPDATED']),
+    (payload, args, ctx) => payload.eventId === args.eventId,
+  ),
+})
+export const questionDeletedSubscription = subscriptionField<
+  'questionsDeleted'
+>('questionsDeleted', {
+  type: 'Question',
+  list: true,
+  args: { eventId: idArg({ required: true }) },
+  resolve: payload => {
+    return payload.questionsDeleted
   },
-)
+  subscribe: withFilter(
+    (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_DELETED']),
+    (payload, args, ctx) => payload.eventId === args.eventId,
+  ),
+})
 
 const ERROR_MESSAGE = {
   noQuestionId: (questionId: string) => `No question for id: ${questionId}`,

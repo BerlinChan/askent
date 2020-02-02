@@ -12,8 +12,8 @@ import { QueryResult } from "@apollo/react-common";
 import {
   MeAudienceQuery,
   MeAudienceQueryVariables,
-  LiveEventQuery,
-  LiveEventQueryVariables,
+  LiveQuestionsByEventQuery,
+  LiveQuestionsByEventQueryVariables,
   useDeleteQuestionMutation
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
@@ -29,12 +29,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
-  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
+  liveQuestionsResult: QueryResult<LiveQuestionsByEventQuery, LiveQuestionsByEventQueryVariables>;
 }
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
-  eventQueryResult
+  liveQuestionsResult
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -87,7 +87,7 @@ const QuestionList: React.FC<Props> = ({
   return (
     <React.Fragment>
       <List className={classes.list} disablePadding>
-        {eventQueryResult.data?.eventById.questionsForLive
+        {liveQuestionsResult.data?.liveQuestionsByEvent
           .sort((a, b) => (b.top ? 1 : -1))
           .map((item, index) => (
             <QuestionItem

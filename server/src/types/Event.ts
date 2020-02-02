@@ -25,22 +25,7 @@ export const Event = objectType({
     t.model.moderation()
     t.model.questions()
 
-    t.list.field('questionsForLive', {
-      type: 'Question',
-      resolve: async (root, args, ctx) => {
-        const userId = getAudienceUserId(ctx)
-        const questionsForLive = await ctx.prisma.question.findMany({
-          where: {
-            event: { id: root.id },
-            OR: [{ author: { id: userId } }, { published: true }],
-            archived: false,
-          },
-        })
-
-        return questionsForLive
-      },
-    })
-    t.int('questionCountForLive', {
+    t.int('liveQuestionCount', {
       resolve: async (root, args, ctx) => {
         const userId = getAudienceUserId(ctx)
         const questionsForLive = await ctx.prisma.question.findMany({

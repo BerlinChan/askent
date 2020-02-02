@@ -13,6 +13,12 @@ fragment LiveQuestionFields on Question {
   }
 }
 
+query LiveQuestionsByEvent($eventId: ID!) {
+  liveQuestionsByEvent(eventId: $eventId) {
+    ...LiveQuestionFields
+  }
+}
+
 mutation CreateQuestion($eventId: ID!, $content: String!) {
   createQuestion(eventId: $eventId, content: $content) {
     ...LiveQuestionFields
@@ -21,6 +27,25 @@ mutation CreateQuestion($eventId: ID!, $content: String!) {
 
 mutation VoteQuestion($questionId: ID!) {
   voteQuestion(questionId: $questionId) {
+    ...LiveQuestionFields
+  }
+}
+
+
+subscription LiveQuestionAdded($eventId: ID!) {
+  questionAdded(eventId: $eventId) {
+    ...LiveQuestionFields
+  }
+}
+
+subscription LiveQuestionUpdated($eventId: ID!) {
+  questionsUpdated(eventId: $eventId) {
+    ...LiveQuestionFields
+  }
+}
+
+subscription LiveQuestionDeleted($eventId: ID!) {
+  questionsDeleted(eventId: $eventId) {
     ...LiveQuestionFields
   }
 }

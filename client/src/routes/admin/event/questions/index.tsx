@@ -103,9 +103,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           questionsByEvent: (subscriptionData.data?.questionAdded
             ? [subscriptionData.data?.questionAdded]
             : []
-          ).concat(
-            questions?.questionsByEvent ? questions?.questionsByEvent : []
-          )
+          ).concat(questions?.questionsByEvent || [])
         }
       });
     }

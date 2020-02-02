@@ -1,4 +1,5 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 import { Box, Typography, Container, Paper } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -10,7 +11,14 @@ import {
   MeAudienceQuery,
   MeAudienceQueryVariables,
   LiveEventQuery,
-  LiveEventQueryVariables
+  LiveEventQueryVariables,
+  LiveQuestionsByEventQuery,
+  LiveQuestionsByEventQueryVariables,
+  useLiveQuestionsByEventQuery,
+  useLiveQuestionAddedSubscription,
+  useLiveQuestionUpdatedSubscription,
+  useLiveQuestionDeletedSubscription,
+  LiveQuestionsByEventDocument
 } from "../../../../generated/graphqlHooks";
 import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
@@ -47,7 +55,73 @@ const LiveQuestions: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
+  let { id } = useParams();
+  const liveQuestionsResult = useLiveQuestionsByEventQuery({
+    variables: { eventId: id as string }
+  });
   const [tabIndex, setTabIndex] = React.useState(0);
+
+  // subscriptions
+  useLiveQuestionAddedSubscription({
+    variables: { eventId: id as string },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const questions = client.readQuery<
+        LiveQuestionsByEventQuery,
+        LiveQuestionsByEventQueryVariables
+      >({
+        query: LiveQuestionsByEventDocument,
+        variables: { eventId: id as string }
+      });
+
+      // add
+      client.writeQuery<
+        LiveQuestionsByEventQuery,
+        LiveQuestionsByEventQueryVariables
+      >({
+        query: LiveQuestionsByEventDocument,
+        variables: { eventId: id as string },
+        data: {
+          liveQuestionsByEvent: (subscriptionData.data?.questionAdded
+            ? [subscriptionData.data?.questionAdded]
+            : []
+          ).concat(questions?.liveQuestionsByEvent || [])
+        }
+      });
+    }
+  });
+  useLiveQuestionUpdatedSubscription({
+    variables: { eventId: id as string }
+  });
+  useLiveQuestionDeletedSubscription({
+    variables: { eventId: id as string },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const questions = client.readQuery<
+        LiveQuestionsByEventQuery,
+        LiveQuestionsByEventQueryVariables
+      >({
+        query: LiveQuestionsByEventDocument,
+        variables: { eventId: id as string }
+      });
+
+      // remove
+      client.writeQuery<
+        LiveQuestionsByEventQuery,
+        LiveQuestionsByEventQueryVariables
+      >({
+        query: LiveQuestionsByEventDocument,
+        variables: { eventId: id as string },
+        data: {
+          liveQuestionsByEvent: (
+            questions?.liveQuestionsByEvent || []
+          ).filter(questionItem =>
+            (subscriptionData.data?.questionsDeleted || [])
+              .map(deletedItem => deletedItem.id)
+              .includes(questionItem.id)
+          )
+        }
+      });
+    }
+  });
 
   const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);
@@ -83,7 +157,7 @@ const LiveQuestions: React.FC<Props> = ({
         </SubTabs>
         <Box>
           <Typography color="textSecondary">
-            {eventQueryResult.data?.eventById.questionCountForLive}{" "}
+            {eventQueryResult.data?.eventById.liveQuestionCount}{" "}
             <FormattedMessage id="questions" defaultMessage="questions" />
           </Typography>
         </Box>
@@ -92,7 +166,7 @@ const LiveQuestions: React.FC<Props> = ({
         <TabPanel value={tabIndex} index={0}>
           <QuestionList
             userQueryResult={userQueryResult}
-            eventQueryResult={eventQueryResult}
+            liveQuestionsResult={liveQuestionsResult}
           />
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
