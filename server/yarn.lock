@@ -1140,25 +1140,10 @@ cors@2.8.5, cors@^2.8.4:
     object-assign "^4"
     vary "^1"
 
-crc32-stream@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npm.taobao.org/crc32-stream/download/crc32-stream-3.0.1.tgz#cae6eeed003b0e44d739d279de5ae63b171b4e85"
-  integrity sha1-yubu7QA7DkTXOdJ53lrmOxcbToU=
-  dependencies:
-    crc "^3.4.4"
-    readable-stream "^3.4.0"
-
-crc@^3.4.4:
-  version "3.8.0"
-  resolved "https://registry.npm.taobao.org/crc/download/crc-3.8.0.tgz#ad60269c2c856f8c299e2c4cc0de4556914056c6"
-  integrity sha1-rWAmnCyFb4wpnixMwN5FVpFAVsY=
-  dependencies:
-    buffer "^5.1.0"
-
 create-nexus-type@1.1.7:
   version "1.1.7"
-  resolved "https://registry.npm.taobao.org/create-nexus-type/download/create-nexus-type-1.1.7.tgz#b39742ac8d350ed10e77a10923a9ac860b8fdc36"
-  integrity sha1-s5dCrI01DtEOd6EJI6mshguP3DY=
+  resolved "https://registry.yarnpkg.com/create-nexus-type/-/create-nexus-type-1.1.7.tgz#b39742ac8d350ed10e77a10923a9ac860b8fdc36"
+  integrity sha512-mItdDcadmI6NJZxXsWGsb0Y15PXE642jZaT195PC/qsV/qVgylGENNihCo6Luni3fUJvhLQ8mgeROLRUCWwXvQ==
   dependencies:
     arg "^4.1.2"
     pluralize "^8.0.0"
