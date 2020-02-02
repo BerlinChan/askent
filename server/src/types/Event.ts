@@ -57,7 +57,7 @@ export const Event = objectType({
     })
     t.int('audienceCount', {
       resolve: async ({ id }, args, ctx) => {
-        const audiences = await ctx.prisma.events
+        const audiences = await ctx.prisma.event
           .findOne({
             where: { id },
           })

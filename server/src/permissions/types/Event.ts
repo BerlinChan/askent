@@ -14,7 +14,7 @@ export const isEventOwner = rule({ cache: 'contextual' })(
 export const isEventOwnerByArgId = rule({ cache: 'strict' })(
   async (parent, { eventId }, context) => {
     const userId = getAdminUserId(context)
-    const owner = await context.prisma.events
+    const owner = await context.prisma.event
       .findOne({ where: { id: eventId } })
       .owner()
 

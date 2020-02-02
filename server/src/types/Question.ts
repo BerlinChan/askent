@@ -35,7 +35,7 @@ export const Question = objectType({
     })
     t.int('voteCount', {
       async resolve({ id }, _args, ctx) {
-        const users = await ctx.prisma.questions
+        const users = await ctx.prisma.question
           .findOne({ where: { id } })
           .votedUsers()
 
@@ -319,7 +319,7 @@ const ERROR_MESSAGE = {
 async function getVoted(ctx: Context, questionId: string) {
   const userId = getAudienceUserId(ctx)
   if (!userId) return false
-  const audiences: User[] = await ctx.prisma.questions
+  const audiences: User[] = await ctx.prisma.question
     .findOne({ where: { id: questionId } })
     .votedUsers({ where: { id: userId } })
 

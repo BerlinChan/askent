@@ -33,7 +33,7 @@ enum Role {
 }
 
 model Event {
-  id         String     @default(uuid()) @id
+  id         String     @default(cuid()) @id
   code       String     @unique
   name       String
   owner      User
@@ -47,7 +47,7 @@ model Event {
 }
 
 model Question {
-  id         String   @default(uuid()) @id
+  id         String   @default(cuid()) @id
   event      Event
   author     User?
   createdAt  DateTime @default(now())
