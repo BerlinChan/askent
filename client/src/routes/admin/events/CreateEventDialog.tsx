@@ -19,9 +19,9 @@ import {
   useCreateEventMutation
 } from "../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
-import { EVENT_CODE_MAX_LENGTH } from "../../../constant";
+import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../../constant";
 import { TextField } from "formik-material-ui";
-import { DatePicker } from 'formik-material-ui-pickers';
+import { DatePicker } from "formik-material-ui-pickers";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -66,7 +66,7 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
           try {
             await Yup.object({
               name: Yup.string()
-                .max(20)
+                .max(USERNAME_MAX_LENGTH)
                 .required(),
               code: Yup.string()
                 .max(EVENT_CODE_MAX_LENGTH)

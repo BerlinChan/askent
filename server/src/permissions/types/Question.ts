@@ -1,4 +1,4 @@
-import { rule, or } from 'graphql-shield'
+import { rule, or, not, and } from 'graphql-shield'
 import { getAdminUserId, getAudienceUserId } from '../../utils'
 import { isAuthenticatedUser, isAuthenticatedAudience } from './User'
 import { isEventOwnerByArgId } from './Event'
@@ -64,6 +64,15 @@ export const isQuestionEventAudienceByArg = rule({ cache: 'strict' })(
     return Boolean(audience.length)
   },
 )
+export const isQuestionTopByArg = rule({ cache: 'strict' })(
+  async (root, args, ctx) => {
+    const question = await ctx.prisma.question.findOne({
+      where: { id: args.questionId },
+    })
+
+    return question.top
+  },
+)
 
 export default {
   Query: {
@@ -73,7 +82,10 @@ export default {
   },
   Mutation: {
     createQuestion: isAuthenticatedAudience,
-    deleteQuestion: or(isQuestionAuthorByArg, isQuestionEventOwnerByArg),
+    deleteQuestion: and(
+      or(isQuestionAuthorByArg, isQuestionEventOwnerByArg),
+      not(isQuestionTopByArg),
+    ),
     deleteAllUnpublishedQuestions: isEventOwnerByArgId,
     publishAllUnpublishedQuestions: isEventOwnerByArgId,
     voteQuestion: isQuestionEventAudienceByArg,

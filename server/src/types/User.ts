@@ -1,4 +1,11 @@
-import { objectType, extendType, stringArg, idArg } from 'nexus'
+import {
+  objectType,
+  extendType,
+  stringArg,
+  idArg,
+  inputObjectType,
+  arg,
+} from 'nexus'
 import {
   User as UserType,
   UserCreateInput,
@@ -37,6 +44,13 @@ export const PGP = objectType({
   name: 'PGP',
   definition(t) {
     t.string('pubKey')
+  },
+})
+export const UpdateAudienceInput = inputObjectType({
+  name: 'UpdateAudienceInput',
+  definition(t) {
+    t.string('name')
+    t.string('email')
   },
 })
 
@@ -161,6 +175,17 @@ export const userMutation = extendType({
           token: signToken({ userId: user.id, role: user.role }),
           user,
         }
+      },
+    })
+    t.field('updateAudienceUser', {
+      type: 'User',
+      args: { input: arg({ type: 'UpdateAudienceInput', required: true }) },
+      resolve: (root, { input }, ctx) => {
+        const userId = getAudienceUserId(ctx)
+        return ctx.prisma.user.update({
+          where: { id: userId },
+          data: input,
+        })
       },
     })
   },

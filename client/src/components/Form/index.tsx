@@ -1,1 +1,1 @@
-export {ButtonLoading} from './ButtonLoading'
+export { ButtonLoading } from "./ButtonLoading";

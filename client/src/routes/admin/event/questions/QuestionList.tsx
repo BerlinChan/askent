@@ -139,7 +139,14 @@ const QuestionList: React.FC<Props> = ({
             })}
           />
         </MenuItem>
-        <MenuItem onClick={() => handleOpenDelete(moreMenu.id)}>
+        <MenuItem
+          disabled={
+            (data?.questionsByEvent || []).find(
+              question => question.id === moreMenu.id
+            )?.top
+          }
+          onClick={() => handleOpenDelete(moreMenu.id)}
+        >
           <ListItemIcon>
             <DeleteForeverIcon fontSize="small" />
           </ListItemIcon>

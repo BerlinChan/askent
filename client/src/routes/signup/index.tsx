@@ -12,6 +12,11 @@ import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { FormattedMessage } from "react-intl";
 import { TextField } from "formik-material-ui";
+import {
+  USERNAME_MAX_LENGTH,
+  EMAIL_MAX_LENGTH,
+  PASSWORD_MAX_LENGTH
+} from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,16 +61,29 @@ const Signup: React.FC = () => {
           try {
             await Yup.object({
               name: Yup.string()
-                .max(30, "Must be 30 characters or less")
+                .max(
+                  USERNAME_MAX_LENGTH,
+                  `Must be ${USERNAME_MAX_LENGTH} characters or less`
+                )
                 .required("Required"),
               email: Yup.string()
+                .max(
+                  EMAIL_MAX_LENGTH,
+                  `Must be ${EMAIL_MAX_LENGTH} characters or less`
+                )
                 .email("Invalid email address")
                 .required("Required"),
               password: Yup.string()
-                .max(20, "Must be 20 characters or less")
+                .max(
+                  PASSWORD_MAX_LENGTH,
+                  `Must be ${PASSWORD_MAX_LENGTH} characters or less`
+                )
                 .required("Required"),
               repeatPassword: Yup.string()
-                .max(20, "Must be 20 characters or less")
+                .max(
+                  PASSWORD_MAX_LENGTH,
+                  `Must be ${PASSWORD_MAX_LENGTH} characters or less`
+                )
                 .required("Required")
             }).validate({
               name,

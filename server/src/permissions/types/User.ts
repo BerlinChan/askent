@@ -24,4 +24,7 @@ export default {
     me: isAuthenticatedUser,
     meAudience: isAuthedAudienceUser,
   },
+  Mutation: {
+    updateAudienceUser: isAuthedAudienceUser,
+  },
 }
