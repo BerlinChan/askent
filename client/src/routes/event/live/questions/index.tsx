@@ -2,9 +2,9 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { Box, Typography, Container, Paper } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
+import { compareAsc } from "date-fns";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
-import TabPanel from "../../../../components/TabPanel";
 import { SubTabs, SubTab } from "../../../../components/Tabs";
 import { QueryResult } from "@apollo/react-common";
 import {
@@ -162,15 +162,20 @@ const LiveQuestions: React.FC<Props> = ({
         </Box>
       </Box>
       <Paper className={classes.panelPaper}>
-        <TabPanel value={tabIndex} index={0}>
-          <QuestionList
-            userQueryResult={userQueryResult}
-            liveQuestionsResult={liveQuestionsResult}
-          />
-        </TabPanel>
-        <TabPanel value={tabIndex} index={1}>
-          Recent
-        </TabPanel>
+        <QuestionList
+          userQueryResult={userQueryResult}
+          liveQuestionsResult={liveQuestionsResult}
+          sort={(a, b) => {
+            switch (tabIndex) {
+              case 0:
+                return b.voteCount - a.voteCount;
+              case 1:
+                return compareAsc(new Date(b.createdAt), new Date(a.createdAt));
+              default:
+                return 1;
+            }
+          }}
+        />
       </Paper>
       <Box className={classes.bottomLogoBox}>
         <Logo />

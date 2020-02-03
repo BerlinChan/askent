@@ -95,7 +95,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         variables: { eventId: id as string }
       });
 
-      // merge
+      // add
       client.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>({
         query: QuestionsByEventDocument,
         variables: { eventId: id as string },

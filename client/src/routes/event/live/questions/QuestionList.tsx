@@ -14,7 +14,8 @@ import {
   MeAudienceQueryVariables,
   LiveQuestionsByEventQuery,
   LiveQuestionsByEventQueryVariables,
-  useDeleteQuestionMutation
+  useDeleteQuestionMutation,
+  LiveQuestionFieldsFragment
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
@@ -29,12 +30,20 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
-  liveQuestionsResult: QueryResult<LiveQuestionsByEventQuery, LiveQuestionsByEventQueryVariables>;
+  liveQuestionsResult: QueryResult<
+    LiveQuestionsByEventQuery,
+    LiveQuestionsByEventQueryVariables
+  >;
+  sort?: (
+    a: LiveQuestionFieldsFragment,
+    b: LiveQuestionFieldsFragment
+  ) => number;
 }
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
-  liveQuestionsResult
+  liveQuestionsResult,
+  sort
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -61,6 +70,7 @@ const QuestionList: React.FC<Props> = ({
 
   const handleOpenDelete = (id: string) => {
     setDeleteConfirm({ open: true, id });
+    handleMoreClose();
   };
   const handleCloseDelete = () => {
     setDeleteConfirm({ open: false, id: "" });
@@ -88,6 +98,7 @@ const QuestionList: React.FC<Props> = ({
     <React.Fragment>
       <List className={classes.list} disablePadding>
         {liveQuestionsResult.data?.liveQuestionsByEvent
+          .sort(sort)
           .sort((a, b) => (b.top ? 1 : -1))
           .map((item, index) => (
             <QuestionItem
@@ -122,10 +133,7 @@ const QuestionList: React.FC<Props> = ({
             <EditIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText
-            primary={formatMessage({
-              id: "Edit",
-              defaultMessage: "Edit"
-            })}
+            primary={formatMessage({ id: "Edit", defaultMessage: "Edit" })}
           />
         </MenuItem>
         <MenuItem onClick={() => handleOpenDelete(moreMenu.id)}>
@@ -133,10 +141,7 @@ const QuestionList: React.FC<Props> = ({
             <DeleteForeverIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText
-            primary={formatMessage({
-              id: "Delete",
-              defaultMessage: "Delete"
-            })}
+            primary={formatMessage({ id: "Delete", defaultMessage: "Delete" })}
           />
         </MenuItem>
       </Menu>

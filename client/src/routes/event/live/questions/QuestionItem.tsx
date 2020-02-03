@@ -7,10 +7,21 @@ import {
   Button,
   ListItem,
   ListItemText,
-  ListItemAvatar
+  ListItemAvatar,
+  Tooltip
 } from "@material-ui/core";
-import { FormattedMessage, FormattedTime, FormattedDate } from "react-intl";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  FormattedMessage,
+  FormattedTime,
+  FormattedDate,
+  useIntl
+} from "react-intl";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  fade
+} from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/react-common";
 import {
   MeAudienceQuery,
@@ -21,6 +32,7 @@ import {
 } from "../../../../generated/graphqlHooks";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import TopIcon from "@material-ui/icons/Publish";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
@@ -33,12 +45,18 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: "wrap",
       position: "relative"
     },
+    topQuestion: {
+      backgroundColor: fade(theme.palette.success.light, 0.5)
+    },
     questionContent: { width: "100%" },
     moreButton: { float: "right" },
     questionActionBox: {
       position: "absolute",
       top: theme.spacing(1),
-      right: theme.spacing(1)
+      right: theme.spacing(1),
+      display: "flex",
+      alignItems: "center",
+      "& > *": { marginLeft: theme.spacing(1) }
     },
     thumbUpButton: {
       height: 24,
@@ -79,6 +97,7 @@ const QuestionItem: React.FC<Props> = ({
   editContentInputRef
 }) => {
   const classes = useStyles();
+  const { formatMessage } = useIntl();
   const [
     voteQuestionMutation,
     { loading: voteLoading }
@@ -93,7 +112,13 @@ const QuestionItem: React.FC<Props> = ({
   };
 
   return (
-    <ListItem className={classes.listItem} alignItems="flex-start" divider>
+    <ListItem
+      className={`${classes.listItem} ${
+        question.top ? classes.topQuestion : ""
+      }`}
+      alignItems="flex-start"
+      divider
+    >
       <ListItemAvatar>
         <Avatar
           alt={question.author?.name as string}
@@ -188,17 +213,25 @@ const QuestionItem: React.FC<Props> = ({
         <React.Fragment>
           <Typography className={classes.questionContent} variant="body1">
             {question.content}
-            {question.author?.id === userQueryResult.data?.meAudience.id && (
-              <IconButton
-                className={classes.moreButton}
-                size="small"
-                onClick={e => handleMoreClick(e, question.id)}
-              >
-                <MoreHorizIcon fontSize="inherit" />
-              </IconButton>
-            )}
+            {question.author?.id === userQueryResult.data?.meAudience.id &&
+              !question.top && (
+                <IconButton
+                  className={classes.moreButton}
+                  size="small"
+                  onClick={e => handleMoreClick(e, question.id)}
+                >
+                  <MoreHorizIcon fontSize="inherit" />
+                </IconButton>
+              )}
           </Typography>
           <Box className={classes.questionActionBox}>
+            {question.top && (
+              <Tooltip
+                title={formatMessage({ id: "Top", defaultMessage: "Top" })}
+              >
+                <TopIcon fontSize="small" color="disabled" />
+              </Tooltip>
+            )}
             <Button
               variant="outlined"
               color={question.voted ? "primary" : "default"}

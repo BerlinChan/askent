@@ -15,8 +15,7 @@ import {
   QuestionsByEventQueryVariables,
   AdminEventQuery,
   AdminEventQueryVariables,
-  useDeleteQuestionMutation,
-  QuestionsByEventDocument
+  useDeleteQuestionMutation
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
@@ -79,27 +78,7 @@ const QuestionList: React.FC<Props> = ({
   };
   const handleDelete = async () => {
     await deleteQuestionMutation({
-      variables: { questionId: deleteConfirm.id },
-      update: (cache, mutationResult) => {
-        const questions = cache.readQuery<
-          QuestionsByEventQuery,
-          QuestionsByEventQueryVariables
-        >({
-          query: QuestionsByEventDocument,
-          variables: { eventId: eventQuery.data?.eventById.id as string }
-        });
-        cache.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>(
-          {
-            query: QuestionsByEventDocument,
-            variables: { eventId: eventQuery.data?.eventById.id as string },
-            data: {
-              questionsByEvent: (questions?.questionsByEvent || []).filter(
-                item => item.id !== mutationResult.data?.deleteQuestion.id
-              )
-            }
-          }
-        );
-      }
+      variables: { questionId: deleteConfirm.id }
     });
     handleCloseDelete();
   };

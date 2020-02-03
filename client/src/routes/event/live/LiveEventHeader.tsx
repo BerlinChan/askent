@@ -94,7 +94,7 @@ const LiveEventHeader: React.FC<Props> = ({
               <IconButton color="inherit" onClick={handleDrawerToggle}>
                 <MenuIcon />
               </IconButton>
-              <Typography color="inherit" noWrap>
+              <Typography variant="h6" color="inherit" noWrap>
                 {data?.eventById.name}
               </Typography>
             </Grid>

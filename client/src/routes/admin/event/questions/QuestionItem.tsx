@@ -9,7 +9,12 @@ import {
   IconButton,
   Button
 } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  fade
+} from "@material-ui/core/styles";
 import {
   useIntl,
   FormattedMessage,
@@ -57,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.warning.light
     },
     topQuestion: {
-      backgroundColor: theme.palette.success.light
+      backgroundColor: fade(theme.palette.success.light, 0.5)
     },
     questionMeta: {
       marginLeft: theme.spacing(0.5),
