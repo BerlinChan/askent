@@ -3029,10 +3029,10 @@ querystringify@^2.1.1:
   resolved "https://registry.npm.taobao.org/querystringify/download/querystringify-2.1.1.tgz#60e5a5fd64a7f8bfa4d2ab2ed6fdf4c85bad154e"
   integrity sha1-YOWl/WSn+L+k0qsu1v30yFutFU4=
 
-ramda@0.26.1:
-  version "0.26.1"
-  resolved "https://registry.npm.taobao.org/ramda/download/ramda-0.26.1.tgz#8d41351eb8111c55353617fc3bbffad8e4d35d06"
-  integrity sha1-jUE1HrgRHFU1Nhf8O7/62OTTXQY=
+ramda@0.27.0:
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.27.0.tgz#915dc29865c0800bf3f69b8fd6c279898b59de43"
+  integrity sha512-pVzZdDpWwWqEVVLshWUHjNwuVP7SfcmPraYuqocJp1yo2U1R7P+5QAfDhdItkuoGqIBnBYrtPp7rEPqDn9HlZA==
 
 range-parser@~1.2.1:
   version "1.2.1"
