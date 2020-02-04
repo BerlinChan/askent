@@ -19,6 +19,12 @@ query LiveQuestionsByEvent($eventId: ID!) {
   }
 }
 
+query QuestionsByMeAudience($eventId: ID!) {
+  questionsByMeAudience(eventId: $eventId) {
+    ...LiveQuestionFields
+  }
+}
+
 mutation CreateQuestion($eventId: ID!, $content: String!) {
   createQuestion(eventId: $eventId, content: $content) {
     ...LiveQuestionFields

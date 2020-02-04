@@ -24,7 +24,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import AppBarElevationScroll from "../../../components/AppBarElevationScroll";
-import { AudienceAction } from "../../../components/Header";
+import AudienceAction from "./AudienceAction";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import EqualizerIcon from "@material-ui/icons/Equalizer";

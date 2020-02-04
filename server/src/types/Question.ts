@@ -9,7 +9,7 @@ import {
   subscriptionField,
 } from 'nexus'
 import { Question as QuestionType, User } from '@prisma/client'
-import { getAdminUserId, getAudienceUserId } from '../utils'
+import { getAudienceUserId } from '../utils'
 import { withFilter } from 'apollo-server-express'
 import { Context } from '../context'
 
@@ -59,14 +59,21 @@ export const UpdateQuestionInputType = inputObjectType({
 export const questionQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('questionsByMe', {
+    t.list.field('questionsByMeAudience', {
       type: 'Question',
       args: {
         // TODO: pagination
+        eventId: idArg({ required: true }),
       },
-      resolve: (root, args, ctx) => {
+      resolve: (root, { eventId }, ctx) => {
+        const userId = getAudienceUserId(ctx)
+
         return ctx.prisma.question.findMany({
-          where: { author: { id: getAdminUserId(ctx) } },
+          where: {
+            author: { id: userId },
+            event: { id: eventId },
+            archived: false,
+          },
         })
       },
     })

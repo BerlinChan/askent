@@ -14,6 +14,8 @@ import {
   MeAudienceQueryVariables,
   LiveQuestionsByEventQuery,
   LiveQuestionsByEventQueryVariables,
+  QuestionsByMeAudienceQuery,
+  QuestionsByMeAudienceQueryVariables,
   useDeleteQuestionMutation,
   LiveQuestionFieldsFragment
 } from "../../../../generated/graphqlHooks";
@@ -30,9 +32,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
-  liveQuestionsResult: QueryResult<
+  liveQuestionsResult?: QueryResult<
     LiveQuestionsByEventQuery,
     LiveQuestionsByEventQueryVariables
+  >;
+  myQuestionsResult?: QueryResult<
+    QuestionsByMeAudienceQuery,
+    QuestionsByMeAudienceQueryVariables
   >;
   sort?: (
     a: LiveQuestionFieldsFragment,
@@ -43,6 +49,7 @@ interface Props {
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
   liveQuestionsResult,
+  myQuestionsResult,
   sort
 }) => {
   const classes = useStyles();
@@ -97,7 +104,11 @@ const QuestionList: React.FC<Props> = ({
   return (
     <React.Fragment>
       <List className={classes.list} disablePadding>
-        {liveQuestionsResult.data?.liveQuestionsByEvent
+        {(
+          (liveQuestionsResult
+            ? liveQuestionsResult?.data?.liveQuestionsByEvent
+            : myQuestionsResult?.data?.questionsByMeAudience) || []
+        )
           .sort(sort)
           .sort((a, b) => (b.top ? 1 : -1))
           .map((item, index) => (
