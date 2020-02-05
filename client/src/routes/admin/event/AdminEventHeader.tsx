@@ -18,7 +18,7 @@ import {
   AdminEventQueryVariables
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
-import { FormattedDate } from "react-intl";
+import { FormattedDate, useIntl } from "react-intl";
 import { AuthedAction } from "../../../components/Header";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -47,6 +47,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const history = useHistory();
   let { url } = useRouteMatch();
+  const { formatMessage } = useIntl();
   const { data, loading } = eventQuery;
 
   return (
@@ -78,12 +79,8 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                 </Box>
               </Box>
               <Box>
-                <Typography color="inherit">
-                  #{data?.eventById.code}
-                </Typography>
-                <Typography color="inherit">
-                  #{data?.eventById.code}
-                </Typography>
+                <Typography color="inherit">#{data?.eventById.code}</Typography>
+                <Typography color="inherit">#{data?.eventById.code}</Typography>
               </Box>
               <Box className={classes.actions}>
                 <AuthedAction />
@@ -96,9 +93,27 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
         <Container maxWidth="lg">
           <RouteTabs
             tabs={[
-              { label: "问答", to: `${url}/questions` },
-              { label: "调查", to: `${url}/polls` },
-              { label: "分析", to: `${url}/analytics` }
+              {
+                label: formatMessage({
+                  id: "Audience_Q&A",
+                  defaultMessage: "Audience Q&A"
+                }),
+                to: `${url}/questions`
+              },
+              {
+                label: formatMessage({
+                  id: "Live_polls",
+                  defaultMessage: "Live polls"
+                }),
+                to: `${url}/polls`
+              },
+              {
+                label: formatMessage({
+                  id: "Analitics",
+                  defaultMessage: "Analitics"
+                }),
+                to: `${url}/analytics`
+              }
             ]}
             indicatorColor="primary"
             textColor="primary"

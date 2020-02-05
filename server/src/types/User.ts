@@ -75,14 +75,14 @@ export const userQuery = extendType({
         }) as Promise<UserType>
       },
     })
-    t.field('checkNameOrEmailExist', {
+    t.field('checkEmailExist', {
       type: 'Boolean',
-      description: 'Check if a name or email has already exist.',
+      description: 'Check if a email has already exist.',
       args: {
-        string: stringArg({ required: true }),
+        email: stringArg({ required: true }),
       },
-      resolve: async (root, { string }, ctx) => {
-        return await checkNameOrEmailExist(ctx, string)
+      resolve: async (root, { email }, ctx) => {
+        return await checkEmailExist(ctx, email)
       },
     })
     t.field('PGP', {
@@ -105,9 +105,7 @@ export const userMutation = extendType({
         password: stringArg({ required: true }),
       },
       resolve: async (root, args, ctx, info) => {
-        if (await checkNameOrEmailExist(ctx, args.name)) {
-          throw new Error(ERROR_MESSAGE.nameExist(args.name))
-        } else if (await checkNameOrEmailExist(ctx, args.email)) {
+        if (await checkEmailExist(ctx, args.email)) {
           throw new Error(ERROR_MESSAGE.emailExist(args.email))
         }
         const hashedPassword = await hash(args.password, 10)
@@ -191,38 +189,14 @@ export const userMutation = extendType({
   },
 })
 
-async function checkNameOrEmailExist(
-  ctx: Context,
-  string: string,
-): Promise<boolean> {
-  if (/@/.test(string)) {
-    return Boolean(
-      await ctx.prisma.user.findOne({
-        where: { email: string } as UserWhereUniqueInput,
-      }),
-    )
-  } else {
-    return Boolean(
-      await ctx.prisma.user.findOne({
-        where: { name: string } as UserWhereUniqueInput,
-      }),
-    )
-  }
-}
-async function checkFingerprintExist(
-  ctx: Context,
-  fingerprint: string,
-): Promise<boolean> {
+async function checkEmailExist(ctx: Context, email: string): Promise<boolean> {
   return Boolean(
     await ctx.prisma.user.findOne({
-      where: { fingerprint },
+      where: { email } as UserWhereUniqueInput,
     }),
   )
 }
 
 const ERROR_MESSAGE = {
-  nameExist: (name: string) => `Name "${name}" has already exist.`,
   emailExist: (email: string) => `Email "${email}" has already exist.`,
-  fingerprintExist: (fingerprint: string) =>
-    `Fingerprint "${fingerprint}" has already exist.`,
 }

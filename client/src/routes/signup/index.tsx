@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   useSignupMutation,
-  useCheckNameOrEmailExistLazyQuery
+  useCheckEmailExistLazyQuery
 } from "../../generated/graphqlHooks";
 import { ButtonLoading } from "../../components/Form";
 import { useHistory } from "react-router-dom";
@@ -40,13 +40,9 @@ const Signup: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [signupMutation, { loading }] = useSignupMutation();
   const [
-    checkNameExistLazyQuery,
-    { data: checkNameData, loading: checkNameLoading }
-  ] = useCheckNameOrEmailExistLazyQuery();
-  const [
     checkEmailExistLazyQuery,
     { data: checkEmailData, loading: checkEmailLoading }
-  ] = useCheckNameOrEmailExistLazyQuery();
+  ] = useCheckEmailExistLazyQuery();
 
   return (
     <Box className={classes.signupBox}>
@@ -103,20 +99,12 @@ const Signup: React.FC = () => {
             return { repeatPassword: "Not same" };
           }
 
-          await checkNameExistLazyQuery({
-            variables: {
-              string: name
-            }
-          });
-          if (checkNameData?.checkNameOrEmailExist) {
-            return { name: "Name exist" };
-          }
           await checkEmailExistLazyQuery({
             variables: {
-              string: email
+              email
             }
           });
-          if (checkEmailData?.checkNameOrEmailExist) {
+          if (checkEmailData?.checkEmailExist) {
             return { email: "Eamil exist" };
           }
         }}
@@ -176,8 +164,8 @@ const Signup: React.FC = () => {
                 type="submit"
                 variant="contained"
                 color="primary"
-                loading={loading || checkNameLoading || checkEmailLoading}
-                disabled={loading || checkNameLoading || checkEmailLoading}
+                loading={loading || checkEmailLoading}
+                disabled={loading || checkEmailLoading}
               >
                 <FormattedMessage
                   id="CREATE_ACCOUNT"

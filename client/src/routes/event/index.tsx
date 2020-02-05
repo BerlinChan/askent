@@ -17,6 +17,9 @@ const EventLoginComponent = loadable(() => import("./login"), {
 const LiveComponent = loadable(() => import("./live"), {
   fallback: <Loading />
 });
+const WallComponent = loadable(() => import("./wall"), {
+  fallback: <Loading />
+});
 
 const Event: React.FC = () => {
   let { path } = useRouteMatch();
@@ -35,6 +38,7 @@ const Event: React.FC = () => {
       <AudienceRoute path={`${path}/live`}>
         <LiveComponent />
       </AudienceRoute>
+      <Route path={`${path}/wall`} component={WallComponent} />
     </Switch>
   );
 };
