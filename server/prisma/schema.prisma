@@ -18,7 +18,7 @@ model User {
   updatedAt   DateTime   @updatedAt
   lastLoginAt DateTime?
   role        Role       @default(Admin)
-  name        String?    @unique
+  name        String?
   email       String?    @unique
   fingerprint String?    @unique
   password    String?
