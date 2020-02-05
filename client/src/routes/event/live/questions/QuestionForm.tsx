@@ -27,7 +27,8 @@ import { QueryResult } from "@apollo/react-common";
 import {
   MeAudienceQuery,
   MeAudienceQueryVariables,
-  useCreateQuestionMutation
+  useCreateQuestionMutation,
+  useUpdateAudienceUserMutation
 } from "../../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -78,6 +79,10 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
   const { formatMessage } = useIntl();
   const [expanded, setExpanded] = React.useState<boolean>(false);
   const [createQuestionMutation, { loading }] = useCreateQuestionMutation();
+  const [
+    updateAudienceUserMutation,
+    { loading: updateUserLoading }
+  ] = useUpdateAudienceUserMutation();
 
   const handleClickAway = () => {
     setExpanded(false);
@@ -96,6 +101,11 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
         name: Yup.string().max(USERNAME_MAX_LENGTH)
       })}
       onSubmit={async (values, formikBag) => {
+        if (values.name !== userQueryResult.data?.meAudience.name) {
+          await updateAudienceUserMutation({
+            variables: { input: { name: values.name } }
+          });
+        }
         await createQuestionMutation({
           variables: { eventId: id as string, content: values.question }
         });
@@ -126,7 +136,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                       id: "Type_your_question",
                       defaultMessage: "Type your question"
                     })}
-                    disabled={loading}
+                    disabled={loading || updateUserLoading}
                     onFocus={() => {
                       if (!expanded && !formProps.touched.name) {
                         formProps.setFieldValue(
@@ -170,7 +180,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                         id: "Your_name(optional)",
                         defaultMessage: "Your name(optional)"
                       })}
-                      disabled={loading}
+                      disabled={loading || updateUserLoading}
                       onFocus={() => setExpanded(true)}
                     />
                   </Box>
@@ -178,7 +188,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                     variant="contained"
                     color="primary"
                     type="submit"
-                    loading={loading}
+                    loading={loading || updateUserLoading}
                   >
                     <FormattedMessage id="Send" defaultMessage="Send" />
                   </ButtonLoading>
