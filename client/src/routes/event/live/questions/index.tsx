@@ -138,7 +138,7 @@ const LiveQuestions: React.FC<Props> = ({
           defaultMessage="Ask the speaker"
         />
       </Typography>
-      <QuestionForm />
+      <QuestionForm userQueryResult={userQueryResult} />
       <Box className={classes.listActions}>
         <SubTabs value={tabIndex} onChange={handleTabsChange}>
           <SubTab

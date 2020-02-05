@@ -8,7 +8,8 @@ import {
   FormControl,
   Collapse,
   FormHelperText,
-  ClickAwayListener
+  ClickAwayListener,
+  Avatar
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -17,9 +18,17 @@ import { InputBase } from "formik-material-ui";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
+import {
+  QUESTION_CONTENT_MAX_LENGTH,
+  USERNAME_MAX_LENGTH
+} from "../../../../constant";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
-import { useCreateQuestionMutation } from "../../../../generated/graphqlHooks";
+import { QueryResult } from "@apollo/react-common";
+import {
+  MeAudienceQuery,
+  MeAudienceQueryVariables,
+  useCreateQuestionMutation
+} from "../../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,11 +58,21 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     cardActions: {
       justifyContent: "space-between"
+    },
+    avatar: {
+      width: theme.spacing(4),
+      height: theme.spacing(4),
+      marginRight: theme.spacing(1),
+      fontSize: theme.typography.pxToRem(16)
     }
   })
 );
 
-const QuestionForm: React.FC = () => {
+interface Props {
+  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+}
+
+const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
   const classes = useStyles();
   let { id } = useParams();
   const { formatMessage } = useIntl();
@@ -67,12 +86,14 @@ const QuestionForm: React.FC = () => {
   return (
     <Formik
       initialValues={{
-        question: ""
+        question: "",
+        name: ""
       }}
       validationSchema={Yup.object({
         question: Yup.string()
           .max(QUESTION_CONTENT_MAX_LENGTH)
-          .required()
+          .required(),
+        name: Yup.string().max(USERNAME_MAX_LENGTH)
       })}
       onSubmit={async (values, formikBag) => {
         await createQuestionMutation({
@@ -106,17 +127,27 @@ const QuestionForm: React.FC = () => {
                       defaultMessage: "Type your question"
                     })}
                     disabled={loading}
-                    onFocus={() => setExpanded(true)}
+                    onFocus={() => {
+                      if (!expanded && !formProps.touched.name) {
+                        formProps.setFieldValue(
+                          "name",
+                          userQueryResult.data?.meAudience.name || ""
+                        );
+                      }
+                      setExpanded(true);
+                    }}
                   />
                 </FormControl>
                 <Collapse in={expanded}>
                   <Box className={classes.helperTextBox}>
                     <FormHelperText
                       error={Boolean(
-                        formProps.touched.question && formProps.errors.question
+                        (formProps.touched.question &&
+                          formProps.errors.question) ||
+                          (formProps.touched.name && formProps.errors.name)
                       )}
                     >
-                      {formProps.errors.question}
+                      {formProps.errors.question || formProps.errors.name}
                     </FormHelperText>
                     <Typography variant="body2" color="textSecondary">
                       {QUESTION_CONTENT_MAX_LENGTH -
@@ -127,7 +158,12 @@ const QuestionForm: React.FC = () => {
               </CardContent>
               <Collapse in={expanded}>
                 <CardActions className={classes.cardActions}>
-                  <Box>
+                  <Box display="flex">
+                    <Avatar
+                      className={classes.avatar}
+                      alt={formProps.values.name}
+                      src="/example.jpg"
+                    />
                     <InputBase
                       name="name"
                       placeholder={formatMessage({
