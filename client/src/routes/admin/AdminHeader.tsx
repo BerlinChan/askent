@@ -102,8 +102,20 @@ const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
         <Container maxWidth="lg">
           <RouteTabs
             tabs={[
-              { label: "活动", to: `${url}/events` },
-              { label: "分析", to: `${url}/analytics` }
+              {
+                label: formatMessage({
+                  id: "Events",
+                  defaultMessage: "Events"
+                }),
+                to: `${url}/events`
+              },
+              {
+                label: formatMessage({
+                  id: "Analitics",
+                  defaultMessage: "Analitics"
+                }),
+                to: `${url}/analytics`
+              }
             ]}
             indicatorColor="primary"
             textColor="primary"

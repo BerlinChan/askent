@@ -136,11 +136,11 @@ const QuestionItem: React.FC<Props> = ({
           </Typography>
         }
         secondary={
-          <Typography variant="body2" color="textSecondary">
+          <React.Fragment>
             <FormattedDate value={question.updatedAt} />
             {", "}
             <FormattedTime value={question.updatedAt} />
-          </Typography>
+          </React.Fragment>
         }
       />
       {editContent ? (

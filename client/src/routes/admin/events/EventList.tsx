@@ -21,7 +21,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { useHistory } from "react-router-dom";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, FormattedDate, FormattedTime } from "react-intl";
 import Confirm from "../../../components/Confirm";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -95,11 +95,19 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
                       color="textSecondary"
                       display="inline"
                     >
-                      #{eventItem.code}
+                      # {eventItem.code}
                     </Typography>
                   </Fragment>
                 }
-                secondary={`${eventItem.startAt} ~ ${eventItem.endAt}`}
+                secondary={
+                  <React.Fragment>
+                    <FormattedDate value={eventItem.startAt} />{" "}
+                    <FormattedTime value={eventItem.startAt} />
+                    {" ~ "}
+                    <FormattedDate value={eventItem.endAt} />{" "}
+                    <FormattedTime value={eventItem.endAt} />
+                  </React.Fragment>
+                }
               />
               <ListItemSecondaryAction>
                 <IconButton
