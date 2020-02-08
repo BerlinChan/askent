@@ -84,10 +84,10 @@
   resolved "https://registry.npm.taobao.org/@prisma/client/download/@prisma/client-2.0.0-preview021.tgz#7205345e3faa09278f3de104bb8af60e063420ad"
   integrity sha1-cgU0Xj+qCSePPeEEu4r2DgY0IK0=
 
-"@prisma/engine-core@2.0.98":
-  version "2.0.98"
-  resolved "https://registry.npm.taobao.org/@prisma/engine-core/download/@prisma/engine-core-2.0.98.tgz#871c38a8044b988a804a01603d8c6e6bc37856c8"
-  integrity sha1-hxw4qARLmIqASgFgPYxua8N4Vsg=
+"@prisma/engine-core@2.0.103":
+  version "2.0.103"
+  resolved "https://registry.yarnpkg.com/@prisma/engine-core/-/engine-core-2.0.103.tgz#82d4bd50d776974bd5ea018e6f9feea2b324d3e4"
+  integrity sha512-uUza6FtdQca0hmlYQ37ZUG0LOVpOmn1fNhuSMOJOjo+dodwhU4DWPykhOEDOBzxvc1KMdXdXadvLP2/72cCm3Q==
   dependencies:
     "@prisma/generator-helper" "0.0.29"
     "@prisma/get-platform" "0.1.23"
@@ -134,13 +134,13 @@
   dependencies:
     debug "^4.1.1"
 
-"@prisma/sdk@0.0.182":
-  version "0.0.182"
-  resolved "https://registry.npm.taobao.org/@prisma/sdk/download/@prisma/sdk-0.0.182.tgz#8ff5f0c7d57dea96685d689308fd5f5fb5fbc517"
-  integrity sha1-j/Xwx9V96pZoXWiTCP1fX7X7xRc=
+"@prisma/sdk@0.0.195":
+  version "0.0.195"
+  resolved "https://registry.yarnpkg.com/@prisma/sdk/-/sdk-0.0.195.tgz#3ac88c02110cf9d7568fe858aed4e966f574911d"
+  integrity sha512-UJxgYcqHk5klO6SgqZBEyaDJ2fkbYjGt6DZaGBSs3gtxBL5iJHaLaTx/FHIlajqhnw5xaZsNaViZWGoO2gidpw==
   dependencies:
     "@apexearth/copy" "^1.4.4"
-    "@prisma/engine-core" "2.0.98"
+    "@prisma/engine-core" "2.0.103"
     "@prisma/fetch-engine" "0.3.34"
     "@prisma/generator-helper" "0.0.29"
     "@prisma/get-platform" "0.1.23"
