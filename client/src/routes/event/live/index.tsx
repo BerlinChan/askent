@@ -7,7 +7,8 @@ import Layout from "../../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
 import {
   useLiveEventQuery,
-  useMeAudienceQuery
+  useMeAudienceQuery,
+  useLiveEventUpdatedSubscription
 } from "../../../generated/graphqlHooks";
 
 const LiveQuestionsComponent = loadable(() => import("./questions"), {
@@ -19,6 +20,10 @@ const Live: React.FC = () => {
   let { id } = useParams();
   const meAudienceQueryResult = useMeAudienceQuery();
   const liveEventQueryResult = useLiveEventQuery({
+    variables: { eventId: id as string }
+  });
+
+  useLiveEventUpdatedSubscription({
     variables: { eventId: id as string }
   });
 

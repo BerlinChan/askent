@@ -49,8 +49,8 @@ subscription LiveQuestionUpdated($eventId: ID!) {
   }
 }
 
-subscription LiveQuestionDeleted($eventId: ID!) {
-  questionsDeleted(eventId: $eventId) {
+subscription LiveQuestionRemoved($eventId: ID!) {
+  questionsRemoved(eventId: $eventId) {
     ...LiveQuestionFields
   }
 }

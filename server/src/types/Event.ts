@@ -2,6 +2,7 @@ import {
   objectType,
   extendType,
   stringArg,
+  subscriptionField,
   arg,
   idArg,
   booleanArg,
@@ -9,6 +10,7 @@ import {
 import { getAdminUserId, getAudienceUserId } from '../utils'
 import { Context } from '../context'
 import { Event as EventType } from '@prisma/client'
+import { withFilter } from 'apollo-server-express'
 
 export const Event = objectType({
   name: 'Event',
@@ -185,10 +187,17 @@ export const eventMutation = extendType({
             : {},
         )
 
-        return ctx.prisma.event.update({
+        const updateEvent = ctx.prisma.event.update({
           where: { id: args.eventId },
           data: event,
         })
+
+        ctx.pubsub.publish('EVENT_UPDATED', {
+          eventId: args.eventId,
+          eventUpdated: updateEvent,
+        })
+
+        return updateEvent
       },
     })
     t.field('deleteEvent', {
@@ -209,16 +218,36 @@ export const eventMutation = extendType({
       },
       resolve: async (root, { eventId }, ctx) => {
         const userId = getAudienceUserId(ctx)
-        const event = await ctx.prisma.event.update({
+        const updateEvent = await ctx.prisma.event.update({
           where: { id: eventId },
           data: { audiences: { connect: { id: userId } } },
         })
 
-        return event
+        ctx.pubsub.publish('EVENT_UPDATED', {
+          eventId: eventId,
+          eventUpdated: updateEvent,
+        })
+
+        return updateEvent
       },
     })
   },
 })
+
+export const eventUpdatedSubscription = subscriptionField<'eventUpdated'>(
+  'eventUpdated',
+  {
+    type: 'Event',
+    args: { eventId: idArg({ required: true }) },
+    resolve: payload => {
+      return payload.eventUpdated
+    },
+    subscribe: withFilter(
+      (root, args, ctx) => ctx.pubsub.asyncIterator(['EVENT_UPDATED']),
+      (payload, args, ctx) => payload.eventId === args.eventId,
+    ),
+  },
+)
 
 async function checkEventCodeExist(ctx: Context, code: string) {
   return Boolean(await ctx.prisma.event.findOne({ where: { code } }))

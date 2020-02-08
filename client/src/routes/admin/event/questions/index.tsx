@@ -16,7 +16,7 @@ import {
   useUpdateEventMutation,
   useQuestionAddedSubscription,
   useQuestionUpdatedSubscription,
-  useQuestionDeletedSubscription,
+  useQuestionRemovedSubscription,
   useDeleteAllUnpublishedQuestionsMutation,
   usePublishAllUnpublishedQuestionsMutation,
   AdminEventQuery,
@@ -111,7 +111,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   useQuestionUpdatedSubscription({
     variables: { eventId: id as string }
   });
-  useQuestionDeletedSubscription({
+  useQuestionRemovedSubscription({
     variables: { eventId: id as string },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const questions = client.readQuery<
@@ -129,8 +129,8 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         data: {
           questionsByEvent: (questions?.questionsByEvent || []).filter(
             questionItem =>
-              !(subscriptionData.data?.questionsDeleted || [])
-                .map(deletedItem => deletedItem.id)
+              !(subscriptionData.data?.questionsRemoved || [])
+                .map(removedItem => removedItem.id)
                 .includes(questionItem.id)
           )
         }

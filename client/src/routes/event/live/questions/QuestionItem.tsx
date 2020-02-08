@@ -33,6 +33,7 @@ import {
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import TopIcon from "@material-ui/icons/Publish";
+import ScheduleIcon from "@material-ui/icons/Schedule";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
@@ -225,6 +226,16 @@ const QuestionItem: React.FC<Props> = ({
               )}
           </Typography>
           <Box className={classes.questionActionBox}>
+            {!question.published && (
+              <Tooltip
+                title={formatMessage({
+                  id: "Waiting_review",
+                  defaultMessage: "Waiting review"
+                })}
+              >
+                <ScheduleIcon fontSize="small" color="disabled" />
+              </Tooltip>
+            )}
             {question.top && (
               <Tooltip
                 title={formatMessage({ id: "Top", defaultMessage: "Top" })}

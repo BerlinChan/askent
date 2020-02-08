@@ -166,9 +166,6 @@ export const questionMutation = extendType({
           where: { id: questionId },
           include: { event: true },
         })
-        if (!findQuestion) {
-          throw new Error(ERROR_MESSAGE.noQuestionId(questionId))
-        }
 
         // can only top one question at a time
         let topQuestion: Array<QuestionType> = []
@@ -196,7 +193,18 @@ export const questionMutation = extendType({
         })
         const updateQuestions = [currentTopQuestion].concat(topQuestion)
 
-        ctx.pubsub.publish('QUESTION_UPDATED', {
+        if (published === true) {
+          ctx.pubsub.publish('QUESTION_ADDED', {
+            eventId: findQuestion?.event.id,
+            questionAdded: currentTopQuestion,
+          })
+        } else if (published === false) {
+          ctx.pubsub.publish('QUESTIONS_REMOVED', {
+            eventId: findQuestion?.event.id,
+            questionsRemoved: [currentTopQuestion],
+          })
+        }
+        ctx.pubsub.publish('QUESTIONS_UPDATED', {
           eventId: findQuestion?.event.id,
           questionsUpdated: updateQuestions,
         })
@@ -223,9 +231,9 @@ export const questionMutation = extendType({
           where: { id: questionId },
         })
 
-        ctx.pubsub.publish('QUESTION_DELETED', {
+        ctx.pubsub.publish('QUESTIONS_REMOVED', {
           eventId: findQuestion?.event.id,
-          questionsDeleted: [response],
+          questionsRemoved: [response],
         })
 
         return response
@@ -280,7 +288,7 @@ export const questionMutation = extendType({
           },
         })
 
-        ctx.pubsub.publish('QUESTION_UPDATED', {
+        ctx.pubsub.publish('QUESTIONS_UPDATED', {
           eventId: updateQuestion.event.id,
           questionsUpdated: [updateQuestion],
         })
@@ -315,21 +323,21 @@ export const questionUpdatedSubscription = subscriptionField<
     return payload.questionsUpdated
   },
   subscribe: withFilter(
-    (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_UPDATED']),
+    (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTIONS_UPDATED']),
     (payload, args, ctx) => payload.eventId === args.eventId,
   ),
 })
-export const questionDeletedSubscription = subscriptionField<
-  'questionsDeleted'
->('questionsDeleted', {
+export const questionRemovedSubscription = subscriptionField<
+  'questionsRemoved'
+>('questionsRemoved', {
   type: 'Question',
   list: true,
   args: { eventId: idArg({ required: true }) },
   resolve: payload => {
-    return payload.questionsDeleted
+    return payload.questionsRemoved
   },
   subscribe: withFilter(
-    (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_DELETED']),
+    (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTIONS_REMOVED']),
     (payload, args, ctx) => payload.eventId === args.eventId,
   ),
 })

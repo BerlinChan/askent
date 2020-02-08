@@ -2,7 +2,6 @@ import http from 'http'
 import dotenv from 'dotenv'
 import path from 'path'
 import express from 'express'
-import cors from 'cors'
 import { ApolloServer } from 'apollo-server-express'
 import { schema } from './schema'
 import { createContext } from './context'
@@ -20,7 +19,6 @@ const app = express()
 //
 // Register Node.js middleware
 // -----------------------------------------------------------------------------
-app.use(cors())
 
 //
 // Register API middleware

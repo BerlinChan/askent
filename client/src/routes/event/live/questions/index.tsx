@@ -17,7 +17,7 @@ import {
   useLiveQuestionsByEventQuery,
   useLiveQuestionAddedSubscription,
   useLiveQuestionUpdatedSubscription,
-  useLiveQuestionDeletedSubscription,
+  useLiveQuestionRemovedSubscription,
   LiveQuestionsByEventDocument
 } from "../../../../generated/graphqlHooks";
 import Logo from "../../../../components/Logo";
@@ -92,7 +92,7 @@ const LiveQuestions: React.FC<Props> = ({
   useLiveQuestionUpdatedSubscription({
     variables: { eventId: id as string }
   });
-  useLiveQuestionDeletedSubscription({
+  useLiveQuestionRemovedSubscription({
     variables: { eventId: id as string },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const questions = client.readQuery<
@@ -113,8 +113,8 @@ const LiveQuestions: React.FC<Props> = ({
         data: {
           liveQuestionsByEvent: (questions?.liveQuestionsByEvent || []).filter(
             questionItem =>
-              !(subscriptionData.data?.questionsDeleted || [])
-                .map(deletedItem => deletedItem.id)
+              !(subscriptionData.data?.questionsRemoved || [])
+                .map(removedItem => removedItem.id)
                 .includes(questionItem.id)
           )
         }
