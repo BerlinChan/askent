@@ -30,7 +30,7 @@ export default function HomeHeader() {
         <Toolbar className={classes.toolbar}>
           <Logo />
           <Box className={classes.actions}>
-            {token.authToken ? <AuthedAction /> : <UnauthAction />}
+            {token ? <AuthedAction /> : <UnauthAction />}
           </Box>
         </Toolbar>
       </Container>

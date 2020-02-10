@@ -27,8 +27,9 @@ model User {
 }
 
 model Role {
-  id   String   @default(cuid()) @id
-  name RoleName @unique
+  id    String   @default(cuid()) @id
+  name  RoleName @unique
+  users User[]
 }
 
 enum RoleName {
@@ -42,7 +43,7 @@ model Event {
   code       String     @unique
   name       String
   owner      User
-  audiences  User[]     @relation(name: "EventAudiencesToUserTable")
+  audiences  User[]     @relation(name: "EventAudiencesUserTable")
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   startAt    DateTime
@@ -54,7 +55,7 @@ model Event {
 model Question {
   id         String   @default(cuid()) @id
   event      Event
-  author     User?
+  author     User
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   content    String

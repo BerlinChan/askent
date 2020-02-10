@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch, useRouteMatch, Redirect, useParams } from "react-router-dom";
-import { PrivateRoute } from "../../../components/Route";
+import PrivateRoute from "../../../components/PrivateRoute";
 import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
 import AdminEventHeader from "./AdminEventHeader";

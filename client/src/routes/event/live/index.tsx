@@ -2,7 +2,7 @@ import React from "react";
 import { Switch, Redirect, useRouteMatch, useParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
-import { AudienceRoute } from "../../../components/Route";
+import PrivateRoute from "../../../components/PrivateRoute";
 import Layout from "../../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
 import {
@@ -40,12 +40,12 @@ const Live: React.FC = () => {
         }
         body={
           <Switch>
-            <AudienceRoute path={`${path}/questions`}>
+            <PrivateRoute path={`${path}/questions`}>
               <LiveQuestionsComponent
                 userQueryResult={meAudienceQueryResult}
                 eventQueryResult={liveEventQueryResult}
               />
-            </AudienceRoute>
+            </PrivateRoute>
           </Switch>
         }
       />

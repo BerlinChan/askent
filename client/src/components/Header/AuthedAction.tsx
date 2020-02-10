@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const AuthedAction: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
-  const { data: userData } = useMeQuery();
+  const { data: userData, client } = useMeQuery();
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
@@ -90,7 +90,8 @@ export const AuthedAction: React.FC = () => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            removeToken("authToken");
+            removeToken();
+            client.resetStore();
             history.replace("/");
             handleMenuClose();
           }}

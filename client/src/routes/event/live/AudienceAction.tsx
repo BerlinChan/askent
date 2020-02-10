@@ -48,7 +48,7 @@ interface Props {
 const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
   const classes = useStyles();
   const history = useHistory();
-  const { data: userData } = userQueryResult;
+  const { data: userData, client } = userQueryResult;
   const { removeToken } = useToken();
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
@@ -130,7 +130,8 @@ const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            removeToken("authToken");
+            removeToken();
+            client.resetStore();
             history.replace("/");
             handleMenuClose();
           }}

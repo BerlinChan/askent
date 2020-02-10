@@ -13,29 +13,28 @@ import { AUTH_TOKEN } from "../constant";
 // TODO: refactor to createChache, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
 const cache = new InMemoryCache();
 
-type ConnectionParamsType = {
-  Authorization?: string;
-};
-const Authorization: ConnectionParamsType["Authorization"] =
-  localStorage.getItem(AUTH_TOKEN) || "";
-
 const authMiddleware = setContext((operation, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization
+      Authorization: localStorage.getItem(AUTH_TOKEN) || ""
     }
   };
 });
+
+type ConnectionParamsType = {
+  Authorization?: string;
+};
 const wsLink = new WebSocketLink({
   uri: config.webSocketUri,
   options: {
     reconnect: true,
     connectionParams: {
-      Authorization
+      Authorization: localStorage.getItem(AUTH_TOKEN) || ""
     } as ConnectionParamsType
   }
 });
+
 const httpLink = new HttpLink({
   uri: config.apiUri
 });
