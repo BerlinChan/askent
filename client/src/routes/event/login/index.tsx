@@ -63,7 +63,7 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
 
   React.useEffect(() => {
     (async () => {
-      if (token.audienceAuthToken) {
+      if (token.authToken) {
         await isEventAudienceLazyQuery({
           variables: { eventId: id as string }
         });
@@ -76,11 +76,11 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
   }, [id]);
 
   const handleEventLogin = async () => {
-    if (!token.audienceAuthToken) {
+    if (!token.authToken) {
       const { data } = await loginAudienceMutation({
         variables: { fingerprint }
       });
-      setToken({ audienceAuthToken: data?.loginAudience.token });
+      setToken({ authToken: data?.loginAudience.token });
     }
     await joinEventMutation({ variables: { eventId: id as string } });
     history.replace(`/event/${id}/live/questions`);

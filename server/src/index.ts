@@ -7,6 +7,7 @@ import { schema } from './schema'
 import { createContext } from './context'
 import { applyMiddleware } from 'graphql-middleware'
 import { permissions } from './permissions'
+import { getAuthedUser } from './utils'
 
 const dotenvResult = dotenv.config({ path: path.join(__dirname, '../.env') })
 if (dotenvResult.error) {
@@ -24,9 +25,19 @@ const app = express()
 // Register API middleware
 // -----------------------------------------------------------------------------
 // https://github.com/graphql/express-graphql#options
+type ConnectionParamsType = {
+  Authorization?: string
+}
 const server = new ApolloServer({
   schema: applyMiddleware(schema, permissions),
   context: createContext,
+  subscriptions: {
+    onConnect: (connectionParams: ConnectionParamsType, websocket, context) => {
+      if (connectionParams?.Authorization) {
+        return getAuthedUser(connectionParams.Authorization)
+      }
+    },
+  },
 })
 server.applyMiddleware({ app })
 

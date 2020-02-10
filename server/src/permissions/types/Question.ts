@@ -1,11 +1,11 @@
 import { rule, or, not, and } from 'graphql-shield'
-import { getAdminUserId, getAudienceUserId } from '../../utils'
-import { isAuthenticatedUser, isAuthenticatedAudience } from './User'
+import { getAuthedUser } from '../../utils'
+import { isAuthedAdmin, isAuthedAudience } from './User'
 import { isEventOwnerByArgId } from './Event'
 
 export const isQuestionAuthor = rule({ cache: 'contextual' })(
   async ({ id }, args, ctx) => {
-    const userId = getAudienceUserId(ctx)
+    const userId = getAuthedUser(ctx)?.id
     const questionAuthor = await ctx.prisma.question
       .findOne({
         where: { id },
@@ -17,7 +17,7 @@ export const isQuestionAuthor = rule({ cache: 'contextual' })(
 )
 export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
-    const userId = getAudienceUserId(ctx)
+    const userId = getAuthedUser(ctx)?.id
     const questionAuthor = await ctx.prisma.question
       .findOne({
         where: { id: args.questionId },
@@ -27,9 +27,9 @@ export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
     return userId === questionAuthor.id
   },
 )
-export const isQuestionEventOwner = rule({ cache: 'contextual' })(
+export const isQuestionEventOwner = rule({ cache: 'strict' })(
   async ({ id }, args, ctx) => {
-    const userId = getAdminUserId(ctx)
+    const userId = getAuthedUser(ctx)?.id
     const eventOwner = await ctx.prisma.question
       .findOne({
         where: { id },
@@ -42,7 +42,7 @@ export const isQuestionEventOwner = rule({ cache: 'contextual' })(
 )
 export const isQuestionEventOwnerByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
-    const userId = getAdminUserId(ctx)
+    const userId = getAuthedUser(ctx)?.id
     const eventOwner = await ctx.prisma.question
       .findOne({
         where: { id: args.questionId },
@@ -55,7 +55,7 @@ export const isQuestionEventOwnerByArg = rule({ cache: 'strict' })(
 )
 export const isQuestionEventAudienceByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
-    const userId = getAudienceUserId(ctx)
+    const userId = getAuthedUser(ctx)?.id
     const audience = await ctx.prisma.question
       .findOne({ where: { id: args.questionId } })
       .event()
@@ -76,12 +76,12 @@ export const isQuestionTopByArg = rule({ cache: 'strict' })(
 
 export default {
   Query: {
-    questionsByMeAudience: isAuthenticatedAudience,
-    questionsByEvent: isAuthenticatedUser,
-    liveQuestionsByEvent: isAuthenticatedAudience,
+    questionsByMeAudience: isAuthedAudience,
+    questionsByEvent: isAuthedAdmin,
+    liveQuestionsByEvent: isAuthedAudience,
   },
   Mutation: {
-    createQuestion: isAuthenticatedAudience,
+    createQuestion: isAuthedAudience,
     deleteQuestion: and(
       or(isQuestionAuthorByArg, isQuestionEventOwnerByArg),
       not(isQuestionTopByArg),

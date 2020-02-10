@@ -1,10 +1,10 @@
 import { rule, or } from 'graphql-shield'
-import { getAdminUserId } from '../../utils'
-import { isAuthenticatedUser, isAuthenticatedAudience } from './User'
+import { getAuthedUser } from '../../utils'
+import { isAuthedAdmin, isAuthedAudience } from './User'
 
 export const isEventOwner = rule({ cache: 'contextual' })(
   async ({ id }, args, ctx) => {
-    const userId = getAdminUserId(ctx)
+    const userId = getAuthedUser(ctx)?.id
     const owner = await ctx.prisma.event.findOne({ where: { id } }).owner()
 
     return userId === owner.id
@@ -13,7 +13,7 @@ export const isEventOwner = rule({ cache: 'contextual' })(
 
 export const isEventOwnerByArgId = rule({ cache: 'strict' })(
   async (parent, { eventId }, ctx) => {
-    const userId = getAdminUserId(ctx)
+    const userId = getAuthedUser(ctx)?.id
     const owner = await ctx.prisma.event
       .findOne({ where: { id: eventId } })
       .owner()
@@ -24,15 +24,15 @@ export const isEventOwnerByArgId = rule({ cache: 'strict' })(
 
 export default {
   Query: {
-    eventsByMe: isAuthenticatedUser,
-    checkEventCodeExist: isAuthenticatedUser,
-    isEventAudience: isAuthenticatedAudience,
+    eventsByMe: isAuthedAdmin,
+    checkEventCodeExist: isAuthedAdmin,
+    isEventAudience: isAuthedAudience,
   },
   Mutation: {
-    createEvent: isAuthenticatedUser,
+    createEvent: isAuthedAdmin,
     updateEvent: isEventOwnerByArgId,
     deleteEvent: isEventOwnerByArgId,
-    joinEvent: isAuthenticatedAudience,
+    joinEvent: isAuthedAudience,
   },
   Event: {
     owner: isEventOwner,
@@ -40,7 +40,7 @@ export default {
     createdAt: isEventOwner,
     updatedAt: isEventOwner,
     questions: isEventOwner,
-    liveQuestionCount: isAuthenticatedAudience,
-    audienceCount: or(isEventOwner, isAuthenticatedAudience),
+    liveQuestionCount: isAuthedAudience,
+    audienceCount: or(isEventOwner, isAuthedAudience),
   },
 }

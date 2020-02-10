@@ -11,7 +11,7 @@ export const AudienceRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
     <Route
       {...rest}
       render={({ location }) =>
-        token.audienceAuthToken ? (
+        token.authToken ? (
           children
         ) : (
           <Redirect

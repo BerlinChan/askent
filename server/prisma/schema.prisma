@@ -17,7 +17,7 @@ model User {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   lastLoginAt DateTime?
-  role        Role       @default(Admin)
+  roles       Role[]
   name        String?
   email       String?    @unique
   fingerprint String?    @unique
@@ -26,10 +26,15 @@ model User {
   questions   Question[]
 }
 
-enum Role {
-  Admin
-  Audience
-  Guest
+model Role {
+  id   String   @default(cuid()) @id
+  name RoleName @unique
+}
+
+enum RoleName {
+  ADMIN
+  AUDIENCE
+  WALL
 }
 
 model Event {
