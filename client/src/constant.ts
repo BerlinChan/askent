@@ -1,5 +1,4 @@
 export const AUTH_TOKEN = "AUTH_TOKEN";
-export const AUDIENCE_AUTH_TOKEN = "AUDIENCE_AUTH_TOKEN";
 
 export const USERNAME_MAX_LENGTH = 30;
 export const EMAIL_MAX_LENGTH = 30;

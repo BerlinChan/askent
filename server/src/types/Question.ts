@@ -9,7 +9,7 @@ import {
   subscriptionField,
 } from 'nexus'
 import { Question as QuestionType, User } from '@prisma/client'
-import { getAudienceUserId } from '../utils'
+import { getAuthedUser } from '../utils'
 import { withFilter } from 'apollo-server-express'
 import { Context } from '../context'
 
@@ -66,7 +66,7 @@ export const questionQuery = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: (root, { eventId }, ctx) => {
-        const userId = getAudienceUserId(ctx)
+        const userId = getAuthedUser(ctx)?.id
 
         return ctx.prisma.question.findMany({
           where: {
@@ -107,7 +107,7 @@ export const questionQuery = extendType({
       type: 'Question',
       args: { eventId: idArg({ required: true }) },
       resolve: async (root, { eventId }, ctx) => {
-        const userId = getAudienceUserId(ctx)
+        const userId = getAuthedUser(ctx)?.id
         const liveQuestions = await ctx.prisma.question.findMany({
           where: {
             event: { id: eventId },
@@ -133,7 +133,7 @@ export const questionMutation = extendType({
         content: stringArg({ required: true }),
       },
       resolve: async (root, { eventId, content }, ctx) => {
-        const userId = getAudienceUserId(ctx)
+        const userId = getAuthedUser(ctx)?.id
         const event = await ctx.prisma.event.findOne({
           where: { id: eventId },
         })
@@ -203,11 +203,12 @@ export const questionMutation = extendType({
             eventId: findQuestion?.event.id,
             questionsRemoved: [currentTopQuestion],
           })
+        } else {
+          ctx.pubsub.publish('QUESTIONS_UPDATED', {
+            eventId: findQuestion?.event.id,
+            questionsUpdated: updateQuestions,
+          })
         }
-        ctx.pubsub.publish('QUESTIONS_UPDATED', {
-          eventId: findQuestion?.event.id,
-          questionsUpdated: updateQuestions,
-        })
 
         return updateQuestions
       },
@@ -275,7 +276,7 @@ export const questionMutation = extendType({
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
-        const userId = getAudienceUserId(ctx)
+        const userId = getAuthedUser(ctx)?.id
         const voted = await getVoted(ctx, questionId)
 
         const updateQuestion = await ctx.prisma.question.update({
@@ -304,13 +305,38 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
   {
     type: 'Question',
     args: { eventId: idArg({ required: true }) },
+    subscribe: withFilter(
+      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_ADDED']),
+      async (payload, args, ctx) => {
+        // return payload.eventId === args.eventId
+
+        switch (ctx.connection.context.role) {
+          case 'Admin':
+            console.log('admin', ctx.connection.context)
+            return payload.eventId === args.eventId
+          case 'Audience':
+            const author = await ctx.prisma.question
+              .findOne({ where: { id: payload.questionAdded.id } })
+              .author()
+            //BUG: login as Admin and Audience in same browser will see all unpublished questions
+            console.log(
+              'Audience',
+              ctx.connection.context.userId === author.id,
+              payload.questionAdded.published,
+            )
+
+            return (
+              ctx.connection.context.userId === author.id ||
+              payload.questionAdded.published
+            )
+          default:
+            return false
+        }
+      },
+    ),
     resolve: (payload, args, ctx) => {
       return payload.questionAdded
     },
-    subscribe: withFilter(
-      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_ADDED']),
-      (payload, args, ctx) => payload.eventId === args.eventId,
-    ),
   },
 )
 export const questionUpdatedSubscription = subscriptionField<
@@ -319,13 +345,13 @@ export const questionUpdatedSubscription = subscriptionField<
   type: 'Question',
   list: true,
   args: { eventId: idArg({ required: true }) },
-  resolve: payload => {
-    return payload.questionsUpdated
-  },
   subscribe: withFilter(
     (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTIONS_UPDATED']),
     (payload, args, ctx) => payload.eventId === args.eventId,
   ),
+  resolve: payload => {
+    return payload.questionsUpdated
+  },
 })
 export const questionRemovedSubscription = subscriptionField<
   'questionsRemoved'
@@ -333,13 +359,13 @@ export const questionRemovedSubscription = subscriptionField<
   type: 'Question',
   list: true,
   args: { eventId: idArg({ required: true }) },
-  resolve: payload => {
-    return payload.questionsRemoved
-  },
   subscribe: withFilter(
     (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTIONS_REMOVED']),
     (payload, args, ctx) => payload.eventId === args.eventId,
   ),
+  resolve: payload => {
+    return payload.questionsRemoved
+  },
 })
 
 const ERROR_MESSAGE = {
@@ -347,7 +373,7 @@ const ERROR_MESSAGE = {
 }
 
 async function getVoted(ctx: Context, questionId: string) {
-  const userId = getAudienceUserId(ctx)
+  const userId = getAuthedUser(ctx)?.id
   if (!userId) return false
   const audiences: User[] = await ctx.prisma.question
     .findOne({ where: { id: questionId } })

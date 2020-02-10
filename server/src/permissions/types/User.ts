@@ -1,30 +1,25 @@
-import { rule } from 'graphql-shield'
-import { getAdminUserId, getAudienceUserId } from '../../utils'
+import { rule, or } from 'graphql-shield'
+import { getAuthedUser } from '../../utils'
 
-export const isAuthenticatedUser = rule({ cache: 'contextual' })(
+export const isAuthedAdmin = rule({ cache: 'contextual' })(
   (parent, args, ctx) => {
-    const userId = getAdminUserId(ctx)
-    return Boolean(userId)
+    const getUser = getAuthedUser(ctx)
+    return Boolean(getUser?.roles.includes('ADMIN') && getUser?.id)
   },
 )
-export const isAuthedAudienceUser = rule({ cache: 'contextual' })(
+export const isAuthedAudience = rule({ cache: 'contextual' })(
   (parent, args, ctx) => {
-    const userId = getAudienceUserId(ctx)
-    return Boolean(userId)
-  },
-)
-export const isAuthenticatedAudience = rule({ cache: 'contextual' })(
-  (parent, args, ctx) => {
-    return Boolean(getAudienceUserId(ctx))
+    const getUser = getAuthedUser(ctx)
+    return Boolean(getUser?.roles.includes('AUDIENCE') && getUser?.id)
   },
 )
 
 export default {
   Query: {
-    me: isAuthenticatedUser,
-    meAudience: isAuthedAudienceUser,
+    me: isAuthedAdmin,
+    meAudience: or(isAuthedAdmin, isAuthedAudience),
   },
   Mutation: {
-    updateAudienceUser: isAuthedAudienceUser,
+    updateAudienceUser: isAuthedAudience,
   },
 }

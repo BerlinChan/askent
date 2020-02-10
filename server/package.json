@@ -10,8 +10,8 @@
     "build": "npm -s run clean && npm -s run generate && tsc",
     "prisma:migrate-save": "prisma2 migrate save --name 'init' --experimental",
     "prisma:migrate-up": "prisma2 migrate up --experimental",
-    "prisma:seed": "ts-node prisma/seed",
     "prisma:generate": "prisma2 generate",
+    "prisma:seed": "ts-node prisma/seed",
     "generate": "npm -s run prisma:generate && npm -s run generate:nexus",
     "generate:nexus": "ts-node --transpile-only src/schema"
   },

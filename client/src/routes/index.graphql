@@ -1,8 +1,11 @@
 fragment UserInfo on User {
   id
-  role
   name
   email
+  roles {
+    id
+    name
+  }
 }
 
 query Me {

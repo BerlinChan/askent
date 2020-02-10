@@ -78,7 +78,7 @@ const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
           )}
         </Typography>
         <Typography className={classes.role}>
-          {userData?.meAudience.role}
+          {userData?.meAudience.roles.map(role => role.name).join()}
         </Typography>
       </Box>
       <IconButton size="small" onClick={handleMenuOpen}>
@@ -130,7 +130,7 @@ const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            removeToken("audienceAuthToken");
+            removeToken("authToken");
             history.replace("/");
             handleMenuClose();
           }}

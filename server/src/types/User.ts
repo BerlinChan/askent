@@ -2,11 +2,11 @@ import {
   objectType,
   extendType,
   stringArg,
-  idArg,
   inputObjectType,
   arg,
 } from 'nexus'
 import {
+  RoleName,
   User as UserType,
   UserCreateInput,
   UserWhereUniqueInput,
@@ -15,7 +15,7 @@ import {
 import { NexusGenFieldTypes } from 'nexus-typegen'
 import { hash, compare } from 'bcryptjs'
 import { Context } from '../context'
-import { getAdminUserId, signToken, getAudienceUserId } from '../utils'
+import { getAuthedUser, signToken } from '../utils'
 
 export const User = objectType({
   name: 'User',
@@ -24,7 +24,7 @@ export const User = objectType({
     t.model.createdAt()
     t.model.updatedAt()
     t.model.lastLoginAt()
-    t.model.role()
+    t.model.roles()
     t.model.name()
     t.model.email()
     t.model.events()
@@ -46,6 +46,7 @@ export const PGP = objectType({
     t.string('pubKey')
   },
 })
+
 export const UpdateAudienceInput = inputObjectType({
   name: 'UpdateAudienceInput',
   definition(t) {
@@ -62,7 +63,7 @@ export const userQuery = extendType({
       description: 'Query my user info.',
       resolve: (root, args, ctx) => {
         return ctx.prisma.user.findOne({
-          where: { id: getAdminUserId(ctx) },
+          where: { id: getAuthedUser(ctx)?.id },
         }) as Promise<UserType>
       },
     })
@@ -71,7 +72,7 @@ export const userQuery = extendType({
       description: 'Query my audience user info.',
       resolve: (root, args, ctx) => {
         return ctx.prisma.user.findOne({
-          where: { id: getAudienceUserId(ctx) },
+          where: { id: getAuthedUser(ctx)?.id },
         }) as Promise<UserType>
       },
     })
@@ -109,16 +110,17 @@ export const userMutation = extendType({
           throw new Error(ERROR_MESSAGE.emailExist(args.email))
         }
         const hashedPassword = await hash(args.password, 10)
+        const userRoles: Array<RoleName> = ['ADMIN', 'AUDIENCE', 'WALL']
         const user = await ctx.prisma.user.create({
           data: {
             ...args,
             password: hashedPassword,
-            role: 'Admin',
+            roles: { connect: userRoles.map(role => ({ name: role })) },
           } as UserCreateInput,
         })
 
         return {
-          token: signToken({ userId: user.id, role: user.role }),
+          token: signToken({ id: user.id, roles: userRoles }),
           user,
         }
       },
@@ -132,6 +134,7 @@ export const userMutation = extendType({
       resolve: async (parent, args: UserWhereInput, ctx, info) => {
         const user = await ctx.prisma.user.findOne({
           where: { email: args.email } as UserWhereUniqueInput,
+          include: { roles: true },
         })
         if (!user) {
           throw new Error(`No user found for email: ${args.email}`)
@@ -145,7 +148,10 @@ export const userMutation = extendType({
         }
 
         return {
-          token: signToken({ userId: user.id, role: user.role }),
+          token: signToken({
+            id: user.id,
+            roles: user.roles.map(role => role.name),
+          }),
           user,
         }
       },
@@ -160,17 +166,18 @@ export const userMutation = extendType({
         let user = await ctx.prisma.user.findOne({
           where: { fingerprint },
         })
+        const userRoles: Array<RoleName> = ['AUDIENCE']
         if (!user) {
           user = await ctx.prisma.user.create({
             data: {
               fingerprint,
-              role: 'Audience',
+              roles: { connect: userRoles.map(role => ({ name: role })) },
             },
           })
         }
 
         return {
-          token: signToken({ userId: user.id, role: user.role }),
+          token: signToken({ id: user.id, roles: userRoles }),
           user,
         }
       },
@@ -179,7 +186,7 @@ export const userMutation = extendType({
       type: 'User',
       args: { input: arg({ type: 'UpdateAudienceInput', required: true }) },
       resolve: (root, { input }, ctx) => {
-        const userId = getAudienceUserId(ctx)
+        const userId = getAuthedUser(ctx)?.id
         return ctx.prisma.user.update({
           where: { id: userId },
           data: input,

@@ -8,24 +8,32 @@ import { HttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { resolvers, typeDefs } from "./resolvers";
 import config from "../config";
-import { AUTH_TOKEN, AUDIENCE_AUTH_TOKEN } from "../constant";
+import { AUTH_TOKEN } from "../constant";
 
 // TODO: refactor to createChache, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
 const cache = new InMemoryCache();
+
+type ConnectionParamsType = {
+  Authorization?: string;
+};
+const Authorization: ConnectionParamsType["Authorization"] =
+  localStorage.getItem(AUTH_TOKEN) || "";
 
 const authMiddleware = setContext((operation, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: localStorage.getItem(AUTH_TOKEN) || "",
-      AuthorizationAudience: localStorage.getItem(AUDIENCE_AUTH_TOKEN) || ""
+      Authorization
     }
   };
 });
 const wsLink = new WebSocketLink({
   uri: config.webSocketUri,
   options: {
-    reconnect: true
+    reconnect: true,
+    connectionParams: {
+      Authorization
+    } as ConnectionParamsType
   }
 });
 const httpLink = new HttpLink({
