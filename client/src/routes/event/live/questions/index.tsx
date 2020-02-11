@@ -1,4 +1,5 @@
 import React from "react";
+import * as R from "ramda";
 import { useParams } from "react-router-dom";
 import { Box, Typography, Container, Paper } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -96,7 +97,40 @@ const LiveQuestions: React.FC<Props> = ({
     }
   });
   useLiveQuestionUpdatedSubscription({
-    variables: { eventId: id as string }
+    variables: { eventId: id as string },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const questions = client.readQuery<
+        LiveQuestionsByEventQuery,
+        LiveQuestionsByEventQueryVariables
+      >({
+        query: LiveQuestionsByEventDocument,
+        variables: { eventId: id as string }
+      });
+
+      const shouldReplace = (
+        subscriptionData.data?.questionsUpdated || []
+      ).filter(
+        question =>
+          !question.archived &&
+          (question.published ||
+            question.author?.id === userQueryResult.data?.me.id)
+      );
+      const deduplicated = R.without(
+        subscriptionData.data?.questionsUpdated || [],
+        questions?.liveQuestionsByEvent || []
+      );
+      const concat = R.concat(shouldReplace || [], deduplicated);
+
+      // update
+      client.writeQuery<
+        LiveQuestionsByEventQuery,
+        LiveQuestionsByEventQueryVariables
+      >({
+        query: LiveQuestionsByEventDocument,
+        variables: { eventId: id as string },
+        data: { liveQuestionsByEvent: concat }
+      });
+    }
   });
   useLiveQuestionRemovedSubscription({
     variables: { eventId: id as string },
@@ -117,11 +151,9 @@ const LiveQuestions: React.FC<Props> = ({
         query: LiveQuestionsByEventDocument,
         variables: { eventId: id as string },
         data: {
-          liveQuestionsByEvent: (questions?.liveQuestionsByEvent || []).filter(
-            questionItem =>
-              !(subscriptionData.data?.questionsRemoved || [])
-                .map(removedItem => removedItem.id)
-                .includes(questionItem.id)
+          liveQuestionsByEvent: R.without(
+            subscriptionData.data?.questionsRemoved || [],
+            questions?.liveQuestionsByEvent || []
           )
         }
       });

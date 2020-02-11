@@ -4,6 +4,7 @@ fragment LiveQuestionFields on Question {
   updatedAt
   content
   published
+  archived
   top
   voted
   voteCount

@@ -193,15 +193,10 @@ export const questionMutation = extendType({
         })
         const updateQuestions = [currentTopQuestion].concat(topQuestion)
 
-        if (published === true) {
+        if (published === true || archived === false) {
           ctx.pubsub.publish('QUESTION_ADDED', {
             eventId: findQuestion?.event.id,
             questionAdded: currentTopQuestion,
-          })
-        } else if (published === false) {
-          ctx.pubsub.publish('QUESTIONS_REMOVED', {
-            eventId: findQuestion?.event.id,
-            questionsRemoved: [currentTopQuestion],
           })
         } else {
           ctx.pubsub.publish('QUESTIONS_UPDATED', {
@@ -243,8 +238,16 @@ export const questionMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
+        const shouldDelete = await ctx.prisma.question.findMany({
+          where: { event: { id: eventId }, published: false },
+        })
         const { count } = await ctx.prisma.question.deleteMany({
           where: { event: { id: eventId }, published: false },
+        })
+
+        ctx.pubsub.publish('QUESTIONS_REMOVED', {
+          eventId,
+          questionsRemoved: shouldDelete,
         })
 
         return count
@@ -257,10 +260,22 @@ export const questionMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
+        const shouldUpdate = await ctx.prisma.question.findMany({
+          where: { event: { id: eventId }, published: false },
+        })
         const { count } = await ctx.prisma.question.updateMany({
           where: { event: { id: eventId }, published: false },
           data: { published: true },
         })
+
+        shouldUpdate
+          .map(question => ({ ...question, published: true }))
+          .forEach(question =>
+            ctx.pubsub.publish('QUESTION_ADDED', {
+              eventId,
+              questionAdded: question,
+            }),
+          )
 
         return count
       },
@@ -309,24 +324,21 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
       async (payload, args, ctx) => {
         const { id, roles } = ctx.connection.context as TokenPayload
         const role: RoleName = args.role
-        if (roles.includes(role)) {
+        if (payload.eventId === args.eventId && roles.includes(role)) {
           switch (role) {
             case 'ADMIN':
               const owner = await ctx.prisma.question
                 .findOne({ where: { id: payload.questionAdded.id } })
                 .event()
                 .owner()
-              return payload.eventId === args.eventId && id === owner.id
+              return id === owner.id
             case 'AUDIENCE':
               const author = await ctx.prisma.question
                 .findOne({ where: { id: payload.questionAdded.id } })
                 .author()
               return id === author.id || payload.questionAdded.published
             case 'WALL':
-              return (
-                payload.eventId === args.eventId &&
-                payload.questionAdded.published
-              )
+              return payload.questionAdded.published
             default:
               return false
           }
