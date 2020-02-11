@@ -118,9 +118,9 @@ export const eventQuery = extendType({
         const audienceId = getAuthedUser(ctx)?.id
         const audiences = await ctx.prisma.event
           .findOne({ where: { id: eventId } })
-          .audiences()
+          .audiences({ where: { id: audienceId } })
 
-        return Boolean(audiences.find(user => user.id === audienceId))
+        return Boolean(audiences.length)
       },
     })
   },

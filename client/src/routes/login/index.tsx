@@ -40,9 +40,12 @@ const Login: React.FC = () => {
   const history = useHistory();
   const { formatMessage } = useIntl();
   const { token, setToken } = useToken();
-  if (token) {
-    history.replace("/admin");
-  }
+
+  React.useEffect(() => {
+    if (token) {
+      history.replace("/admin");
+    }
+  });
 
   return (
     <Box className={classes.loginBox}>
@@ -74,7 +77,10 @@ const Login: React.FC = () => {
                 fullWidth
                 id="email"
                 name="email"
-                label={formatMessage({ id: "Email", defaultMessage: "Email" })}
+                label={formatMessage({
+                  id: "Email",
+                  defaultMessage: "Email"
+                })}
                 type="email"
                 margin="normal"
               />
@@ -82,7 +88,10 @@ const Login: React.FC = () => {
                 fullWidth
                 id="password"
                 name="password"
-                label={formatMessage({ id: "Password", defaultMessage: "Password" })}
+                label={formatMessage({
+                  id: "Password",
+                  defaultMessage: "Password"
+                })}
                 type="password"
                 margin="normal"
               />

@@ -45,35 +45,34 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const history = useHistory();
   let { id } = useParams();
+  const { token, setToken } = useToken();
   const { data, loading: eventForLoginLoading } = eventQuery;
   const [
     loginAudienceMutation,
     { loading: loginAudienceLoading }
   ] = useLoginAudienceMutation();
   const [
-    isEventAudienceLazyQuery,
-    { data: isEventAudienceData }
-  ] = useIsEventAudienceLazyQuery();
-  const [
     joinEventMutation,
     { loading: joinEventLoading }
   ] = useJoinEventMutation();
   const fingerprint = useFingerprint();
-  const { token, setToken } = useToken();
+  const [
+    isEventAudienceLazyQuery,
+    { data: isEventAudienceData, called }
+  ] = useIsEventAudienceLazyQuery();
 
   React.useEffect(() => {
-    (async () => {
-      if (token) {
+    if (!called && token) {
+      (async () => {
         await isEventAudienceLazyQuery({
           variables: { eventId: id as string }
         });
-        if (isEventAudienceData?.isEventAudience) {
-          history.replace(`/event/${id}/live/questions`);
-        }
-      }
-    })();
+      })();
+    } else if (isEventAudienceData?.isEventAudience) {
+      history.replace(`/event/${id}/live/questions`);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, isEventAudienceData]);
 
   const handleEventLogin = async () => {
     if (!token) {

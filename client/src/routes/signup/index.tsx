@@ -52,9 +52,12 @@ const Signup: React.FC = () => {
     { data: checkEmailData, loading: checkEmailLoading }
   ] = useCheckEmailExistLazyQuery();
   const { token } = useToken();
-  if (token) {
-    history.replace("/admin");
-  }
+
+  React.useEffect(() => {
+    if (token) {
+      history.replace("/admin");
+    }
+  });
 
   return (
     <Box className={classes.signupBox}>
