@@ -41,12 +41,19 @@ const httpLink = new HttpLink({
 const link = from([
   // TODO: apollo error handling, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
   onError(({ graphQLErrors, networkError }) => {
-    if (graphQLErrors)
+    if (graphQLErrors?.length) {
       graphQLErrors.map(({ message, locations, path }) =>
         console.warn(
           `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
         )
       );
+      switch (graphQLErrors[0].message) {
+        case "Not Authorised!":
+          window.location.href = "/unauthorized";
+          break;
+        default:
+      }
+    }
     if (networkError) console.warn(`[Network error]: ${networkError}`);
   }),
   authMiddleware,

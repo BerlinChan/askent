@@ -24,8 +24,8 @@ import {
 } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/react-common";
 import {
-  MeAudienceQuery,
-  MeAudienceQueryVariables,
+  MeQuery,
+  MeQueryVariables,
   useVoteQuestionMutation,
   LiveQuestionFieldsFragment,
   useUpdateQuestionMutation
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   question: LiveQuestionFieldsFragment;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -214,7 +214,7 @@ const QuestionItem: React.FC<Props> = ({
         <React.Fragment>
           <Typography className={classes.questionContent} variant="body1">
             {question.content}
-            {question.author?.id === userQueryResult.data?.meAudience.id &&
+            {question.author?.id === userQueryResult.data?.me.id &&
               !question.top && (
                 <IconButton
                   className={classes.moreButton}

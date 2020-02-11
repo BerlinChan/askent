@@ -47,8 +47,8 @@ export const PGP = objectType({
   },
 })
 
-export const UpdateAudienceInput = inputObjectType({
-  name: 'UpdateAudienceInput',
+export const UpdateUserInput = inputObjectType({
+  name: 'UpdateUserInput',
   definition(t) {
     t.string('name')
     t.string('email')
@@ -61,15 +61,6 @@ export const userQuery = extendType({
     t.field('me', {
       type: 'User',
       description: 'Query my user info.',
-      resolve: (root, args, ctx) => {
-        return ctx.prisma.user.findOne({
-          where: { id: getAuthedUser(ctx)?.id },
-        }) as Promise<UserType>
-      },
-    })
-    t.field('meAudience', {
-      type: 'User',
-      description: 'Query my audience user info.',
       resolve: (root, args, ctx) => {
         return ctx.prisma.user.findOne({
           where: { id: getAuthedUser(ctx)?.id },
@@ -182,9 +173,9 @@ export const userMutation = extendType({
         }
       },
     })
-    t.field('updateAudienceUser', {
+    t.field('updateUser', {
       type: 'User',
-      args: { input: arg({ type: 'UpdateAudienceInput', required: true }) },
+      args: { input: arg({ type: 'UpdateUserInput', required: true }) },
       resolve: (root, { input }, ctx) => {
         const userId = getAuthedUser(ctx)?.id
         return ctx.prisma.user.update({

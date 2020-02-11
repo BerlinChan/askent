@@ -7,7 +7,7 @@ import Layout from "../../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
 import {
   useLiveEventQuery,
-  useMeAudienceQuery,
+  useMeQuery,
   useLiveEventUpdatedSubscription
 } from "../../../generated/graphqlHooks";
 
@@ -18,7 +18,7 @@ const LiveQuestionsComponent = loadable(() => import("./questions"), {
 const Live: React.FC = () => {
   let { path } = useRouteMatch();
   let { id } = useParams();
-  const meAudienceQueryResult = useMeAudienceQuery();
+  const meQueryResult = useMeQuery();
   const liveEventQueryResult = useLiveEventQuery({
     variables: { eventId: id as string }
   });
@@ -34,7 +34,7 @@ const Live: React.FC = () => {
       <Layout
         header={
           <LiveEventHeader
-            userQueryResult={meAudienceQueryResult}
+            userQueryResult={meQueryResult}
             eventQueryResult={liveEventQueryResult}
           />
         }
@@ -42,7 +42,7 @@ const Live: React.FC = () => {
           <Switch>
             <PrivateRoute path={`${path}/questions`}>
               <LiveQuestionsComponent
-                userQueryResult={meAudienceQueryResult}
+                userQueryResult={meQueryResult}
                 eventQueryResult={liveEventQueryResult}
               />
             </PrivateRoute>

@@ -12,8 +12,8 @@ import {
 } from "@material-ui/core";
 import { QueryResult } from "@apollo/react-common";
 import {
-  MeAudienceQuery,
-  MeAudienceQueryVariables
+  MeQuery,
+  MeQueryVariables
 } from "../../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
@@ -42,13 +42,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
 }
 
 const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
   const classes = useStyles();
   const history = useHistory();
-  const { data: userData, client } = userQueryResult;
+  const { data: userData } = userQueryResult;
   const { removeToken } = useToken();
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
@@ -71,19 +71,19 @@ const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
     <React.Fragment>
       <Box className={classes.userInfo}>
         <Typography className={classes.name}>
-          {userData?.meAudience.name ? (
-            userData?.meAudience.name
+          {userData?.me.name ? (
+            userData?.me.name
           ) : (
             <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
           )}
         </Typography>
         <Typography className={classes.role}>
-          {userData?.meAudience.roles.map(role => role.name).join()}
+          {userData?.me.roles.map(role => role.name).join()}
         </Typography>
       </Box>
       <IconButton size="small" onClick={handleMenuOpen}>
         <Avatar
-          alt={userData?.meAudience.name as string}
+          alt={userData?.me.name as string}
           src="/broken-image.jpg"
         />
       </IconButton>
@@ -131,7 +131,6 @@ const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
         <MenuItem
           onClick={() => {
             removeToken();
-            client.resetStore();
             history.replace("/");
             handleMenuClose();
           }}

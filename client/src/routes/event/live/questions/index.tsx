@@ -8,8 +8,8 @@ import QuestionForm from "./QuestionForm";
 import { SubTabs, SubTab } from "../../../../components/Tabs";
 import { QueryResult } from "@apollo/react-common";
 import {
-  MeAudienceQuery,
-  MeAudienceQueryVariables,
+  MeQuery,
+  MeQueryVariables,
   LiveEventQuery,
   LiveEventQueryVariables,
   LiveQuestionsByEventQuery,
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
 }
 

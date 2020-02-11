@@ -10,8 +10,8 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/react-common";
 import {
-  MeAudienceQuery,
-  MeAudienceQueryVariables,
+  MeQuery,
+  MeQueryVariables,
   LiveQuestionsByEventQuery,
   LiveQuestionsByEventQueryVariables,
   QuestionsByMeAudienceQuery,
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   liveQuestionsResult?: QueryResult<
     LiveQuestionsByEventQuery,
     LiveQuestionsByEventQueryVariables

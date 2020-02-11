@@ -17,9 +17,8 @@ export const isAuthedAudience = rule({ cache: 'contextual' })(
 export default {
   Query: {
     me: isAuthedAdmin,
-    meAudience: or(isAuthedAdmin, isAuthedAudience),
   },
   Mutation: {
-    updateAudienceUser: isAuthedAudience,
+    updateUser: or(isAuthedAudience, isAuthedAdmin),
   },
 }

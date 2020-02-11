@@ -14,14 +14,8 @@ query Me {
   }
 }
 
-query MeAudience {
-  meAudience {
-    ...UserInfo
-  }
-}
-
-mutation UpdateAudienceUser($input: UpdateAudienceInput!) {
-  updateAudienceUser(input: $input) {
+mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input) {
     ...UserInfo
   }
 }
