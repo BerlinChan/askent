@@ -8,8 +8,8 @@ import {
   booleanArg,
   subscriptionField,
 } from 'nexus'
-import { Question as QuestionType, User } from '@prisma/client'
-import { getAuthedUser } from '../utils'
+import { Question as QuestionType, User, RoleName } from '@prisma/client'
+import { getAuthedUser, TokenPayload } from '../utils'
 import { withFilter } from 'apollo-server-express'
 import { Context } from '../context'
 
@@ -224,20 +224,16 @@ export const questionMutation = extendType({
           where: { id: questionId },
           include: { event: true },
         })
-        if (!findQuestion) {
-          throw new Error(ERROR_MESSAGE.noQuestionId(questionId))
-        }
-
-        const response = await ctx.prisma.question.delete({
+        const delQuestion = await ctx.prisma.question.delete({
           where: { id: questionId },
         })
 
         ctx.pubsub.publish('QUESTIONS_REMOVED', {
           eventId: findQuestion?.event.id,
-          questionsRemoved: [response],
+          questionsRemoved: [delQuestion],
         })
 
-        return response
+        return delQuestion
       },
     })
     t.field('deleteAllUnpublishedQuestions', {
@@ -304,33 +300,38 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
   'questionAdded',
   {
     type: 'Question',
-    args: { eventId: idArg({ required: true }) },
+    args: {
+      eventId: idArg({ required: true }),
+      role: arg({ type: 'RoleName', required: true }),
+    },
     subscribe: withFilter(
       (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_ADDED']),
       async (payload, args, ctx) => {
-        // return payload.eventId === args.eventId
-
-        switch (ctx.connection.context.role) {
-          case 'Admin':
-            console.log('admin', ctx.connection.context)
-            return payload.eventId === args.eventId
-          case 'Audience':
-            const author = await ctx.prisma.question
-              .findOne({ where: { id: payload.questionAdded.id } })
-              .author()
-            //BUG: login as Admin and Audience in same browser will see all unpublished questions
-            console.log(
-              'Audience',
-              ctx.connection.context.userId === author.id,
-              payload.questionAdded.published,
-            )
-
-            return (
-              ctx.connection.context.userId === author.id ||
-              payload.questionAdded.published
-            )
-          default:
-            return false
+        const { id, roles } = ctx.connection.context as TokenPayload
+        const role: RoleName = args.role
+        if (roles.includes(role)) {
+          switch (role) {
+            case 'ADMIN':
+              const owner = await ctx.prisma.question
+                .findOne({ where: { id: payload.questionAdded.id } })
+                .event()
+                .owner()
+              return payload.eventId === args.eventId && id === owner.id
+            case 'AUDIENCE':
+              const author = await ctx.prisma.question
+                .findOne({ where: { id: payload.questionAdded.id } })
+                .author()
+              return id === author.id || payload.questionAdded.published
+            case 'WALL':
+              return (
+                payload.eventId === args.eventId &&
+                payload.questionAdded.published
+              )
+            default:
+              return false
+          }
+        } else {
+          return false
         }
       },
     ),

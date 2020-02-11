@@ -55,7 +55,7 @@ model Event {
 model Question {
   id         String   @default(cuid()) @id
   event      Event
-  author     User
+  author     User?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   content    String

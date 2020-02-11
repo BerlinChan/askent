@@ -2,7 +2,7 @@ import { sign, verify } from 'jsonwebtoken'
 import { Context } from './context'
 import { RoleName } from '@prisma/client'
 
-interface TokenPayload {
+export interface TokenPayload {
   id: string
   roles: Array<RoleName>
   iat?: number
@@ -19,7 +19,7 @@ export function getAuthedUser(
   if (typeof context === 'string') {
     token = context
   } else if (typeof context === 'object') {
-    token = context.req.headers.authorization as string
+    token = context.req?.headers.authorization as string
   }
   if (token) {
     const verifiedToken = verify(

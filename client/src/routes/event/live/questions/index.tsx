@@ -18,7 +18,8 @@ import {
   useLiveQuestionAddedSubscription,
   useLiveQuestionUpdatedSubscription,
   useLiveQuestionRemovedSubscription,
-  LiveQuestionsByEventDocument
+  LiveQuestionsByEventDocument,
+  RoleName
 } from "../../../../generated/graphqlHooks";
 import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
@@ -63,7 +64,7 @@ const LiveQuestions: React.FC<Props> = ({
 
   // subscriptions
   useLiveQuestionAddedSubscription({
-    variables: { eventId: id as string },
+    variables: { eventId: id as string, role: RoleName.Audience },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const questions = client.readQuery<
         LiveQuestionsByEventQuery,
@@ -84,7 +85,12 @@ const LiveQuestions: React.FC<Props> = ({
           liveQuestionsByEvent: (subscriptionData.data?.questionAdded
             ? [subscriptionData.data?.questionAdded]
             : []
-          ).concat(questions?.liveQuestionsByEvent || [])
+          ).concat(
+            (questions?.liveQuestionsByEvent || []).filter(
+              question =>
+                question.id !== subscriptionData.data?.questionAdded.id
+            )
+          )
         }
       });
     }

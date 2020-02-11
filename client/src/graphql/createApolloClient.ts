@@ -47,12 +47,12 @@ const link = from([
           `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
         )
       );
-      switch (graphQLErrors[0].message) {
-        case "Not Authorised!":
-          window.location.href = "/unauthorized";
-          break;
-        default:
-      }
+      // switch (graphQLErrors[0].message) {
+      //   case "Not Authorised!":
+      //     window.location.href = "/unauthorized";
+      //     break;
+      //   default:
+      // }
     }
     if (networkError) console.warn(`[Network error]: ${networkError}`);
   }),

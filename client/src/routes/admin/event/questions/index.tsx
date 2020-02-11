@@ -23,7 +23,8 @@ import {
   AdminEventQueryVariables,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
-  QuestionsByEventDocument
+  QuestionsByEventDocument,
+  RoleName
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
@@ -85,7 +86,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
 
   // subscriptions
   useQuestionAddedSubscription({
-    variables: { eventId: id as string },
+    variables: { eventId: id as string, role: RoleName.Admin },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const questions = client.readQuery<
         QuestionsByEventQuery,
@@ -103,7 +104,12 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           questionsByEvent: (subscriptionData.data?.questionAdded
             ? [subscriptionData.data?.questionAdded]
             : []
-          ).concat(questions?.questionsByEvent || [])
+          ).concat(
+            (questions?.questionsByEvent || []).filter(
+              question =>
+                question.id !== subscriptionData.data?.questionAdded.id
+            )
+          )
         }
       });
     }
