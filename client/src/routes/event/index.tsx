@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import Loading from "../../components/Loading";
 import loadable from "@loadable/component";
-import { AudienceRoute } from "../../components/Route";
+import PrivateRoute from "../../components/PrivateRoute";
 import { useEventForLoginQuery } from "../../generated/graphqlHooks";
 
 const EventLoginComponent = loadable(() => import("./login"), {
@@ -35,9 +35,9 @@ const Event: React.FC = () => {
         <EventLoginComponent eventQuery={eventForLoginQuery} />
       </Route>
 
-      <AudienceRoute path={`${path}/live`}>
+      <PrivateRoute path={`${path}/live`}>
         <LiveComponent />
-      </AudienceRoute>
+      </PrivateRoute>
       <Route path={`${path}/wall`} component={WallComponent} />
     </Switch>
   );

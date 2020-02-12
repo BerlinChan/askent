@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import EventRules from './Event'
 import UserRules from './User'
 import QuestionRules from './Question'

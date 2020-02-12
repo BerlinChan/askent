@@ -25,10 +25,10 @@ import {
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import { QueryResult } from "@apollo/react-common";
 import {
-  MeAudienceQuery,
-  MeAudienceQueryVariables,
+  MeQuery,
+  MeQueryVariables,
   useCreateQuestionMutation,
-  useUpdateAudienceUserMutation
+  useUpdateUserMutation
 } from "../../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
 }
 
 const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
@@ -82,7 +82,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
   const [
     updateAudienceUserMutation,
     { loading: updateUserLoading }
-  ] = useUpdateAudienceUserMutation();
+  ] = useUpdateUserMutation();
 
   const handleClickAway = () => {
     setExpanded(false);
@@ -101,7 +101,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
         name: Yup.string().max(USERNAME_MAX_LENGTH)
       })}
       onSubmit={async (values, formikBag) => {
-        if (values.name !== userQueryResult.data?.meAudience.name) {
+        if (values.name !== userQueryResult.data?.me.name) {
           await updateAudienceUserMutation({
             variables: { input: { name: values.name } }
           });
@@ -141,7 +141,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                       if (!expanded && !formProps.touched.name) {
                         formProps.setFieldValue(
                           "name",
-                          userQueryResult.data?.meAudience.name || ""
+                          userQueryResult.data?.me.name || ""
                         );
                       }
                       setExpanded(true);

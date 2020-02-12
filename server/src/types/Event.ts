@@ -7,7 +7,7 @@ import {
   idArg,
   booleanArg,
 } from 'nexus'
-import { getAdminUserId, getAudienceUserId } from '../utils'
+import { getAuthedUser } from '../utils'
 import { Context } from '../context'
 import { Event as EventType } from '@prisma/client'
 import { withFilter } from 'apollo-server-express'
@@ -29,7 +29,7 @@ export const Event = objectType({
 
     t.int('liveQuestionCount', {
       resolve: async (root, args, ctx) => {
-        const userId = getAudienceUserId(ctx)
+        const userId = getAuthedUser(ctx)?.id
         const questionsForLive = await ctx.prisma.question.findMany({
           where: {
             event: { id: root.id },
@@ -77,7 +77,7 @@ export const eventQuery = extendType({
       description: 'Get all my events.',
       args: { searchString: stringArg() },
       resolve: async (root, args, ctx) => {
-        const userId = getAdminUserId(ctx)
+        const userId = getAuthedUser(ctx)?.id
         return ctx.prisma.event.findMany({
           where: {
             owner: { id: userId },
@@ -115,12 +115,12 @@ export const eventQuery = extendType({
       type: 'Boolean',
       args: { eventId: idArg({ required: true }) },
       resolve: async (root, { eventId }, ctx) => {
-        const audienceId = getAudienceUserId(ctx)
+        const audienceId = getAuthedUser(ctx)?.id
         const audiences = await ctx.prisma.event
           .findOne({ where: { id: eventId } })
-          .audiences()
+          .audiences({ where: { id: audienceId } })
 
-        return Boolean(audiences.find(user => user.id === audienceId))
+        return Boolean(audiences.length)
       },
     })
   },
@@ -141,7 +141,7 @@ export const eventMutation = extendType({
         if (await checkEventCodeExist(ctx, code)) {
           throw new Error(`Code "${code}" has already exist.`)
         }
-        const userId = getAdminUserId(ctx)
+        const userId = getAuthedUser(ctx)?.id
         return ctx.prisma.event.create({
           data: {
             owner: { connect: { id: userId } },
@@ -217,7 +217,7 @@ export const eventMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
-        const userId = getAudienceUserId(ctx)
+        const userId = getAuthedUser(ctx)?.id
         const updateEvent = await ctx.prisma.event.update({
           where: { id: eventId },
           data: { audiences: { connect: { id: userId } } },

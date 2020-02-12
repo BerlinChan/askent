@@ -5,19 +5,19 @@ import { useToken } from "../../hooks";
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-export const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
+const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
   const { token } = useToken();
 
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        token.authToken ? (
+        token ? (
           children
         ) : (
           <Redirect
             to={{
-              pathname: "/login",
+              pathname: "/unauthorized",
               state: { from: location }
             }}
           />
@@ -26,3 +26,5 @@ export const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
     />
   );
 };
+
+export default PrivateRoute;

@@ -17,14 +17,14 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { QueryResult } from "@apollo/react-common";
 import {
-  MeAudienceQuery,
-  MeAudienceQueryVariables
+  MeQuery,
+  MeQueryVariables
 } from "../../../generated/graphqlHooks";
 import { FormattedMessage, useIntl } from "react-intl";
 import PersonIcon from "@material-ui/icons/Person";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import { USERNAME_MAX_LENGTH, EMAIL_MAX_LENGTH } from "../../../constant";
-import { useUpdateAudienceUserMutation } from "../../../generated/graphqlHooks";
+import { useUpdateUserMutation } from "../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   open: boolean;
   onClose: () => void;
 }
@@ -55,7 +55,7 @@ const MyProfileDialog: React.FC<Props> = ({
   const [
     updateAudienceUserMutation,
     { loading: updateProfileLoading }
-  ] = useUpdateAudienceUserMutation();
+  ] = useUpdateUserMutation();
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -64,8 +64,8 @@ const MyProfileDialog: React.FC<Props> = ({
       </DialogTitle>
       <Formik
         initialValues={{
-          name: userData?.meAudience.name || "",
-          email: userData?.meAudience.email || ""
+          name: userData?.me.name || "",
+          email: userData?.me.email || ""
         }}
         validationSchema={Yup.object({
           name: Yup.string().max(USERNAME_MAX_LENGTH),

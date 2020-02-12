@@ -4,6 +4,7 @@ fragment LiveQuestionFields on Question {
   updatedAt
   content
   published
+  archived
   top
   voted
   voteCount
@@ -37,8 +38,8 @@ mutation VoteQuestion($questionId: ID!) {
   }
 }
 
-subscription LiveQuestionAdded($eventId: ID!) {
-  questionAdded(eventId: $eventId) {
+subscription LiveQuestionAdded($eventId: ID!, $role: RoleName!) {
+  questionAdded(eventId: $eventId, role: $role) {
     ...LiveQuestionFields
   }
 }

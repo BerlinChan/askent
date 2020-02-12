@@ -9,15 +9,15 @@ import {
 } from "@material-ui/core";
 import { QueryResult } from "@apollo/react-common";
 import {
-  MeAudienceQuery,
-  MeAudienceQueryVariables
+  MeQuery,
+  MeQueryVariables
 } from "../../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import { useQuestionsByMeAudienceQuery } from "../../../generated/graphqlHooks";
 import QuestionList from "./questions/QuestionList";
 
 interface Props {
-  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   open: boolean;
   onClose: () => void;
 }

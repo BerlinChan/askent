@@ -55,7 +55,9 @@ export const AuthedAction: React.FC = () => {
     <React.Fragment>
       <Box className={classes.userInfo}>
         <Typography className={classes.email}>{userData?.me.email}</Typography>
-        <Typography className={classes.role}>{userData?.me.role}</Typography>
+        <Typography className={classes.role}>
+          {userData?.me.roles.map(role => role.name).join()}
+        </Typography>
       </Box>
       <IconButton size="small" onClick={handleMenuOpen}>
         <Avatar alt={userData?.me.name as string} src="/broken-image.jpg" />
@@ -88,7 +90,7 @@ export const AuthedAction: React.FC = () => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            removeToken("authToken");
+            removeToken();
             history.replace("/");
             handleMenuClose();
           }}

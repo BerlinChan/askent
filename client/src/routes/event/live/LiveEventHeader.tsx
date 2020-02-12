@@ -17,8 +17,8 @@ import {
 import { RouteTabs } from "../../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
 import {
-  MeAudienceQuery,
-  MeAudienceQueryVariables,
+  MeQuery,
+  MeQueryVariables,
   LiveEventQuery,
   LiveEventQueryVariables
 } from "../../../generated/graphqlHooks";
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
 }
 

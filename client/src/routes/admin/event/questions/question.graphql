@@ -51,8 +51,8 @@ mutation UpdateQuestion($input: UpdateQuestionInputType!) {
   }
 }
 
-subscription QuestionAdded($eventId: ID!) {
-  questionAdded(eventId: $eventId) {
+subscription QuestionAdded($eventId: ID!, $role: RoleName!) {
+  questionAdded(eventId: $eventId, role: $role) {
     ...QuestionFields
   }
 }

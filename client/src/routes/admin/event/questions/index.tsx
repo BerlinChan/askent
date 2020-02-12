@@ -1,4 +1,5 @@
 import React from "react";
+import * as R from "ramda";
 import { useParams } from "react-router-dom";
 import {
   Grid,
@@ -23,7 +24,8 @@ import {
   AdminEventQueryVariables,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
-  QuestionsByEventDocument
+  QuestionsByEventDocument,
+  RoleName
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
@@ -85,7 +87,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
 
   // subscriptions
   useQuestionAddedSubscription({
-    variables: { eventId: id as string },
+    variables: { eventId: id as string, role: RoleName.Admin },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const questions = client.readQuery<
         QuestionsByEventQuery,
@@ -103,7 +105,12 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           questionsByEvent: (subscriptionData.data?.questionAdded
             ? [subscriptionData.data?.questionAdded]
             : []
-          ).concat(questions?.questionsByEvent || [])
+          ).concat(
+            (questions?.questionsByEvent || []).filter(
+              question =>
+                question.id !== subscriptionData.data?.questionAdded.id
+            )
+          )
         }
       });
     }
@@ -127,11 +134,9 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         query: QuestionsByEventDocument,
         variables: { eventId: id as string },
         data: {
-          questionsByEvent: (questions?.questionsByEvent || []).filter(
-            questionItem =>
-              !(subscriptionData.data?.questionsRemoved || [])
-                .map(removedItem => removedItem.id)
-                .includes(questionItem.id)
+          questionsByEvent: R.without(
+            subscriptionData.data?.questionsRemoved || [],
+            questions?.questionsByEvent || []
           )
         }
       });

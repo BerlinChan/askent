@@ -8,7 +8,7 @@ import { HttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { resolvers, typeDefs } from "./resolvers";
 import config from "../config";
-import { AUTH_TOKEN, AUDIENCE_AUTH_TOKEN } from "../constant";
+import { AUTH_TOKEN } from "../constant";
 
 // TODO: refactor to createChache, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
 const cache = new InMemoryCache();
@@ -17,29 +17,43 @@ const authMiddleware = setContext((operation, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: localStorage.getItem(AUTH_TOKEN) || "",
-      AuthorizationAudience: localStorage.getItem(AUDIENCE_AUTH_TOKEN) || ""
+      Authorization: localStorage.getItem(AUTH_TOKEN) || ""
     }
   };
 });
+
+type ConnectionParamsType = {
+  Authorization?: string;
+};
 const wsLink = new WebSocketLink({
   uri: config.webSocketUri,
   options: {
-    reconnect: true
+    reconnect: true,
+    connectionParams: {
+      Authorization: localStorage.getItem(AUTH_TOKEN) || ""
+    } as ConnectionParamsType
   }
 });
+
 const httpLink = new HttpLink({
   uri: config.apiUri
 });
 const link = from([
   // TODO: apollo error handling, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
   onError(({ graphQLErrors, networkError }) => {
-    if (graphQLErrors)
+    if (graphQLErrors?.length) {
       graphQLErrors.map(({ message, locations, path }) =>
         console.warn(
           `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
         )
       );
+      // switch (graphQLErrors[0].message) {
+      //   case "Not Authorised!":
+      //     window.location.href = "/unauthorized";
+      //     break;
+      //   default:
+      // }
+    }
     if (networkError) console.warn(`[Network error]: ${networkError}`);
   }),
   authMiddleware,

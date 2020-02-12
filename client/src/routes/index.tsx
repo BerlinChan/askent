@@ -1,10 +1,9 @@
 import React from "react";
 import loadable from "@loadable/component";
-import { PrivateRoute } from "../components/Route";
+import PrivateRoute from "../components/PrivateRoute";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../components/Loading";
 import Providers from "../components/Providers";
-import { useToken } from "../hooks";
 
 const HomeComponent = loadable(() => import("./home"), {
   fallback: <Loading />
@@ -35,19 +34,13 @@ const Error404Component = loadable(() => import("./error/404"), {
 });
 
 const Router = () => {
-  const { token } = useToken();
-
   return (
     <Providers>
       <BrowserRouter>
         <Switch>
           <Route exact path="/" component={HomeComponent} />
-          <Route path="/login">
-            {token.authToken ? <Redirect to="/admin" /> : <LoginComponent />}
-          </Route>
-          <Route path="/signup">
-            {token.authToken ? <Redirect to="/admin" /> : <SignupComponent />}
-          </Route>
+          <Route path="/login" component={LoginComponent} />
+          <Route path="/signup" component={SignupComponent} />
 
           <Redirect exact path="/admin" to="/admin/events" />
           <PrivateRoute path="/admin">

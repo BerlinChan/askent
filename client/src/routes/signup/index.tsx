@@ -1,5 +1,11 @@
 import React from "react";
-import { Box, Card, CardActions, CardContent } from "@material-ui/core";
+import {
+  Box,
+  Typography,
+  Card,
+  CardActions,
+  CardContent
+} from "@material-ui/core";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -10,23 +16,24 @@ import {
 import { ButtonLoading } from "../../components/Form";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { TextField } from "formik-material-ui";
 import {
   USERNAME_MAX_LENGTH,
   EMAIL_MAX_LENGTH,
   PASSWORD_MAX_LENGTH
 } from "../../constant";
+import { useToken } from "../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     signupBox: {
-      display: "flex",
-      justifyContent: "center",
-      marginTop: theme.spacing(4)
+      textAlign: "center"
     },
     form: {
-      width: 475
+      width: 475,
+      marginLeft: "auto",
+      marginRight: "auto"
     },
     card: {
       padding: theme.spacing(2)
@@ -38,14 +45,25 @@ const Signup: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const { enqueueSnackbar } = useSnackbar();
+  const { formatMessage } = useIntl();
   const [signupMutation, { loading }] = useSignupMutation();
   const [
     checkEmailExistLazyQuery,
     { data: checkEmailData, loading: checkEmailLoading }
   ] = useCheckEmailExistLazyQuery();
+  const { token } = useToken();
+
+  React.useEffect(() => {
+    if (token) {
+      history.replace("/admin");
+    }
+  });
 
   return (
     <Box className={classes.signupBox}>
+      <Typography variant="h4" gutterBottom>
+        <FormattedMessage id="Sign_up" defaultMessage="Sign up" />
+      </Typography>
       <Formik
         initialValues={{
           name: "",
@@ -127,7 +145,10 @@ const Signup: React.FC = () => {
                 id="name"
                 name="name"
                 fullWidth
-                label="User Name"
+                label={formatMessage({
+                  id: "User_name",
+                  defaultMessage: "User name"
+                })}
                 margin="normal"
                 disabled={loading}
               />
@@ -135,7 +156,7 @@ const Signup: React.FC = () => {
                 id="email"
                 name="email"
                 fullWidth
-                label="Email"
+                label={formatMessage({ id: "Email", defaultMessage: "Email" })}
                 type="email"
                 margin="normal"
                 disabled={loading}
@@ -144,7 +165,10 @@ const Signup: React.FC = () => {
                 id="password"
                 name="password"
                 fullWidth
-                label="Password"
+                label={formatMessage({
+                  id: "Password",
+                  defaultMessage: "Password"
+                })}
                 type="password"
                 margin="normal"
                 disabled={loading}
@@ -153,7 +177,10 @@ const Signup: React.FC = () => {
                 id="repeatPassword"
                 name="repeatPassword"
                 fullWidth
-                label="Password repeat"
+                label={formatMessage({
+                  id: "Password_repeat",
+                  defaultMessage: "Password repeat"
+                })}
                 type="password"
                 margin="normal"
                 disabled={loading}
@@ -169,7 +196,7 @@ const Signup: React.FC = () => {
               >
                 <FormattedMessage
                   id="CREATE_ACCOUNT"
-                  defaultMessage="创建账号"
+                  defaultMessage="Create account"
                 />
               </ButtonLoading>
             </CardActions>

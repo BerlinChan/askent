@@ -1,15 +1,15 @@
 import React from "react";
+import * as R from "ramda";
 import { useParams } from "react-router-dom";
 import { Box, Typography, Container, Paper } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
-import { compareAsc } from "date-fns";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
 import { SubTabs, SubTab } from "../../../../components/Tabs";
 import { QueryResult } from "@apollo/react-common";
 import {
-  MeAudienceQuery,
-  MeAudienceQueryVariables,
+  MeQuery,
+  MeQueryVariables,
   LiveEventQuery,
   LiveEventQueryVariables,
   LiveQuestionsByEventQuery,
@@ -18,7 +18,8 @@ import {
   useLiveQuestionAddedSubscription,
   useLiveQuestionUpdatedSubscription,
   useLiveQuestionRemovedSubscription,
-  LiveQuestionsByEventDocument
+  LiveQuestionsByEventDocument,
+  RoleName
 } from "../../../../generated/graphqlHooks";
 import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
@@ -45,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  userQueryResult: QueryResult<MeAudienceQuery, MeAudienceQueryVariables>;
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
 }
 
@@ -63,7 +64,7 @@ const LiveQuestions: React.FC<Props> = ({
 
   // subscriptions
   useLiveQuestionAddedSubscription({
-    variables: { eventId: id as string },
+    variables: { eventId: id as string, role: RoleName.Audience },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const questions = client.readQuery<
         LiveQuestionsByEventQuery,
@@ -84,13 +85,51 @@ const LiveQuestions: React.FC<Props> = ({
           liveQuestionsByEvent: (subscriptionData.data?.questionAdded
             ? [subscriptionData.data?.questionAdded]
             : []
-          ).concat(questions?.liveQuestionsByEvent || [])
+          ).concat(
+            (questions?.liveQuestionsByEvent || []).filter(
+              question =>
+                question.id !== subscriptionData.data?.questionAdded.id
+            )
+          )
         }
       });
     }
   });
   useLiveQuestionUpdatedSubscription({
-    variables: { eventId: id as string }
+    variables: { eventId: id as string },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const questions = client.readQuery<
+        LiveQuestionsByEventQuery,
+        LiveQuestionsByEventQueryVariables
+      >({
+        query: LiveQuestionsByEventDocument,
+        variables: { eventId: id as string }
+      });
+
+      const shouldReplace = (
+        subscriptionData.data?.questionsUpdated || []
+      ).filter(
+        question =>
+          !question.archived &&
+          (question.published ||
+            question.author?.id === userQueryResult.data?.me.id)
+      );
+      const deduplicated = R.without(
+        subscriptionData.data?.questionsUpdated || [],
+        questions?.liveQuestionsByEvent || []
+      );
+      const concat = R.concat(shouldReplace || [], deduplicated);
+
+      // update
+      client.writeQuery<
+        LiveQuestionsByEventQuery,
+        LiveQuestionsByEventQueryVariables
+      >({
+        query: LiveQuestionsByEventDocument,
+        variables: { eventId: id as string },
+        data: { liveQuestionsByEvent: concat }
+      });
+    }
   });
   useLiveQuestionRemovedSubscription({
     variables: { eventId: id as string },
@@ -111,11 +150,9 @@ const LiveQuestions: React.FC<Props> = ({
         query: LiveQuestionsByEventDocument,
         variables: { eventId: id as string },
         data: {
-          liveQuestionsByEvent: (questions?.liveQuestionsByEvent || []).filter(
-            questionItem =>
-              !(subscriptionData.data?.questionsRemoved || [])
-                .map(removedItem => removedItem.id)
-                .includes(questionItem.id)
+          liveQuestionsByEvent: R.without(
+            subscriptionData.data?.questionsRemoved || [],
+            questions?.liveQuestionsByEvent || []
           )
         }
       });
@@ -165,16 +202,13 @@ const LiveQuestions: React.FC<Props> = ({
         <QuestionList
           userQueryResult={userQueryResult}
           liveQuestionsResult={liveQuestionsResult}
-          sort={(a, b) => {
-            switch (tabIndex) {
-              case 0:
-                return b.voteCount - a.voteCount;
-              case 1:
-                return compareAsc(new Date(b.createdAt), new Date(a.createdAt));
-              default:
-                return 1;
-            }
-          }}
+          comparator={
+            tabIndex === 0
+              ? [R.descend(R.prop("voteCount"))]
+              : tabIndex === 1
+              ? [R.descend(R.prop("createdAt"))]
+              : undefined
+          }
         />
       </Paper>
       <Box className={classes.bottomLogoBox}>
