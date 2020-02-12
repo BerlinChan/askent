@@ -3,7 +3,6 @@ import * as R from "ramda";
 import { useParams } from "react-router-dom";
 import { Box, Typography, Container, Paper } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
-import { compareAsc } from "date-fns";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
 import { SubTabs, SubTab } from "../../../../components/Tabs";
@@ -203,16 +202,13 @@ const LiveQuestions: React.FC<Props> = ({
         <QuestionList
           userQueryResult={userQueryResult}
           liveQuestionsResult={liveQuestionsResult}
-          sort={(a, b) => {
-            switch (tabIndex) {
-              case 0:
-                return b.voteCount - a.voteCount;
-              case 1:
-                return compareAsc(new Date(b.createdAt), new Date(a.createdAt));
-              default:
-                return 1;
-            }
-          }}
+          comparator={
+            tabIndex === 0
+              ? [R.descend(R.prop("voteCount"))]
+              : tabIndex === 1
+              ? [R.descend(R.prop("createdAt"))]
+              : undefined
+          }
         />
       </Paper>
       <Box className={classes.bottomLogoBox}>

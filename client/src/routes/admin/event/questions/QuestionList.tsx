@@ -1,4 +1,5 @@
 import React from "react";
+import * as R from "ramda";
 import {
   List,
   ListItemIcon,
@@ -15,7 +16,8 @@ import {
   QuestionsByEventQueryVariables,
   AdminEventQuery,
   AdminEventQueryVariables,
-  useDeleteQuestionMutation
+  useDeleteQuestionMutation,
+  QuestionFieldsFragment
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
@@ -97,8 +99,9 @@ const QuestionList: React.FC<Props> = ({
   return (
     <React.Fragment>
       <List className={classes.list} disablePadding>
-        {data?.questionsByEvent
-          .sort((a, b) => (b.top ? 1 : -1))
+        {R.sortWith([R.descend<QuestionFieldsFragment>(R.prop("top"))])(
+          data?.questionsByEvent || []
+        )
           .filter(filter)
           .map((item, index) => (
             <QuestionItem

@@ -1,4 +1,5 @@
 import React from "react";
+import * as R from "ramda";
 import {
   List,
   ListItemIcon,
@@ -40,17 +41,14 @@ interface Props {
     QuestionsByMeAudienceQuery,
     QuestionsByMeAudienceQueryVariables
   >;
-  sort?: (
-    a: LiveQuestionFieldsFragment,
-    b: LiveQuestionFieldsFragment
-  ) => number;
+  comparator?: R.Comparator<LiveQuestionFieldsFragment, number>[];
 }
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
   liveQuestionsResult,
   myQuestionsResult,
-  sort
+  comparator = []
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -104,24 +102,24 @@ const QuestionList: React.FC<Props> = ({
   return (
     <React.Fragment>
       <List className={classes.list} disablePadding>
-        {(
-          (liveQuestionsResult
-            ? liveQuestionsResult?.data?.liveQuestionsByEvent
-            : myQuestionsResult?.data?.questionsByMeAudience) || []
-        )
-          .sort(sort)
-          .sort((a, b) => (b.top ? 1 : -1))
-          .map((item, index) => (
-            <QuestionItem
-              key={index}
-              question={item}
-              userQueryResult={userQueryResult}
-              handleMoreClick={handleMoreClick}
-              editContent={editContentIds.includes(item.id)}
-              handleEditContentToggle={handleEditContentToggle}
-              editContentInputRef={editContentInputRef}
-            />
-          ))}
+        {R.sortWith<LiveQuestionFieldsFragment>([
+          R.descend(R.prop("top")),
+          ...comparator
+        ])(
+          liveQuestionsResult?.data?.liveQuestionsByEvent ||
+            myQuestionsResult?.data?.questionsByMeAudience ||
+            []
+        ).map((item, index) => (
+          <QuestionItem
+            key={index}
+            question={item}
+            userQueryResult={userQueryResult}
+            handleMoreClick={handleMoreClick}
+            editContent={editContentIds.includes(item.id)}
+            handleEditContentToggle={handleEditContentToggle}
+            editContentInputRef={editContentInputRef}
+          />
+        ))}
       </List>
 
       <Menu
