@@ -214,16 +214,15 @@ const QuestionItem: React.FC<Props> = ({
         <React.Fragment>
           <Typography className={classes.questionContent} variant="body1">
             {question.content}
-            {question.author?.id === userQueryResult.data?.me.id &&
-              !question.top && (
-                <IconButton
-                  className={classes.moreButton}
-                  size="small"
-                  onClick={e => handleMoreClick(e, question.id)}
-                >
-                  <MoreHorizIcon fontSize="inherit" />
-                </IconButton>
-              )}
+            {question.author?.id === userQueryResult.data?.me.id && (
+              <IconButton
+                className={classes.moreButton}
+                size="small"
+                onClick={e => handleMoreClick(e, question.id)}
+              >
+                <MoreHorizIcon fontSize="inherit" />
+              </IconButton>
+            )}
           </Typography>
           <Box className={classes.questionActionBox}>
             {!question.published && (

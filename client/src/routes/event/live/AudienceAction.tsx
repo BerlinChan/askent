@@ -13,7 +13,9 @@ import {
 import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
-  MeQueryVariables
+  MeQueryVariables,
+  LiveEventQuery,
+  LiveEventQueryVariables
 } from "../../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
@@ -43,9 +45,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
+  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
 }
 
-const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
+const AudienceAction: React.FC<Props> = ({
+  userQueryResult,
+  eventQueryResult
+}) => {
   const classes = useStyles();
   const history = useHistory();
   const { data: userData } = userQueryResult;
@@ -82,10 +88,7 @@ const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
         </Typography>
       </Box>
       <IconButton size="small" onClick={handleMenuOpen}>
-        <Avatar
-          alt={userData?.me.name as string}
-          src="/broken-image.jpg"
-        />
+        <Avatar alt={userData?.me.name as string} src="/broken-image.jpg" />
       </IconButton>
 
       <Menu
@@ -148,6 +151,7 @@ const AudienceAction: React.FC<Props> = ({ userQueryResult }) => {
       />
       <MyQuestionsDialog
         userQueryResult={userQueryResult}
+        eventQueryResult={eventQueryResult}
         open={myQuestionsDialogOpen}
         onClose={() => setMyQuestionsDialogOpen(false)}
       />

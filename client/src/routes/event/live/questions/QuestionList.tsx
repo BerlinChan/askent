@@ -13,6 +13,8 @@ import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
   MeQueryVariables,
+  LiveEventQuery,
+  LiveEventQueryVariables,
   LiveQuestionsByEventQuery,
   LiveQuestionsByEventQueryVariables,
   QuestionsByMeAudienceQuery,
@@ -33,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
+  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
   liveQuestionsResult?: QueryResult<
     LiveQuestionsByEventQuery,
     LiveQuestionsByEventQueryVariables
@@ -46,6 +49,7 @@ interface Props {
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
+  eventQueryResult,
   liveQuestionsResult,
   myQuestionsResult,
   comparator = []
@@ -98,6 +102,13 @@ const QuestionList: React.FC<Props> = ({
     handleMoreClose();
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
+  const questionList =
+    liveQuestionsResult?.data?.liveQuestionsByEvent ||
+    myQuestionsResult?.data?.questionsByMeAudience ||
+    [];
+  const questionMoreTarget = questionList.find(
+    question => question.id === moreMenu.id
+  );
 
   return (
     <React.Fragment>
@@ -105,11 +116,7 @@ const QuestionList: React.FC<Props> = ({
         {R.sortWith<LiveQuestionFieldsFragment>([
           R.descend(R.prop("top")),
           ...comparator
-        ])(
-          liveQuestionsResult?.data?.liveQuestionsByEvent ||
-            myQuestionsResult?.data?.questionsByMeAudience ||
-            []
-        ).map((item, index) => (
+        ])(questionList).map((item, index) => (
           <QuestionItem
             key={index}
             question={item}
@@ -137,7 +144,14 @@ const QuestionList: React.FC<Props> = ({
         open={Boolean(moreMenu.anchorEl)}
         onClose={handleMoreClose}
       >
-        <MenuItem onClick={() => handleEditContentToggle(moreMenu.id)}>
+        <MenuItem
+          disabled={
+            questionMoreTarget?.top ||
+            (eventQueryResult.data?.eventById.moderation &&
+              questionMoreTarget?.published)
+          }
+          onClick={() => handleEditContentToggle(moreMenu.id)}
+        >
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
@@ -145,12 +159,18 @@ const QuestionList: React.FC<Props> = ({
             primary={formatMessage({ id: "Edit", defaultMessage: "Edit" })}
           />
         </MenuItem>
-        <MenuItem onClick={() => handleOpenDelete(moreMenu.id)}>
+        <MenuItem
+          disabled={questionMoreTarget?.top}
+          onClick={() => handleOpenDelete(moreMenu.id)}
+        >
           <ListItemIcon>
             <DeleteForeverIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText
-            primary={formatMessage({ id: "Delete", defaultMessage: "Delete" })}
+            primary={formatMessage({
+              id: "Withdraw",
+              defaultMessage: "Withdraw"
+            })}
           />
         </MenuItem>
       </Menu>
@@ -158,11 +178,11 @@ const QuestionList: React.FC<Props> = ({
         open={deleteConfirm.open}
         contentText={
           <FormattedMessage
-            id="Delete_this_question?"
-            defaultMessage="Delete this question?"
+            id="Withdraw_this_question?"
+            defaultMessage="Withdraw this question?"
           />
         }
-        okText={<FormattedMessage id="Delete" defaultMessage="Delete" />}
+        okText={<FormattedMessage id="Withdraw" defaultMessage="Withdraw" />}
         onCancel={handleCloseDelete}
         onOk={handleDelete}
       />

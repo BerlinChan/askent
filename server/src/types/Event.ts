@@ -29,11 +29,10 @@ export const Event = objectType({
 
     t.int('liveQuestionCount', {
       resolve: async (root, args, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
         const questionsForLive = await ctx.prisma.question.findMany({
           where: {
             event: { id: root.id },
-            OR: [{ author: { id: userId } }, { published: true }],
+            published: true,
             archived: false,
           },
         })

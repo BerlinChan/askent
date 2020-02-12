@@ -10,20 +10,24 @@ import {
 import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
-  MeQueryVariables
+  MeQueryVariables,
+  LiveEventQuery,
+  LiveEventQueryVariables,
+  useQuestionsByMeAudienceQuery
 } from "../../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
-import { useQuestionsByMeAudienceQuery } from "../../../generated/graphqlHooks";
 import QuestionList from "./questions/QuestionList";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
+  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
   open: boolean;
   onClose: () => void;
 }
 
 const MyQuestionsDialog: React.FC<Props> = ({
   userQueryResult,
+  eventQueryResult,
   open,
   onClose
 }) => {
@@ -46,6 +50,7 @@ const MyQuestionsDialog: React.FC<Props> = ({
       <DialogContent>
         <QuestionList
           userQueryResult={userQueryResult}
+          eventQueryResult={eventQueryResult}
           myQuestionsResult={myQuestionsResult}
         />
       </DialogContent>

@@ -201,6 +201,7 @@ const LiveQuestions: React.FC<Props> = ({
       <Paper className={classes.panelPaper}>
         <QuestionList
           userQueryResult={userQueryResult}
+          eventQueryResult={eventQueryResult}
           liveQuestionsResult={liveQuestionsResult}
           comparator={
             tabIndex === 0

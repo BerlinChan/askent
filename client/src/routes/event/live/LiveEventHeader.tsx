@@ -145,7 +145,10 @@ const LiveEventHeader: React.FC<Props> = ({
               />
             </Grid>
             <Grid item xs={3} className={classes.right}>
-              <AudienceAction userQueryResult={userQueryResult} />
+              <AudienceAction
+                userQueryResult={userQueryResult}
+                eventQueryResult={eventQueryResult}
+              />
             </Grid>
           </Grid>
         </Toolbar>
