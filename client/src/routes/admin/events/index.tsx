@@ -23,7 +23,7 @@ const Events: React.FC<Props> = ({ searchString }) => {
   const classes = useStyles();
   const [openCreate, setOpenCreate] = React.useState(false);
   const eventsByMeQueryResult = useEventsByMeQuery({
-    variables: { searchString }
+    variables: { searchString, pagination: { first: 50, skip: 0 } }
   });
   const { refetch: eventsByMeRefetch } = eventsByMeQueryResult;
 

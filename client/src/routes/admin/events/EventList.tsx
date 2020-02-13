@@ -72,7 +72,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
     <Fragment>
       <Paper className={classes.eventList}>
         <List disablePadding>
-          {data?.eventsByMe.map((eventItem, eventIndex) => (
+          {data?.eventsByMe.list.map((eventItem, eventIndex) => (
             <ListItem
               key={eventIndex}
               button

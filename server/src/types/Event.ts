@@ -1,5 +1,7 @@
 import {
   objectType,
+  inputObjectType,
+  interfaceType,
   extendType,
   stringArg,
   subscriptionField,
@@ -11,6 +13,7 @@ import { getAuthedUser } from '../utils'
 import { Context } from '../context'
 import { Event as EventType } from '@prisma/client'
 import { withFilter } from 'apollo-server-express'
+import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from '../constant'
 
 export const Event = objectType({
   name: 'Event',
@@ -54,10 +57,39 @@ export const Event = objectType({
     })
   },
 })
+export const PaginationInputType = inputObjectType({
+  name: 'PaginationInputType',
+  description: 'Pagination input type.',
+  definition(t) {
+    t.int('skip', {
+      default: DEFAULT_PAGE_SKIP,
+      required: true,
+      description: 'Start from 0.',
+    })
+    t.int('first', { default: DEFAULT_PAGE_FIRST, required: true })
+  },
+})
+export const IPagedType = interfaceType({
+  name: 'IPagedType',
+  definition(t) {
+    t.int('skip')
+    t.int('first')
+    t.int('totalCount')
+    t.boolean('hasNextPage')
+  },
+})
+export const PagedEvent = objectType({
+  name: 'PagedEvent',
+  definition(t) {
+    t.implements('IPagedType')
+    t.list.field('list', { type: 'Event' })
+  },
+})
 
 export const eventQuery = extendType({
   type: 'Query',
   definition(t) {
+    t.crud.events({ ordering: true })
     t.field('eventById', {
       type: 'Event',
       args: {
@@ -71,21 +103,47 @@ export const eventQuery = extendType({
         return event as EventType
       },
     })
-    t.list.field('eventsByMe', {
-      type: 'Event',
+    t.field('eventsByMe', {
+      type: 'PagedEvent',
       description: 'Get all my events.',
-      args: { searchString: stringArg() },
-      resolve: async (root, args, ctx) => {
+      args: {
+        searchString: stringArg(),
+        pagination: arg({ type: 'PaginationInputType', required: true }),
+        orderBy: arg({ type: 'EventOrderByInput' }),
+      },
+      resolve: async (root, { searchString, pagination, orderBy }, ctx) => {
         const userId = getAuthedUser(ctx)?.id
-        return ctx.prisma.event.findMany({
+        // TODO: aggregation count
+        const allEvents = await ctx.prisma.event.findMany({
           where: {
             owner: { id: userId },
             OR: [
-              { name: { contains: args.searchString } },
-              { code: { contains: args.searchString } },
+              { name: { contains: searchString } },
+              { code: { contains: searchString } },
             ],
           },
         })
+        const totalCount = allEvents.length
+        const { first, skip } = pagination
+        const events = await ctx.prisma.event.findMany({
+          where: {
+            owner: { id: userId },
+            OR: [
+              { name: { contains: searchString } },
+              { code: { contains: searchString } },
+            ],
+          },
+          orderBy,
+          ...pagination,
+        })
+
+        return {
+          list: events,
+          hasNextPage: first + skip < totalCount,
+          totalCount,
+          first,
+          skip,
+        }
       },
     })
     t.list.field('eventsByCode', {

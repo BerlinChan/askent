@@ -1,4 +1,4 @@
-import { rule, or } from 'graphql-shield'
+import { rule, deny } from 'graphql-shield'
 import { getAuthedUser } from '../../utils'
 import { isAuthedAdmin, isAuthedAudience } from './User'
 
@@ -24,6 +24,8 @@ export const isEventOwnerByArgId = rule({ cache: 'strict' })(
 
 export default {
   Query: {
+    events: deny,
+    
     eventsByMe: isAuthedAdmin,
     checkEventCodeExist: isAuthedAdmin,
     isEventAudience: isAuthedAudience,
