@@ -120,47 +120,47 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
           divider
           onClick={() => history.push(`/admin/event/${eventItem.id}`)}
         >
-          <ListItemAvatar>
-            <Avatar>
-              <FolderIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <Fragment>
-                <Typography color="inherit" display="inline">
-                  {eventItem.name}
-                </Typography>
-                <Typography
-                  className={classes.code}
-                  color="textSecondary"
-                  display="inline"
-                >
-                  # {eventItem.code}
-                </Typography>
-              </Fragment>
-            }
-            secondary={
-              <React.Fragment>
-                <FormattedDate value={eventItem.startAt} />
-                {" ~ "}
-                <FormattedDate value={eventItem.endAt} />
-              </React.Fragment>
-            }
-          />
-          <ListItemSecondaryAction>
-            <IconButton
-              edge="end"
-              aria-label="delete"
-              onClick={event => handleOpenDelete(event, eventItem.id)}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
+          <React.Fragment>
+            <ListItemAvatar>
+              <Avatar>
+                <FolderIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={
+                <Fragment>
+                  <Typography color="inherit" display="inline">
+                    {eventItem.name}
+                  </Typography>
+                  <Typography
+                    className={classes.code}
+                    color="textSecondary"
+                    display="inline"
+                  >
+                    # {eventItem.code}
+                  </Typography>
+                </Fragment>
+              }
+              secondary={
+                <React.Fragment>
+                  <FormattedDate value={eventItem.startAt} />
+                  {" ~ "}
+                  <FormattedDate value={eventItem.endAt} />
+                </React.Fragment>
+              }
+            />
+            <ListItemSecondaryAction>
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={event => handleOpenDelete(event, eventItem.id)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </ListItemSecondaryAction>
+          </React.Fragment>
         </ListItem>
       );
-    } else {
-      return <div style={style} key={index}></div>;
     }
   };
 

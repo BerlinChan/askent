@@ -22,7 +22,9 @@ interface Props<ItemType = any>
   // Callback function responsible for loading the next page of items.
   loadNextPage: () => any;
 
-  renderItem: (rowProps: ListChildComponentProps) => React.ReactElement;
+  renderItem: (
+    rowProps: ListChildComponentProps
+  ) => React.ReactElement | undefined;
 }
 
 const InfinitList: React.FC<Props> = ({
@@ -46,7 +48,7 @@ const InfinitList: React.FC<Props> = ({
   };
 
   // Every row is loaded except for our loading indicator row.
-  const isItemLoaded = (index: number) => hasNextPage || index < items.length;
+  const isItemLoaded = (index: number) => !hasNextPage || index < items.length;
 
   // Render an item or a loading indicator.
   const renderRow = (rowProps: ListChildComponentProps) => {
@@ -59,7 +61,7 @@ const InfinitList: React.FC<Props> = ({
         </div>
       );
     } else {
-      return renderItem(rowProps);
+      return renderItem(rowProps) || <div style={style} key={index}></div>;
     }
   };
 
