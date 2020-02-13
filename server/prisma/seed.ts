@@ -17,7 +17,7 @@ async function main() {
       },
       password: await hash('w', 10),
       events: {
-        create: Array.from({ length: 1500 }, () => 'event').map(
+        create: Array.from({ length: 100 }, () => 'event').map(
           (item, index) => ({
             code: `code${index}`,
             name: `name${index}`,
