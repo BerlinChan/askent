@@ -1,3 +1,11 @@
+fragment AdminEventFields on Event {
+  id
+  name
+  code
+  startAt
+  endAt
+}
+
 query EventsByMe(
   $searchString: String
   $pagination: PaginationInputType!
@@ -13,11 +21,7 @@ query EventsByMe(
     totalCount
     hasNextPage
     list {
-      id
-      name
-      code
-      startAt
-      endAt
+      ...AdminEventFields
     }
   }
 }
@@ -45,8 +49,6 @@ mutation CreateEvent(
 
 mutation DeleteEvent($eventId: ID!) {
   deleteEvent(eventId: $eventId) {
-    id
-    name
-    code
+    ...AdminEventFields
   }
 }
