@@ -57,18 +57,6 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
   });
   const [deleteEventMutation] = useDeleteEventMutation();
 
-  const [listDemension, setListDemension] = React.useState({
-    width: 0,
-    height: 0
-  });
-  const listBoxRef = React.useRef<HTMLDivElement>(null);
-  React.useEffect(() => {
-    setListDemension({
-      width: Number(listBoxRef?.current?.clientWidth),
-      height: Number(listBoxRef?.current?.clientHeight)
-    });
-  }, []);
-
   const handleOpenDelete = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     id: string
@@ -166,15 +154,13 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
 
   return (
     <Fragment>
-      <Paper className={classes.eventList} ref={listBoxRef}>
+      <Paper className={classes.eventList}>
         <InfinitList
           items={data?.eventsByMe.list || []}
           hasNextPage={data?.eventsByMe.hasNextPage}
           loading={loading}
           loadNextPage={loadNextPage}
           renderItem={renderItem}
-          height={listDemension.height}
-          width={listDemension.width}
           itemSize={73}
         />
 

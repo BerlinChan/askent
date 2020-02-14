@@ -7,7 +7,10 @@ import {
 import InfiniteLoader from "react-window-infinite-loader";
 
 interface Props<ItemType = any>
-  extends Omit<FixedSizeListProps, "children" | "itemCount"> {
+  extends Omit<
+    FixedSizeListProps,
+    "children" | "itemCount" | "width" | "height"
+  > {
   // Are there more items to load?
   // (This information comes from the most recent API request.)
   hasNextPage: boolean | undefined;
@@ -35,6 +38,18 @@ const InfinitList: React.FC<Props> = ({
   renderItem,
   ...props
 }) => {
+  const [listDemension, setListDemension] = React.useState({
+    width: 0,
+    height: 0
+  });
+  const listBoxRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    setListDemension({
+      width: Number(listBoxRef?.current?.clientWidth),
+      height: Number(listBoxRef?.current?.clientHeight)
+    });
+  }, []);
+
   // If there are more items to be loaded then add an extra row to hold a loading indicator.
   const itemCount = items.length + (hasNextPage ? 1 : 0);
 
@@ -66,22 +81,29 @@ const InfinitList: React.FC<Props> = ({
   };
 
   return (
-    <InfiniteLoader
-      isItemLoaded={isItemLoaded}
-      itemCount={itemCount}
-      loadMoreItems={loadMoreItems}
+    <div
+      ref={listBoxRef}
+      style={{ display: "flex", width: "100%", height: "100%" }}
     >
-      {({ onItemsRendered, ref }) => (
-        <FixedSizeList
-          itemCount={itemCount}
-          onItemsRendered={onItemsRendered}
-          ref={ref}
-          {...props}
-        >
-          {renderRow}
-        </FixedSizeList>
-      )}
-    </InfiniteLoader>
+      <InfiniteLoader
+        isItemLoaded={isItemLoaded}
+        itemCount={itemCount}
+        loadMoreItems={loadMoreItems}
+      >
+        {({ onItemsRendered, ref }) => (
+          <FixedSizeList
+            itemCount={itemCount}
+            onItemsRendered={onItemsRendered}
+            ref={ref}
+            width={listDemension.width}
+            height={listDemension.height}
+            {...props}
+          >
+            {renderRow}
+          </FixedSizeList>
+        )}
+      </InfiniteLoader>
+    </div>
   );
 };
 
