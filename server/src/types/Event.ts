@@ -76,6 +76,7 @@ export const IPagedType = interfaceType({
     t.int('first')
     t.int('totalCount')
     t.boolean('hasNextPage')
+    t.resolveType(() => null)
   },
 })
 export const PagedEvent = objectType({

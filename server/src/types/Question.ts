@@ -44,6 +44,13 @@ export const Question = objectType({
     })
   },
 })
+export const PagedQuestion = objectType({
+  name: 'PagedQuestion',
+  definition(t) {
+    t.implements('IPagedType')
+    t.list.field('list', { type: 'Question' })
+  },
+})
 export const UpdateQuestionInputType = inputObjectType({
   name: 'UpdateQuestionInputType',
   definition(t) {
@@ -59,6 +66,8 @@ export const UpdateQuestionInputType = inputObjectType({
 export const questionQuery = extendType({
   type: 'Query',
   definition(t) {
+    t.crud.questions({ ordering: true })
+
     t.list.field('questionsByMeAudience', {
       type: 'Question',
       args: {
@@ -77,8 +86,8 @@ export const questionQuery = extendType({
         })
       },
     })
-    t.list.field('questionsByEvent', {
-      type: 'Question',
+    t.field('questionsByEvent', {
+      type: 'PagedQuestion',
       args: {
         eventId: idArg({ required: true }),
         searchString: stringArg(),
@@ -86,9 +95,11 @@ export const questionQuery = extendType({
         archived: booleanArg(),
         published: booleanArg(),
         top: booleanArg(),
+        pagination: arg({ type: 'PaginationInputType', required: true }),
+        orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
-      resolve: (root, args, ctx) => {
-        return ctx.prisma.question.findMany({
+      resolve: async (root, args, ctx) => {
+        const allQuestions = await ctx.prisma.question.findMany({
           where: {
             event: { id: args.eventId },
             star: args.star,
@@ -101,6 +112,31 @@ export const questionQuery = extendType({
             ],
           },
         })
+        const totalCount = allQuestions.length
+        const { first, skip } = args.pagination
+        const questions = await ctx.prisma.question.findMany({
+          where: {
+            event: { id: args.eventId },
+            star: args.star,
+            archived: args.archived,
+            published: args.published,
+            top: args.top,
+            OR: [
+              { author: { name: { contains: args.searchString } } },
+              { content: { contains: args.searchString } },
+            ],
+          },
+          orderBy: args.orderBy,
+          ...args.pagination,
+        })
+
+        return {
+          list: questions,
+          hasNextPage: first + skip < totalCount,
+          totalCount,
+          first,
+          skip,
+        }
       },
     })
     t.list.field('liveQuestionsByEvent', {

@@ -32,6 +32,7 @@ import QuestionList from "./QuestionList";
 import Confirm from "../../../../components/Confirm";
 import { SubTabs, SubTab } from "../../../../components/Tabs";
 import TabPanel from "../../../../components/TabPanel";
+import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,7 +75,10 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const [tabIndex, setTabIndex] = React.useState(0);
   const { data } = eventQuery;
   const questionsByEventQuery = useQuestionsByEventQuery({
-    variables: { eventId: id as string }
+    variables: {
+      eventId: id as string,
+      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+    }
   });
   const [updateEventMutation] = useUpdateEventMutation();
   const [
@@ -89,30 +93,38 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   useQuestionAddedSubscription({
     variables: { eventId: id as string, role: RoleName.Admin },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      const questions = client.readQuery<
-        QuestionsByEventQuery,
-        QuestionsByEventQueryVariables
-      >({
-        query: QuestionsByEventDocument,
-        variables: { eventId: id as string }
-      });
+      if (subscriptionData.data) {
+        const prev = questionsByEventQuery.data;
 
-      // add
-      client.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>({
-        query: QuestionsByEventDocument,
-        variables: { eventId: id as string },
-        data: {
-          questionsByEvent: (subscriptionData.data?.questionAdded
-            ? [subscriptionData.data?.questionAdded]
-            : []
-          ).concat(
-            (questions?.questionsByEvent || []).filter(
-              question =>
-                question.id !== subscriptionData.data?.questionAdded.id
-            )
-          )
+        if (prev) {
+          // add
+          client.writeQuery<
+            QuestionsByEventQuery,
+            QuestionsByEventQueryVariables
+          >({
+            query: QuestionsByEventDocument,
+            variables: {
+              eventId: id as string,
+              pagination: {
+                first: prev.questionsByEvent.first,
+                skip: prev.questionsByEvent.skip
+              }
+            },
+            data: {
+              questionsByEvent: {
+                ...prev.questionsByEvent,
+                totalCount: prev.questionsByEvent.totalCount + 1,
+                list: [subscriptionData.data.questionAdded].concat(
+                  prev.questionsByEvent.list.filter(
+                    question =>
+                      question.id !== subscriptionData.data?.questionAdded.id
+                  )
+                )
+              }
+            }
+          });
         }
-      });
+      }
     }
   });
   useQuestionUpdatedSubscription({
@@ -121,25 +133,38 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   useQuestionRemovedSubscription({
     variables: { eventId: id as string },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      const questions = client.readQuery<
-        QuestionsByEventQuery,
-        QuestionsByEventQueryVariables
-      >({
-        query: QuestionsByEventDocument,
-        variables: { eventId: id as string }
-      });
+      if (subscriptionData.data) {
+        const prev = questionsByEventQuery.data;
 
-      // remove
-      client.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>({
-        query: QuestionsByEventDocument,
-        variables: { eventId: id as string },
-        data: {
-          questionsByEvent: R.without(
-            subscriptionData.data?.questionsRemoved || [],
-            questions?.questionsByEvent || []
-          )
+        if (prev) {
+          // remove
+          client.writeQuery<
+            QuestionsByEventQuery,
+            QuestionsByEventQueryVariables
+          >({
+            query: QuestionsByEventDocument,
+            variables: {
+              eventId: id as string,
+              pagination: {
+                first: prev.questionsByEvent.first,
+                skip: prev.questionsByEvent.skip
+              }
+            },
+            data: {
+              questionsByEvent: {
+                ...prev.questionsByEvent,
+                totalCount:
+                  prev.questionsByEvent.totalCount -
+                  subscriptionData.data.questionsRemoved.length,
+                list: R.without(
+                  subscriptionData.data.questionsRemoved,
+                  prev.questionsByEvent.list
+                )
+              }
+            }
+          });
         }
-      });
+      }
     }
   });
 
@@ -160,27 +185,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   };
   const handleDeleteAll = async () => {
     await deleteAllUnpublishedQuestionsMutation({
-      variables: { eventId: id as string },
-      update: (cache, mutationResult) => {
-        const questions = cache.readQuery<
-          QuestionsByEventQuery,
-          QuestionsByEventQueryVariables
-        >({
-          query: QuestionsByEventDocument,
-          variables: { eventId: id as string }
-        });
-        cache.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>(
-          {
-            query: QuestionsByEventDocument,
-            variables: { eventId: id as string },
-            data: {
-              questionsByEvent: (questions?.questionsByEvent || []).filter(
-                item => item.published
-              )
-            }
-          }
-        );
-      }
+      variables: { eventId: id as string }
     });
     await updateEventMutation({
       variables: {
@@ -192,27 +197,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   };
   const handlePublishAll = async () => {
     await publishAllUnpublishedQuestionsMutation({
-      variables: { eventId: id as string },
-      update: (cache, mutationResult) => {
-        const questions = cache.readQuery<
-          QuestionsByEventQuery,
-          QuestionsByEventQueryVariables
-        >({
-          query: QuestionsByEventDocument,
-          variables: { eventId: id as string }
-        });
-        cache.writeQuery<QuestionsByEventQuery, QuestionsByEventQueryVariables>(
-          {
-            query: QuestionsByEventDocument,
-            variables: { eventId: id as string },
-            data: {
-              questionsByEvent: (
-                questions?.questionsByEvent || []
-              ).map(item => ({ ...item, published: true }))
-            }
-          }
-        );
-      }
+      variables: { eventId: id as string }
     });
     await updateEventMutation({
       variables: {

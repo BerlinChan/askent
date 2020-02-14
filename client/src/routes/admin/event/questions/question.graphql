@@ -1,3 +1,12 @@
+fragment PagedQuestionFields on PagedQuestion {
+  first
+  skip
+  totalCount
+  hasNextPage
+  list {
+    ...QuestionFields
+  }
+}
 fragment QuestionFields on Question {
   id
   updatedAt
@@ -19,6 +28,8 @@ query QuestionsByEvent(
   $star: Boolean
   $archived: Boolean
   $top: Boolean
+  $pagination: PaginationInputType!
+  $orderBy: QuestionOrderByInput
 ) {
   questionsByEvent(
     eventId: $eventId
@@ -26,8 +37,10 @@ query QuestionsByEvent(
     star: $star
     archived: $archived
     top: $top
+    pagination: $pagination
+    orderBy: $orderBy
   ) {
-    ...QuestionFields
+    ...PagedQuestionFields
   }
 }
 
