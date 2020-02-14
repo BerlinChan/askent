@@ -1,28 +1,29 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, QuestionReviewStatus,RoleName } from '@prisma/client'
 import { hash } from 'bcryptjs'
+import { addDays } from 'date-fns'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  await prisma.role.create({ data: { name: 'ADMIN' } })
-  await prisma.role.create({ data: { name: 'AUDIENCE' } })
-  await prisma.role.create({ data: { name: 'WALL' } })
+  await prisma.role.create({ data: { name: RoleName.ADMIN } })
+  await prisma.role.create({ data: { name: RoleName.AUDIENCE } })
+  await prisma.role.create({ data: { name: RoleName.WALL } })
 
   const user1 = await prisma.user.create({
     data: {
       email: 'w@w.w',
       name: 'w',
       roles: {
-        connect: [{ name: 'ADMIN' }, { name: 'AUDIENCE' }, { name: 'WALL' }],
+        connect: [{ name: RoleName.ADMIN }, { name: RoleName.AUDIENCE }, { name: RoleName.WALL }],
       },
       password: await hash('w', 10),
       events: {
-        create: Array.from({ length: 100 }, () => 'event').map(
+        create: Array.from({ length: 200 }, () => 'event').map(
           (item, index) => ({
             code: `code${index}`,
-            name: `name${index}`,
-            startAt: new Date(),
-            endAt: new Date(),
+            name: `name ${index}`,
+            startAt: addDays(new Date('2017-11-02T01:01:01Z'), index),
+            endAt: addDays(new Date('2017-11-05T02:02:02Z'), index + 4),
           }),
         ),
       },
@@ -33,7 +34,7 @@ async function main() {
       email: 'w2@w.w',
       name: 'w2',
       roles: {
-        connect: [{ name: 'ADMIN' }, { name: 'AUDIENCE' }, { name: 'WALL' }],
+        connect: [{ name: RoleName.ADMIN }, { name: RoleName.AUDIENCE }, { name: RoleName.WALL }],
       },
       password: 'w',
       events: {
@@ -54,26 +55,32 @@ async function main() {
       },
     },
   })
+
   const user1Events = await prisma.event.findMany({
     where: { owner: { name: 'w' } },
+    first: 1,
+  })
+  await prisma.event.update({
+    where: { id: user1Events[0].id },
+    data: {
+      questions: {
+        create: Array.from({ length: 200 }, () => 'q').map((item, index) => ({
+          content: `Question ${index}`,
+          author: { connect: { id: user2.id } },
+        })),
+      },
+    },
   })
   const user1Question = await prisma.question.create({
     data: {
       event: { connect: { id: user1Events[0].id } },
       content: 'How can I use?',
-      archived: true,
+      reviewStatus: QuestionReviewStatus.ARCHIVE,
       author: { connect: { id: user1.id } },
     },
   })
-  const user2Question = await prisma.question.create({
-    data: {
-      event: { connect: { id: user1Events[0].id } },
-      content: 'An other question by user: w2.',
-      author: { connect: { id: user2.id } },
-    },
-  })
 
-  console.log({ user1, user2, user1Events, user1Question, user2Question })
+  console.log({ user1, user2, user1Events, user1Question })
 }
 
 main()

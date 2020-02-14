@@ -23,6 +23,9 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
 import QuestionItem from "./QuestionItem";
 import EditIcon from "@material-ui/icons/Edit";
+import { ListChildComponentProps } from "react-window";
+import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../../constant";
+import InfinitList from "../../../../components/InfinitList";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,7 +42,7 @@ interface Props {
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables
   >;
-  filter?: (item: Pick<Question, "star" | "archived" | "published">) => boolean;
+  filter?: (item: Pick<Question, "star" | "reviewStatus">) => boolean;
 }
 
 const QuestionList: React.FC<Props> = ({
@@ -49,7 +52,10 @@ const QuestionList: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const { data } = questionsByEventQuery;
+  const { data, loading, fetchMore } = questionsByEventQuery;
+  const orderFilterList = R.sortWith([
+    R.descend<QuestionFieldsFragment>(R.prop("top"))
+  ])(data?.questionsByEvent.list || []).filter(filter);
   const [moreMenu, setMoreMenu] = React.useState<{
     anchorEl: null | HTMLElement;
     id: string;
@@ -96,14 +102,62 @@ const QuestionList: React.FC<Props> = ({
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
 
+  const loadNextPage = () => {
+    fetchMore({
+      variables: {
+        pagination: {
+          skip: data?.questionsByEvent.list.length || DEFAULT_PAGE_SKIP,
+          first: data?.questionsByEvent.first || DEFAULT_PAGE_FIRST
+        }
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+
+        return Object.assign({}, fetchMoreResult, {
+          questionsByEvent: {
+            ...fetchMoreResult.questionsByEvent,
+            list: [
+              ...prev.questionsByEvent.list,
+              ...fetchMoreResult.questionsByEvent.list
+            ]
+          }
+        });
+      }
+    });
+  };
+  const renderItem = (rowProps: ListChildComponentProps) => {
+    const { index, style, data } = rowProps;
+
+    if (data[index]) {
+      return (
+        <QuestionItem
+          key={index}
+          style={style}
+          question={data[index]}
+          eventQuery={eventQuery}
+          handleMoreClick={handleMoreClick}
+          editContent={editContentIds.includes(data[index].id)}
+          handleEditContentToggle={handleEditContentToggle}
+          editContentInputRef={editContentInputRef}
+        />
+      );
+    }
+  };
+
   return (
     <React.Fragment>
-      <List className={classes.list} disablePadding>
-        {R.sortWith([R.descend<QuestionFieldsFragment>(R.prop("top"))])(
-          data?.questionsByEvent || []
-        )
-          .filter(filter)
-          .map((item, index) => (
+      {0 ? (
+        <InfinitList
+          items={orderFilterList}
+          itemSize={93}
+          hasNextPage={data?.questionsByEvent.hasNextPage}
+          loading={loading}
+          loadNextPage={loadNextPage}
+          renderItem={renderItem}
+        />
+      ) : (
+        <List className={classes.list} disablePadding>
+          {orderFilterList.map((item, index) => (
             <QuestionItem
               key={index}
               question={item}
@@ -114,7 +168,8 @@ const QuestionList: React.FC<Props> = ({
               editContentInputRef={editContentInputRef}
             />
           ))}
-      </List>
+        </List>
+      )}
 
       <Menu
         MenuListProps={{ dense: true }}
@@ -144,7 +199,7 @@ const QuestionList: React.FC<Props> = ({
         </MenuItem>
         <MenuItem
           disabled={
-            (data?.questionsByEvent || []).find(
+            (data?.questionsByEvent.list || []).find(
               question => question.id === moreMenu.id
             )?.top
           }

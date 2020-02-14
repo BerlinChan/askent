@@ -26,7 +26,8 @@ import {
   QuestionFieldsFragment,
   AdminEventQuery,
   AdminEventQueryVariables,
-  useUpdateQuestionMutation
+  useUpdateQuestionMutation,
+  QuestionReviewStatus
 } from "../../../../generated/graphqlHooks";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
@@ -37,9 +38,7 @@ import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
 import StarIcon from "@material-ui/icons/Star";
 import TopIcon from "@material-ui/icons/Publish";
-import QuestionToggleButton, {
-  handleToggleInterface
-} from "./QuestionToggleButton";
+import QuestionToggleButton, { handleToggleType } from "./QuestionToggleButton";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
@@ -81,6 +80,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  style?: React.CSSProperties;
   question: QuestionFieldsFragment;
   eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
   handleMoreClick: (
@@ -93,6 +93,7 @@ interface Props {
 }
 
 const QuestionListItem: React.FC<Props> = ({
+  style,
   question,
   handleMoreClick,
   eventQuery,
@@ -108,26 +109,36 @@ const QuestionListItem: React.FC<Props> = ({
     { loading: updateQuestionLoading }
   ] = useUpdateQuestionMutation();
 
-  const handleArchiveClick: handleToggleInterface = async (e, id, archived) => {
+  const handleArchiveClick: handleToggleType = async (e, id, currentStatus) => {
     await updateQuestionMutation({
-      variables: { input: { questionId: id, archived: !archived } }
+      variables: {
+        input: {
+          questionId: id,
+          reviewStatus: currentStatus
+            ? QuestionReviewStatus.Publish
+            : QuestionReviewStatus.Archive
+        }
+      }
     });
   };
-  const handlePublishClick: handleToggleInterface = async (
-    e,
-    id,
-    published
-  ) => {
+  const handlePublishClick: handleToggleType = async (e, id, currentStatus) => {
     await updateQuestionMutation({
-      variables: { input: { questionId: id, published: !published } }
+      variables: {
+        input: {
+          questionId: id,
+          reviewStatus: currentStatus
+            ? QuestionReviewStatus.Review
+            : QuestionReviewStatus.Publish
+        }
+      }
     });
   };
-  const handleStarClick: handleToggleInterface = async (e, id, star) => {
+  const handleStarClick: handleToggleType = async (e, id, star) => {
     await updateQuestionMutation({
       variables: { input: { questionId: id, star: !star } }
     });
   };
-  const handleTopClick: handleToggleInterface = async (e, id, top) => {
+  const handleTopClick: handleToggleType = async (e, id, top) => {
     await updateQuestionMutation({
       variables: { input: { questionId: id, top: !top } }
     });
@@ -135,6 +146,7 @@ const QuestionListItem: React.FC<Props> = ({
 
   return (
     <ListItem
+      style={style}
       className={`${classes.listItem} ${
         question.star ? classes.starQuestion : ""
       } ${question.top ? classes.topQuestion : ""}`}
@@ -252,7 +264,8 @@ const QuestionListItem: React.FC<Props> = ({
           </Typography>
 
           <Box className={classes.questionActionBox}>
-            {question.published && (
+            {(question.reviewStatus === QuestionReviewStatus.Publish ||
+              question.reviewStatus === QuestionReviewStatus.Archive) && (
               <QuestionToggleButton
                 className="questionHover"
                 id={question.id}
@@ -267,7 +280,7 @@ const QuestionListItem: React.FC<Props> = ({
                 handleToggle={handleStarClick}
               />
             )}
-            {question.published && !question.archived && (
+            {question.reviewStatus === QuestionReviewStatus.Publish && (
               <QuestionToggleButton
                 className="questionHover"
                 id={question.id}
@@ -282,29 +295,34 @@ const QuestionListItem: React.FC<Props> = ({
                 handleToggle={handleTopClick}
               />
             )}
-            {data?.eventById.moderation && !question.archived && (
+            {data?.eventById.moderation &&
+              (question.reviewStatus === QuestionReviewStatus.Publish ||
+                question.reviewStatus === QuestionReviewStatus.Review) && (
+                <QuestionToggleButton
+                  className="questionHover"
+                  id={question.id}
+                  status={
+                    question.reviewStatus === QuestionReviewStatus.Publish
+                  }
+                  onTitle={formatMessage({
+                    id: "Unpublish",
+                    defaultMessage: "Unpublish"
+                  })}
+                  offTitle={formatMessage({
+                    id: "Publish",
+                    defaultMessage: "Publish"
+                  })}
+                  onIcon={<ClearIcon fontSize="inherit" />}
+                  offIcon={<CheckIcon fontSize="inherit" />}
+                  handleToggle={handlePublishClick}
+                />
+              )}
+            {(question.reviewStatus === QuestionReviewStatus.Publish ||
+              question.reviewStatus === QuestionReviewStatus.Archive) && (
               <QuestionToggleButton
                 className="questionHover"
                 id={question.id}
-                status={question.published}
-                onTitle={formatMessage({
-                  id: "Unpublish",
-                  defaultMessage: "Unpublish"
-                })}
-                offTitle={formatMessage({
-                  id: "Publish",
-                  defaultMessage: "Publish"
-                })}
-                onIcon={<ClearIcon fontSize="inherit" />}
-                offIcon={<CheckIcon fontSize="inherit" />}
-                handleToggle={handlePublishClick}
-              />
-            )}
-            {question.published && (
-              <QuestionToggleButton
-                className="questionHover"
-                id={question.id}
-                status={question.archived}
+                status={question.reviewStatus === QuestionReviewStatus.Archive}
                 onTitle={formatMessage({
                   id: "Unarchive",
                   defaultMessage: "Unarchive"

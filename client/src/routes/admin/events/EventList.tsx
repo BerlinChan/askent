@@ -96,8 +96,8 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
     });
   };
   const renderItem = (rowProps: ListChildComponentProps) => {
-    const { index, style } = rowProps;
-    const eventItem = data?.eventsByMe.list[index];
+    const { index, style, data } = rowProps;
+    const eventItem = data[index];
 
     if (eventItem) {
       return (

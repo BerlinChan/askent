@@ -1,10 +1,4 @@
-import {
-  objectType,
-  extendType,
-  stringArg,
-  inputObjectType,
-  arg,
-} from 'nexus'
+import { objectType, extendType, stringArg, inputObjectType, arg } from 'nexus'
 import {
   RoleName,
   User as UserType,
@@ -101,7 +95,11 @@ export const userMutation = extendType({
           throw new Error(ERROR_MESSAGE.emailExist(args.email))
         }
         const hashedPassword = await hash(args.password, 10)
-        const userRoles: Array<RoleName> = ['ADMIN', 'AUDIENCE', 'WALL']
+        const userRoles: Array<RoleName> = [
+          RoleName.ADMIN,
+          RoleName.AUDIENCE,
+          RoleName.WALL,
+        ]
         const user = await ctx.prisma.user.create({
           data: {
             ...args,

@@ -11,7 +11,7 @@ import {
 } from 'nexus'
 import { getAuthedUser } from '../utils'
 import { Context } from '../context'
-import { Event as EventType } from '@prisma/client'
+import { Event as EventType, QuestionReviewStatus } from '@prisma/client'
 import { withFilter } from 'apollo-server-express'
 import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from '../constant'
 
@@ -35,8 +35,7 @@ export const Event = objectType({
         const questionsForLive = await ctx.prisma.question.findMany({
           where: {
             event: { id: root.id },
-            published: true,
-            archived: false,
+            reviewStatus: QuestionReviewStatus.PUBLISH,
           },
         })
 
@@ -91,6 +90,7 @@ export const eventQuery = extendType({
   type: 'Query',
   definition(t) {
     t.crud.events({ ordering: true })
+
     t.field('eventById', {
       type: 'Event',
       args: {

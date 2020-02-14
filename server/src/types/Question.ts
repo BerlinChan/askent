@@ -5,10 +5,14 @@ import {
   stringArg,
   idArg,
   arg,
-  booleanArg,
   subscriptionField,
 } from 'nexus'
-import { Question as QuestionType, User, RoleName } from '@prisma/client'
+import {
+  Question as QuestionType,
+  User,
+  RoleName,
+  QuestionReviewStatus,
+} from '@prisma/client'
 import { getAuthedUser, TokenPayload } from '../utils'
 import { withFilter } from 'apollo-server-express'
 import { Context } from '../context'
@@ -22,9 +26,8 @@ export const Question = objectType({
     t.model.createdAt()
     t.model.updatedAt()
     t.model.content()
+    t.model.reviewStatus()
     t.model.star()
-    t.model.archived()
-    t.model.published()
     t.model.top()
     // t.model.votedUsers()
 
@@ -56,8 +59,7 @@ export const UpdateQuestionInputType = inputObjectType({
   definition(t) {
     t.id('questionId', { required: true })
     t.string('content')
-    t.boolean('published')
-    t.boolean('archived')
+    t.field('reviewStatus', { type: 'QuestionReviewStatus' })
     t.boolean('star')
     t.boolean('top')
   },
@@ -66,65 +68,29 @@ export const UpdateQuestionInputType = inputObjectType({
 export const questionQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.crud.questions({ ordering: true })
+    t.crud.questions({ ordering: true, filtering: true })
 
-    t.list.field('questionsByMeAudience', {
-      type: 'Question',
-      args: {
-        // TODO: pagination
-        eventId: idArg({ required: true }),
-      },
-      resolve: (root, { eventId }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
-
-        return ctx.prisma.question.findMany({
-          where: {
-            author: { id: userId },
-            event: { id: eventId },
-            archived: false,
-          },
-        })
-      },
-    })
     t.field('questionsByEvent', {
       type: 'PagedQuestion',
       args: {
         eventId: idArg({ required: true }),
-        searchString: stringArg(),
-        star: booleanArg(),
-        archived: booleanArg(),
-        published: booleanArg(),
-        top: booleanArg(),
         pagination: arg({ type: 'PaginationInputType', required: true }),
+        where: arg({ type: 'QuestionWhereInput' }),
         orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
       resolve: async (root, args, ctx) => {
         const allQuestions = await ctx.prisma.question.findMany({
           where: {
+            ...args.where,
             event: { id: args.eventId },
-            star: args.star,
-            archived: args.archived,
-            published: args.published,
-            top: args.top,
-            OR: [
-              { author: { name: { contains: args.searchString } } },
-              { content: { contains: args.searchString } },
-            ],
           },
         })
         const totalCount = allQuestions.length
         const { first, skip } = args.pagination
         const questions = await ctx.prisma.question.findMany({
           where: {
+            ...args.where,
             event: { id: args.eventId },
-            star: args.star,
-            archived: args.archived,
-            published: args.published,
-            top: args.top,
-            OR: [
-              { author: { name: { contains: args.searchString } } },
-              { content: { contains: args.searchString } },
-            ],
           },
           orderBy: args.orderBy,
           ...args.pagination,
@@ -147,12 +113,35 @@ export const questionQuery = extendType({
         const liveQuestions = await ctx.prisma.question.findMany({
           where: {
             event: { id: eventId },
-            OR: [{ author: { id: userId } }, { published: true }],
-            archived: false,
+            OR: [
+              { author: { id: userId } },
+              { reviewStatus: QuestionReviewStatus.PUBLISH },
+            ],
           },
         })
 
         return liveQuestions
+      },
+    })
+    t.list.field('questionsByMeAudience', {
+      type: 'Question',
+      args: {
+        // TODO: pagination
+        eventId: idArg({ required: true }),
+      },
+      resolve: (root, { eventId }, ctx) => {
+        const userId = getAuthedUser(ctx)?.id
+
+        return ctx.prisma.question.findMany({
+          where: {
+            author: { id: userId },
+            event: { id: eventId },
+            OR: [
+              { reviewStatus: QuestionReviewStatus.PUBLISH },
+              { reviewStatus: QuestionReviewStatus.REVIEW },
+            ],
+          },
+        })
       },
     })
   },
@@ -175,7 +164,9 @@ export const questionMutation = extendType({
         })
         const newQuestion = await ctx.prisma.question.create({
           data: {
-            published: !event?.moderation,
+            reviewStatus: event?.moderation
+              ? QuestionReviewStatus.REVIEW
+              : QuestionReviewStatus.PUBLISH,
             content,
             event: { connect: { id: eventId } },
             author: { connect: { id: userId } },
@@ -197,7 +188,7 @@ export const questionMutation = extendType({
         input: arg({ type: 'UpdateQuestionInputType', required: true }),
       },
       resolve: async (root, { input }, ctx) => {
-        const { content, questionId, published, archived, star, top } = input
+        const { content, questionId, reviewStatus, star, top } = input
         const findQuestion = await ctx.prisma.question.findOne({
           where: { id: questionId },
           include: { event: true },
@@ -217,10 +208,11 @@ export const questionMutation = extendType({
         }
 
         let question = Object.assign(
-          { content, published, archived, star, top },
-          archived === true ? { top: false } : {},
-          published === false
-            ? { top: false, star: false, archived: false }
+          { content, reviewStatus, star, top },
+          reviewStatus === QuestionReviewStatus.ARCHIVE
+            ? { top: false }
+            : reviewStatus === QuestionReviewStatus.REVIEW
+            ? { top: false, star: false }
             : {},
         )
         const currentTopQuestion = await ctx.prisma.question.update({
@@ -229,7 +221,7 @@ export const questionMutation = extendType({
         })
         const updateQuestions = [currentTopQuestion].concat(topQuestion)
 
-        if (published === true || archived === false) {
+        if (reviewStatus === QuestionReviewStatus.PUBLISH) {
           ctx.pubsub.publish('QUESTION_ADDED', {
             eventId: findQuestion?.event.id,
             questionAdded: currentTopQuestion,
@@ -267,18 +259,24 @@ export const questionMutation = extendType({
         return delQuestion
       },
     })
-    t.field('deleteAllUnpublishedQuestions', {
+    t.field('deleteAllReviewQuestions', {
       type: 'Int',
-      description: 'Delete all unpublished questions by event.',
+      description: 'Delete all Review questions by event.',
       args: {
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
         const shouldDelete = await ctx.prisma.question.findMany({
-          where: { event: { id: eventId }, published: false },
+          where: {
+            event: { id: eventId },
+            reviewStatus: QuestionReviewStatus.REVIEW,
+          },
         })
         const { count } = await ctx.prisma.question.deleteMany({
-          where: { event: { id: eventId }, published: false },
+          where: {
+            event: { id: eventId },
+            reviewStatus: QuestionReviewStatus.REVIEW,
+          },
         })
 
         ctx.pubsub.publish('QUESTIONS_REMOVED', {
@@ -289,23 +287,32 @@ export const questionMutation = extendType({
         return count
       },
     })
-    t.field('publishAllUnpublishedQuestions', {
+    t.field('publishAllReviewQuestions', {
       type: 'Int',
-      description: 'Delete all unpublished questions by event.',
+      description: 'Delete all Review questions by event.',
       args: {
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
         const shouldUpdate = await ctx.prisma.question.findMany({
-          where: { event: { id: eventId }, published: false },
+          where: {
+            event: { id: eventId },
+            reviewStatus: QuestionReviewStatus.REVIEW,
+          },
         })
         const { count } = await ctx.prisma.question.updateMany({
-          where: { event: { id: eventId }, published: false },
-          data: { published: true },
+          where: {
+            event: { id: eventId },
+            reviewStatus: QuestionReviewStatus.REVIEW,
+          },
+          data: { reviewStatus: QuestionReviewStatus.PUBLISH },
         })
 
         shouldUpdate
-          .map(question => ({ ...question, published: true }))
+          .map(question => ({
+            ...question,
+            reviewStatus: QuestionReviewStatus.PUBLISH,
+          }))
           .forEach(question =>
             ctx.pubsub.publish('QUESTION_ADDED', {
               eventId,
@@ -362,19 +369,26 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
         const role: RoleName = args.role
         if (payload.eventId === args.eventId && roles.includes(role)) {
           switch (role) {
-            case 'ADMIN':
+            case RoleName.ADMIN:
               const owner = await ctx.prisma.question
                 .findOne({ where: { id: payload.questionAdded.id } })
                 .event()
                 .owner()
               return id === owner.id
-            case 'AUDIENCE':
+            case RoleName.AUDIENCE:
               const author = await ctx.prisma.question
                 .findOne({ where: { id: payload.questionAdded.id } })
                 .author()
-              return id === author.id || payload.questionAdded.published
-            case 'WALL':
-              return payload.questionAdded.published
+              return (
+                id === author.id ||
+                payload.questionAdded.reviewStatus ===
+                  QuestionReviewStatus.PUBLISH
+              )
+            case RoleName.WALL:
+              return (
+                payload.questionAdded.reviewStatus ===
+                QuestionReviewStatus.PUBLISH
+              )
             default:
               return false
           }

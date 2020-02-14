@@ -3,8 +3,7 @@ fragment LiveQuestionFields on Question {
   createdAt
   updatedAt
   content
-  published
-  archived
+  reviewStatus
   top
   voted
   voteCount

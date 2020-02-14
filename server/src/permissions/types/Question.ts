@@ -88,15 +88,14 @@ export default {
       or(isQuestionAuthorByArg, isQuestionEventOwnerByArg),
       not(isQuestionTopByArg),
     ),
-    deleteAllUnpublishedQuestions: isEventOwnerByArgId,
-    publishAllUnpublishedQuestions: isEventOwnerByArgId,
+    deleteAllReviewQuestions: isEventOwnerByArgId,
+    publishAllReviewQuestions: isEventOwnerByArgId,
     voteQuestion: isQuestionEventAudienceByArg,
   },
   UpdateQuestionInputType: {
     content: or(isQuestionAuthor, isQuestionEventOwner),
-    published: isQuestionEventOwner,
+    reviewStatus: isQuestionEventOwner,
     star: isQuestionEventOwner,
     top: isQuestionEventOwner,
-    archived: isQuestionEventOwner,
   },
 }

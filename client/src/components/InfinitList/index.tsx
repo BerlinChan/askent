@@ -2,7 +2,8 @@ import React from "react";
 import {
   FixedSizeList,
   FixedSizeListProps,
-  ListChildComponentProps
+  ListChildComponentProps,
+  areEqual
 } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 
@@ -65,8 +66,11 @@ const InfinitList: React.FC<Props> = ({
   // Every row is loaded except for our loading indicator row.
   const isItemLoaded = (index: number) => !hasNextPage || index < items.length;
 
-  // Render an item or a loading indicator.
-  const renderRow = (rowProps: ListChildComponentProps) => {
+  // If list items are expensive to render,
+  // Consider using React.memo or shouldComponentUpdate to avoid unnecessary re-renders.
+  // https://reactjs.org/docs/react-api.html#reactmemo
+  // https://reactjs.org/docs/react-api.html#reactpurecomponent
+  const renderRow = React.memo((rowProps: ListChildComponentProps) => {
     const { index, style } = rowProps;
 
     if (!isItemLoaded(index)) {
@@ -76,9 +80,9 @@ const InfinitList: React.FC<Props> = ({
         </div>
       );
     } else {
-      return renderItem(rowProps) || <div style={style} key={index}></div>;
+      return renderItem(rowProps) || <div style={style} key={index} />;
     }
-  };
+  }, areEqual);
 
   return (
     <div
@@ -92,6 +96,7 @@ const InfinitList: React.FC<Props> = ({
       >
         {({ onItemsRendered, ref }) => (
           <FixedSizeList
+            itemData={items}
             itemCount={itemCount}
             onItemsRendered={onItemsRendered}
             ref={ref}

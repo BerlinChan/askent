@@ -12,9 +12,8 @@ fragment QuestionFields on Question {
   updatedAt
   voteCount
   content
+  reviewStatus
   star
-  archived
-  published
   top
   author {
     id
@@ -24,19 +23,13 @@ fragment QuestionFields on Question {
 
 query QuestionsByEvent(
   $eventId: ID!
-  $searchString: String
-  $star: Boolean
-  $archived: Boolean
-  $top: Boolean
+  $where: QuestionWhereInput
   $pagination: PaginationInputType!
   $orderBy: QuestionOrderByInput
 ) {
   questionsByEvent(
     eventId: $eventId
-    searchString: $searchString
-    star: $star
-    archived: $archived
-    top: $top
+    where: $where
     pagination: $pagination
     orderBy: $orderBy
   ) {
@@ -50,12 +43,12 @@ mutation DeleteQuestion($questionId: ID!) {
   }
 }
 
-mutation DeleteAllUnpublishedQuestions($eventId: ID!) {
-  deleteAllUnpublishedQuestions(eventId: $eventId)
+mutation DeleteAllReviewQuestions($eventId: ID!) {
+  deleteAllReviewQuestions(eventId: $eventId)
 }
 
-mutation PublishAllUnpublishedQuestions($eventId: ID!) {
-  publishAllUnpublishedQuestions(eventId: $eventId)
+mutation PublishAllReviewQuestions($eventId: ID!) {
+  publishAllReviewQuestions(eventId: $eventId)
 }
 
 mutation UpdateQuestion($input: UpdateQuestionInputType!) {

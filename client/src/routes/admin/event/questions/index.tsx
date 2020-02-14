@@ -18,14 +18,16 @@ import {
   useQuestionAddedSubscription,
   useQuestionUpdatedSubscription,
   useQuestionRemovedSubscription,
-  useDeleteAllUnpublishedQuestionsMutation,
-  usePublishAllUnpublishedQuestionsMutation,
+  useDeleteAllReviewQuestionsMutation,
+  usePublishAllReviewQuestionsMutation,
   AdminEventQuery,
   AdminEventQueryVariables,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument,
-  RoleName
+  RoleName,
+  QuestionReviewStatus,
+  OrderByArg
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
@@ -74,27 +76,54 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const { id } = useParams();
   const [tabIndex, setTabIndex] = React.useState(0);
   const { data } = eventQuery;
+  const [updateEventMutation] = useUpdateEventMutation();
+  const [
+    deleteAllReviewQuestionsMutation
+  ] = useDeleteAllReviewQuestionsMutation();
+  const [
+    publishAllReviewQuestionsMutation
+  ] = usePublishAllReviewQuestionsMutation();
+  const [confirmModeration, setConfirmModeration] = React.useState(false);
   const questionsByEventQuery = useQuestionsByEventQuery({
     variables: {
       eventId: id as string,
+      where: { reviewStatus: QuestionReviewStatus.Publish },
+      orderBy: { createdAt: OrderByArg.Desc },
       pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
     }
   });
-  const [updateEventMutation] = useUpdateEventMutation();
-  const [
-    deleteAllUnpublishedQuestionsMutation
-  ] = useDeleteAllUnpublishedQuestionsMutation();
-  const [
-    publishAllUnpublishedQuestionsMutation
-  ] = usePublishAllUnpublishedQuestionsMutation();
-  const [confirmModeration, setConfirmModeration] = React.useState(false);
+  const questionsByEventQueryUnpub = useQuestionsByEventQuery({
+    variables: {
+      eventId: id as string,
+      where: { reviewStatus: QuestionReviewStatus.Review },
+      orderBy: { createdAt: OrderByArg.Desc },
+      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+    }
+  });
+  const questionsByEventQueryArchived = useQuestionsByEventQuery({
+    variables: {
+      eventId: id as string,
+      where: { reviewStatus: QuestionReviewStatus.Archive },
+      orderBy: { createdAt: OrderByArg.Desc },
+      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+    }
+  });
 
   // subscriptions
   useQuestionAddedSubscription({
     variables: { eventId: id as string, role: RoleName.Admin },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
-        const prev = questionsByEventQuery.data;
+        const { questionAdded } = subscriptionData.data;
+        let prev: QuestionsByEventQuery | undefined;
+        switch (questionAdded.reviewStatus) {
+          case QuestionReviewStatus.Review:
+            prev = questionsByEventQueryUnpub.data;
+            break;
+          case QuestionReviewStatus.Publish:
+            prev = questionsByEventQuery.data;
+            break;
+        }
 
         if (prev) {
           // add
@@ -105,6 +134,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
             query: QuestionsByEventDocument,
             variables: {
               eventId: id as string,
+              where: { reviewStatus: questionAdded.reviewStatus },
               pagination: {
                 first: prev.questionsByEvent.first,
                 skip: prev.questionsByEvent.skip
@@ -114,10 +144,9 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
               questionsByEvent: {
                 ...prev.questionsByEvent,
                 totalCount: prev.questionsByEvent.totalCount + 1,
-                list: [subscriptionData.data.questionAdded].concat(
+                list: [questionAdded].concat(
                   prev.questionsByEvent.list.filter(
-                    question =>
-                      question.id !== subscriptionData.data?.questionAdded.id
+                    question => question.id !== questionAdded.id
                   )
                 )
               }
@@ -184,7 +213,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     }
   };
   const handleDeleteAll = async () => {
-    await deleteAllUnpublishedQuestionsMutation({
+    await deleteAllReviewQuestionsMutation({
       variables: { eventId: id as string }
     });
     await updateEventMutation({
@@ -196,7 +225,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     setConfirmModeration(false);
   };
   const handlePublishAll = async () => {
-    await publishAllUnpublishedQuestionsMutation({
+    await publishAllReviewQuestionsMutation({
       variables: { eventId: id as string }
     });
     await updateEventMutation({
@@ -254,8 +283,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           {data?.eventById.moderation ? (
             <QuestionList
               eventQuery={eventQuery}
-              questionsByEventQuery={questionsByEventQuery}
-              filter={item => !item.published}
+              questionsByEventQuery={questionsByEventQueryUnpub}
             />
           ) : (
             <Box className={classes.moderationOffTips}>
@@ -294,14 +322,12 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
             <QuestionList
               eventQuery={eventQuery}
               questionsByEventQuery={questionsByEventQuery}
-              filter={item => !item.archived && item.published}
             />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             <QuestionList
               eventQuery={eventQuery}
-              questionsByEventQuery={questionsByEventQuery}
-              filter={item => item.archived && item.published}
+              questionsByEventQuery={questionsByEventQueryArchived}
             />
           </TabPanel>
         </Paper>

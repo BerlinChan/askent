@@ -53,15 +53,20 @@ model Event {
 }
 
 model Question {
-  id         String   @default(cuid()) @id
-  event      Event
-  author     User?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  content    String
-  votedUsers User[]   @relation(name: "VotedUsersUserTable")
-  star       Boolean  @default(false)
-  archived   Boolean  @default(false)
-  published  Boolean  @default(true)
-  top        Boolean  @default(false)
+  id           String               @default(cuid()) @id
+  event        Event
+  author       User?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  content      String
+  votedUsers   User[]               @relation(name: "VotedUsersUserTable")
+  reviewStatus QuestionReviewStatus @default(PUBLISH)
+  star         Boolean              @default(false)
+  top          Boolean              @default(false)
+}
+
+enum QuestionReviewStatus {
+  REVIEW
+  PUBLISH
+  ARCHIVE
 }

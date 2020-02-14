@@ -19,7 +19,8 @@ import {
   useLiveQuestionUpdatedSubscription,
   useLiveQuestionRemovedSubscription,
   LiveQuestionsByEventDocument,
-  RoleName
+  RoleName,
+  QuestionReviewStatus
 } from "../../../../generated/graphqlHooks";
 import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
@@ -110,9 +111,8 @@ const LiveQuestions: React.FC<Props> = ({
         subscriptionData.data?.questionsUpdated || []
       ).filter(
         question =>
-          !question.archived &&
-          (question.published ||
-            question.author?.id === userQueryResult.data?.me.id)
+          question.reviewStatus === QuestionReviewStatus.Publish ||
+          question.author?.id === userQueryResult.data?.me.id
       );
       const deduplicated = R.without(
         subscriptionData.data?.questionsUpdated || [],

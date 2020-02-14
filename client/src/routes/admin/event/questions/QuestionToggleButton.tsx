@@ -1,13 +1,11 @@
 import React from "react";
 import { IconButtonProps, IconButton, Tooltip } from "@material-ui/core";
 
-export interface handleToggleInterface {
-  (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-    currentStatus: boolean
-  ): void;
-}
+export type handleToggleType = (
+  event: React.MouseEvent<HTMLButtonElement>,
+  id: string,
+  currentStatus: boolean
+) => void;
 
 interface Props {
   id: string;
@@ -17,7 +15,7 @@ interface Props {
   onIcon: React.ReactNode;
   offIcon: React.ReactNode;
 
-  handleToggle: handleToggleInterface;
+  handleToggle: handleToggleType;
 }
 
 const QuestionToggleButton: React.FC<Props & IconButtonProps> = ({

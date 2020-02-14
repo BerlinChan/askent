@@ -2,7 +2,10 @@ import React from "react";
 import { Box, Button } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
-import { useEventsByMeQuery } from "../../../generated/graphqlHooks";
+import {
+  useEventsByMeQuery,
+  OrderByArg
+} from "../../../generated/graphqlHooks";
 import CreateEventDialog from "./CreateEventDialog";
 import EventList from "./EventList";
 import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../constant";
@@ -31,6 +34,7 @@ const Events: React.FC<Props> = ({ searchString }) => {
   const eventsByMeQueryResult = useEventsByMeQuery({
     variables: {
       searchString,
+      orderBy: { createdAt: OrderByArg.Desc },
       pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
     }
   });

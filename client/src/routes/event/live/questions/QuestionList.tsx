@@ -20,7 +20,8 @@ import {
   QuestionsByMeAudienceQuery,
   QuestionsByMeAudienceQueryVariables,
   useDeleteQuestionMutation,
-  LiveQuestionFieldsFragment
+  LiveQuestionFieldsFragment,
+  QuestionReviewStatus
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
@@ -148,7 +149,7 @@ const QuestionList: React.FC<Props> = ({
           disabled={
             questionMoreTarget?.top ||
             (eventQueryResult.data?.eventById.moderation &&
-              questionMoreTarget?.published)
+              questionMoreTarget?.reviewStatus === QuestionReviewStatus.Publish)
           }
           onClick={() => handleEditContentToggle(moreMenu.id)}
         >
