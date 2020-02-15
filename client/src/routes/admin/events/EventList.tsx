@@ -1,29 +1,32 @@
 import React, { Fragment } from "react";
+import * as R from "ramda";
 import {
   Paper,
   Typography,
   Avatar,
   IconButton,
+  List,
+  ListSubheader,
   ListItem,
   ListItemAvatar,
   ListItemText,
   ListItemSecondaryAction,
   CircularProgress
 } from "@material-ui/core";
-import { ListChildComponentProps } from "react-window";
+import { GroupedVirtuoso } from "react-virtuoso";
 import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   EventsByMeQuery,
   EventsByMeQueryVariables,
-  useDeleteEventMutation
+  useDeleteEventMutation,
+  AdminEventFieldsFragment
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { useHistory } from "react-router-dom";
 import { FormattedMessage, FormattedDate } from "react-intl";
 import Confirm from "../../../components/Confirm";
-import InfinitList from "../../../components/InfinitList";
 import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -32,6 +35,9 @@ const useStyles = makeStyles((theme: Theme) =>
       position: "relative",
       margin: theme.spacing(2, 0),
       flex: 1
+    },
+    header: {
+      backgroundColor: theme.palette.background.paper
     },
     code: { marginLeft: theme.spacing(2) },
     progress: {
@@ -75,93 +81,142 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
     setDeleteConfirm({ open: false, id: "" });
   };
 
-  const loadNextPage = () => {
-    fetchMore({
-      variables: {
-        pagination: {
-          skip: data?.eventsByMe.list.length || DEFAULT_PAGE_SKIP,
-          first: data?.eventsByMe.first || DEFAULT_PAGE_FIRST
-        }
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
+  const [endReached, setEndReached] = React.useState(false);
+  const { groupKeys, groupCounts } = React.useMemo(() => {
+    // the code below calculates the group counts
+    // for the users loaded so far;
+    // this should be performed on the server too
+    const groupedEvents = R.groupBy<AdminEventFieldsFragment>(item =>
+      item.startAt ? "Past" : "Current"
+    )(data?.eventsByMe.list || []);
+    const groupKeys = Object.keys(groupedEvents);
+    const groupCounts = Object.values(groupedEvents).map(item => item.length);
+    if (
+      Number(data?.eventsByMe.list.length) >=
+      Number(data?.eventsByMe.totalCount)
+    ) {
+      setEndReached(true);
+    }
 
-        return Object.assign({}, fetchMoreResult, {
-          eventsByMe: {
-            ...fetchMoreResult.eventsByMe,
-            list: [...prev.eventsByMe.list, ...fetchMoreResult.eventsByMe.list]
+    return {
+      groupKeys,
+      groupCounts
+    };
+  }, [data]);
+  const loadMore = () => {
+    if (!endReached) {
+      fetchMore({
+        variables: {
+          pagination: {
+            skip: data?.eventsByMe.list.length || DEFAULT_PAGE_SKIP,
+            first: data?.eventsByMe.first || DEFAULT_PAGE_FIRST
           }
-        });
-      }
-    });
-  };
-  const renderItem = (rowProps: ListChildComponentProps) => {
-    const { index, style, data } = rowProps;
-    const eventItem = data[index];
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
 
-    if (eventItem) {
-      return (
-        <ListItem
-          style={style}
-          key={index}
-          button
-          divider
-          onClick={() => history.push(`/admin/event/${eventItem.id}`)}
-        >
-          <React.Fragment>
-            <ListItemAvatar>
-              <Avatar>
-                <FolderIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Fragment>
-                  <Typography color="inherit" display="inline">
-                    {eventItem.name}
-                  </Typography>
-                  <Typography
-                    className={classes.code}
-                    color="textSecondary"
-                    display="inline"
-                  >
-                    # {eventItem.code}
-                  </Typography>
-                </Fragment>
-              }
-              secondary={
-                <React.Fragment>
-                  <FormattedDate value={eventItem.startAt} />
-                  {" ~ "}
-                  <FormattedDate value={eventItem.endAt} />
-                </React.Fragment>
-              }
-            />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                aria-label="delete"
-                onClick={event => handleOpenDelete(event, eventItem.id)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </React.Fragment>
-        </ListItem>
-      );
+          return Object.assign({}, fetchMoreResult, {
+            eventsByMe: {
+              ...fetchMoreResult.eventsByMe,
+              list: [
+                ...prev.eventsByMe.list,
+                ...fetchMoreResult.eventsByMe.list
+              ]
+            }
+          });
+        }
+      });
     }
   };
 
   return (
     <Fragment>
       <Paper className={classes.eventList}>
-        <InfinitList
-          items={data?.eventsByMe.list || []}
-          hasNextPage={data?.eventsByMe.hasNextPage}
-          loading={loading}
-          loadNextPage={loadNextPage}
-          renderItem={renderItem}
-          itemSize={73}
+        <GroupedVirtuoso
+          style={{ height: "100%", width: "100%" }}
+          groupCounts={groupCounts}
+          overscan={200}
+          endReached={loadMore}
+          GroupContainer={({ children, ...props }) => (
+            <ListSubheader {...props} className={classes.header}>
+              {children}
+            </ListSubheader>
+          )}
+          group={index => <div>Group {groupKeys[index]}</div>}
+          ListContainer={({ listRef, children, ...props }) => {
+            return (
+              <List {...props} disablePadding ref={listRef}>
+                {children}
+              </List>
+            );
+          }}
+          ItemContainer={({ children, ...props }) => {
+            return (
+              <ListItem
+                {...props}
+                button
+                divider
+                onClick={() => {
+                  const id = data?.eventsByMe.list[props["data-index"] - 1].id;
+                  history.push(`/admin/event/${id}`);
+                }}
+              >
+                {children}
+              </ListItem>
+            );
+          }}
+          item={index => (
+            <React.Fragment>
+              <ListItemAvatar>
+                <Avatar>
+                  <FolderIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography color="inherit" display="inline">
+                      {data?.eventsByMe.list[index].name}
+                    </Typography>
+                    <Typography
+                      className={classes.code}
+                      color="textSecondary"
+                      display="inline"
+                    >
+                      # {data?.eventsByMe.list[index].code}
+                    </Typography>
+                  </Fragment>
+                }
+                secondary={
+                  <React.Fragment>
+                    <FormattedDate
+                      value={data?.eventsByMe.list[index].startAt}
+                    />
+                    {" ~ "}
+                    <FormattedDate value={data?.eventsByMe.list[index].endAt} />
+                  </React.Fragment>
+                }
+              />
+              <ListItemSecondaryAction>
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={e => {
+                    const id = data?.eventsByMe.list[index].id as string;
+                    handleOpenDelete(e, id);
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </React.Fragment>
+          )}
+          FooterContainer={({ footerRef, children }) => (
+            <ListItem ref={footerRef}>{children}</ListItem>
+          )}
+          footer={() => {
+            return endReached ? <div>-- end --</div> : <div>Loading...</div>;
+          }}
         />
 
         {loading && <CircularProgress className={classes.progress} />}

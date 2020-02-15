@@ -3642,21 +3642,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-window-infinite-loader@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@types/react-window-infinite-loader/-/react-window-infinite-loader-1.0.2.tgz#dbca3a93dbf8d781bd68003e120003571200fe90"
-  integrity sha512-vBuiQiu6nuCy122qrSF1SBD4uu2zmvq6h4s89O2fakhQJriB6EADH8m7fM/S9x3uFw3dM3UBi/w+eboHvlLPiw==
-  dependencies:
-    "@types/react" "*"
-    "@types/react-window" "*"
-
-"@types/react-window@*", "@types/react-window@1.8.1":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@types/react-window/-/react-window-1.8.1.tgz#6e1ceab2e6f2f78dbf1f774ee0e00f1bb0364bb3"
-  integrity sha512-V3k1O5cbfZIRa0VVbQ81Ekq/7w42CK1SuiB9U1oPMTxv270D9qUn7rHb3sZoqMkIJFfB1NZxaH7NRDlk+ToDsg==
-  dependencies:
-    "@types/react" "*"
-
 "@types/react@*":
   version "16.9.17"
   resolved "https://registry.npm.taobao.org/@types/react/download/@types/react-16.9.17.tgz?cache=0&sync_timestamp=1576825860124&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Freact%2Fdownload%2F%40types%2Freact-16.9.17.tgz#58f0cc0e9ec2425d1441dd7b623421a867aa253e"
@@ -9929,11 +9914,6 @@ mem@^4.0.0:
     mimic-fn "^2.0.0"
     p-is-promise "^2.0.0"
 
-"memoize-one@>=3.1.1 <6":
-  version "5.1.1"
-  resolved "https://registry.npm.taobao.org/memoize-one/download/memoize-one-5.1.1.tgz#047b6e3199b508eaec03504de71229b8eb1d75c0"
-  integrity sha1-BHtuMZm1COrsA1BN5xIpuOsddcA=
-
 memory-fs@^0.4.1:
   version "0.4.1"
   resolved "https://registry.npm.taobao.org/memory-fs/download/memory-fs-0.4.1.tgz#3a9a20b8462523e447cfbc7e8bb80ed667bfc552"
@@ -12221,18 +12201,13 @@ react-transition-group@^4.0.0, react-transition-group@^4.3.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-window-infinite-loader@1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/react-window-infinite-loader/-/react-window-infinite-loader-1.0.5.tgz#6fe094d538a88978c2c9b623052bc50cb28c2abc"
-  integrity sha512-IcPIq8lADK3zsAcqoLqQGyduicqR6jWkiK2VUX5sKSI9X/rou6OWlOEexnGyujdNTG7hSG8OVBFEhLSDs4qrxg==
-
-react-window@1.8.5:
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/react-window/-/react-window-1.8.5.tgz#a56b39307e79979721021f5d06a67742ecca52d1"
-  integrity sha512-HeTwlNa37AFa8MDZFZOKcNEkuF2YflA0hpGPiTT9vR7OawEt+GZbfM6wqkBahD3D3pUjIabQYzsnY/BSJbgq6Q==
+react-virtuoso@^0.13.1:
+  version "0.13.1"
+  resolved "https://registry.npm.taobao.org/react-virtuoso/download/react-virtuoso-0.13.1.tgz#461c51609fe02d05e124c2761795960ed010681b"
+  integrity sha1-RhxRYJ/gLQXhJMJ2F5WWDtAQaBs=
   dependencies:
-    "@babel/runtime" "^7.0.0"
-    memoize-one ">=3.1.1 <6"
+    resize-observer-polyfill "^1.5.1"
+    tslib "^1.10.0"
 
 react@16.12.0:
   version "16.12.0"
@@ -12558,6 +12533,11 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npm.taobao.org/requires-port/download/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
+
+resize-observer-polyfill@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.npm.taobao.org/resize-observer-polyfill/download/resize-observer-polyfill-1.5.1.tgz#0e9020dd3d21024458d4ebd27e23e40269810464"
+  integrity sha1-DpAg3T0hAkRY1OvSfiPkAmmBBGQ=
 
 resolve-cwd@^2.0.0:
   version "2.0.0"
