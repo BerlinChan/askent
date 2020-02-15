@@ -7399,10 +7399,10 @@ form-data@~2.3.2:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
-formik-material-ui-pickers@0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/formik-material-ui-pickers/-/formik-material-ui-pickers-0.0.4.tgz#7b532e3c36747ee6a1e98bd8bf7033dc01ed3258"
-  integrity sha512-rVKv3HVrpW/TeivCejCaPK5aVj42g7o4ItYrvTcdnN8SR2J901Dj+NDJ6IEvQklv4WkdAhpiRGRnnqsu+JeyAQ==
+formik-material-ui-pickers@0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/formik-material-ui-pickers/-/formik-material-ui-pickers-0.0.8.tgz#203e602b71eff4a1f28ef40c4c7989a63fc5ff07"
+  integrity sha512-4/5Fcxe+Bi/6g0nA+ZE1U/D+W8s8yEiictA5w/vLPDab9P9uoktXFjEy2TfKQhfeUP4krYIt6U2tNNZuhRwoIg==
 
 formik-material-ui@2.0.0-alpha.3:
   version "2.0.0-alpha.3"
@@ -12209,11 +12209,6 @@ react-transition-group@^4.0.0, react-transition-group@^4.3.0:
     dom-helpers "^5.0.1"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
-
-react-virtualized-auto-sizer@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npm.taobao.org/react-virtualized-auto-sizer/download/react-virtualized-auto-sizer-1.0.2.tgz#a61dd4f756458bbf63bd895a92379f9b70f803bd"
-  integrity sha1-ph3U91ZFi79jvYlakjefm3D4A70=
 
 react-window-infinite-loader@^1.0.5:
   version "1.0.5"

@@ -22,7 +22,7 @@
     "fingerprintjs2": "2.1.0",
     "formik": "2.1.4",
     "formik-material-ui": "2.0.0-alpha.3",
-    "formik-material-ui-pickers": "0.0.4",
+    "formik-material-ui-pickers": "0.0.8",
     "graphql-tag": "2.10.3",
     "notistack": "0.9.7",
     "ramda": "^0.27.0",
