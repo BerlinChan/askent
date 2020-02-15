@@ -195,12 +195,15 @@ export const questionMutation = extendType({
         })
 
         // can only top one question at a time
-        let topQuestion: Array<QuestionType> = []
+        let prevTopQuestion: Array<QuestionType> = []
         if (top) {
-          topQuestion = await ctx.prisma.question.findMany({
+          prevTopQuestion = await ctx.prisma.question.findMany({
             where: { top: true },
           })
-          topQuestion = topQuestion.map(item => ({ ...item, top: false }))
+          prevTopQuestion = prevTopQuestion.map(item => ({
+            ...item,
+            top: false,
+          }))
           await ctx.prisma.question.updateMany({
             where: { top: true },
             data: { top: false },
@@ -215,23 +218,26 @@ export const questionMutation = extendType({
             ? { top: false, star: false }
             : {},
         )
-        const currentTopQuestion = await ctx.prisma.question.update({
+        const updateQuestion = await ctx.prisma.question.update({
           where: { id: questionId },
           data: question,
         })
-        const updateQuestions = [currentTopQuestion].concat(topQuestion)
+        const updateQuestions = [updateQuestion].concat(prevTopQuestion)
 
-        if (reviewStatus === QuestionReviewStatus.PUBLISH) {
+        if (reviewStatus) {
+          ctx.pubsub.publish('QUESTIONS_REMOVED', {
+            eventId: findQuestion?.event.id,
+            questionsRemoved: [findQuestion],
+          })
           ctx.pubsub.publish('QUESTION_ADDED', {
             eventId: findQuestion?.event.id,
-            questionAdded: currentTopQuestion,
-          })
-        } else {
-          ctx.pubsub.publish('QUESTIONS_UPDATED', {
-            eventId: findQuestion?.event.id,
-            questionsUpdated: updateQuestions,
+            questionAdded: updateQuestion,
           })
         }
+        ctx.pubsub.publish('QUESTIONS_UPDATED', {
+          eventId: findQuestion?.event.id,
+          questionsUpdated: updateQuestions,
+        })
 
         return updateQuestions
       },
@@ -367,6 +373,7 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
       async (payload, args, ctx) => {
         const { id, roles } = ctx.connection.context as TokenPayload
         const role: RoleName = args.role
+
         if (payload.eventId === args.eventId && roles.includes(role)) {
           switch (role) {
             case RoleName.ADMIN:
@@ -397,9 +404,7 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
         }
       },
     ),
-    resolve: (payload, args, ctx) => {
-      return payload.questionAdded
-    },
+    resolve: (payload, args, ctx) => payload.questionAdded,
   },
 )
 export const questionUpdatedSubscription = subscriptionField<
@@ -412,9 +417,7 @@ export const questionUpdatedSubscription = subscriptionField<
     (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTIONS_UPDATED']),
     (payload, args, ctx) => payload.eventId === args.eventId,
   ),
-  resolve: payload => {
-    return payload.questionsUpdated
-  },
+  resolve: payload => payload.questionsUpdated,
 })
 export const questionRemovedSubscription = subscriptionField<
   'questionsRemoved'
@@ -426,9 +429,7 @@ export const questionRemovedSubscription = subscriptionField<
     (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTIONS_REMOVED']),
     (payload, args, ctx) => payload.eventId === args.eventId,
   ),
-  resolve: payload => {
-    return payload.questionsRemoved
-  },
+  resolve: payload => payload.questionsRemoved,
 })
 
 const ERROR_MESSAGE = {

@@ -32,7 +32,7 @@ query QuestionsByEvent(
     where: $where
     pagination: $pagination
     orderBy: $orderBy
-  ) {
+  ) @connection(key: "questionsByEvent", filter: ["eventId", "where"]) {
     ...PagedQuestionFields
   }
 }
@@ -63,13 +63,13 @@ subscription QuestionAdded($eventId: ID!, $role: RoleName!) {
   }
 }
 
-subscription QuestionUpdated($eventId: ID!) {
+subscription QuestionsUpdated($eventId: ID!) {
   questionsUpdated(eventId: $eventId) {
     ...QuestionFields
   }
 }
 
-subscription QuestionRemoved($eventId: ID!) {
+subscription QuestionsRemoved($eventId: ID!) {
   questionsRemoved(eventId: $eventId) {
     ...QuestionFields
   }

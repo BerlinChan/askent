@@ -16,8 +16,8 @@ import {
   useQuestionsByEventQuery,
   useUpdateEventMutation,
   useQuestionAddedSubscription,
-  useQuestionUpdatedSubscription,
-  useQuestionRemovedSubscription,
+  useQuestionsUpdatedSubscription,
+  useQuestionsRemovedSubscription,
   useDeleteAllReviewQuestionsMutation,
   usePublishAllReviewQuestionsMutation,
   AdminEventQuery,
@@ -35,6 +35,7 @@ import Confirm from "../../../../components/Confirm";
 import { SubTabs, SubTab } from "../../../../components/Tabs";
 import TabPanel from "../../../../components/TabPanel";
 import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
+import ApolloClient from "apollo-client";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -92,7 +93,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
     }
   });
-  const questionsByEventQueryUnpub = useQuestionsByEventQuery({
+  const questionsByEventQueryReview = useQuestionsByEventQuery({
     variables: {
       eventId: id as string,
       where: { reviewStatus: QuestionReviewStatus.Review },
@@ -100,7 +101,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
     }
   });
-  const questionsByEventQueryArchived = useQuestionsByEventQuery({
+  const questionsByEventQueryArchive = useQuestionsByEventQuery({
     variables: {
       eventId: id as string,
       where: { reviewStatus: QuestionReviewStatus.Archive },
@@ -110,86 +111,78 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   });
 
   // subscriptions
+  const getPrev = (
+    reviewStatus: QuestionReviewStatus
+  ): QuestionsByEventQuery | undefined => {
+    switch (reviewStatus) {
+      case QuestionReviewStatus.Review:
+        return questionsByEventQueryReview.data;
+      case QuestionReviewStatus.Publish:
+        return questionsByEventQuery.data;
+      case QuestionReviewStatus.Archive:
+        return questionsByEventQueryArchive.data;
+    }
+  };
+  const updateCache = (
+    client: ApolloClient<object>,
+    eventId: string,
+    reviewStatus: QuestionReviewStatus,
+    data: QuestionsByEventQuery
+  ) => {
+    client.writeQuery<
+      QuestionsByEventQuery,
+      Omit<QuestionsByEventQueryVariables, "pagination">
+    >({
+      query: QuestionsByEventDocument,
+      variables: {
+        eventId,
+        where: { reviewStatus }
+      },
+      data
+    });
+  };
   useQuestionAddedSubscription({
     variables: { eventId: id as string, role: RoleName.Admin },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
         const { questionAdded } = subscriptionData.data;
-        let prev: QuestionsByEventQuery | undefined;
-        switch (questionAdded.reviewStatus) {
-          case QuestionReviewStatus.Review:
-            prev = questionsByEventQueryUnpub.data;
-            break;
-          case QuestionReviewStatus.Publish:
-            prev = questionsByEventQuery.data;
-            break;
-        }
+        const prev = getPrev(questionAdded.reviewStatus);
 
         if (prev) {
           // add
-          client.writeQuery<
-            QuestionsByEventQuery,
-            QuestionsByEventQueryVariables
-          >({
-            query: QuestionsByEventDocument,
-            variables: {
-              eventId: id as string,
-              where: { reviewStatus: questionAdded.reviewStatus },
-              pagination: {
-                first: prev.questionsByEvent.first,
-                skip: prev.questionsByEvent.skip
-              }
-            },
-            data: {
-              questionsByEvent: {
-                ...prev.questionsByEvent,
-                totalCount: prev.questionsByEvent.totalCount + 1,
-                list: [questionAdded].concat(
-                  prev.questionsByEvent.list.filter(
-                    question => question.id !== questionAdded.id
-                  )
+          updateCache(client, id as string, questionAdded.reviewStatus, {
+            questionsByEvent: {
+              ...prev.questionsByEvent,
+              totalCount: prev.questionsByEvent.totalCount + 1,
+              list: [questionAdded].concat(
+                prev.questionsByEvent.list.filter(
+                  question => question.id !== questionAdded.id
                 )
-              }
+              )
             }
           });
         }
       }
     }
   });
-  useQuestionUpdatedSubscription({
+  useQuestionsUpdatedSubscription({
     variables: { eventId: id as string }
   });
-  useQuestionRemovedSubscription({
+  useQuestionsRemovedSubscription({
     variables: { eventId: id as string },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data) {
-        const prev = questionsByEventQuery.data;
+      if (subscriptionData.data?.questionsRemoved.length) {
+        const { questionsRemoved } = subscriptionData.data;
+        const prev = getPrev(questionsRemoved[0].reviewStatus);
 
         if (prev) {
           // remove
-          client.writeQuery<
-            QuestionsByEventQuery,
-            QuestionsByEventQueryVariables
-          >({
-            query: QuestionsByEventDocument,
-            variables: {
-              eventId: id as string,
-              pagination: {
-                first: prev.questionsByEvent.first,
-                skip: prev.questionsByEvent.skip
-              }
-            },
-            data: {
-              questionsByEvent: {
-                ...prev.questionsByEvent,
-                totalCount:
-                  prev.questionsByEvent.totalCount -
-                  subscriptionData.data.questionsRemoved.length,
-                list: R.without(
-                  subscriptionData.data.questionsRemoved,
-                  prev.questionsByEvent.list
-                )
-              }
+          updateCache(client, id as string, questionsRemoved[0].reviewStatus, {
+            questionsByEvent: {
+              ...prev.questionsByEvent,
+              totalCount:
+                prev.questionsByEvent.totalCount - questionsRemoved.length,
+              list: R.without(questionsRemoved, prev.questionsByEvent.list)
             }
           });
         }
@@ -283,7 +276,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           {data?.eventById.moderation ? (
             <QuestionList
               eventQuery={eventQuery}
-              questionsByEventQuery={questionsByEventQueryUnpub}
+              questionsByEventQuery={questionsByEventQueryReview}
             />
           ) : (
             <Box className={classes.moderationOffTips}>
@@ -327,7 +320,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           <TabPanel value={tabIndex} index={1}>
             <QuestionList
               eventQuery={eventQuery}
-              questionsByEventQuery={questionsByEventQueryArchived}
+              questionsByEventQuery={questionsByEventQueryArchive}
             />
           </TabPanel>
         </Paper>
