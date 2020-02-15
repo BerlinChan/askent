@@ -23,7 +23,7 @@
     "dotenv": "8.2.0",
     "graphql": "14.6.0",
     "graphql-middleware": "4.0.2",
-    "graphql-shield": "7.0.11",
+    "graphql-shield": "7.0.12",
     "jsonwebtoken": "8.5.1",
     "nexus": "0.12.0-rc.11",
     "nexus-prisma": "0.9.1",
