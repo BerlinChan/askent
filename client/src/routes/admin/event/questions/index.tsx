@@ -35,7 +35,7 @@ import Confirm from "../../../../components/Confirm";
 import { SubTabs, SubTab } from "../../../../components/Tabs";
 import TabPanel from "../../../../components/TabPanel";
 import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
-import ApolloClient from "apollo-client";
+import { DataProxy } from "apollo-cache";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -124,12 +124,12 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     }
   };
   const updateCache = (
-    client: ApolloClient<object>,
+    cache: DataProxy,
     eventId: string,
     reviewStatus: QuestionReviewStatus,
     data: QuestionsByEventQuery
   ) => {
-    client.writeQuery<
+    cache.writeQuery<
       QuestionsByEventQuery,
       Omit<QuestionsByEventQueryVariables, "pagination">
     >({
@@ -207,7 +207,18 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   };
   const handleDeleteAll = async () => {
     await deleteAllReviewQuestionsMutation({
-      variables: { eventId: id as string }
+      variables: { eventId: id as string },
+      update: (cache, mutationResult) => {
+        updateCache(cache, id as string, QuestionReviewStatus.Review, {
+          questionsByEvent: {
+            skip: DEFAULT_PAGE_SKIP,
+            first: DEFAULT_PAGE_FIRST,
+            totalCount: 0,
+            hasNextPage: false,
+            list: []
+          }
+        });
+      }
     });
     await updateEventMutation({
       variables: {
@@ -219,7 +230,18 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   };
   const handlePublishAll = async () => {
     await publishAllReviewQuestionsMutation({
-      variables: { eventId: id as string }
+      variables: { eventId: id as string },
+      update: (cache, mutationResult) => {
+        updateCache(cache, id as string, QuestionReviewStatus.Review, {
+          questionsByEvent: {
+            skip: DEFAULT_PAGE_SKIP,
+            first: DEFAULT_PAGE_FIRST,
+            totalCount: 0,
+            hasNextPage: false,
+            list: []
+          }
+        });
+      }
     });
     await updateEventMutation({
       variables: {

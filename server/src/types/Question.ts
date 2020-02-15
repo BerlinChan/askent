@@ -114,8 +114,13 @@ export const questionQuery = extendType({
           where: {
             event: { id: eventId },
             OR: [
-              { author: { id: userId } },
               { reviewStatus: QuestionReviewStatus.PUBLISH },
+              {
+                AND: [
+                  { author: { id: userId } },
+                  { reviewStatus: QuestionReviewStatus.REVIEW },
+                ],
+              },
             ],
           },
         })
@@ -198,14 +203,14 @@ export const questionMutation = extendType({
         let prevTopQuestion: Array<QuestionType> = []
         if (top) {
           prevTopQuestion = await ctx.prisma.question.findMany({
-            where: { top: true },
+            where: { top: true, event: { id: findQuestion?.event.id } },
           })
           prevTopQuestion = prevTopQuestion.map(item => ({
             ...item,
             top: false,
           }))
           await ctx.prisma.question.updateMany({
-            where: { top: true },
+            where: { top: true, event: { id: findQuestion?.event.id } },
             data: { top: false },
           })
         }
@@ -233,11 +238,12 @@ export const questionMutation = extendType({
             eventId: findQuestion?.event.id,
             questionAdded: updateQuestion,
           })
+        } else {
+          ctx.pubsub.publish('QUESTIONS_UPDATED', {
+            eventId: findQuestion?.event.id,
+            questionsUpdated: updateQuestions,
+          })
         }
-        ctx.pubsub.publish('QUESTIONS_UPDATED', {
-          eventId: findQuestion?.event.id,
-          questionsUpdated: updateQuestions,
-        })
 
         return updateQuestions
       },
@@ -387,9 +393,11 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
                 .findOne({ where: { id: payload.questionAdded.id } })
                 .author()
               return (
-                id === author.id ||
                 payload.questionAdded.reviewStatus ===
-                  QuestionReviewStatus.PUBLISH
+                  QuestionReviewStatus.PUBLISH ||
+                (id === author.id &&
+                  payload.questionAdded.reviewStatus ===
+                    QuestionReviewStatus.REVIEW)
               )
             case RoleName.WALL:
               return (
