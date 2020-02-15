@@ -7404,10 +7404,10 @@ formik-material-ui-pickers@0.0.8:
   resolved "https://registry.yarnpkg.com/formik-material-ui-pickers/-/formik-material-ui-pickers-0.0.8.tgz#203e602b71eff4a1f28ef40c4c7989a63fc5ff07"
   integrity sha512-4/5Fcxe+Bi/6g0nA+ZE1U/D+W8s8yEiictA5w/vLPDab9P9uoktXFjEy2TfKQhfeUP4krYIt6U2tNNZuhRwoIg==
 
-formik-material-ui@2.0.0-alpha.3:
-  version "2.0.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/formik-material-ui/-/formik-material-ui-2.0.0-alpha.3.tgz#1f5e4d98068686fa1c1c0cf54e75b51e92b14981"
-  integrity sha512-jVG18/cFa89j9omVPQUSJ+4kK7mJ1Wxz0hPVUKwdX+Cr1Z4Vfl1pBo6tJ0xzS2cOj4NEN35D+9Ft1DPAsDa90g==
+formik-material-ui@2.0.0-beta.1:
+  version "2.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/formik-material-ui/-/formik-material-ui-2.0.0-beta.1.tgz#adf6321c97f8617aff00ed717daba8b66d436fd7"
+  integrity sha512-Zt2pHQzaU2f9reXLS0E85ddeU8aFFtVJV42IPfVdC3lLY+kf+PUdzSiyCHFbRFVniG7SGisEoOwOZFMpkA85Qw==
 
 formik@2.1.4:
   version "2.1.4"
