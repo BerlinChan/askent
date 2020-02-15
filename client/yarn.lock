@@ -3580,10 +3580,10 @@
   resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-13.1.4.tgz#4cfd90175a200ee9b02bd6b1cd19bc349741607e"
   integrity sha1-TP2QF1ogDumwK9axzRm8NJdBYH4=
 
-"@types/node@12.12.26":
-  version "12.12.26"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.26.tgz#213e153babac0ed169d44a6d919501e68f59dea9"
-  integrity sha512-UmUm94/QZvU5xLcUlNR8hA7Ac+fGpO1EG/a8bcWVz0P0LqtxFmun9Y2bbtuckwGboWJIT70DoWq1r3hb56n3DA==
+"@types/node@12.12.27":
+  version "12.12.27"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.27.tgz#d7506f73160ad30fcebbcf5b8b7d2d976e649e42"
+  integrity sha512-odQFl/+B9idbdS0e8IxDl2ia/LP8KZLXhV3BUeI98TrZp0uoIzQPhGd+5EtzHmT0SMOIaPd7jfz6pOHLWTtl7A==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -12209,11 +12209,6 @@ react-transition-group@^4.0.0, react-transition-group@^4.3.0:
     dom-helpers "^5.0.1"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
-
-react-virtualized-auto-sizer@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npm.taobao.org/react-virtualized-auto-sizer/download/react-virtualized-auto-sizer-1.0.2.tgz#a61dd4f756458bbf63bd895a92379f9b70f803bd"
-  integrity sha1-ph3U91ZFi79jvYlakjefm3D4A70=
 
 react-window-infinite-loader@^1.0.5:
   version "1.0.5"
