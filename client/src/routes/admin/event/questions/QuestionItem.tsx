@@ -39,7 +39,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import StarIcon from "@material-ui/icons/Star";
 import TopIcon from "@material-ui/icons/Publish";
 import QuestionToggleButton, { handleToggleType } from "./QuestionToggleButton";
-import { Formik, Form } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
@@ -213,7 +213,8 @@ const QuestionListItem: React.FC<Props> = ({
         >
           {formProps => (
             <Form className={classes.editContentForm}>
-              <TextField
+              <Field
+                component={TextField}
                 inputRef={editContentInputRef}
                 fullWidth
                 id="content"

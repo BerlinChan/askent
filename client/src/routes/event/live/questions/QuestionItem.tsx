@@ -35,7 +35,7 @@ import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import TopIcon from "@material-ui/icons/Publish";
 import ScheduleIcon from "@material-ui/icons/Schedule";
-import { Formik, Form } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
@@ -167,7 +167,8 @@ const QuestionItem: React.FC<Props> = ({
         >
           {formProps => (
             <Form className={classes.editContentForm}>
-              <TextField
+              <Field
+                component={TextField}
                 inputRef={editContentInputRef}
                 fullWidth
                 id="content"

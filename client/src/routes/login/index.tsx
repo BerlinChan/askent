@@ -7,7 +7,7 @@ import {
   CardActions,
   CardContent
 } from "@material-ui/core";
-import { Formik, Form } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../components/Form";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -72,7 +72,8 @@ const Login: React.FC = () => {
         <Form className={classes.form}>
           <Card className={classes.card}>
             <CardContent>
-              <TextField
+              <Field
+                component={TextField}
                 autoFocus
                 fullWidth
                 id="email"
@@ -84,7 +85,8 @@ const Login: React.FC = () => {
                 type="email"
                 margin="normal"
               />
-              <TextField
+              <Field
+                component={TextField}
                 fullWidth
                 id="password"
                 name="password"

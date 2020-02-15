@@ -15,7 +15,7 @@ import { useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { ButtonLoading } from "../../../../components/Form";
 import { InputBase } from "formik-material-ui";
-import { Formik, Form } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
@@ -126,7 +126,8 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                   >
                     <QuestionAnswerIcon />
                   </Box>
-                  <InputBase
+                  <Field
+                    component={InputBase}
                     multiline
                     rows={3}
                     rowsMax={8}
@@ -174,7 +175,8 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                       alt={formProps.values.name}
                       src="/example.jpg"
                     />
-                    <InputBase
+                    <Field
+                      component={InputBase}
                       name="name"
                       placeholder={formatMessage({
                         id: "Your_name(optional)",

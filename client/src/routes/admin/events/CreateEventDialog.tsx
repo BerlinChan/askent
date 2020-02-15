@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
-import { Formik, Form } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../components/Form";
 import { add } from "date-fns";
@@ -111,7 +111,8 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
             <FormattedMessage id="CREAT_EVENT" />
           </DialogTitle>
           <DialogContent>
-            <TextField
+            <Field
+              component={TextField}
               autoFocus
               fullWidth
               id="name"
@@ -120,7 +121,8 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
               margin="normal"
             />
             <Box className={classes.dateRange}>
-              <DatePicker
+              <Field
+                component={DatePicker}
                 id="startAt"
                 name="startAt"
                 label="Start date"
@@ -130,7 +132,8 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
                 disableToolbar
                 disablePast
               />
-              <DatePicker
+              <Field
+                component={DatePicker}
                 id="endAt"
                 name="endAt"
                 label="End date"
@@ -141,7 +144,8 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
                 disablePast
               />
             </Box>
-            <TextField
+            <Field
+              component={TextField}
               fullWidth
               id="code"
               name="code"

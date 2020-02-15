@@ -6,7 +6,7 @@ import {
   CardActions,
   CardContent
 } from "@material-ui/core";
-import { Formik, Form } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
@@ -140,7 +140,8 @@ const Signup: React.FC = () => {
         <Form className={classes.form}>
           <Card className={classes.card}>
             <CardContent>
-              <TextField
+              <Field
+                component={TextField}
                 autoFocus
                 id="name"
                 name="name"
@@ -152,7 +153,8 @@ const Signup: React.FC = () => {
                 margin="normal"
                 disabled={loading}
               />
-              <TextField
+              <Field
+                component={TextField}
                 id="email"
                 name="email"
                 fullWidth
@@ -161,7 +163,8 @@ const Signup: React.FC = () => {
                 margin="normal"
                 disabled={loading}
               />
-              <TextField
+              <Field
+                component={TextField}
                 id="password"
                 name="password"
                 fullWidth
@@ -173,7 +176,8 @@ const Signup: React.FC = () => {
                 margin="normal"
                 disabled={loading}
               />
-              <TextField
+              <Field
+                component={TextField}
                 id="repeatPassword"
                 name="repeatPassword"
                 fullWidth
