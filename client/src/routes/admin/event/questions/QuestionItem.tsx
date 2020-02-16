@@ -1,4 +1,5 @@
 import React from "react";
+import * as R from "ramda";
 import {
   Box,
   Typography,
@@ -80,7 +81,6 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  style?: React.CSSProperties;
   question: QuestionFieldsFragment;
   eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
   handleMoreClick: (
@@ -93,7 +93,6 @@ interface Props {
 }
 
 const QuestionListItem: React.FC<Props> = ({
-  style,
   question,
   handleMoreClick,
   eventQuery,
@@ -146,7 +145,7 @@ const QuestionListItem: React.FC<Props> = ({
 
   return (
     <ListItem
-      style={style}
+      component="div"
       className={`${classes.listItem} ${
         question.star ? classes.starQuestion : ""
       } ${question.top ? classes.topQuestion : ""}`}
@@ -263,7 +262,6 @@ const QuestionListItem: React.FC<Props> = ({
           <Typography className={classes.questionContent} variant="body1">
             {question.content}
           </Typography>
-
           <Box className={classes.questionActionBox}>
             {(question.reviewStatus === QuestionReviewStatus.Publish ||
               question.reviewStatus === QuestionReviewStatus.Archive) && (
@@ -275,7 +273,10 @@ const QuestionListItem: React.FC<Props> = ({
                   id: "Unstar",
                   defaultMessage: "Unstar"
                 })}
-                offTitle={formatMessage({ id: "Star", defaultMessage: "Star" })}
+                offTitle={formatMessage({
+                  id: "Star",
+                  defaultMessage: "Star"
+                })}
                 onIcon={<StarIcon fontSize="inherit" color="secondary" />}
                 offIcon={<StarIcon fontSize="inherit" color="inherit" />}
                 handleToggle={handleStarClick}
@@ -351,4 +352,11 @@ const QuestionListItem: React.FC<Props> = ({
   );
 };
 
-export default QuestionListItem;
+export default React.memo(QuestionListItem, (prevProps, nextProps) => {
+  /*
+  return true if passing nextProps to render would return
+  the same result as passing prevProps to render,
+  otherwise return false
+  */
+  return R.equals(prevProps, nextProps);
+});

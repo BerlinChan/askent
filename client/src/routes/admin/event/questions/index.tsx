@@ -33,7 +33,6 @@ import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
 import Confirm from "../../../../components/Confirm";
 import { SubTabs, SubTab } from "../../../../components/Tabs";
-import TabPanel from "../../../../components/TabPanel";
 import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
 import { DataProxy } from "apollo-cache";
 
@@ -333,18 +332,14 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           </Box>
         </Box>
         <Paper className={classes.gridItemPaper}>
-          <TabPanel value={tabIndex} index={0}>
-            <QuestionList
-              eventQuery={eventQuery}
-              questionsByEventQuery={questionsByEventQuery}
-            />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={1}>
-            <QuestionList
-              eventQuery={eventQuery}
-              questionsByEventQuery={questionsByEventQueryArchive}
-            />
-          </TabPanel>
+          <QuestionList
+            eventQuery={eventQuery}
+            questionsByEventQuery={
+              tabIndex === 0
+                ? questionsByEventQuery
+                : questionsByEventQueryArchive
+            }
+          />
         </Paper>
       </Grid>
     </Grid>
