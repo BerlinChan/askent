@@ -13,8 +13,6 @@ import {
   CircularProgress
 } from "@material-ui/core";
 import { GroupedVirtuoso } from "react-virtuoso";
-import FolderIcon from "@material-ui/icons/Folder";
-import DeleteIcon from "@material-ui/icons/Delete";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   EventsByMeQuery,
@@ -27,6 +25,36 @@ import { useHistory } from "react-router-dom";
 import { FormattedMessage, FormattedDate } from "react-intl";
 import Confirm from "../../../components/Confirm";
 import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../constant";
+import { isAfter, isBefore } from "date-fns";
+import DeleteIcon from "@material-ui/icons/Delete";
+import DvrIcon from "@material-ui/icons/Dvr";
+import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
+import EventIcon from "@material-ui/icons/Event";
+import EventAvailableIcon from "@material-ui/icons/EventAvailable";
+import EventBusyIcon from "@material-ui/icons/EventBusy";
+
+enum EventDateStatus {
+  Current,
+  Past,
+  Future
+}
+function getEventDateStatus(
+  event: AdminEventFieldsFragment | undefined,
+  currentDate: Date
+): EventDateStatus | undefined {
+  if (event) {
+    if (
+      isAfter(new Date(event.startAt), currentDate) &&
+      isBefore(new Date(event.endAt), currentDate)
+    ) {
+      return EventDateStatus.Current;
+    } else if (isAfter(new Date(event.endAt), currentDate)) {
+      return EventDateStatus.Past;
+    } else if (isBefore(new Date(event.startAt), currentDate)) {
+      return EventDateStatus.Future;
+    }
+  }
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,7 +65,15 @@ const useStyles = makeStyles((theme: Theme) =>
     header: {
       backgroundColor: theme.palette.background.paper
     },
-    code: { marginLeft: theme.spacing(2) }
+    listItem: {
+      "& .actionHover": { display: "none" },
+      "&:hover .actionHover": { display: "inline-flex" }
+    },
+    code: { marginLeft: theme.spacing(2) },
+    actionHoverIcon: {
+      fontSize: theme.typography.pxToRem(18),
+      color: theme.palette.action.disabled
+    }
   })
 );
 
@@ -55,6 +91,18 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   });
   const [deleteEventMutation] = useDeleteEventMutation();
 
+  const handlePhoneClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: string
+  ) => {
+    event.stopPropagation();
+  };
+  const handleWallClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: string
+  ) => {
+    event.stopPropagation();
+  };
   const handleOpenDelete = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     id: string
@@ -127,7 +175,6 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
         <GroupedVirtuoso
           style={{ height: "100%", width: "100%" }}
           groupCounts={groupCounts}
-          overscan={50}
           endReached={loadMore}
           GroupContainer={({ children, ...props }) => (
             <ListSubheader {...props} className={classes.header}>
@@ -135,58 +182,79 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
             </ListSubheader>
           )}
           group={index => <div>Group {groupKeys[index]}</div>}
-          item={index => (
-            <ListItem
-              button
-              divider
-              onClick={() => {
-                history.push(`/admin/event/${data?.eventsByMe.list[index].id}`);
-              }}
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  <FolderIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <Fragment>
-                    <Typography color="inherit" display="inline">
-                      {data?.eventsByMe.list[index].name}
-                    </Typography>
-                    <Typography
-                      className={classes.code}
-                      color="textSecondary"
-                      display="inline"
+          item={index => {
+            const event = data?.eventsByMe.list[index];
+
+            return (
+              <ListItem
+                button
+                divider
+                className={classes.listItem}
+                onClick={() => {
+                  history.push(`/admin/event/${event?.id}`);
+                }}
+              >
+                <React.Fragment>
+                  <ListItemAvatar>
+                    <Avatar>
+                      {getEventDateStatus(event, new Date()) ===
+                      EventDateStatus.Current ? (
+                        <EventAvailableIcon />
+                      ) : getEventDateStatus(event, new Date()) ===
+                        EventDateStatus.Future ? (
+                        <EventIcon />
+                      ) : (
+                        <EventBusyIcon />
+                      )}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      <Fragment>
+                        <Typography color="inherit" display="inline">
+                          {event?.name}
+                        </Typography>
+                        <Typography
+                          className={classes.code}
+                          color="textSecondary"
+                          display="inline"
+                        >
+                          # {event?.code}
+                        </Typography>
+                      </Fragment>
+                    }
+                    secondary={
+                      <React.Fragment>
+                        <FormattedDate value={event?.startAt} />
+                        {" ~ "}
+                        <FormattedDate value={event?.endAt} />
+                      </React.Fragment>
+                    }
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      className="actionHover"
+                      onClick={e => handlePhoneClick(e, event?.id as string)}
                     >
-                      # {data?.eventsByMe.list[index].code}
-                    </Typography>
-                  </Fragment>
-                }
-                secondary={
-                  <React.Fragment>
-                    <FormattedDate
-                      value={data?.eventsByMe.list[index].startAt}
-                    />
-                    {" ~ "}
-                    <FormattedDate value={data?.eventsByMe.list[index].endAt} />
-                  </React.Fragment>
-                }
-              />
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={e => {
-                    const id = data?.eventsByMe.list[index].id as string;
-                    handleOpenDelete(e, id);
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          )}
+                      <PhoneAndroidIcon className={classes.actionHoverIcon} />
+                    </IconButton>
+                    <IconButton
+                      className="actionHover"
+                      onClick={e => handleWallClick(e, event?.id as string)}
+                    >
+                      <DvrIcon className={classes.actionHoverIcon} />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete"
+                      onClick={e => handleOpenDelete(e, event?.id as string)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </React.Fragment>
+              </ListItem>
+            );
+          }}
           footer={() => {
             return endReached ? (
               <div>-- end --</div>

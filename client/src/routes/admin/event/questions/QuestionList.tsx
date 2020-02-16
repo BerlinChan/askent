@@ -124,7 +124,6 @@ const QuestionList: React.FC<Props> = ({
       <Virtuoso
         style={{ height: "100%", width: "100%" }}
         totalCount={orderList.length}
-        overscan={50}
         endReached={loadMore}
         item={index => {
           return (
