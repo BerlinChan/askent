@@ -5,7 +5,6 @@ import {
   Typography,
   Avatar,
   IconButton,
-  List,
   ListSubheader,
   ListItem,
   ListItemAvatar,
@@ -32,20 +31,13 @@ import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../constant";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     eventList: {
-      position: "relative",
       margin: theme.spacing(2, 0),
       flex: 1
     },
     header: {
       backgroundColor: theme.palette.background.paper
     },
-    code: { marginLeft: theme.spacing(2) },
-    progress: {
-      position: "absolute",
-      top: 0,
-      left: "50%",
-      zIndex: 1
-    }
+    code: { marginLeft: theme.spacing(2) }
   })
 );
 
@@ -53,7 +45,7 @@ interface Props {
   eventsByMeQueryResult: QueryResult<EventsByMeQuery, EventsByMeQueryVariables>;
 }
 
-const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
+const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   const classes = useStyles();
   const history = useHistory();
   const { data, loading, refetch, fetchMore } = eventsByMeQueryResult;
@@ -87,7 +79,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
     // for the users loaded so far;
     // this should be performed on the server too
     const groupedEvents = R.groupBy<AdminEventFieldsFragment>(item =>
-      item.startAt ? "Past" : "Current"
+      item.name.indexOf("5") >= 0 ? "5" : "Current"
     )(data?.eventsByMe.list || []);
     const groupKeys = Object.keys(groupedEvents);
     const groupCounts = Object.values(groupedEvents).map(item => item.length);
@@ -135,7 +127,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
         <GroupedVirtuoso
           style={{ height: "100%", width: "100%" }}
           groupCounts={groupCounts}
-          overscan={200}
+          overscan={50}
           endReached={loadMore}
           GroupContainer={({ children, ...props }) => (
             <ListSubheader {...props} className={classes.header}>
@@ -143,30 +135,14 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
             </ListSubheader>
           )}
           group={index => <div>Group {groupKeys[index]}</div>}
-          ListContainer={({ listRef, children, ...props }) => {
-            return (
-              <List {...props} disablePadding ref={listRef}>
-                {children}
-              </List>
-            );
-          }}
-          ItemContainer={({ children, ...props }) => {
-            return (
-              <ListItem
-                {...props}
-                button
-                divider
-                onClick={() => {
-                  const id = data?.eventsByMe.list[props["data-index"] - 1].id;
-                  history.push(`/admin/event/${id}`);
-                }}
-              >
-                {children}
-              </ListItem>
-            );
-          }}
           item={index => (
-            <React.Fragment>
+            <ListItem
+              button
+              divider
+              onClick={() => {
+                history.push(`/admin/event/${data?.eventsByMe.list[index].id}`);
+              }}
+            >
               <ListItemAvatar>
                 <Avatar>
                   <FolderIcon />
@@ -209,17 +185,18 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult, ...props }) => {
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>
-            </React.Fragment>
-          )}
-          FooterContainer={({ footerRef, children }) => (
-            <ListItem ref={footerRef}>{children}</ListItem>
+            </ListItem>
           )}
           footer={() => {
-            return endReached ? <div>-- end --</div> : <div>Loading...</div>;
+            return endReached ? (
+              <div>-- end --</div>
+            ) : loading ? (
+              <CircularProgress />
+            ) : (
+              <div>-- more --</div>
+            );
           }}
         />
-
-        {loading && <CircularProgress className={classes.progress} />}
       </Paper>
 
       <Confirm
