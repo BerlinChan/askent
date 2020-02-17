@@ -38,7 +38,9 @@ const Event: React.FC = () => {
       <PrivateRoute path={`${path}/live`}>
         <LiveComponent />
       </PrivateRoute>
-      <Route path={`${path}/wall`} component={WallComponent} />
+      <PrivateRoute path={`${path}/wall`}>
+        <WallComponent />
+      </PrivateRoute>
     </Switch>
   );
 };

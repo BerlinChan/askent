@@ -25,36 +25,13 @@ import { useHistory } from "react-router-dom";
 import { FormattedMessage, FormattedDate } from "react-intl";
 import Confirm from "../../../components/Confirm";
 import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../constant";
-import { isAfter, isBefore } from "date-fns";
 import DeleteIcon from "@material-ui/icons/Delete";
 import DvrIcon from "@material-ui/icons/Dvr";
 import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
 import EventIcon from "@material-ui/icons/Event";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import EventBusyIcon from "@material-ui/icons/EventBusy";
-
-enum EventDateStatus {
-  Current,
-  Past,
-  Future
-}
-function getEventDateStatus(
-  event: AdminEventFieldsFragment | undefined,
-  currentDate: Date
-): EventDateStatus | undefined {
-  if (event) {
-    if (
-      isAfter(new Date(event.startAt), currentDate) &&
-      isBefore(new Date(event.endAt), currentDate)
-    ) {
-      return EventDateStatus.Current;
-    } else if (isAfter(new Date(event.endAt), currentDate)) {
-      return EventDateStatus.Past;
-    } else if (isBefore(new Date(event.startAt), currentDate)) {
-      return EventDateStatus.Future;
-    }
-  }
-}
+import { EventDateStatus, getEventDateStatus } from "../../../utils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -96,12 +73,14 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     id: string
   ) => {
     event.stopPropagation();
+    window.open(`/event/${id}`);
   };
   const handleWallClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     id: string
   ) => {
     event.stopPropagation();
+    window.open(`/event/${id}/wall`);
   };
   const handleOpenDelete = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
