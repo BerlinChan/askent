@@ -3,12 +3,10 @@ fragment PagedQuestionFields on PagedQuestion {
   skip
   totalCount
   hasNextPage
-  list {
-    ...QuestionFields
-  }
 }
 fragment QuestionFields on Question {
   id
+  createdAt
   updatedAt
   voteCount
   content
@@ -34,6 +32,9 @@ query QuestionsByEvent(
     orderBy: $orderBy
   ) @connection(key: "questionsByEvent", filter: ["eventId", "where"]) {
     ...PagedQuestionFields
+    list {
+      ...QuestionFields
+    }
   }
 }
 

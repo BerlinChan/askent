@@ -14,6 +14,12 @@ export const isAuthedAudience = rule({ cache: 'contextual' })(
     return Boolean(getUser?.roles.includes(RoleName.AUDIENCE) && getUser?.id)
   },
 )
+export const isAuthedWall = rule({ cache: 'contextual' })(
+  (parent, args, ctx) => {
+    const getUser = getAuthedUser(ctx)
+    return Boolean(getUser?.roles.includes(RoleName.WALL) && getUser?.id)
+  },
+)
 
 export default {
   Query: {

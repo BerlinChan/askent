@@ -139,9 +139,9 @@ const QuestionItem: React.FC<Props> = ({
         }
         secondary={
           <React.Fragment>
-            <FormattedDate value={question.updatedAt} />
+            <FormattedDate value={question.createdAt} />
             {", "}
-            <FormattedTime value={question.updatedAt} />
+            <FormattedTime value={question.createdAt} />
           </React.Fragment>
         }
       />

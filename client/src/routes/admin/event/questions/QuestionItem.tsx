@@ -39,7 +39,9 @@ import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
 import StarIcon from "@material-ui/icons/Star";
 import TopIcon from "@material-ui/icons/Publish";
-import QuestionToggleButton, { handleToggleType } from "./QuestionToggleButton";
+import QuestionToggleButton, {
+  handleToggleType
+} from "../../../../components/QuestionToggleButton";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
@@ -185,9 +187,9 @@ const QuestionListItem: React.FC<Props> = ({
                 variant="body2"
                 color="inherit"
               >
-                <FormattedDate value={question.updatedAt} />
+                <FormattedDate value={question.createdAt} />
                 {", "}
-                <FormattedTime value={question.updatedAt} />
+                <FormattedTime value={question.createdAt} />
               </Typography>
             </React.Fragment>
           }

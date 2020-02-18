@@ -10,6 +10,7 @@ import Loading from "../../components/Loading";
 import loadable from "@loadable/component";
 import PrivateRoute from "../../components/PrivateRoute";
 import { useEventForLoginQuery } from "../../generated/graphqlHooks";
+import { WallThemeProvider } from "../../components/Providers";
 
 const EventLoginComponent = loadable(() => import("./login"), {
   fallback: <Loading />
@@ -39,7 +40,9 @@ const Event: React.FC = () => {
         <LiveComponent />
       </PrivateRoute>
       <PrivateRoute path={`${path}/wall`}>
-        <WallComponent />
+        <WallThemeProvider>
+          <WallComponent />
+        </WallThemeProvider>
       </PrivateRoute>
     </Switch>
   );

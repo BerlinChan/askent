@@ -149,6 +149,40 @@ export const questionQuery = extendType({
         })
       },
     })
+    t.field('wallQuestionsByEvent', {
+      type: 'PagedQuestion',
+      args: {
+        eventId: idArg({ required: true }),
+        pagination: arg({ type: 'PaginationInputType', required: true }),
+        orderBy: arg({ type: 'QuestionOrderByInput' }),
+      },
+      resolve: async (root, args, ctx) => {
+        const allQuestions = await ctx.prisma.question.findMany({
+          where: {
+            event: { id: args.eventId },
+            reviewStatus: QuestionReviewStatus.PUBLISH,
+          },
+        })
+        const totalCount = allQuestions.length
+        const { first, skip } = args.pagination
+        const questions = await ctx.prisma.question.findMany({
+          where: {
+            event: { id: args.eventId },
+            reviewStatus: QuestionReviewStatus.PUBLISH,
+          },
+          orderBy: args.orderBy,
+          ...args.pagination,
+        })
+
+        return {
+          list: questions,
+          hasNextPage: first + skip < totalCount,
+          totalCount,
+          first,
+          skip,
+        }
+      },
+    })
   },
 })
 

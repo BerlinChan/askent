@@ -1,6 +1,6 @@
 import { rule, or, not, and, deny } from 'graphql-shield'
 import { getAuthedUser } from '../../utils'
-import { isAuthedAdmin, isAuthedAudience } from './User'
+import { isAuthedAdmin, isAuthedAudience, isAuthedWall } from './User'
 import { isEventOwnerByArgId } from './Event'
 
 export const isQuestionAuthor = rule({ cache: 'contextual' })(
@@ -78,9 +78,10 @@ export default {
   Query: {
     questions: deny,
 
-    questionsByMeAudience: isAuthedAudience,
     questionsByEvent: isAuthedAdmin,
+    questionsByMeAudience: isAuthedAudience,
     liveQuestionsByEvent: isAuthedAudience,
+    wallQuestionsByEvent: isAuthedWall,
   },
   Mutation: {
     createQuestion: isAuthedAudience,

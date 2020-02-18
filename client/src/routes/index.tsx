@@ -3,7 +3,7 @@ import loadable from "@loadable/component";
 import PrivateRoute from "../components/PrivateRoute";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../components/Loading";
-import Providers from "../components/Providers";
+import { MasterProvider } from "../components/Providers";
 
 const HomeComponent = loadable(() => import("./home"), {
   fallback: <Loading />
@@ -35,7 +35,7 @@ const Error404Component = loadable(() => import("./error/404"), {
 
 const Router = () => {
   return (
-    <Providers>
+    <MasterProvider>
       <BrowserRouter>
         <Switch>
           <Route exact path="/" component={HomeComponent} />
@@ -57,7 +57,7 @@ const Router = () => {
           <Route path="*" component={Error404Component} />
         </Switch>
       </BrowserRouter>
-    </Providers>
+    </MasterProvider>
   );
 };
 

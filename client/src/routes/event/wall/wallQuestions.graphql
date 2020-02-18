@@ -1,0 +1,48 @@
+fragment WallQuestionFields on Question {
+  id
+  createdAt
+  updatedAt
+  content
+  reviewStatus
+  top
+  voteCount
+  author {
+    id
+    name
+  }
+}
+
+query WallQuestionsByEvent(
+  $eventId: ID!
+  $pagination: PaginationInputType!
+  $orderBy: QuestionOrderByInput
+) {
+  wallQuestionsByEvent(
+    eventId: $eventId
+    pagination: $pagination
+    orderBy: $orderBy
+  ) {
+    ...PagedQuestionFields
+    list {
+      ...WallQuestionFields
+    }
+  }
+}
+
+subscription WallQuestionAdded($eventId: ID!, $role: RoleName!) {
+  questionAdded(eventId: $eventId, role: $role) {
+    ...WallQuestionFields
+  }
+}
+
+subscription WallQuestionUpdated($eventId: ID!) {
+  questionsUpdated(eventId: $eventId) {
+    ...WallQuestionFields
+  }
+}
+
+subscription WallQuestionRemoved($eventId: ID!) {
+  questionsRemoved(eventId: $eventId) {
+    ...WallQuestionFields
+  }
+}
