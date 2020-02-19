@@ -73,6 +73,7 @@ const useStyles = makeStyles((theme: Theme) =>
     questionActionBox: {
       position: "absolute",
       display: "flex",
+      alignItems: "center",
       top: 0,
       right: 8,
       height: 48

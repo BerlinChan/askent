@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export function useMouseMove(timeout: number = 5000) {
+export function useMouseMove(timeout: number = 2000) {
   const [mouseEvent, setMouseMove] = useState<MouseEvent | null>(null);
   const [mouseStop, setMouseStop] = useState<boolean>(true);
   let timer: number | null = null;
