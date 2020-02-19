@@ -29,31 +29,6 @@ export const Event = objectType({
     t.model.endAt()
     t.model.moderation()
     t.model.questions()
-
-    t.int('liveQuestionCount', {
-      resolve: async (root, args, ctx) => {
-        const questionsForLive = await ctx.prisma.question.findMany({
-          where: {
-            event: { id: root.id },
-            reviewStatus: QuestionReviewStatus.PUBLISH,
-          },
-        })
-
-        //TODO:aggregate count not yet implemented, https://github.com/prisma/prisma-client-js/issues/5
-        return questionsForLive.length
-      },
-    })
-    t.int('audienceCount', {
-      resolve: async ({ id }, args, ctx) => {
-        const audiences = await ctx.prisma.event
-          .findOne({
-            where: { id },
-          })
-          .audiences()
-
-        return audiences.length
-      },
-    })
   },
 })
 export const PaginationInputType = inputObjectType({
@@ -114,7 +89,7 @@ export const eventQuery = extendType({
       },
       resolve: async (root, { searchString, pagination, orderBy }, ctx) => {
         const userId = getAuthedUser(ctx)?.id
-        // TODO: aggregation count
+        // TODO:aggregate count not yet implemented, https://github.com/prisma/prisma-client-js/issues/5
         const allEvents = await ctx.prisma.event.findMany({
           where: {
             owner: { id: userId },

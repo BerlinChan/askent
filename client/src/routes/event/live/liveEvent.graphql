@@ -15,8 +15,6 @@ fragment LiveEventFields on Event {
   startAt
   endAt
   moderation
-  audienceCount
-  liveQuestionCount
 }
 
 query LiveEvent($eventId: ID!) {

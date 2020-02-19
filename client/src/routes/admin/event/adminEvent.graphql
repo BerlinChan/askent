@@ -6,7 +6,6 @@ query AdminEvent($eventId: ID!) {
     startAt
     endAt
     moderation
-    audienceCount
   }
 }
 
