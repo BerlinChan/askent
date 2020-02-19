@@ -1,5 +1,4 @@
 import React from "react";
-import * as R from "ramda";
 import { useParams } from "react-router-dom";
 import {
   Grid,
@@ -181,7 +180,10 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
               ...prev.questionsByEvent,
               totalCount:
                 prev.questionsByEvent.totalCount - questionsRemoved.length,
-              list: R.without(questionsRemoved, prev.questionsByEvent.list)
+              list: prev.questionsByEvent.list.filter(
+                preQuestion =>
+                  !questionsRemoved.find(item => item.id === preQuestion.id)
+              )
             }
           });
         }

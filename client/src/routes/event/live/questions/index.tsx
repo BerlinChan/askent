@@ -150,9 +150,11 @@ const LiveQuestions: React.FC<Props> = ({
         query: LiveQuestionsByEventDocument,
         variables: { eventId: id as string },
         data: {
-          liveQuestionsByEvent: R.without(
-            subscriptionData.data?.questionsRemoved || [],
-            questions?.liveQuestionsByEvent || []
+          liveQuestionsByEvent: (questions?.liveQuestionsByEvent || []).filter(
+            preQuestion =>
+              !(subscriptionData.data?.questionsRemoved || []).find(
+                item => item.id === preQuestion.id
+              )
           )
         }
       });
