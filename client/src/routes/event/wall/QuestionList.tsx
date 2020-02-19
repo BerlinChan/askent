@@ -26,12 +26,10 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
       R.descend<WallQuestionFieldsFragment>(R.prop("top"))
     ])(data?.wallQuestionsByEvent.list || []);
 
-    if (
+    setEndReached(
       Number(data?.wallQuestionsByEvent.list.length) >=
-      Number(data?.wallQuestionsByEvent.totalCount)
-    ) {
-      setEndReached(true);
-    }
+        Number(data?.wallQuestionsByEvent.totalCount)
+    );
 
     return orderList;
   }, [data]);

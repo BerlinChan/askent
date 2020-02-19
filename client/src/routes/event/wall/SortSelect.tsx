@@ -1,24 +1,45 @@
 import React from "react";
-import { Box, Typography, Menu, MenuItem } from "@material-ui/core";
+import { Typography, Menu, MenuItem } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { FormattedMessage, useIntl } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
+import { QueryLazyOptions } from "@apollo/react-hooks";
 import {
   WallQuestionsByEventQuery,
-  WallQuestionsByEventQueryVariables
+  WallQuestionsByEventQueryVariables,
+  OrderByArg
 } from "../../../generated/graphqlHooks";
+import { useParams } from "react-router-dom";
+import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    sortSelectBox: {
-      display: "flex",
-      alignItems: "center"
-    },
-    select: {
-      display: "inline",
+    sortSelect: {
+      display: "inline-flex",
+      alignItems: "center",
       cursor: "pointer",
-      marginLeft: theme.spacing(1)
+      color: "inherit",
+      marginLeft: theme.spacing(1),
+      fontSize: theme.typography.pxToRem(18),
+      "& .arrowIcon": {
+        color: "inherit",
+        fontSize: theme.typography.pxToRem(16),
+        opacity: 0,
+        transition: theme.transitions.create("opacity")
+      },
+      "&:hover .arrowIcon": {
+        opacity: 1
+      }
+    },
+    icon: {
+      color: "inherit",
+      fontSize: theme.typography.pxToRem(18),
+      marginRight: theme.typography.pxToRem(4)
+    },
+    menuItem: {
+      width: theme.typography.pxToRem(180)
     }
   })
 );
@@ -30,15 +51,23 @@ enum TopSort {
   Starred
 }
 interface Props {
+  wallQuestionsByEventLazyQuery: (
+    options?: QueryLazyOptions<WallQuestionsByEventQueryVariables> | undefined
+  ) => void;
   wallQuestionsResult: QueryResult<
     WallQuestionsByEventQuery,
     WallQuestionsByEventQueryVariables
   >;
 }
 
-const SortSelect: React.FC<Props> = ({ wallQuestionsResult }) => {
+const SortSelect: React.FC<Props> = ({
+  wallQuestionsByEventLazyQuery,
+  wallQuestionsResult
+}) => {
   const classes = useStyles();
+  const { id } = useParams();
   const { formatMessage } = useIntl();
+  const { data } = wallQuestionsResult;
   const [sortMenu, setSortMenu] = React.useState<{
     selected: TopSort;
     anchorEl: null | HTMLElement;
@@ -66,6 +95,23 @@ const SortSelect: React.FC<Props> = ({ wallQuestionsResult }) => {
     setSortMenu({ ...sortMenu, anchorEl: event.currentTarget });
   };
   const handleSortChange = (selected: TopSort) => {
+    wallQuestionsByEventLazyQuery({
+      variables: {
+        eventId: id as string,
+        star: selected === TopSort.Starred ? true : undefined,
+        pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP },
+        orderBy:
+          selected === TopSort.Recent
+            ? { createdAt: OrderByArg.Desc }
+            : selected === TopSort.Oldest
+            ? { createdAt: OrderByArg.Asc }
+            : selected === TopSort.Starred
+            ? { createdAt: OrderByArg.Desc }
+            : selected === TopSort.Popular
+            ? {}
+            : {}
+      }
+    });
     setSortMenu({ selected, anchorEl: null });
   };
   const handleSortClose = () => {
@@ -73,16 +119,12 @@ const SortSelect: React.FC<Props> = ({ wallQuestionsResult }) => {
   };
 
   return (
-    <Box className={classes.sortSelectBox}>
-      <QuestionAnswerIcon color="inherit" />
-      <Typography
-        variant="h6"
-        color="inherit"
-        className={classes.select}
-        onClick={handleSortOpen}
-      >
+    <React.Fragment>
+      <Typography className={classes.sortSelect} onClick={handleSortOpen}>
+        <QuestionAnswerIcon className={classes.icon} />
         <FormattedMessage id="Top_questions" defaultMessage="Top questions" />(
-        {wallQuestionsResult.data?.wallQuestionsByEvent.totalCount})
+        {data?.wallQuestionsByEvent.totalCount})
+        <ArrowDropDownIcon className="arrowIcon" />
       </Typography>
 
       <Menu
@@ -102,6 +144,7 @@ const SortSelect: React.FC<Props> = ({ wallQuestionsResult }) => {
       >
         {menuList.map(item => (
           <MenuItem
+            className={classes.menuItem}
             key={item.value}
             selected={sortMenu.selected === item.value}
             onClick={() => handleSortChange(item.value)}
@@ -110,7 +153,7 @@ const SortSelect: React.FC<Props> = ({ wallQuestionsResult }) => {
           </MenuItem>
         ))}
       </Menu>
-    </Box>
+    </React.Fragment>
   );
 };
 

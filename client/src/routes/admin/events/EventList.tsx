@@ -110,12 +110,11 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     )(data?.eventsByMe.list || []);
     const groupKeys = Object.keys(groupedEvents);
     const groupCounts = Object.values(groupedEvents).map(item => item.length);
-    if (
+
+    setEndReached(
       Number(data?.eventsByMe.list.length) >=
-      Number(data?.eventsByMe.totalCount)
-    ) {
-      setEndReached(true);
-    }
+        Number(data?.eventsByMe.totalCount)
+    );
 
     return {
       groupKeys,

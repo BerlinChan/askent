@@ -5,6 +5,7 @@ fragment WallQuestionFields on Question {
   content
   reviewStatus
   top
+  star
   voteCount
   author {
     id
@@ -14,11 +15,13 @@ fragment WallQuestionFields on Question {
 
 query WallQuestionsByEvent(
   $eventId: ID!
+  $star: Boolean
   $pagination: PaginationInputType!
   $orderBy: QuestionOrderByInput
 ) {
   wallQuestionsByEvent(
     eventId: $eventId
+    star: $star
     pagination: $pagination
     orderBy: $orderBy
   ) {

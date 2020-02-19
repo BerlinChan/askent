@@ -6,6 +6,7 @@ import {
   idArg,
   arg,
   subscriptionField,
+  booleanArg,
 } from 'nexus'
 import {
   Question as QuestionType,
@@ -153,6 +154,7 @@ export const questionQuery = extendType({
       type: 'PagedQuestion',
       args: {
         eventId: idArg({ required: true }),
+        star: booleanArg(),
         pagination: arg({ type: 'PaginationInputType', required: true }),
         orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
@@ -160,6 +162,7 @@ export const questionQuery = extendType({
         const allQuestions = await ctx.prisma.question.findMany({
           where: {
             event: { id: args.eventId },
+            star: args.star,
             reviewStatus: QuestionReviewStatus.PUBLISH,
           },
         })
@@ -168,6 +171,7 @@ export const questionQuery = extendType({
         const questions = await ctx.prisma.question.findMany({
           where: {
             event: { id: args.eventId },
+            star: args.star,
             reviewStatus: QuestionReviewStatus.PUBLISH,
           },
           orderBy: args.orderBy,

@@ -8,7 +8,7 @@ import SortSelect from "./SortSelect";
 import {
   useLiveEventQuery,
   useLiveEventUpdatedSubscription,
-  useWallQuestionsByEventQuery,
+  useWallQuestionsByEventLazyQuery,
   OrderByArg
 } from "../../../generated/graphqlHooks";
 import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../constant";
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
     wallGrid: {
       width: "100%",
       height: "100vh",
-      padding: theme.typography.pxToRem(15),
+      padding: theme.typography.pxToRem(24),
       color: theme.palette.text.primary,
       background: "radial-gradient(#3b5379 0%, #0e1935 100%)"
     },
@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       flexDirection: "column",
       height: "100%",
-      padding: theme.typography.pxToRem(15)
+      padding: theme.typography.pxToRem(24),
+      position: "relative"
     },
     infoBox: {
       textAlign: "center",
@@ -35,6 +36,12 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       flexDirection: "column",
       justifyContent: "center"
+    },
+    rightTitleBox: {
+      position: "absolute",
+      top: `-${theme.typography.pxToRem(6)}`,
+      left: theme.typography.pxToRem(40),
+      color: theme.palette.text.secondary
     },
     listBox: { flex: 1 }
   })
@@ -50,13 +57,10 @@ const EventWall: React.FC<Props> = () => {
   const liveEventQueryResult = useLiveEventQuery({
     variables: { eventId: id as string }
   });
-  const wallQuestionsResult = useWallQuestionsByEventQuery({
-    variables: {
-      eventId: id as string,
-      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP },
-      orderBy: { createdAt: OrderByArg.Desc }
-    }
-  });
+  const [
+    wallQuestionsByEventLazyQuery,
+    wallQuestionsResult
+  ] = useWallQuestionsByEventLazyQuery();
 
   useLiveEventUpdatedSubscription({
     variables: { eventId: id as string }
@@ -71,7 +75,15 @@ const EventWall: React.FC<Props> = () => {
   });
   React.useEffect(() => {
     onResize();
-  }, []);
+    wallQuestionsByEventLazyQuery({
+      variables: {
+        eventId: id as string,
+        pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP },
+        orderBy: { createdAt: OrderByArg.Desc }
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   return (
     <Grid container className={classes.wallGrid}>
@@ -96,7 +108,12 @@ const EventWall: React.FC<Props> = () => {
         </Box>
       </Grid>
       <Grid item xs={9} className={classes.gridItem}>
-        <SortSelect wallQuestionsResult={wallQuestionsResult} />
+        <Box className={classes.rightTitleBox}>
+          <SortSelect
+            wallQuestionsByEventLazyQuery={wallQuestionsByEventLazyQuery}
+            wallQuestionsResult={wallQuestionsResult}
+          />
+        </Box>
         <Box className={classes.listBox}>
           <QuestionList questionsQueryResult={wallQuestionsResult} />
         </Box>

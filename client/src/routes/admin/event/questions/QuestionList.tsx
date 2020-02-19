@@ -84,12 +84,10 @@ const QuestionList: React.FC<Props> = ({
       R.descend<QuestionFieldsFragment>(R.prop("top"))
     ])(data?.questionsByEvent.list || []);
 
-    if (
+    setEndReached(
       Number(data?.questionsByEvent.list.length) >=
-      Number(data?.questionsByEvent.totalCount)
-    ) {
-      setEndReached(true);
-    }
+        Number(data?.questionsByEvent.totalCount)
+    );
 
     return orderList;
   }, [data]);
