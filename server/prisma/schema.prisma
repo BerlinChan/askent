@@ -13,17 +13,18 @@ generator client {
 }
 
 model User {
-  id          String     @default(cuid()) @id
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  lastLoginAt DateTime?
-  roles       Role[]
-  name        String?
-  email       String?    @unique
-  fingerprint String?    @unique
-  password    String?
-  events      Event[]
-  questions   Question[]
+  id             String     @default(cuid()) @id
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  lastLoginAt    DateTime?
+  roles          Role[]
+  name           String?
+  email          String?    @unique
+  fingerprint    String?    @unique
+  password       String?
+  events         Event[]
+  questions      Question[]
+  votedQuestions Question[] @relation(name: "VotedUsersUserTable")
 }
 
 model Role {

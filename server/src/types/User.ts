@@ -23,6 +23,7 @@ export const User = objectType({
     t.model.email()
     t.model.events()
     t.model.questions()
+    t.model.votedQuestions()
     // t.model.fingerprint()
     // t.model.password()
   },

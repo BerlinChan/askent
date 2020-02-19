@@ -104,7 +104,7 @@ const SortSelect: React.FC<Props> = ({
             ? { createdAt: OrderByArg.Asc }
             : selected === TopSort.Starred
             ? { createdAt: OrderByArg.Desc }
-            : selected === TopSort.Popular
+            : selected === TopSort.Popular // TODO: cant orderBy voteCount
             ? {}
             : {}
       }
