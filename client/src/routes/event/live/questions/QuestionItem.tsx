@@ -115,6 +115,7 @@ const QuestionItem: React.FC<Props> = ({
 
   return (
     <ListItem
+    component='div'
       className={`${classes.listItem} ${
         question.top ? classes.topQuestion : ""
       }`}

@@ -8,7 +8,6 @@ import {
   MenuItem
 } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
@@ -27,17 +26,13 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
 import EditIcon from "@material-ui/icons/Edit";
 import QuestionItem from "./QuestionItem";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    list: {}
-  })
-);
+import { Virtuoso } from "react-virtuoso";
+import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../../constant";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
-  liveQuestionsResult?: QueryResult<
+  liveQuestionsResult: QueryResult<
     LiveQuestionsByEventQuery,
     LiveQuestionsByEventQueryVariables
   >;
@@ -45,7 +40,7 @@ interface Props {
     QuestionsByMeAudienceQuery,
     QuestionsByMeAudienceQueryVariables
   >;
-  comparator?: R.Comparator<LiveQuestionFieldsFragment, number>[];
+  sortComparator?: R.Comparator<LiveQuestionFieldsFragment, number>[];
 }
 
 const QuestionList: React.FC<Props> = ({
@@ -53,10 +48,11 @@ const QuestionList: React.FC<Props> = ({
   eventQueryResult,
   liveQuestionsResult,
   myQuestionsResult,
-  comparator = []
+  sortComparator = []
 }) => {
-  const classes = useStyles();
   const { formatMessage } = useIntl();
+  const { data, fetchMore } = liveQuestionsResult;
+  const [deleteQuestionMutation] = useDeleteQuestionMutation();
   const [moreMenu, setMoreMenu] = React.useState<{
     anchorEl: null | HTMLElement;
     id: string;
@@ -65,8 +61,10 @@ const QuestionList: React.FC<Props> = ({
     open: false,
     id: ""
   });
-  const [deleteQuestionMutation] = useDeleteQuestionMutation();
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
+  const questionMoreTarget = data?.liveQuestionsByEvent.list.find(
+    question => question.id === moreMenu.id
+  );
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -103,32 +101,84 @@ const QuestionList: React.FC<Props> = ({
     handleMoreClose();
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
-  const questionList =
-    liveQuestionsResult?.data?.liveQuestionsByEvent ||
-    myQuestionsResult?.data?.questionsByMeAudience ||
-    [];
-  const questionMoreTarget = questionList.find(
-    question => question.id === moreMenu.id
-  );
+
+  const [endReached, setEndReached] = React.useState(false);
+  const orderList = React.useMemo(() => {
+    const list = R.sortWith([
+      R.descend<LiveQuestionFieldsFragment>(R.prop("top")),
+      ...sortComparator
+    ])(data?.liveQuestionsByEvent.list || []);
+
+    setEndReached(
+      Number(data?.liveQuestionsByEvent.list.length) >=
+        Number(data?.liveQuestionsByEvent.totalCount)
+    );
+
+    return list;
+  }, [data, sortComparator]);
+  const loadMore = () => {
+    if (!endReached) {
+      fetchMore({
+        variables: {
+          pagination: {
+            skip: data?.liveQuestionsByEvent.list.length || DEFAULT_PAGE_SKIP,
+            first: data?.liveQuestionsByEvent.first || DEFAULT_PAGE_FIRST
+          }
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
+          return Object.assign({}, fetchMoreResult, {
+            questionsByEvent: {
+              ...fetchMoreResult.liveQuestionsByEvent,
+              list: [
+                ...prev.liveQuestionsByEvent.list,
+                ...fetchMoreResult.liveQuestionsByEvent.list
+              ]
+            }
+          });
+        }
+      });
+    }
+  };
 
   return (
     <React.Fragment>
-      <List className={classes.list} disablePadding>
-        {R.sortWith<LiveQuestionFieldsFragment>([
-          R.descend(R.prop("top")),
-          ...comparator
-        ])(questionList).map((item, index) => (
-          <QuestionItem
-            key={index}
-            question={item}
-            userQueryResult={userQueryResult}
-            handleMoreClick={handleMoreClick}
-            editContent={editContentIds.includes(item.id)}
-            handleEditContentToggle={handleEditContentToggle}
-            editContentInputRef={editContentInputRef}
-          />
-        ))}
-      </List>
+      {0 ? (
+        <Virtuoso
+          style={{ height: "100%", width: "100%" }}
+          totalCount={orderList.length}
+          endReached={loadMore}
+          item={index => {
+            return (
+              <QuestionItem
+                question={orderList[index]}
+                userQueryResult={userQueryResult}
+                handleMoreClick={handleMoreClick}
+                editContent={editContentIds.includes(orderList[index].id)}
+                handleEditContentToggle={handleEditContentToggle}
+                editContentInputRef={editContentInputRef}
+              />
+            );
+          }}
+          footer={() => {
+            return endReached ? <div>-- end --</div> : <div>Loading...</div>;
+          }}
+        />
+      ) : (
+        <List disablePadding>
+          {orderList.map((item, index) => (
+            <QuestionItem
+              key={index}
+              question={item}
+              userQueryResult={userQueryResult}
+              handleMoreClick={handleMoreClick}
+              editContent={editContentIds.includes(item.id)}
+              handleEditContentToggle={handleEditContentToggle}
+              editContentInputRef={editContentInputRef}
+            />
+          ))}
+        </List>
+      )}
 
       <Menu
         MenuListProps={{ dense: true }}

@@ -16,7 +16,8 @@ import {
   useQuestionsByMeAudienceQuery
 } from "../../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
-import QuestionList from "./questions/QuestionList";
+// import QuestionList from "./questions/QuestionList";
+import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../constant";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
@@ -33,7 +34,10 @@ const MyQuestionsDialog: React.FC<Props> = ({
 }) => {
   let { id } = useParams();
   const myQuestionsResult = useQuestionsByMeAudienceQuery({
-    variables: { eventId: id as string }
+    variables: {
+      eventId: id as string,
+      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+    }
   });
 
   React.useEffect(() => {
@@ -48,11 +52,11 @@ const MyQuestionsDialog: React.FC<Props> = ({
         <FormattedMessage id="My_questions" defaultMessage="My questions" />
       </DialogTitle>
       <DialogContent>
-        <QuestionList
+        {/* <QuestionList
           userQueryResult={userQueryResult}
           eventQueryResult={eventQueryResult}
           myQuestionsResult={myQuestionsResult}
-        />
+        /> */}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>

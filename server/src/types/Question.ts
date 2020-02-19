@@ -106,12 +106,16 @@ export const questionQuery = extendType({
         }
       },
     })
-    t.list.field('liveQuestionsByEvent', {
-      type: 'Question',
-      args: { eventId: idArg({ required: true }) },
-      resolve: async (root, { eventId }, ctx) => {
+    t.field('liveQuestionsByEvent', {
+      type: 'PagedQuestion',
+      args: {
+        eventId: idArg({ required: true }),
+        pagination: arg({ type: 'PaginationInputType', required: true }),
+        orderBy: arg({ type: 'QuestionOrderByInput' }),
+      },
+      resolve: async (root, { eventId, pagination, orderBy }, ctx) => {
         const userId = getAuthedUser(ctx)?.id
-        const liveQuestions = await ctx.prisma.question.findMany({
+        const allQuestions = await ctx.prisma.question.findMany({
           where: {
             event: { id: eventId },
             OR: [
@@ -125,20 +129,44 @@ export const questionQuery = extendType({
             ],
           },
         })
+        const totalCount = allQuestions.length
+        const { first, skip } = pagination
+        const questions = await ctx.prisma.question.findMany({
+          where: {
+            event: { id: eventId },
+            OR: [
+              { reviewStatus: QuestionReviewStatus.PUBLISH },
+              {
+                AND: [
+                  { author: { id: userId } },
+                  { reviewStatus: QuestionReviewStatus.REVIEW },
+                ],
+              },
+            ],
+          },
+          orderBy,
+          ...pagination,
+        })
 
-        return liveQuestions
+        return {
+          list: questions,
+          hasNextPage: first + skip < totalCount,
+          totalCount,
+          first,
+          skip,
+        }
       },
     })
-    t.list.field('questionsByMeAudience', {
-      type: 'Question',
+    t.field('questionsByMeAudience', {
+      type: 'PagedQuestion',
       args: {
-        // TODO: pagination
         eventId: idArg({ required: true }),
+        pagination: arg({ type: 'PaginationInputType', required: true }),
+        orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
-      resolve: (root, { eventId }, ctx) => {
+      resolve: async (root, { eventId, pagination, orderBy }, ctx) => {
         const userId = getAuthedUser(ctx)?.id
-
-        return ctx.prisma.question.findMany({
+        const allQuestions = await ctx.prisma.question.findMany({
           where: {
             author: { id: userId },
             event: { id: eventId },
@@ -148,6 +176,28 @@ export const questionQuery = extendType({
             ],
           },
         })
+        const totalCount = allQuestions.length
+        const { first, skip } = pagination
+        const questions = await ctx.prisma.question.findMany({
+          where: {
+            author: { id: userId },
+            event: { id: eventId },
+            OR: [
+              { reviewStatus: QuestionReviewStatus.PUBLISH },
+              { reviewStatus: QuestionReviewStatus.REVIEW },
+            ],
+          },
+          orderBy,
+          ...pagination,
+        })
+
+        return {
+          list: questions,
+          hasNextPage: first + skip < totalCount,
+          totalCount,
+          first,
+          skip,
+        }
       },
     })
     t.field('wallQuestionsByEvent', {

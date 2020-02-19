@@ -14,16 +14,19 @@ import {
   LiveEventQueryVariables,
   LiveQuestionsByEventQuery,
   LiveQuestionsByEventQueryVariables,
-  useLiveQuestionsByEventQuery,
+  useLiveQuestionsByEventLazyQuery,
   useLiveQuestionAddedSubscription,
   useLiveQuestionUpdatedSubscription,
   useLiveQuestionRemovedSubscription,
   LiveQuestionsByEventDocument,
+  QuestionReviewStatus,
   RoleName,
-  QuestionReviewStatus
+  OrderByArg
 } from "../../../../generated/graphqlHooks";
+import { DataProxy } from "apollo-cache";
 import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
+import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,106 +61,120 @@ const LiveQuestions: React.FC<Props> = ({
   const classes = useStyles();
   const { formatMessage } = useIntl();
   let { id } = useParams();
-  const liveQuestionsResult = useLiveQuestionsByEventQuery({
-    variables: { eventId: id as string }
-  });
   const [tabIndex, setTabIndex] = React.useState(0);
+  const [
+    liveQuestionsByEventLazyQuery,
+    liveQuestionsResult
+  ] = useLiveQuestionsByEventLazyQuery();
+
+  React.useEffect(() => {
+    liveQuestionsByEventLazyQuery({
+      variables: {
+        eventId: id as string,
+        orderBy:
+          tabIndex === 0
+            ? { createdAt: OrderByArg.Desc } // TODO: cant orderBy voteCount
+            : tabIndex === 0
+            ? { createdAt: OrderByArg.Desc }
+            : undefined,
+        pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, tabIndex]);
 
   // subscriptions
+  const updateCache = (
+    cache: DataProxy,
+    eventId: string,
+    data: LiveQuestionsByEventQuery
+  ) => {
+    cache.writeQuery<
+      LiveQuestionsByEventQuery,
+      Omit<LiveQuestionsByEventQueryVariables, "pagination">
+    >({
+      query: LiveQuestionsByEventDocument,
+      variables: { eventId },
+      data
+    });
+  };
   useLiveQuestionAddedSubscription({
     variables: { eventId: id as string, role: RoleName.Audience },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      const questions = client.readQuery<
-        LiveQuestionsByEventQuery,
-        LiveQuestionsByEventQueryVariables
-      >({
-        query: LiveQuestionsByEventDocument,
-        variables: { eventId: id as string }
-      });
+      if (subscriptionData.data) {
+        const { questionAdded } = subscriptionData.data;
+        const prev = liveQuestionsResult.data;
 
-      // add
-      client.writeQuery<
-        LiveQuestionsByEventQuery,
-        LiveQuestionsByEventQueryVariables
-      >({
-        query: LiveQuestionsByEventDocument,
-        variables: { eventId: id as string },
-        data: {
-          liveQuestionsByEvent: (subscriptionData.data?.questionAdded
-            ? [subscriptionData.data?.questionAdded]
-            : []
-          ).concat(
-            (questions?.liveQuestionsByEvent || []).filter(
-              question =>
-                question.id !== subscriptionData.data?.questionAdded.id
-            )
-          )
+        if (prev) {
+          // add
+          updateCache(client, id as string, {
+            liveQuestionsByEvent: {
+              ...prev.liveQuestionsByEvent,
+              list: [questionAdded].concat(
+                prev.liveQuestionsByEvent.list.filter(
+                  question =>
+                    question.id !== subscriptionData.data?.questionAdded.id
+                )
+              )
+            }
+          });
         }
-      });
+      }
     }
   });
   useLiveQuestionUpdatedSubscription({
     variables: { eventId: id as string },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      const questions = client.readQuery<
-        LiveQuestionsByEventQuery,
-        LiveQuestionsByEventQueryVariables
-      >({
-        query: LiveQuestionsByEventDocument,
-        variables: { eventId: id as string }
-      });
+      if (subscriptionData.data?.questionsUpdated.length) {
+        const { questionsUpdated } = subscriptionData.data;
+        const prev = liveQuestionsResult.data;
 
-      const shouldReplace = (
-        subscriptionData.data?.questionsUpdated || []
-      ).filter(
-        question =>
-          question.reviewStatus === QuestionReviewStatus.Publish ||
-          question.author?.id === userQueryResult.data?.me.id
-      );
-      const deduplicated = R.without(
-        subscriptionData.data?.questionsUpdated || [],
-        questions?.liveQuestionsByEvent || []
-      );
-      const concat = R.concat(shouldReplace || [], deduplicated);
+        if (prev) {
+          const shouldReplace = questionsUpdated.filter(
+            question =>
+              question.reviewStatus === QuestionReviewStatus.Publish ||
+              question.author?.id === userQueryResult.data?.me.id
+          );
+          const deduplicated = R.without(
+            questionsUpdated,
+            prev.liveQuestionsByEvent.list
+          );
+          const concat = R.concat(shouldReplace, deduplicated);
 
-      // update
-      client.writeQuery<
-        LiveQuestionsByEventQuery,
-        LiveQuestionsByEventQueryVariables
-      >({
-        query: LiveQuestionsByEventDocument,
-        variables: { eventId: id as string },
-        data: { liveQuestionsByEvent: concat }
-      });
+          // update
+          updateCache(client, id as string, {
+            liveQuestionsByEvent: {
+              ...prev.liveQuestionsByEvent,
+              totalCount: concat.length,
+              list: concat
+            }
+          });
+        }
+      }
     }
   });
   useLiveQuestionRemovedSubscription({
     variables: { eventId: id as string },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      const questions = client.readQuery<
-        LiveQuestionsByEventQuery,
-        LiveQuestionsByEventQueryVariables
-      >({
-        query: LiveQuestionsByEventDocument,
-        variables: { eventId: id as string }
-      });
+      if (subscriptionData.data?.questionsRemoved.length) {
+        const { questionsRemoved } = subscriptionData.data;
+        const prev = liveQuestionsResult.data;
 
-      // remove
-      client.writeQuery<
-        LiveQuestionsByEventQuery,
-        LiveQuestionsByEventQueryVariables
-      >({
-        query: LiveQuestionsByEventDocument,
-        variables: { eventId: id as string },
-        data: {
-          liveQuestionsByEvent: (questions?.liveQuestionsByEvent || []).filter(
-            preQuestion =>
-              !(subscriptionData.data?.questionsRemoved || []).find(
-                item => item.id === preQuestion.id
+        if (prev) {
+          // remove
+          updateCache(client, id as string, {
+            liveQuestionsByEvent: {
+              ...prev.liveQuestionsByEvent,
+              totalCount:
+                prev.liveQuestionsByEvent.totalCount - questionsRemoved.length,
+              list: prev.liveQuestionsByEvent.list.filter(
+                preQuestion =>
+                  !questionsRemoved.find(item => item.id === preQuestion.id)
               )
-          )
+            }
+          });
         }
-      });
+      }
     }
   });
 
@@ -193,19 +210,17 @@ const LiveQuestions: React.FC<Props> = ({
             })}
           />
         </SubTabs>
-        <Box>
-          <Typography color="textSecondary">
-            {eventQueryResult.data?.eventById.liveQuestionCount}{" "}
-            <FormattedMessage id="questions" defaultMessage="questions" />
-          </Typography>
-        </Box>
+        <Typography color="textSecondary">
+          {liveQuestionsResult.data?.liveQuestionsByEvent.totalCount}{" "}
+          <FormattedMessage id="questions" defaultMessage="questions" />
+        </Typography>
       </Box>
       <Paper className={classes.panelPaper}>
         <QuestionList
           userQueryResult={userQueryResult}
           eventQueryResult={eventQueryResult}
           liveQuestionsResult={liveQuestionsResult}
-          comparator={
+          sortComparator={
             tabIndex === 0
               ? [R.descend(R.prop("voteCount"))]
               : tabIndex === 1

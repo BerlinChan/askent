@@ -13,15 +13,37 @@ fragment LiveQuestionFields on Question {
   }
 }
 
-query LiveQuestionsByEvent($eventId: ID!) {
-  liveQuestionsByEvent(eventId: $eventId) {
-    ...LiveQuestionFields
+query LiveQuestionsByEvent(
+  $eventId: ID!
+  $pagination: PaginationInputType!
+  $orderBy: QuestionOrderByInput
+) {
+  liveQuestionsByEvent(
+    eventId: $eventId
+    pagination: $pagination
+    orderBy: $orderBy
+  ) @connection(key: "liveQuestionsByEvent", filter: ["eventId"]) {
+    ...PagedQuestionFields
+    list {
+      ...LiveQuestionFields
+    }
   }
 }
 
-query QuestionsByMeAudience($eventId: ID!) {
-  questionsByMeAudience(eventId: $eventId) {
-    ...LiveQuestionFields
+query QuestionsByMeAudience(
+  $eventId: ID!
+  $pagination: PaginationInputType!
+  $orderBy: QuestionOrderByInput
+) {
+  questionsByMeAudience(
+    eventId: $eventId
+    pagination: $pagination
+    orderBy: $orderBy
+  ) {
+    ...PagedQuestionFields
+    list {
+      ...LiveQuestionFields
+    }
   }
 }
 

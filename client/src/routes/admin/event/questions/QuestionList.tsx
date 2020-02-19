@@ -80,16 +80,16 @@ const QuestionList: React.FC<Props> = ({
 
   const [endReached, setEndReached] = React.useState(false);
   const orderList = React.useMemo(() => {
-    const orderList = R.sortWith([
-      R.descend<QuestionFieldsFragment>(R.prop("top"))
-    ])(data?.questionsByEvent.list || []);
+    const list = R.sortWith([R.descend<QuestionFieldsFragment>(R.prop("top"))])(
+      data?.questionsByEvent.list || []
+    );
 
     setEndReached(
       Number(data?.questionsByEvent.list.length) >=
         Number(data?.questionsByEvent.totalCount)
     );
 
-    return orderList;
+    return list;
   }, [data]);
   const loadMore = () => {
     if (!endReached) {
