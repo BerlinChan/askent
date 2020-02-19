@@ -117,12 +117,14 @@ const EventWall: React.FC<Props> = () => {
         <Box className={classes.listBox}>
           <QuestionList questionsQueryResult={wallQuestionsResult} />
         </Box>
-        <Typography variant="h6" color="inherit">
-          <FormattedMessage
-            id="Latest_question"
-            defaultMessage="Latest question"
-          />
-        </Typography>
+        {0 ? (
+          <Typography variant="h6" color="inherit">
+            <FormattedMessage
+              id="Latest_question"
+              defaultMessage="Latest question"
+            />
+          </Typography>
+        ) : null}
       </Grid>
     </Grid>
   );

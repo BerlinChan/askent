@@ -48,7 +48,12 @@ const useStyles = makeStyles((theme: Theme) =>
       height: theme.typography.pxToRem(28),
       marginRight: theme.typography.pxToRem(12)
     },
-    questionContent: { width: "100%", fontSize: theme.typography.pxToRem(28) },
+    questionContent: {
+      width: "100%",
+      fontSize: theme.typography.pxToRem(28),
+      marginTop: theme.typography.pxToRem(12),
+      marginBottom: theme.typography.pxToRem(4)
+    },
     questionActionBox: {
       position: "absolute",
       display: "flex",

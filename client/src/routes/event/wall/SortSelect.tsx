@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Menu, MenuItem } from "@material-ui/core";
+import { Typography, Menu, MenuItem, Fade } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
@@ -13,6 +13,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import { useParams } from "react-router-dom";
 import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../constant";
+import { useMouseMove } from "../../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,12 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: theme.typography.pxToRem(18),
       "& .arrowIcon": {
         color: "inherit",
-        fontSize: theme.typography.pxToRem(16),
-        opacity: 0,
-        transition: theme.transitions.create("opacity")
-      },
-      "&:hover .arrowIcon": {
-        opacity: 1
+        fontSize: theme.typography.pxToRem(16)
       }
     },
     icon: {
@@ -72,6 +68,7 @@ const SortSelect: React.FC<Props> = ({
     selected: TopSort;
     anchorEl: null | HTMLElement;
   }>({ selected: TopSort.Recent, anchorEl: null });
+  const { mouseStop } = useMouseMove();
   const menuList = [
     {
       label: formatMessage({ id: "Popular", defaultMessage: "Popular" }),
@@ -124,7 +121,9 @@ const SortSelect: React.FC<Props> = ({
         <QuestionAnswerIcon className={classes.icon} />
         <FormattedMessage id="Top_questions" defaultMessage="Top questions" />(
         {data?.wallQuestionsByEvent.totalCount})
-        <ArrowDropDownIcon className="arrowIcon" />
+        <Fade in={!mouseStop}>
+          <ArrowDropDownIcon className="arrowIcon" />
+        </Fade>
       </Typography>
 
       <Menu
