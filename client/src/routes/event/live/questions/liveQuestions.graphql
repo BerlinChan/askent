@@ -73,7 +73,6 @@ subscription LiveQuestionUpdated($eventId: ID!) {
 
 subscription LiveQuestionRemoved($eventId: ID!) {
   questionsRemoved(eventId: $eventId) {
-    id
-    reviewStatus
+    ...LiveQuestionFields
   }
 }

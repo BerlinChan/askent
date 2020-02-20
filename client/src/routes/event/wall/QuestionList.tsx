@@ -21,8 +21,8 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
   const { data, fetchMore } = questionsQueryResult;
 
   const [endReached, setEndReached] = React.useState(false);
-  const orderList = React.useMemo(() => {
-    const orderList = R.sortWith([
+  const orderedList = React.useMemo(() => {
+    const list = R.sortWith([
       R.descend<WallQuestionFieldsFragment>(R.prop("top"))
     ])(data?.wallQuestionsByEvent.list || []);
 
@@ -31,7 +31,7 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
         Number(data?.wallQuestionsByEvent.totalCount)
     );
 
-    return orderList;
+    return list;
   }, [data]);
   const loadMore = () => {
     if (!endReached) {
@@ -62,10 +62,10 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
   return (
     <Virtuoso
       style={{ height: "100%", width: "100%" }}
-      totalCount={orderList.length}
+      totalCount={orderedList.length}
       endReached={loadMore}
       item={index => {
-        return <QuestionItem question={orderList[index]} />;
+        return <QuestionItem question={orderedList[index]} />;
       }}
       footer={() => {
         return endReached ? <div>-- end --</div> : <div>Loading...</div>;

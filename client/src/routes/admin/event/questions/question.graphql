@@ -72,7 +72,6 @@ subscription QuestionsUpdated($eventId: ID!) {
 
 subscription QuestionsRemoved($eventId: ID!) {
   questionsRemoved(eventId: $eventId) {
-    id
-    reviewStatus
+    ...QuestionFields
   }
 }
