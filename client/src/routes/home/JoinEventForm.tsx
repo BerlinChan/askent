@@ -74,7 +74,7 @@ const JoinEventForm: React.FC = props => {
               }}
               getOptionSelected={(option, value) => option.id === value.id}
               getOptionLabel={option => option.code}
-              options={data?.eventsByCode}
+              options={data?.eventsByCode || []}
               loading={loading}
               renderInput={params => (
                 <TextField

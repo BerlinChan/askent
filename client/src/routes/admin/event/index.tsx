@@ -17,7 +17,6 @@ const PollsComponent = loadable(() => import("./polls"), {
 const AdminEvent: React.FC = () => {
   const { path } = useRouteMatch();
   const { id } = useParams();
-  // TODO: generate short id for event
   const adminEventQuery = useAdminEventQuery({
     variables: { eventId: id as string }
   });

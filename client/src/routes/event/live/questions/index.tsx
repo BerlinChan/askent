@@ -145,7 +145,9 @@ const LiveQuestions: React.FC<Props> = ({
           updateCache(client, id as string, {
             liveQuestionsByEvent: {
               ...prev.liveQuestionsByEvent,
-              totalCount: concat.length,
+              totalCount:
+                prev.liveQuestionsByEvent.totalCount -
+                (questionsUpdated.length - shouldReplace.length),
               list: concat
             }
           });
