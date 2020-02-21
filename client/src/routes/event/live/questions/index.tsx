@@ -110,6 +110,7 @@ const LiveQuestions: React.FC<Props> = ({
           updateCache(client, id as string, {
             liveQuestionsByEvent: {
               ...prev.liveQuestionsByEvent,
+              totalCount: prev.liveQuestionsByEvent.totalCount + 1,
               list: [questionAdded].concat(
                 prev.liveQuestionsByEvent.list.filter(
                   question =>

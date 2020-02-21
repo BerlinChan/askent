@@ -24,7 +24,7 @@ query WallQuestionsByEvent(
     star: $star
     pagination: $pagination
     orderBy: $orderBy
-  ) {
+  ) @connection(key: "wallQuestionsByEvent", filter: ["eventId"]) {
     ...PagedQuestionFields
     list {
       ...WallQuestionFields

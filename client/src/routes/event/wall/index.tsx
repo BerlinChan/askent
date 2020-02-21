@@ -1,4 +1,5 @@
 import React from "react";
+import * as R from "ramda";
 import { Box, Grid, Card, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useParams } from "react-router-dom";
@@ -9,8 +10,17 @@ import {
   useLiveEventQuery,
   useLiveEventUpdatedSubscription,
   useWallQuestionsByEventLazyQuery,
-  OrderByArg
+  WallQuestionsByEventQuery,
+  WallQuestionsByEventQueryVariables,
+  WallQuestionsByEventDocument,
+  useWallQuestionAddedSubscription,
+  useWallQuestionUpdatedSubscription,
+  useWallQuestionRemovedSubscription,
+  RoleName,
+  OrderByArg,
+  QuestionReviewStatus
 } from "../../../generated/graphqlHooks";
+import { DataProxy } from "apollo-cache";
 import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../constant";
 import QuestionList from "./QuestionList";
 
@@ -62,6 +72,101 @@ const EventWall: React.FC<Props> = () => {
     wallQuestionsResult
   ] = useWallQuestionsByEventLazyQuery();
 
+  // subscription
+  const updateCache = (
+    cache: DataProxy,
+    eventId: string,
+    data: WallQuestionsByEventQuery
+  ) => {
+    cache.writeQuery<
+      WallQuestionsByEventQuery,
+      Omit<WallQuestionsByEventQueryVariables, "pagination">
+    >({
+      query: WallQuestionsByEventDocument,
+      variables: { eventId },
+      data
+    });
+  };
+  useWallQuestionAddedSubscription({
+    variables: { eventId: id as string, role: RoleName.Wall },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data) {
+        const { questionAdded } = subscriptionData.data;
+        const prev = wallQuestionsResult.data;
+
+        if (prev) {
+          // add
+          updateCache(client, id as string, {
+            wallQuestionsByEvent: {
+              ...prev.wallQuestionsByEvent,
+              totalCount: prev.wallQuestionsByEvent.totalCount + 1,
+              list: [questionAdded].concat(
+                prev.wallQuestionsByEvent.list.filter(
+                  question =>
+                    question.id !== subscriptionData.data?.questionAdded.id
+                )
+              )
+            }
+          });
+        }
+      }
+    }
+  });
+  useWallQuestionUpdatedSubscription({
+    variables: { eventId: id as string },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.questionsUpdated.length) {
+        const { questionsUpdated } = subscriptionData.data;
+        const prev = wallQuestionsResult.data;
+
+        if (prev) {
+          const shouldReplace = questionsUpdated.filter(
+            question => question.reviewStatus === QuestionReviewStatus.Publish
+          );
+          const deduplicated = R.without(
+            questionsUpdated,
+            prev.wallQuestionsByEvent.list
+          );
+          const concat = R.concat(shouldReplace, deduplicated);
+
+          // update
+          updateCache(client, id as string, {
+            wallQuestionsByEvent: {
+              ...prev.wallQuestionsByEvent,
+              totalCount:
+                prev.wallQuestionsByEvent.totalCount -
+                (questionsUpdated.length - shouldReplace.length),
+              list: concat
+            }
+          });
+        }
+      }
+    }
+  });
+  useWallQuestionRemovedSubscription({
+    variables: { eventId: id as string },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.questionsRemoved.length) {
+        const { questionsRemoved } = subscriptionData.data;
+        const prev = wallQuestionsResult.data;
+
+        if (prev) {
+          // remove
+          updateCache(client, id as string, {
+            wallQuestionsByEvent: {
+              ...prev.wallQuestionsByEvent,
+              totalCount:
+                prev.wallQuestionsByEvent.totalCount - questionsRemoved.length,
+              list: prev.wallQuestionsByEvent.list.filter(
+                preQuestion =>
+                  !questionsRemoved.find(item => item.id === preQuestion.id)
+              )
+            }
+          });
+        }
+      }
+    }
+  });
   useLiveEventUpdatedSubscription({
     variables: { eventId: id as string }
   });
@@ -70,11 +175,8 @@ const EventWall: React.FC<Props> = () => {
     setQrcodeCardWidth(Number(qrcodeCardRef?.current?.clientWidth));
   };
   React.useEffect(() => {
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  });
-  React.useEffect(() => {
     onResize();
+    window.addEventListener("resize", onResize);
     wallQuestionsByEventLazyQuery({
       variables: {
         eventId: id as string,
@@ -82,6 +184,8 @@ const EventWall: React.FC<Props> = () => {
         orderBy: { createdAt: OrderByArg.Desc }
       }
     });
+
+    return () => window.removeEventListener("resize", onResize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
