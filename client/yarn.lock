@@ -3599,10 +3599,10 @@
   resolved "https://registry.npm.taobao.org/@types/q/download/@types/q-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
   integrity sha1-aQoUdbhPKohP0HzXl8APXzE1bqg=
 
-"@types/qrcode.react@^1.0.0":
+"@types/qrcode.react@1.0.0":
   version "1.0.0"
-  resolved "https://registry.npm.taobao.org/@types/qrcode.react/download/@types/qrcode.react-1.0.0.tgz?cache=0&sync_timestamp=1580865252806&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fqrcode.react%2Fdownload%2F%40types%2Fqrcode.react-1.0.0.tgz#9eff4d4a93eb32fcd65e26ea046f2efc52764431"
-  integrity sha1-nv9NSpPrMvzWXibqBG8u/FJ2RDE=
+  resolved "https://registry.yarnpkg.com/@types/qrcode.react/-/qrcode.react-1.0.0.tgz#9eff4d4a93eb32fcd65e26ea046f2efc52764431"
+  integrity sha512-CyH8QizAyp/G2RTz+2W0qIp/qbJMNC6a8aossG+zN42Rmx3loQlgBCWFatjKJ3NeJaX99e22SJ75yU2EVHlu3g==
   dependencies:
     "@types/react" "*"
 
@@ -11946,10 +11946,10 @@ qr.js@0.0.0:
   resolved "https://registry.npm.taobao.org/qr.js/download/qr.js-0.0.0.tgz#cace86386f59a0db8050fa90d9b6b0e88a1e364f"
   integrity sha1-ys6GOG9ZoNuAUPqQ2baw6IoeNk8=
 
-qrcode.react@^1.0.0:
+qrcode.react@1.0.0:
   version "1.0.0"
-  resolved "https://registry.npm.taobao.org/qrcode.react/download/qrcode.react-1.0.0.tgz#7e8889db3b769e555e8eb463d4c6de221c36d5de"
-  integrity sha1-foiJ2zt2nlVejrRj1MbeIhw21d4=
+  resolved "https://registry.yarnpkg.com/qrcode.react/-/qrcode.react-1.0.0.tgz#7e8889db3b769e555e8eb463d4c6de221c36d5de"
+  integrity sha512-jBXleohRTwvGBe1ngV+62QvEZ/9IZqQivdwzo9pJM4LQMoCM2VnvNBnKdjvGnKyDZ/l0nCDgsPod19RzlPvm/Q==
   dependencies:
     loose-envify "^1.4.0"
     prop-types "^15.6.0"
