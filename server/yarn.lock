@@ -79,10 +79,10 @@
   resolved "https://registry.npm.taobao.org/@nodelib/fs.stat/download/@nodelib/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha1-K1o6s/kYzKSKjHVMCBaOPwPrphs=
 
-"@prisma/client@2.0.0-preview021":
-  version "2.0.0-preview021"
-  resolved "https://registry.npm.taobao.org/@prisma/client/download/@prisma/client-2.0.0-preview021.tgz#7205345e3faa09278f3de104bb8af60e063420ad"
-  integrity sha1-cgU0Xj+qCSePPeEEu4r2DgY0IK0=
+"@prisma/client@2.0.0-preview022":
+  version "2.0.0-preview022"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.0.0-preview022.tgz#89c95b2ba17d151edb5891f0a114a2b000ed4e02"
+  integrity sha512-VVjwodKA7f/xIw704ZP5aAmaVXbcOa0g69E0RWDsMc/mSJlQyBjUtAnQy1QPvjaEA2V8+x+A85zW5JwrIs6qQg==
 
 "@prisma/engine-core@2.0.41":
   version "2.0.41"
