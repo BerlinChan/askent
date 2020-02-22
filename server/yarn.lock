@@ -125,6 +125,17 @@
     debug "4.1.1"
     isbinaryfile "^4.0.2"
 
+"@prisma/generator-helper@0.0.40":
+  version "0.0.40"
+  resolved "https://registry.yarnpkg.com/@prisma/generator-helper/-/generator-helper-0.0.40.tgz#11ad45706efad86c1f7bc837f724b1f46c90879d"
+  integrity sha512-s9keJBkVnFJhhftr7kbULYg9cfp0Xsd/eZrGbUI/9HWtCctIPsRy0joTi/leL7cIoobQYI3RYHydxtumo21pFg==
+  dependencies:
+    "@types/cross-spawn" "^6.0.1"
+    chalk "^3.0.0"
+    cross-spawn "^7.0.1"
+    debug "4.1.1"
+    isbinaryfile "^4.0.2"
+
 "@prisma/get-platform@0.1.23":
   version "0.1.23"
   resolved "https://registry.npm.taobao.org/@prisma/get-platform/download/@prisma/get-platform-0.1.23.tgz#eaff452a2ddafb6349da0a59e7babc7f9c6c6373"
@@ -132,15 +143,15 @@
   dependencies:
     debug "^4.1.1"
 
-"@prisma/sdk@0.0.203":
-  version "0.0.203"
-  resolved "https://registry.yarnpkg.com/@prisma/sdk/-/sdk-0.0.203.tgz#6db88d939e4daefe801f90b81a950bcc4ebf9707"
-  integrity sha512-P4B1jwGVoiqQqPirN31jaOTaBgu28i89d6XNj4SMYMg/Dt822d92Y/M+/7odDBjpZKPMgZ2VniqsuqmN2nb+QA==
+"@prisma/sdk@0.0.216":
+  version "0.0.216"
+  resolved "https://registry.yarnpkg.com/@prisma/sdk/-/sdk-0.0.216.tgz#52f7c5d02706fcd85c139817ad0eaab000749add"
+  integrity sha512-Hc5NiEv7YL9bOr4Mj0S/HXuCZhwW0TbgMy/VeugGNtv6q/DidthbET7AbghaWZ97gT1BGln9mV8BLSRAqXZ04g==
   dependencies:
     "@apexearth/copy" "^1.4.4"
     "@prisma/engine-core" "2.0.41"
     "@prisma/fetch-engine" "0.3.34"
-    "@prisma/generator-helper" "0.0.29"
+    "@prisma/generator-helper" "0.0.40"
     "@prisma/get-platform" "0.1.23"
     archiver "3.0.0"
     chalk "^3.0.0"
@@ -148,11 +159,9 @@
     execa "^3.4.0"
     flat-map-polyfill "^0.3.8"
     globby "^9.2.0"
-    is-ci "^2.0.0"
     make-dir "^3.0.0"
     node-fetch "2.6.0"
     p-map "^3.0.0"
-    prompts "^2.3.0"
     read-pkg-up "^7.0.0"
     resolve-pkg "^2.0.0"
     rimraf "^3.0.0"
@@ -1101,11 +1110,6 @@ chownr@^1.1.3:
   version "1.1.3"
   resolved "https://registry.npm.taobao.org/chownr/download/chownr-1.1.3.tgz#42d837d5239688d55f303003a508230fa6727142"
   integrity sha1-Qtg31SOWiNVfMDADpQgjD6ZycUI=
-
-ci-info@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npm.taobao.org/ci-info/download/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
-  integrity sha1-Z6npZL4xpR4V5QENWObxKDQAL0Y=
 
 class-utils@^0.3.5:
   version "0.3.6"
@@ -2180,13 +2184,6 @@ is-callable@^1.1.4, is-callable@^1.1.5:
   resolved "https://registry.npm.taobao.org/is-callable/download/is-callable-1.1.5.tgz?cache=0&sync_timestamp=1576778289528&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fis-callable%2Fdownload%2Fis-callable-1.1.5.tgz#f7e46b596890456db74e7f6e976cb3273d06faab"
   integrity sha1-9+RrWWiQRW23Tn9ul2yzJz0G+qs=
 
-is-ci@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npm.taobao.org/is-ci/download/is-ci-2.0.0.tgz#6bc6334181810e04b5c22b3d589fdca55026404c"
-  integrity sha1-a8YzQYGBDgS1wis9WJ/cpVAmQEw=
-  dependencies:
-    ci-info "^2.0.0"
-
 is-data-descriptor@^0.1.4:
   version "0.1.4"
   resolved "https://registry.npm.taobao.org/is-data-descriptor/download/is-data-descriptor-0.1.4.tgz#0b5ee648388e2c860282e793f1856fec3f301b56"
@@ -2444,11 +2441,6 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.3"
   resolved "https://registry.npm.taobao.org/kind-of/download/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha1-B8BQNKbDSfoG4k+jWqdttFgM5N0=
-
-kleur@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.npm.taobao.org/kleur/download/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
-  integrity sha1-p5yezIbuHOP6YgbRIWxQHxR/wH4=
 
 lazystream@^1.0.0:
   version "1.0.0"
@@ -3153,14 +3145,6 @@ progress@^2.0.3:
   resolved "https://registry.npm.taobao.org/progress/download/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha1-foz42PW48jnBvGi+tOt4Vn1XLvg=
 
-prompts@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.npm.taobao.org/prompts/download/prompts-2.3.0.tgz#a444e968fa4cc7e86689a74050685ac8006c4cc4"
-  integrity sha1-pETpaPpMx+hmiadAUGhayABsTMQ=
-  dependencies:
-    kleur "^3.0.3"
-    sisteransi "^1.0.3"
-
 property-expr@^1.5.0:
   version "1.5.1"
   resolved "https://registry.npm.taobao.org/property-expr/download/property-expr-1.5.1.tgz#22e8706894a0c8e28d58735804f6ba3a3673314f"
@@ -3496,11 +3480,6 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npm.taobao.org/signal-exit/download/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
   integrity sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
-
-sisteransi@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.npm.taobao.org/sisteransi/download/sisteransi-1.0.4.tgz#386713f1ef688c7c0304dc4c0632898941cad2e3"
-  integrity sha1-OGcT8e9ojHwDBNxMBjKJiUHK0uM=
 
 slash@^2.0.0:
   version "2.0.0"
