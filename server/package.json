@@ -8,7 +8,7 @@
     "start": "node dist/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && npm -s run generate && tsc",
-    "prisma:migrate-save": "prisma2 migrate save --name 'init' --experimental",
+    "prisma:migrate-save": "prisma2 migrate save --create-db --name 'init' --experimental",
     "prisma:migrate-up": "prisma2 migrate up --experimental",
     "prisma:generate": "prisma2 generate",
     "prisma:seed": "ts-node prisma/seed",

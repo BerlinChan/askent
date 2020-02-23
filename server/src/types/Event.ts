@@ -38,9 +38,13 @@ export const PaginationInputType = inputObjectType({
     t.int('skip', {
       default: DEFAULT_PAGE_SKIP,
       required: true,
-      description: 'Start from 0.',
+      description: 'Default start from 0.',
     })
-    t.int('first', { default: DEFAULT_PAGE_FIRST, required: true })
+    t.int('first', {
+      default: DEFAULT_PAGE_FIRST,
+      required: true,
+      description: `Default first ${DEFAULT_PAGE_FIRST}`,
+    })
   },
 })
 export const IPagedType = interfaceType({
