@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Box,
+  Hidden,
   IconButton,
   Avatar,
   Typography,
@@ -75,18 +76,20 @@ const AudienceAction: React.FC<Props> = ({
 
   return (
     <React.Fragment>
-      <Box className={classes.userInfo}>
-        <Typography className={classes.name}>
-          {userData?.me.name ? (
-            userData?.me.name
-          ) : (
-            <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
-          )}
-        </Typography>
-        <Typography className={classes.role}>
-          {userData?.me.roles.map(role => role.name).join()}
-        </Typography>
-      </Box>
+      <Hidden smDown>
+        <Box className={classes.userInfo}>
+          <Typography className={classes.name}>
+            {userData?.me.name ? (
+              userData?.me.name
+            ) : (
+              <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
+            )}
+          </Typography>
+          <Typography className={classes.role}>
+            {userData?.me.roles.map(role => role.name).join()}
+          </Typography>
+        </Box>
+      </Hidden>
       <IconButton size="small" onClick={handleMenuOpen}>
         <Avatar alt={userData?.me.name as string} src="/broken-image.jpg" />
       </IconButton>

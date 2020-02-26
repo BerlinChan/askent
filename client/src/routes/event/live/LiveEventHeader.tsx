@@ -12,7 +12,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider
+  Divider,
+  Hidden
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -40,6 +41,11 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     left: {
       display: "flex",
+      alignItems: "center"
+    },
+    center: {
+      display: "flex",
+      justifyContent: "center",
       alignItems: "center"
     },
     right: {
@@ -85,73 +91,78 @@ const LiveEventHeader: React.FC<Props> = ({
     setOpen(!open);
   };
 
+  const renderEventName = (
+    <Typography variant="h6" color="inherit" noWrap>
+      {data?.eventById.name}
+    </Typography>
+  );
+  const renderRouteTabs = (
+    <RouteTabs
+      centered
+      indicatorColor="secondary"
+      textColor="inherit"
+      tabClasses={{ root: classes.tabRoot }}
+      tabs={[
+        {
+          label: (
+            <Typography>
+              <QuestionAnswerIcon
+                fontSize="small"
+                className={classes.tabIcon}
+              />
+              <FormattedMessage id="Q&A" defaultMessage="Q&A" />
+            </Typography>
+          ),
+          to: `${url}/questions`
+        },
+        {
+          label: (
+            <Typography>
+              <EmojiObjectsIcon fontSize="small" className={classes.tabIcon} />
+              <FormattedMessage id="Ideas" defaultMessage="Ideas" />
+            </Typography>
+          ),
+          to: `${url}/ideas`
+        },
+        {
+          label: (
+            <Typography>
+              <EqualizerIcon fontSize="small" className={classes.tabIcon} />
+              <FormattedMessage id="Polls" defaultMessage="Polls" />
+            </Typography>
+          ),
+          to: `${url}/polls`
+        }
+      ]}
+    />
+  );
+
   return (
     <React.Fragment>
       <AppBarElevationScroll className={classes.appBar}>
-        <Toolbar classes={{ regular: classes.toolbarRegular }}>
-          <Grid container>
-            <Grid item xs={3} className={classes.left}>
-              <IconButton color="inherit" onClick={handleDrawerToggle}>
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" color="inherit" noWrap>
-                {data?.eventById.name}
-              </Typography>
+        <React.Fragment>
+          <Toolbar classes={{ regular: classes.toolbarRegular }}>
+            <Grid container>
+              <Grid item xs={3} className={classes.left}>
+                <IconButton color="inherit" onClick={handleDrawerToggle}>
+                  <MenuIcon />
+                </IconButton>
+                <Hidden smDown>{renderEventName}</Hidden>
+              </Grid>
+              <Grid item xs={6} className={classes.center}>
+                <Hidden smDown>{renderRouteTabs}</Hidden>
+                <Hidden mdUp>{renderEventName}</Hidden>
+              </Grid>
+              <Grid item xs={3} className={classes.right}>
+                <AudienceAction
+                  userQueryResult={userQueryResult}
+                  eventQueryResult={eventQueryResult}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <RouteTabs
-                centered
-                indicatorColor="secondary"
-                textColor="inherit"
-                tabClasses={{ root: classes.tabRoot }}
-                tabs={[
-                  {
-                    label: (
-                      <Typography>
-                        <QuestionAnswerIcon
-                          fontSize="small"
-                          className={classes.tabIcon}
-                        />
-                        <FormattedMessage id="Q&A" defaultMessage="Q&A" />
-                      </Typography>
-                    ),
-                    to: `${url}/questions`
-                  },
-                  {
-                    label: (
-                      <Typography>
-                        <EmojiObjectsIcon
-                          fontSize="small"
-                          className={classes.tabIcon}
-                        />
-                        <FormattedMessage id="Ideas" defaultMessage="Ideas" />
-                      </Typography>
-                    ),
-                    to: `${url}/ideas`
-                  },
-                  {
-                    label: (
-                      <Typography>
-                        <EqualizerIcon
-                          fontSize="small"
-                          className={classes.tabIcon}
-                        />
-                        <FormattedMessage id="Polls" defaultMessage="Polls" />
-                      </Typography>
-                    ),
-                    to: `${url}/polls`
-                  }
-                ]}
-              />
-            </Grid>
-            <Grid item xs={3} className={classes.right}>
-              <AudienceAction
-                userQueryResult={userQueryResult}
-                eventQueryResult={eventQueryResult}
-              />
-            </Grid>
-          </Grid>
-        </Toolbar>
+          </Toolbar>
+          <Hidden mdUp>{renderRouteTabs}</Hidden>
+        </React.Fragment>
       </AppBarElevationScroll>
 
       <Drawer
