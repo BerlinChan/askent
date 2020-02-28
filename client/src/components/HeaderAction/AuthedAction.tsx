@@ -11,7 +11,7 @@ import {
   ListItemIcon,
   Hidden
 } from "@material-ui/core";
-import { useMeQuery } from "../../generated/graphqlHooks";
+import { useMeQuery, RoleName } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
@@ -45,6 +45,7 @@ const AuthedAction: React.FC<Props> = () => {
   const classes = useStyles();
   const history = useHistory();
   const userQueryResult = useMeQuery();
+  const roles = userQueryResult.data?.me.roles.map(role => role.name);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
@@ -97,17 +98,19 @@ const AuthedAction: React.FC<Props> = () => {
         open={Boolean(menuAnchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem
-          onClick={() => {
-            history.replace("/admin");
-            handleMenuClose();
-          }}
-        >
-          <ListItemIcon>
-            <HomeIcon fontSize="small" />
-          </ListItemIcon>
-          <FormattedMessage id="Events" defaultMessage="Events" />
-        </MenuItem>
+        {roles?.includes(RoleName.Admin) && (
+          <MenuItem
+            onClick={() => {
+              history.replace("/admin");
+              handleMenuClose();
+            }}
+          >
+            <ListItemIcon>
+              <HomeIcon fontSize="small" />
+            </ListItemIcon>
+            <FormattedMessage id="Events" defaultMessage="Events" />
+          </MenuItem>
+        )}
         <MenuItem
           onClick={() => {
             setMyProfileDialogOpen(true);

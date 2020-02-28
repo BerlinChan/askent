@@ -1,5 +1,4 @@
 import React from "react";
-import { useParams } from "react-router-dom";
 import {
   Button,
   Dialog,
@@ -7,11 +6,7 @@ import {
   DialogActions,
   DialogContent
 } from "@material-ui/core";
-import {
-  useMeQuery,
-  useEventByIdQuery,
-  useQuestionsByMeAudienceQuery
-} from "../../generated/graphqlHooks";
+import { useQuestionsByMeQuery } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 // import QuestionList from "./questions/QuestionList";
 import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../constant";
@@ -22,14 +17,8 @@ interface Props {
 }
 
 const MyQuestionsDialog: React.FC<Props> = ({ open, onClose }) => {
-  let { id } = useParams();
-  const userQueryResult = useMeQuery();
-  const eventByIdQueryResult = useEventByIdQuery({
-    variables: { eventId: id as string }
-  });
-  const myQuestionsResult = useQuestionsByMeAudienceQuery({
+  const myQuestionsResult = useQuestionsByMeQuery({
     variables: {
-      eventId: id as string,
       pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
     }
   });

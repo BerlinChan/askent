@@ -54,7 +54,7 @@ export default {
     questions: deny,
 
     questionsByEvent: isAuthedAdmin,
-    questionsByMeAudience: isAuthedAudience,
+    questionsByMe: isAuthedAudience,
     liveQuestionsByEvent: isAuthedAudience,
     wallQuestionsByEvent: isAuthedWall,
   },

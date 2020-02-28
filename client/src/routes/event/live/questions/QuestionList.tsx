@@ -16,8 +16,6 @@ import {
   EventByIdQueryVariables,
   LiveQuestionsByEventQuery,
   LiveQuestionsByEventQueryVariables,
-  QuestionsByMeAudienceQuery,
-  QuestionsByMeAudienceQueryVariables,
   useDeleteQuestionMutation,
   LiveQuestionFieldsFragment,
   QuestionReviewStatus
@@ -36,10 +34,6 @@ interface Props {
     LiveQuestionsByEventQuery,
     LiveQuestionsByEventQueryVariables
   >;
-  myQuestionsResult?: QueryResult<
-    QuestionsByMeAudienceQuery,
-    QuestionsByMeAudienceQueryVariables
-  >;
   sortComparator?: R.Comparator<LiveQuestionFieldsFragment, number>[];
 }
 
@@ -47,7 +41,6 @@ const QuestionList: React.FC<Props> = ({
   userQueryResult,
   eventQueryResult,
   liveQuestionsResult,
-  myQuestionsResult,
   sortComparator = []
 }) => {
   const { formatMessage } = useIntl();

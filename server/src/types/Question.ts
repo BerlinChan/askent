@@ -146,19 +146,17 @@ export const questionQuery = extendType({
         }
       },
     })
-    t.field('questionsByMeAudience', {
+    t.field('questionsByMe', {
       type: 'PagedQuestion',
       args: {
-        eventId: idArg({ required: true }),
         pagination: arg({ type: 'PaginationInputType', required: true }),
         orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
-      resolve: async (root, { eventId, pagination, orderBy }, ctx) => {
+      resolve: async (root, { pagination, orderBy }, ctx) => {
         const userId = getAuthedUser(ctx)?.id
         const allQuestions = await ctx.prisma.question.findMany({
           where: {
             author: { id: userId },
-            event: { id: eventId },
             OR: [
               { reviewStatus: QuestionReviewStatus.PUBLISH },
               { reviewStatus: QuestionReviewStatus.REVIEW },
@@ -170,7 +168,6 @@ export const questionQuery = extendType({
         const questions = await ctx.prisma.question.findMany({
           where: {
             author: { id: userId },
-            event: { id: eventId },
             OR: [
               { reviewStatus: QuestionReviewStatus.PUBLISH },
               { reviewStatus: QuestionReviewStatus.REVIEW },
@@ -703,7 +700,7 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
       async (payload, args, ctx) => {
         const { id, roles } = ctx.connection.context as TokenPayload
         const role: RoleName = args.role
-        const { eventId, toRoles, questionAdded } = payload
+        const { eventId, toRoles, questionUpdated } = payload
 
         if (
           eventId === args.eventId &&
@@ -716,7 +713,7 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
                 return true
               }
               const author = await ctx.prisma.question
-                .findOne({ where: { id: questionAdded.id } })
+                .findOne({ where: { id: questionUpdated.id } })
                 .author()
               if (toRoles.includes(AudienceRole.ExcludeAuthor)) {
                 return id !== author.id
@@ -747,7 +744,7 @@ export const questionRemovedSubscription = subscriptionField<'questionRemoved'>(
       async (payload, args, ctx) => {
         const { id, roles } = ctx.connection.context as TokenPayload
         const role: RoleName = args.role
-        const { eventId, toRoles, questionAdded } = payload
+        const { eventId, toRoles, questionRemoved } = payload
 
         if (
           eventId === args.eventId &&
@@ -760,7 +757,7 @@ export const questionRemovedSubscription = subscriptionField<'questionRemoved'>(
                 return true
               }
               const author = await ctx.prisma.question
-                .findOne({ where: { id: questionAdded.id } })
+                .findOne({ where: { id: questionRemoved.id } })
                 .author()
               if (toRoles.includes(AudienceRole.ExcludeAuthor)) {
                 return id !== author.id

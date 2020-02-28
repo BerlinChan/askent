@@ -30,16 +30,11 @@ query LiveQuestionsByEvent(
   }
 }
 
-query QuestionsByMeAudience(
-  $eventId: ID!
+query QuestionsByMe(
   $pagination: PaginationInputType!
   $orderBy: QuestionOrderByInput
 ) {
-  questionsByMeAudience(
-    eventId: $eventId
-    pagination: $pagination
-    orderBy: $orderBy
-  ) {
+  questionsByMe(pagination: $pagination, orderBy: $orderBy) {
     ...PagedQuestionFields
     list {
       ...LiveQuestionFields
