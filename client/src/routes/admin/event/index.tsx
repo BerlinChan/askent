@@ -5,7 +5,10 @@ import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
 import AdminEventHeader from "./AdminEventHeader";
 import Layout from "../../../components/Layout";
-import { useAdminEventQuery } from "../../../generated/graphqlHooks";
+import {
+  useEventByIdQuery,
+  useEventUpdatedSubscription
+} from "../../../generated/graphqlHooks";
 
 const QuestionsComponent = loadable(() => import("./questions"), {
   fallback: <Loading />
@@ -17,7 +20,11 @@ const PollsComponent = loadable(() => import("./polls"), {
 const AdminEvent: React.FC = () => {
   const { path } = useRouteMatch();
   const { id } = useParams();
-  const adminEventQuery = useAdminEventQuery({
+  const adminEventQuery = useEventByIdQuery({
+    variables: { eventId: id as string }
+  });
+
+  useEventUpdatedSubscription({
     variables: { eventId: id as string }
   });
 

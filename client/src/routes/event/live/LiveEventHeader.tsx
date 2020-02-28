@@ -17,15 +17,13 @@ import {
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
-import {
-  MeQuery,
-  MeQueryVariables,
-  LiveEventQuery,
-  LiveEventQueryVariables
-} from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
+import {
+  EventByIdQuery,
+  EventByIdQueryVariables
+} from "../../../generated/graphqlHooks";
 import AppBarElevationScroll from "../../../components/AppBarElevationScroll";
-import AudienceAction from "./AudienceAction";
+import HeaderAction from "../../../components/HeaderAction";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
@@ -74,14 +72,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
+  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
-const LiveEventHeader: React.FC<Props> = ({
-  userQueryResult,
-  eventQueryResult
-}) => {
+const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
   const classes = useStyles();
   let { url } = useRouteMatch();
   const { data } = eventQueryResult;
@@ -98,7 +92,7 @@ const LiveEventHeader: React.FC<Props> = ({
   );
   const renderRouteTabs = (
     <RouteTabs
-      centered
+      variant="fullWidth"
       indicatorColor="secondary"
       textColor="inherit"
       tabClasses={{ root: classes.tabRoot }}
@@ -154,10 +148,7 @@ const LiveEventHeader: React.FC<Props> = ({
                 <Hidden mdUp>{renderEventName}</Hidden>
               </Grid>
               <Grid item xs={3} className={classes.right}>
-                <AudienceAction
-                  userQueryResult={userQueryResult}
-                  eventQueryResult={eventQueryResult}
-                />
+                <HeaderAction />
               </Grid>
             </Grid>
           </Toolbar>

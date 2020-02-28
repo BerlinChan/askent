@@ -2,7 +2,7 @@ import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Link } from "@material-ui/core";
 
-export const UnauthAction = () => {
+const UnauthAction = () => {
   return (
     <React.Fragment>
       <Link color="inherit" component={RouterLink} to="/login">
@@ -14,3 +14,5 @@ export const UnauthAction = () => {
     </React.Fragment>
   );
 };
+
+export default UnauthAction;

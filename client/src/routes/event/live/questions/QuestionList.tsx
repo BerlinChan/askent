@@ -12,8 +12,8 @@ import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
   MeQueryVariables,
-  LiveEventQuery,
-  LiveEventQueryVariables,
+  EventByIdQuery,
+  EventByIdQueryVariables,
   LiveQuestionsByEventQuery,
   LiveQuestionsByEventQueryVariables,
   QuestionsByMeAudienceQuery,
@@ -31,7 +31,7 @@ import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../../constant";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
+  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
   liveQuestionsResult: QueryResult<
     LiveQuestionsByEventQuery,
     LiveQuestionsByEventQueryVariables

@@ -7,32 +7,26 @@ import {
   DialogActions,
   DialogContent
 } from "@material-ui/core";
-import { QueryResult } from "@apollo/react-common";
 import {
-  MeQuery,
-  MeQueryVariables,
-  LiveEventQuery,
-  LiveEventQueryVariables,
+  useMeQuery,
+  useEventByIdQuery,
   useQuestionsByMeAudienceQuery
-} from "../../../generated/graphqlHooks";
+} from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 // import QuestionList from "./questions/QuestionList";
-import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../constant";
+import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../constant";
 
 interface Props {
-  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
   open: boolean;
   onClose: () => void;
 }
 
-const MyQuestionsDialog: React.FC<Props> = ({
-  userQueryResult,
-  eventQueryResult,
-  open,
-  onClose
-}) => {
+const MyQuestionsDialog: React.FC<Props> = ({ open, onClose }) => {
   let { id } = useParams();
+  const userQueryResult = useMeQuery();
+  const eventByIdQueryResult = useEventByIdQuery({
+    variables: { eventId: id as string }
+  });
   const myQuestionsResult = useQuestionsByMeAudienceQuery({
     variables: {
       eventId: id as string,

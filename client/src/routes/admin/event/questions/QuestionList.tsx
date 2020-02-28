@@ -6,8 +6,8 @@ import { QueryResult } from "@apollo/react-common";
 import {
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
-  AdminEventQuery,
-  AdminEventQueryVariables,
+  EventByIdQuery,
+  EventByIdQueryVariables,
   useDeleteQuestionMutation,
   QuestionFieldsFragment
 } from "../../../../generated/graphqlHooks";
@@ -19,7 +19,7 @@ import { Virtuoso } from "react-virtuoso";
 import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../../constant";
 
 interface Props {
-  eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
+  eventQuery: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
   questionsByEventQuery: QueryResult<
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables

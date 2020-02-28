@@ -25,8 +25,8 @@ import {
 import { QueryResult } from "@apollo/react-common";
 import {
   QuestionFieldsFragment,
-  AdminEventQuery,
-  AdminEventQueryVariables,
+  EventByIdQuery,
+  EventByIdQueryVariables,
   useUpdateQuestionReviewStatusMutation,
   useUpdateQuestionStarMutation,
   useUpdateQuestionTopMutation,
@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   question: QuestionFieldsFragment;
-  eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
+  eventQuery: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
@@ -127,11 +127,11 @@ const QuestionListItem: React.FC<Props> = ({
   const handleArchiveClick: handleToggleType = async (e, id, currentStatus) => {
     await updateQuestionReviewStatusMutation({
       variables: {
-          questionId: id,
-          reviewStatus: currentStatus
-            ? QuestionReviewStatus.Publish
-            : QuestionReviewStatus.Archive
-        }
+        questionId: id,
+        reviewStatus: currentStatus
+          ? QuestionReviewStatus.Publish
+          : QuestionReviewStatus.Archive
+      }
     });
   };
   const handlePublishClick: handleToggleType = async (e, id, currentStatus) => {

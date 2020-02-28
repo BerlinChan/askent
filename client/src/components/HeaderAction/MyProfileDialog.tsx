@@ -12,16 +12,16 @@ import {
   DialogContentText
 } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
-import { ButtonLoading } from "../../../components/Form";
+import { ButtonLoading } from "../Form";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { QueryResult } from "@apollo/react-common";
-import { MeQuery, MeQueryVariables } from "../../../generated/graphqlHooks";
+import { MeQuery, MeQueryVariables } from "../../generated/graphqlHooks";
 import { FormattedMessage, useIntl } from "react-intl";
 import PersonIcon from "@material-ui/icons/Person";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
-import { USERNAME_MAX_LENGTH, EMAIL_MAX_LENGTH } from "../../../constant";
-import { useUpdateUserMutation } from "../../../generated/graphqlHooks";
+import { USERNAME_MAX_LENGTH, EMAIL_MAX_LENGTH } from "../../constant";
+import { useUpdateUserMutation } from "../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

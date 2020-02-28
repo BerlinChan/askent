@@ -629,7 +629,7 @@ export const questionMutation = extendType({
             AudienceRole.All,
             RoleName.WALL,
           ],
-          questionUpdated: [updateQuestion],
+          questionUpdated: updateQuestion,
         })
 
         return updateQuestion

@@ -18,7 +18,7 @@ import { useRouteMatch } from "react-router-dom";
 import { RouteTabs } from "../../components/Tabs";
 import SearchIcon from "@material-ui/icons/Search";
 import { useIntl } from "react-intl";
-import { AuthedAction } from "../../components/Header";
+import HeaderAction from "../../components/HeaderAction";
 import Logo from "../../components/Logo";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -94,7 +94,7 @@ const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
               onChange={e => setSearchString(e.target.value)}
             />
 
-            <AuthedAction />
+            <HeaderAction />
           </Box>
         </Toolbar>
       </Container>

@@ -10,8 +10,8 @@ import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
   MeQueryVariables,
-  LiveEventQuery,
-  LiveEventQueryVariables,
+  EventByIdQuery,
+  EventByIdQueryVariables,
   LiveQuestionsByEventQuery,
   LiveQuestionsByEventQueryVariables,
   useLiveQuestionsByEventLazyQuery,
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
+  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
 const LiveQuestions: React.FC<Props> = ({

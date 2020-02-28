@@ -7,24 +7,3 @@ query EventForLogin($eventId: ID!) {
     endAt
   }
 }
-
-fragment LiveEventFields on Event {
-  id
-  name
-  code
-  startAt
-  endAt
-  moderation
-}
-
-query LiveEvent($eventId: ID!) {
-  eventById(eventId: $eventId) {
-    ...LiveEventFields
-  }
-}
-
-subscription LiveEventUpdated($eventId: ID!) {
-  eventUpdated(eventId: $eventId) {
-    ...LiveEventFields
-  }
-}

@@ -3,26 +3,21 @@ import { useHistory } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Box,
-  Hidden,
   IconButton,
   Avatar,
   Typography,
   Menu,
   MenuItem,
-  ListItemIcon
+  ListItemIcon,
+  Hidden
 } from "@material-ui/core";
-import { QueryResult } from "@apollo/react-common";
-import {
-  MeQuery,
-  MeQueryVariables,
-  LiveEventQuery,
-  LiveEventQueryVariables
-} from "../../../generated/graphqlHooks";
+import { useMeQuery } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import PersonIcon from "@material-ui/icons/Person";
-import { useToken } from "../../../hooks";
+import HomeIcon from "@material-ui/icons/Home";
+import { useToken } from "../../hooks";
 import MyProfileDialog from "./MyProfileDialog";
 import MyQuestionsDialog from "./MyQuestionsDialog";
 
@@ -34,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "center",
       marginRight: theme.spacing(1)
     },
-    name: {
+    email: {
       fontSize: theme.typography.pxToRem(14),
       fontWeight: theme.typography.fontWeightBold
     },
@@ -44,22 +39,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props {
-  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  eventQueryResult: QueryResult<LiveEventQuery, LiveEventQueryVariables>;
-}
+interface Props {}
 
-const AudienceAction: React.FC<Props> = ({
-  userQueryResult,
-  eventQueryResult
-}) => {
+const AuthedAction: React.FC<Props> = () => {
   const classes = useStyles();
   const history = useHistory();
-  const { data: userData } = userQueryResult;
-  const { removeToken } = useToken();
+  const userQueryResult = useMeQuery();
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
+  const { removeToken } = useToken();
   const [myProfileDialogOpen, setMyProfileDialogOpen] = React.useState<boolean>(
     false
   );
@@ -78,20 +67,19 @@ const AudienceAction: React.FC<Props> = ({
     <React.Fragment>
       <Hidden smDown>
         <Box className={classes.userInfo}>
-          <Typography className={classes.name}>
-            {userData?.me.name ? (
-              userData?.me.name
-            ) : (
-              <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
-            )}
+          <Typography className={classes.email}>
+            {userQueryResult.data?.me.email}
           </Typography>
           <Typography className={classes.role}>
-            {userData?.me.roles.map(role => role.name).join()}
+            {userQueryResult.data?.me.roles.map(role => role.name).join()}
           </Typography>
         </Box>
       </Hidden>
       <IconButton size="small" onClick={handleMenuOpen}>
-        <Avatar alt={userData?.me.name as string} src="/broken-image.jpg" />
+        <Avatar
+          alt={userQueryResult.data?.me.name as string}
+          src="/broken-image.jpg"
+        />
       </IconButton>
 
       <Menu
@@ -109,6 +97,17 @@ const AudienceAction: React.FC<Props> = ({
         open={Boolean(menuAnchorEl)}
         onClose={handleMenuClose}
       >
+        <MenuItem
+          onClick={() => {
+            history.replace("/admin");
+            handleMenuClose();
+          }}
+        >
+          <ListItemIcon>
+            <HomeIcon fontSize="small" />
+          </ListItemIcon>
+          <FormattedMessage id="Events" defaultMessage="Events" />
+        </MenuItem>
         <MenuItem
           onClick={() => {
             setMyProfileDialogOpen(true);
@@ -153,8 +152,6 @@ const AudienceAction: React.FC<Props> = ({
         onClose={() => setMyProfileDialogOpen(false)}
       />
       <MyQuestionsDialog
-        userQueryResult={userQueryResult}
-        eventQueryResult={eventQueryResult}
         open={myQuestionsDialogOpen}
         onClose={() => setMyQuestionsDialogOpen(false)}
       />
@@ -162,4 +159,4 @@ const AudienceAction: React.FC<Props> = ({
   );
 };
 
-export default AudienceAction;
+export default AuthedAction;

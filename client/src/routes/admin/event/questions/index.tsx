@@ -19,8 +19,8 @@ import {
   useQuestionRemovedSubscription,
   useDeleteAllReviewQuestionsMutation,
   usePublishAllReviewQuestionsMutation,
-  AdminEventQuery,
-  AdminEventQueryVariables,
+  EventByIdQuery,
+  EventByIdQueryVariables,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument,
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
+  eventQuery: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
 const Questions: React.FC<Props> = ({ eventQuery }) => {

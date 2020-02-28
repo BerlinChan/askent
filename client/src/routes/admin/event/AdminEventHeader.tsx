@@ -14,12 +14,12 @@ import {
 import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import {
-  AdminEventQuery,
-  AdminEventQueryVariables
+  EventByIdQuery,
+  EventByIdQueryVariables
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { FormattedDate, useIntl } from "react-intl";
-import { AuthedAction } from "../../../components/Header";
+import HeaderAction from "../../../components/HeaderAction";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQuery: QueryResult<AdminEventQuery, AdminEventQueryVariables>;
+  eventQuery: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
 const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
@@ -83,7 +83,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                 <Typography color="inherit">#{data?.eventById.code}</Typography>
               </Box>
               <Box className={classes.actions}>
-                <AuthedAction />
+                <HeaderAction />
               </Box>
             </React.Fragment>
           )}

@@ -1,11 +1,15 @@
-query AdminEvent($eventId: ID!) {
+fragment EventFields on Event {
+  id
+  name
+  code
+  startAt
+  endAt
+  moderation
+}
+
+query EventById($eventId: ID!) {
   eventById(eventId: $eventId) {
-    id
-    name
-    code
-    startAt
-    endAt
-    moderation
+    ...EventFields
   }
 }
 
@@ -31,5 +35,11 @@ mutation UpdateEvent(
     startAt
     endAt
     moderation
+  }
+}
+
+subscription EventUpdated($eventId: ID!) {
+  eventUpdated(eventId: $eventId) {
+    ...EventFields
   }
 }

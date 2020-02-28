@@ -6,9 +6,9 @@ import PrivateRoute from "../../../components/PrivateRoute";
 import Layout from "../../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
 import {
-  useLiveEventQuery,
+  useEventByIdQuery,
   useMeQuery,
-  useLiveEventUpdatedSubscription
+  useEventUpdatedSubscription
 } from "../../../generated/graphqlHooks";
 
 const LiveQuestionsComponent = loadable(() => import("./questions"), {
@@ -19,11 +19,11 @@ const Live: React.FC = () => {
   let { path } = useRouteMatch();
   let { id } = useParams();
   const meQueryResult = useMeQuery();
-  const liveEventQueryResult = useLiveEventQuery({
+  const eventByIdQueryResult = useEventByIdQuery({
     variables: { eventId: id as string }
   });
 
-  useLiveEventUpdatedSubscription({
+  useEventUpdatedSubscription({
     variables: { eventId: id as string }
   });
 
@@ -32,18 +32,13 @@ const Live: React.FC = () => {
       <Redirect exact path={path} to={`${path}/questions`} />
 
       <Layout
-        header={
-          <LiveEventHeader
-            userQueryResult={meQueryResult}
-            eventQueryResult={liveEventQueryResult}
-          />
-        }
+        header={<LiveEventHeader eventQueryResult={eventByIdQueryResult} />}
         body={
           <Switch>
             <PrivateRoute path={`${path}/questions`}>
               <LiveQuestionsComponent
                 userQueryResult={meQueryResult}
-                eventQueryResult={liveEventQueryResult}
+                eventQueryResult={eventByIdQueryResult}
               />
             </PrivateRoute>
           </Switch>

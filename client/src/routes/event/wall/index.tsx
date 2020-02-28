@@ -6,8 +6,8 @@ import QRCode from "qrcode.react";
 import { FormattedMessage } from "react-intl";
 import SortSelect from "./SortSelect";
 import {
-  useLiveEventQuery,
-  useLiveEventUpdatedSubscription,
+  useEventByIdQuery,
+  useEventUpdatedSubscription,
   useWallQuestionsByEventLazyQuery,
   WallQuestionsByEventQuery,
   WallQuestionsByEventQueryVariables,
@@ -62,7 +62,7 @@ const EventWall: React.FC<Props> = () => {
   const { id } = useParams();
   const qrcodeCardRef = React.useRef<HTMLElement>(null);
   const [qrcodeCardWidth, setQrcodeCardWidth] = React.useState(0);
-  const liveEventQueryResult = useLiveEventQuery({
+  const eventByIdQueryResult = useEventByIdQuery({
     variables: { eventId: id as string }
   });
   const [
@@ -135,7 +135,7 @@ const EventWall: React.FC<Props> = () => {
       }
     }
   });
-  useLiveEventUpdatedSubscription({
+  useEventUpdatedSubscription({
     variables: { eventId: id as string }
   });
 
@@ -175,7 +175,7 @@ const EventWall: React.FC<Props> = () => {
             Askent
           </Typography>
           <Typography variant="h4" color="textPrimary">
-            # {liveEventQueryResult.data?.eventById.code}
+            # {eventByIdQueryResult.data?.eventById.code}
           </Typography>
         </Box>
       </Grid>
