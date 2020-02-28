@@ -30,9 +30,11 @@ const QuestionToggleButton: React.FC<Props & IconButtonProps> = ({
 }) => {
   return (
     <Tooltip title={status ? onTitle : offTitle}>
-      <IconButton {...rest} onClick={e => handleToggle(e, id, status)}>
-        {status ? onIcon : offIcon}
-      </IconButton>
+      <span>
+        <IconButton {...rest} onClick={e => handleToggle(e, id, status)}>
+          {status ? onIcon : offIcon}
+        </IconButton>
+      </span>
     </Tooltip>
   );
 };

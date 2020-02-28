@@ -11,7 +11,8 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useIntl, FormattedMessage } from "react-intl";
 import {
   WallQuestionFieldsFragment,
-  useUpdateQuestionMutation,
+  useUpdateQuestionReviewStatusMutation,
+  useUpdateQuestionTopMutation,
   QuestionReviewStatus
 } from "../../../generated/graphqlHooks";
 import ArchiveIcon from "@material-ui/icons/Archive";
@@ -84,25 +85,27 @@ const QuestionListItem: React.FC<Props> = ({ question }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [
-    updateQuestionMutation,
-    { loading: updateQuestionLoading }
-  ] = useUpdateQuestionMutation();
+    updateQuestionReviewStatusMutation,
+    { loading: updateQuestionReviewStatusLoading }
+  ] = useUpdateQuestionReviewStatusMutation();
+  const [
+    updateQuestionTopMutation,
+    { loading: updateQuestionTopLoading }
+  ] = useUpdateQuestionTopMutation();
 
   const handleArchiveClick: handleToggleType = async (e, id, currentStatus) => {
-    await updateQuestionMutation({
+    await updateQuestionReviewStatusMutation({
       variables: {
-        input: {
-          questionId: id,
-          reviewStatus: currentStatus
-            ? QuestionReviewStatus.Publish
-            : QuestionReviewStatus.Archive
-        }
+        questionId: id,
+        reviewStatus: currentStatus
+          ? QuestionReviewStatus.Publish
+          : QuestionReviewStatus.Archive
       }
     });
   };
   const handleTopClick: handleToggleType = async (e, id, top) => {
-    await updateQuestionMutation({
-      variables: { input: { questionId: id, top: !top } }
+    await updateQuestionTopMutation({
+      variables: { questionId: id, top: !top }
     });
   };
 
@@ -143,7 +146,7 @@ const QuestionListItem: React.FC<Props> = ({ question }) => {
             className="questionHover"
             id={question.id}
             status={question.top}
-            disabled={updateQuestionLoading}
+            disabled={updateQuestionTopLoading}
             onTitle={formatMessage({
               id: "Untop",
               defaultMessage: "Untop"
@@ -157,7 +160,7 @@ const QuestionListItem: React.FC<Props> = ({ question }) => {
             className="questionHover"
             id={question.id}
             status={question.reviewStatus === QuestionReviewStatus.Archive}
-            disabled={updateQuestionLoading}
+            disabled={updateQuestionReviewStatusLoading}
             onTitle={formatMessage({
               id: "Unarchive",
               defaultMessage: "Unarchive"

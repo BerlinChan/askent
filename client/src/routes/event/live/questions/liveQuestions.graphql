@@ -65,14 +65,14 @@ subscription LiveQuestionAdded($eventId: ID!, $role: RoleName!) {
   }
 }
 
-subscription LiveQuestionUpdated($eventId: ID!) {
-  questionsUpdated(eventId: $eventId) {
+subscription LiveQuestionUpdated($eventId: ID!, $role: RoleName!) {
+  questionUpdated(eventId: $eventId, role: $role) {
     ...LiveQuestionFields
   }
 }
 
-subscription LiveQuestionRemoved($eventId: ID!) {
-  questionsRemoved(eventId: $eventId) {
+subscription LiveQuestionRemoved($eventId: ID!, $role: RoleName!) {
+  questionRemoved(eventId: $eventId, role: $role) {
     ...LiveQuestionFields
   }
 }

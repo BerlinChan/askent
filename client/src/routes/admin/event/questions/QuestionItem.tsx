@@ -27,7 +27,10 @@ import {
   QuestionFieldsFragment,
   AdminEventQuery,
   AdminEventQueryVariables,
-  useUpdateQuestionMutation,
+  useUpdateQuestionReviewStatusMutation,
+  useUpdateQuestionStarMutation,
+  useUpdateQuestionTopMutation,
+  useUpdateQuestionContentMutation,
   QuestionReviewStatus
 } from "../../../../generated/graphqlHooks";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
@@ -105,42 +108,50 @@ const QuestionListItem: React.FC<Props> = ({
   const { data } = eventQuery;
   const { formatMessage } = useIntl();
   const [
-    updateQuestionMutation,
-    { loading: updateQuestionLoading }
-  ] = useUpdateQuestionMutation();
+    updateQuestionReviewStatusMutation,
+    { loading: updateQuestionReviewStatusLoading }
+  ] = useUpdateQuestionReviewStatusMutation();
+  const [
+    updateQuestionStarMutation,
+    { loading: updateQuestionStarLoading }
+  ] = useUpdateQuestionStarMutation();
+  const [
+    updateQuestionTopMutation,
+    { loading: updateQuestionTopLoading }
+  ] = useUpdateQuestionTopMutation();
+  const [
+    updateQuestionContentMutation,
+    { loading: updateQuestionContentLoading }
+  ] = useUpdateQuestionContentMutation();
 
   const handleArchiveClick: handleToggleType = async (e, id, currentStatus) => {
-    await updateQuestionMutation({
+    await updateQuestionReviewStatusMutation({
       variables: {
-        input: {
           questionId: id,
           reviewStatus: currentStatus
             ? QuestionReviewStatus.Publish
             : QuestionReviewStatus.Archive
         }
-      }
     });
   };
   const handlePublishClick: handleToggleType = async (e, id, currentStatus) => {
-    await updateQuestionMutation({
+    await updateQuestionReviewStatusMutation({
       variables: {
-        input: {
-          questionId: id,
-          reviewStatus: currentStatus
-            ? QuestionReviewStatus.Review
-            : QuestionReviewStatus.Publish
-        }
+        questionId: id,
+        reviewStatus: currentStatus
+          ? QuestionReviewStatus.Review
+          : QuestionReviewStatus.Publish
       }
     });
   };
   const handleStarClick: handleToggleType = async (e, id, star) => {
-    await updateQuestionMutation({
-      variables: { input: { questionId: id, star: !star } }
+    await updateQuestionStarMutation({
+      variables: { questionId: id, star: !star }
     });
   };
   const handleTopClick: handleToggleType = async (e, id, top) => {
-    await updateQuestionMutation({
-      variables: { input: { questionId: id, top: !top } }
+    await updateQuestionTopMutation({
+      variables: { questionId: id, top: !top }
     });
   };
 
@@ -204,9 +215,10 @@ const QuestionListItem: React.FC<Props> = ({
                 .required()
             })}
             onSubmit={async values => {
-              await updateQuestionMutation({
+              await updateQuestionContentMutation({
                 variables: {
-                  input: { questionId: question.id, content: values.content }
+                  questionId: question.id,
+                  content: values.content
                 }
               });
               handleEditContentToggle(question.id);
@@ -222,7 +234,7 @@ const QuestionListItem: React.FC<Props> = ({
                   name="content"
                   margin="normal"
                   size="small"
-                  disabled={updateQuestionLoading}
+                  disabled={updateQuestionContentLoading}
                 />
                 <Box className={classes.editContentAction}>
                   <Typography
@@ -249,8 +261,8 @@ const QuestionListItem: React.FC<Props> = ({
                       size="small"
                       type="submit"
                       color="primary"
-                      loading={updateQuestionLoading}
-                      disabled={updateQuestionLoading}
+                      loading={updateQuestionContentLoading}
+                      disabled={updateQuestionContentLoading}
                     >
                       <FormattedMessage id="Save" defaultMessage="Save" />
                     </ButtonLoading>
@@ -281,6 +293,7 @@ const QuestionListItem: React.FC<Props> = ({
                   })}
                   onIcon={<StarIcon fontSize="inherit" color="secondary" />}
                   offIcon={<StarIcon fontSize="inherit" color="inherit" />}
+                  disabled={updateQuestionStarLoading}
                   handleToggle={handleStarClick}
                 />
               )}
@@ -296,6 +309,7 @@ const QuestionListItem: React.FC<Props> = ({
                   offTitle={formatMessage({ id: "Top", defaultMessage: "Top" })}
                   onIcon={<TopIcon fontSize="inherit" color="secondary" />}
                   offIcon={<TopIcon fontSize="inherit" color="inherit" />}
+                  disabled={updateQuestionTopLoading}
                   handleToggle={handleTopClick}
                 />
               )}
@@ -318,6 +332,7 @@ const QuestionListItem: React.FC<Props> = ({
                     })}
                     onIcon={<ClearIcon fontSize="inherit" />}
                     offIcon={<CheckIcon fontSize="inherit" />}
+                    disabled={updateQuestionReviewStatusLoading}
                     handleToggle={handlePublishClick}
                   />
                 )}
@@ -339,6 +354,7 @@ const QuestionListItem: React.FC<Props> = ({
                   })}
                   onIcon={<UnarchiveIcon fontSize="inherit" />}
                   offIcon={<ArchiveIcon fontSize="inherit" />}
+                  disabled={updateQuestionReviewStatusLoading}
                   handleToggle={handleArchiveClick}
                 />
               )}

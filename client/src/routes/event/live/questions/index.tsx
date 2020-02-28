@@ -19,7 +19,6 @@ import {
   useLiveQuestionUpdatedSubscription,
   useLiveQuestionRemovedSubscription,
   LiveQuestionsByEventDocument,
-  QuestionReviewStatus,
   RoleName,
   OrderByArg
 } from "../../../../generated/graphqlHooks";
@@ -124,59 +123,25 @@ const LiveQuestions: React.FC<Props> = ({
     }
   });
   useLiveQuestionUpdatedSubscription({
-    variables: { eventId: id as string },
-    onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionsUpdated.length) {
-        const { questionsUpdated } = subscriptionData.data;
-        const prev = liveQuestionsResult.data;
-
-        if (prev) {
-          const shouldReplace = questionsUpdated.filter(
-            question =>
-              question.reviewStatus === QuestionReviewStatus.Publish ||
-              question.author?.id === userQueryResult.data?.me.id
-          );
-          const deduplicated = R.without(
-            questionsUpdated,
-            prev.liveQuestionsByEvent.list
-          );
-          const concat = R.concat(shouldReplace, deduplicated);
-
-          // update
-          updateCache(client, id as string, {
-            liveQuestionsByEvent: {
-              ...prev.liveQuestionsByEvent,
-              totalCount:
-                prev.liveQuestionsByEvent.totalCount -
-                (questionsUpdated.length - shouldReplace.length),
-              list: concat
-            }
-          });
-        }
-      }
-    }
+    variables: { eventId: id as string, role: RoleName.Audience }
   });
   useLiveQuestionRemovedSubscription({
-    variables: { eventId: id as string },
+    variables: { eventId: id as string, role: RoleName.Audience },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionsRemoved.length) {
-        const { questionsRemoved } = subscriptionData.data;
-        const prev = liveQuestionsResult.data;
+      const prev = liveQuestionsResult.data;
 
-        if (prev) {
-          // remove
-          updateCache(client, id as string, {
-            liveQuestionsByEvent: {
-              ...prev.liveQuestionsByEvent,
-              totalCount:
-                prev.liveQuestionsByEvent.totalCount - questionsRemoved.length,
-              list: prev.liveQuestionsByEvent.list.filter(
-                preQuestion =>
-                  !questionsRemoved.find(item => item.id === preQuestion.id)
-              )
-            }
-          });
-        }
+      if (prev) {
+        // remove
+        updateCache(client, id as string, {
+          liveQuestionsByEvent: {
+            ...prev.liveQuestionsByEvent,
+            totalCount: prev.liveQuestionsByEvent.totalCount - 1,
+            list: prev.liveQuestionsByEvent.list.filter(
+              preQuestion =>
+                subscriptionData.data?.questionRemoved.id !== preQuestion.id
+            )
+          }
+        });
       }
     }
   });

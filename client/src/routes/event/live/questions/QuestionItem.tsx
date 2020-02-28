@@ -28,7 +28,7 @@ import {
   MeQueryVariables,
   useVoteQuestionMutation,
   LiveQuestionFieldsFragment,
-  useUpdateQuestionMutation,
+  useUpdateQuestionContentMutation,
   QuestionReviewStatus
 } from "../../../../generated/graphqlHooks";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
@@ -105,9 +105,9 @@ const QuestionItem: React.FC<Props> = ({
     { loading: voteLoading }
   ] = useVoteQuestionMutation();
   const [
-    updateQuestionMutation,
-    { loading: updateQuestionLoading }
-  ] = useUpdateQuestionMutation();
+    updateQuestionContentMutation,
+    { loading: updateQuestionContentLoading }
+  ] = useUpdateQuestionContentMutation();
 
   const handleThumbUpClick = (questionId: string) => {
     voteQuestionMutation({ variables: { questionId } });
@@ -115,7 +115,7 @@ const QuestionItem: React.FC<Props> = ({
 
   return (
     <ListItem
-    component='div'
+      component="div"
       className={`${classes.listItem} ${
         question.top ? classes.topQuestion : ""
       }`}
@@ -155,12 +155,10 @@ const QuestionItem: React.FC<Props> = ({
               .required()
           })}
           onSubmit={async values => {
-            await updateQuestionMutation({
+            await updateQuestionContentMutation({
               variables: {
-                input: {
-                  questionId: question.id,
-                  content: values.content
-                }
+                questionId: question.id,
+                content: values.content
               }
             });
             handleEditContentToggle(question.id);
@@ -176,7 +174,7 @@ const QuestionItem: React.FC<Props> = ({
                 name="content"
                 margin="normal"
                 size="small"
-                disabled={updateQuestionLoading}
+                disabled={updateQuestionContentLoading}
               />
               <Box className={classes.editContentAction}>
                 <Typography
@@ -203,8 +201,8 @@ const QuestionItem: React.FC<Props> = ({
                     size="small"
                     type="submit"
                     color="primary"
-                    loading={updateQuestionLoading}
-                    disabled={updateQuestionLoading}
+                    loading={updateQuestionContentLoading}
+                    disabled={updateQuestionContentLoading}
                   >
                     <FormattedMessage id="Save" defaultMessage="Save" />
                   </ButtonLoading>

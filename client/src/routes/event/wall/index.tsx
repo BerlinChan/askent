@@ -1,5 +1,4 @@
 import React from "react";
-import * as R from "ramda";
 import { Box, Grid, Card, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useParams } from "react-router-dom";
@@ -17,8 +16,7 @@ import {
   useWallQuestionUpdatedSubscription,
   useWallQuestionRemovedSubscription,
   RoleName,
-  OrderByArg,
-  QuestionReviewStatus
+  OrderByArg
 } from "../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
 import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../constant";
@@ -113,41 +111,13 @@ const EventWall: React.FC<Props> = () => {
     }
   });
   useWallQuestionUpdatedSubscription({
-    variables: { eventId: id as string },
-    onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionsUpdated.length) {
-        const { questionsUpdated } = subscriptionData.data;
-        const prev = wallQuestionsResult.data;
-
-        if (prev) {
-          const shouldReplace = questionsUpdated.filter(
-            question => question.reviewStatus === QuestionReviewStatus.Publish
-          );
-          const deduplicated = R.without(
-            questionsUpdated,
-            prev.wallQuestionsByEvent.list
-          );
-          const concat = R.concat(shouldReplace, deduplicated);
-
-          // update
-          updateCache(client, id as string, {
-            wallQuestionsByEvent: {
-              ...prev.wallQuestionsByEvent,
-              totalCount:
-                prev.wallQuestionsByEvent.totalCount -
-                (questionsUpdated.length - shouldReplace.length),
-              list: concat
-            }
-          });
-        }
-      }
-    }
+    variables: { eventId: id as string, role: RoleName.Wall }
   });
   useWallQuestionRemovedSubscription({
-    variables: { eventId: id as string },
+    variables: { eventId: id as string, role: RoleName.Wall },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionsRemoved.length) {
-        const { questionsRemoved } = subscriptionData.data;
+      if (subscriptionData.data?.questionRemoved) {
+        const { questionRemoved } = subscriptionData.data;
         const prev = wallQuestionsResult.data;
 
         if (prev) {
@@ -155,11 +125,9 @@ const EventWall: React.FC<Props> = () => {
           updateCache(client, id as string, {
             wallQuestionsByEvent: {
               ...prev.wallQuestionsByEvent,
-              totalCount:
-                prev.wallQuestionsByEvent.totalCount - questionsRemoved.length,
+              totalCount: prev.wallQuestionsByEvent.totalCount - 1,
               list: prev.wallQuestionsByEvent.list.filter(
-                preQuestion =>
-                  !questionsRemoved.find(item => item.id === preQuestion.id)
+                preQuestion => questionRemoved.id !== preQuestion.id
               )
             }
           });

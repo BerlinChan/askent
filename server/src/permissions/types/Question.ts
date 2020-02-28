@@ -3,18 +3,6 @@ import { getAuthedUser } from '../../utils'
 import { isAuthedAdmin, isAuthedAudience, isAuthedWall } from './User'
 import { isEventOwnerByArgId } from './Event'
 
-export const isQuestionAuthor = rule({ cache: 'contextual' })(
-  async ({ id }, args, ctx) => {
-    const userId = getAuthedUser(ctx)?.id
-    const questionAuthor = await ctx.prisma.question
-      .findOne({
-        where: { id },
-      })
-      .author()
-
-    return userId === questionAuthor.id
-  },
-)
 export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
     const userId = getAuthedUser(ctx)?.id
@@ -25,19 +13,6 @@ export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
       .author()
 
     return userId === questionAuthor.id
-  },
-)
-export const isQuestionEventOwner = rule({ cache: 'strict' })(
-  async ({ id }, args, ctx) => {
-    const userId = getAuthedUser(ctx)?.id
-    const eventOwner = await ctx.prisma.question
-      .findOne({
-        where: { id },
-      })
-      .event()
-      .owner()
-
-    return userId === eventOwner.id
   },
 )
 export const isQuestionEventOwnerByArg = rule({ cache: 'strict' })(
@@ -85,6 +60,10 @@ export default {
   },
   Mutation: {
     createQuestion: isAuthedAudience,
+    updateQuestionReviewStatus: isQuestionEventOwnerByArg,
+    updateQuestionContent: or(isQuestionAuthorByArg, isQuestionEventOwnerByArg),
+    updateQuestionStar: isQuestionEventOwnerByArg,
+    updateQuestionTop: isQuestionEventOwnerByArg,
     deleteQuestion: and(
       or(isQuestionAuthorByArg, isQuestionEventOwnerByArg),
       not(isQuestionTopByArg),
@@ -92,11 +71,5 @@ export default {
     deleteAllReviewQuestions: isEventOwnerByArgId,
     publishAllReviewQuestions: isEventOwnerByArgId,
     voteQuestion: isQuestionEventAudienceByArg,
-  },
-  UpdateQuestionInputType: {
-    content: or(isQuestionAuthor, isQuestionEventOwner),
-    reviewStatus: isQuestionEventOwner,
-    star: isQuestionEventOwner,
-    top: isQuestionEventOwner,
   },
 }

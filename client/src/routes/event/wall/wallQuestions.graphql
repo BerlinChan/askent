@@ -38,14 +38,14 @@ subscription WallQuestionAdded($eventId: ID!, $role: RoleName!) {
   }
 }
 
-subscription WallQuestionUpdated($eventId: ID!) {
-  questionsUpdated(eventId: $eventId) {
+subscription WallQuestionUpdated($eventId: ID!, $role: RoleName!) {
+  questionUpdated(eventId: $eventId, role: $role) {
     ...WallQuestionFields
   }
 }
 
-subscription WallQuestionRemoved($eventId: ID!) {
-  questionsRemoved(eventId: $eventId) {
+subscription WallQuestionRemoved($eventId: ID!, $role: RoleName!) {
+  questionRemoved(eventId: $eventId, role: $role) {
     ...WallQuestionFields
   }
 }

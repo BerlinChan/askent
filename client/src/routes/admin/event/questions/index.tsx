@@ -15,8 +15,8 @@ import {
   useQuestionsByEventQuery,
   useUpdateEventMutation,
   useQuestionAddedSubscription,
-  useQuestionsUpdatedSubscription,
-  useQuestionsRemovedSubscription,
+  useQuestionUpdatedSubscription,
+  useQuestionRemovedSubscription,
   useDeleteAllReviewQuestionsMutation,
   usePublishAllReviewQuestionsMutation,
   AdminEventQuery,
@@ -163,26 +163,24 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       }
     }
   });
-  useQuestionsUpdatedSubscription({
-    variables: { eventId: id as string }
+  useQuestionUpdatedSubscription({
+    variables: { eventId: id as string, role: RoleName.Admin }
   });
-  useQuestionsRemovedSubscription({
-    variables: { eventId: id as string },
+  useQuestionRemovedSubscription({
+    variables: { eventId: id as string, role: RoleName.Admin },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionsRemoved.length) {
-        const { questionsRemoved } = subscriptionData.data;
-        const prev = getPrev(questionsRemoved[0].reviewStatus);
+      if (subscriptionData.data?.questionRemoved) {
+        const { questionRemoved } = subscriptionData.data;
+        const prev = getPrev(questionRemoved.reviewStatus);
 
         if (prev) {
           // remove
-          updateCache(client, id as string, questionsRemoved[0].reviewStatus, {
+          updateCache(client, id as string, questionRemoved.reviewStatus, {
             questionsByEvent: {
               ...prev.questionsByEvent,
-              totalCount:
-                prev.questionsByEvent.totalCount - questionsRemoved.length,
+              totalCount: prev.questionsByEvent.totalCount - 1,
               list: prev.questionsByEvent.list.filter(
-                preQuestion =>
-                  !questionsRemoved.find(item => item.id === preQuestion.id)
+                preQuestion => questionRemoved.id !== preQuestion.id
               )
             }
           });
