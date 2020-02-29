@@ -1,24 +1,13 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import {
-  Grid,
-  Paper,
-  Box,
-  Typography,
-  FormControlLabel,
-  Switch
-} from "@material-ui/core";
+import { Grid, Paper, Box, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { FormattedMessage, useIntl } from "react-intl";
-import SearchIcon from "@material-ui/icons/Search";
+import { FormattedMessage } from "react-intl";
 import {
   useQuestionsByEventQuery,
-  useUpdateEventMutation,
   useQuestionAddedSubscription,
   useQuestionUpdatedSubscription,
   useQuestionRemovedSubscription,
-  useDeleteAllReviewQuestionsMutation,
-  usePublishAllReviewQuestionsMutation,
   EventByIdQuery,
   EventByIdQueryVariables,
   QuestionsByEventQuery,
@@ -30,8 +19,8 @@ import {
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
-import Confirm from "../../../../components/Confirm";
-import { SubTabs, SubTab } from "../../../../components/Tabs";
+import ActionReview from "./ActionReview";
+import ActionRight from "./ActionRight";
 import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
 import { DataProxy } from "apollo-cache";
 
@@ -49,7 +38,8 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      flexWrap: "nowrap"
+      flexWrap: "nowrap",
+      height: 38
     },
     gridItemPaper: {
       flex: 1,
@@ -71,18 +61,13 @@ interface Props {
 
 const Questions: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
-  const { formatMessage } = useIntl();
   const { id } = useParams();
-  const [tabIndex, setTabIndex] = React.useState(0);
-  const { data } = eventQuery;
-  const [updateEventMutation] = useUpdateEventMutation();
-  const [
-    deleteAllReviewQuestionsMutation
-  ] = useDeleteAllReviewQuestionsMutation();
-  const [
-    publishAllReviewQuestionsMutation
-  ] = usePublishAllReviewQuestionsMutation();
-  const [confirmModeration, setConfirmModeration] = React.useState(false);
+  const tabIndexState = React.useState(0);
+  const searchState = React.useState({
+    value: "",
+    active: false
+  });
+  const { data: eventData } = eventQuery;
   const questionsByEventQuery = useQuestionsByEventQuery({
     variables: {
       eventId: id as string,
@@ -105,6 +90,32 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       where: { reviewStatus: QuestionReviewStatus.Archive },
       orderBy: { createdAt: OrderByArg.Desc },
       pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+    }
+  });
+  const questionsByEventQuerySearch = useQuestionsByEventQuery({
+    variables: {
+      eventId: id as string,
+      where: {
+        AND: [
+          {
+            OR: [
+              { reviewStatus: QuestionReviewStatus.Publish },
+              { reviewStatus: QuestionReviewStatus.Archive }
+            ]
+          },
+          {
+            OR: [
+              { content: { contains: searchState[0]?.value } },
+              { author: { name: { contains: searchState[0]?.value } } }
+            ]
+          }
+        ]
+      },
+      orderBy: { createdAt: OrderByArg.Desc },
+      pagination: {
+        first: DEFAULT_PAGE_FIRST,
+        skip: DEFAULT_PAGE_SKIP
+      }
     }
   });
 
@@ -189,112 +200,14 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     }
   });
 
-  const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setTabIndex(newValue);
-  };
-  const handleModerationChange = async () => {
-    if (data?.eventById.moderation) {
-      setConfirmModeration(true);
-    } else {
-      await updateEventMutation({
-        variables: {
-          eventId: id as string,
-          moderation: true
-        }
-      });
-    }
-  };
-  const handleDeleteAll = async () => {
-    await deleteAllReviewQuestionsMutation({
-      variables: { eventId: id as string },
-      update: (cache, mutationResult) => {
-        updateCache(cache, id as string, QuestionReviewStatus.Review, {
-          questionsByEvent: {
-            skip: DEFAULT_PAGE_SKIP,
-            first: DEFAULT_PAGE_FIRST,
-            totalCount: 0,
-            hasNextPage: false,
-            list: []
-          }
-        });
-      }
-    });
-    await updateEventMutation({
-      variables: {
-        eventId: id as string,
-        moderation: false
-      }
-    });
-    setConfirmModeration(false);
-  };
-  const handlePublishAll = async () => {
-    await publishAllReviewQuestionsMutation({
-      variables: { eventId: id as string },
-      update: (cache, mutationResult) => {
-        updateCache(cache, id as string, QuestionReviewStatus.Review, {
-          questionsByEvent: {
-            skip: DEFAULT_PAGE_SKIP,
-            first: DEFAULT_PAGE_FIRST,
-            totalCount: 0,
-            hasNextPage: false,
-            list: []
-          }
-        });
-      }
-    });
-    await updateEventMutation({
-      variables: {
-        eventId: id as string,
-        moderation: false
-      }
-    });
-    setConfirmModeration(false);
-  };
-
   return (
     <Grid container spacing={3} className={classes.questionsGrid}>
       <Grid item sm={6} className={classes.gridItem}>
         <Box className={classes.listActions}>
-          <Typography color="textSecondary">
-            <FormattedMessage id="ForReview" defaultMessage="For view" />
-          </Typography>
-          <FormControlLabel
-            labelPlacement="start"
-            control={
-              <Switch
-                checked={Boolean(data?.eventById.moderation)}
-                onChange={handleModerationChange}
-              />
-            }
-            label={formatMessage({
-              id: "Moderation",
-              defaultMessage: "Moderation"
-            })}
-          />
-          <Confirm
-            disableBackdropClick
-            disableEscapeKeyDown
-            contentText={formatMessage({
-              id: "Publish_or_delete_all_unreview_questions?",
-              defaultMessage: "Publish or delete all unreview questions?"
-            })}
-            open={confirmModeration}
-            cancelText={
-              <Typography color="error" variant="subtitle1">
-                <FormattedMessage id="Delete" defaultMessage="Delete" />
-              </Typography>
-            }
-            okText={
-              <Typography variant="subtitle1">
-                <FormattedMessage id="Publish" defaultMessage="Publish" />
-              </Typography>
-            }
-            onCancel={handleDeleteAll}
-            onOk={handlePublishAll}
-          />
+          <ActionReview eventQuery={eventQuery} updateCache={updateCache} />
         </Box>
         <Paper className={classes.gridItemPaper}>
-          {data?.eventById.moderation ? (
+          {eventData?.eventById.moderation ? (
             <QuestionList
               eventQuery={eventQuery}
               questionsByEventQuery={questionsByEventQueryReview}
@@ -302,10 +215,16 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           ) : (
             <Box className={classes.moderationOffTips}>
               <Typography variant="h6" align="center" paragraph>
-                Moderation is off
+                <FormattedMessage
+                  id="Moderation_is_off"
+                  defaultMessage="Moderation is off"
+                />
               </Typography>
               <Typography align="center">
-                Incoming questions will automatically appear live.
+                <FormattedMessage
+                  id="Incoming_questions_will_automatically_appear_live."
+                  defaultMessage="Incoming questions will automatically appear live."
+                />
               </Typography>
             </Box>
           )}
@@ -313,29 +232,18 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       </Grid>
       <Grid item sm={6} className={classes.gridItem}>
         <Box className={classes.listActions}>
-          <SubTabs value={tabIndex} onChange={handleTabsChange}>
-            <SubTab
-              label={formatMessage({
-                id: "Live",
-                defaultMessage: "Live"
-              })}
-            />
-            <SubTab
-              label={formatMessage({
-                id: "Archive",
-                defaultMessage: "Archive"
-              })}
-            />
-          </SubTabs>
-          <Box>
-            <SearchIcon color="inherit" fontSize="small" />
-          </Box>
+          <ActionRight
+            tabIndexState={tabIndexState}
+            searchState={searchState}
+          />
         </Box>
         <Paper className={classes.gridItemPaper}>
           <QuestionList
             eventQuery={eventQuery}
             questionsByEventQuery={
-              tabIndex === 0
+              searchState[0].active
+                ? questionsByEventQuerySearch
+                : tabIndexState[0] === 0
                 ? questionsByEventQuery
                 : questionsByEventQueryArchive
             }
