@@ -34,8 +34,6 @@
     "@types/bcryptjs": "2.4.2",
     "@types/express-jwt": "0.0.42",
     "@types/jsonwebtoken": "8.3.7",
-    "@types/node": "13.7.4",
-    "@types/node-fetch": "2.5.4",
     "@types/ramda": "types/npm-ramda#dist",
     "create-nexus-type": "1.1.7",
     "prisma2": "2.0.0-preview022",
