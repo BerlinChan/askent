@@ -18,7 +18,7 @@
     "apollo-link-error": "1.1.12",
     "apollo-link-http": "1.5.16",
     "apollo-link-ws": "1.0.19",
-    "date-fns": "2.9.0",
+    "date-fns": "2.10.0",
     "fingerprintjs2": "2.1.0",
     "formik": "2.1.4",
     "formik-material-ui": "2.0.0-beta.1",
