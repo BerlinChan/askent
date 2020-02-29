@@ -84,17 +84,19 @@
   resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.0.0-preview022.tgz#89c95b2ba17d151edb5891f0a114a2b000ed4e02"
   integrity sha512-VVjwodKA7f/xIw704ZP5aAmaVXbcOa0g69E0RWDsMc/mSJlQyBjUtAnQy1QPvjaEA2V8+x+A85zW5JwrIs6qQg==
 
-"@prisma/engine-core@2.0.41":
-  version "2.0.41"
-  resolved "https://registry.yarnpkg.com/@prisma/engine-core/-/engine-core-2.0.41.tgz#23c8e388352c0712df70ccc78b65012468be1c56"
-  integrity sha512-jJ7+OGmNHVLVlpCOuF2I/XJoUVrBMk62GFl02nsbgl1bJyhL3squSLemahGlpAfDF5vnUaZZl2NwPBxIUAKTJg==
+"@prisma/engine-core@2.0.119":
+  version "2.0.119"
+  resolved "https://registry.yarnpkg.com/@prisma/engine-core/-/engine-core-2.0.119.tgz#34a8c0a3b65f1702f312054e4f27eeb79bac256b"
+  integrity sha512-imFz+GLkmwTSdGAyueWXKnc+aIH6C8zDBKbNIKCfXWq8gfagDth51xmc3lPm8Z4yloe5YfFAKbiDTXxXCftnKw==
   dependencies:
-    "@prisma/generator-helper" "0.0.29"
+    "@prisma/generator-helper" "0.0.42"
     "@prisma/get-platform" "0.1.23"
+    bent "^7.0.6"
+    camelcase "^5.3.1"
     chalk "^3.0.0"
     cross-fetch "^3.0.4"
     debug "^4.1.1"
-    got "9.6.0"
+    got "^9.6.0"
     indent-string "^4.0.0"
 
 "@prisma/fetch-engine@0.3.34":
@@ -114,21 +116,10 @@
     p-retry "^4.2.0"
     progress "^2.0.3"
 
-"@prisma/generator-helper@0.0.29":
-  version "0.0.29"
-  resolved "https://registry.npm.taobao.org/@prisma/generator-helper/download/@prisma/generator-helper-0.0.29.tgz#ed13490ba0253dce0e6e02c733df5382cc735ef6"
-  integrity sha1-7RNJC6AlPc4ObgLHM99TgsxzXvY=
-  dependencies:
-    "@types/cross-spawn" "^6.0.1"
-    chalk "^3.0.0"
-    cross-spawn "^7.0.1"
-    debug "4.1.1"
-    isbinaryfile "^4.0.2"
-
-"@prisma/generator-helper@0.0.40":
-  version "0.0.40"
-  resolved "https://registry.yarnpkg.com/@prisma/generator-helper/-/generator-helper-0.0.40.tgz#11ad45706efad86c1f7bc837f724b1f46c90879d"
-  integrity sha512-s9keJBkVnFJhhftr7kbULYg9cfp0Xsd/eZrGbUI/9HWtCctIPsRy0joTi/leL7cIoobQYI3RYHydxtumo21pFg==
+"@prisma/generator-helper@0.0.42":
+  version "0.0.42"
+  resolved "https://registry.yarnpkg.com/@prisma/generator-helper/-/generator-helper-0.0.42.tgz#cfe4f13eba8259d0a1712fc3f2ebdb29a636abc6"
+  integrity sha512-trQjIzieUo3VZKusGqh3Pj7/WMhDNzUhuL4uHV2cLnJbgl2hVp+oDpkobfJq9GWIpIC3XfeXOg0abtTA/0Likw==
   dependencies:
     "@types/cross-spawn" "^6.0.1"
     chalk "^3.0.0"
@@ -143,15 +134,15 @@
   dependencies:
     debug "^4.1.1"
 
-"@prisma/sdk@0.0.216":
-  version "0.0.216"
-  resolved "https://registry.yarnpkg.com/@prisma/sdk/-/sdk-0.0.216.tgz#52f7c5d02706fcd85c139817ad0eaab000749add"
-  integrity sha512-Hc5NiEv7YL9bOr4Mj0S/HXuCZhwW0TbgMy/VeugGNtv6q/DidthbET7AbghaWZ97gT1BGln9mV8BLSRAqXZ04g==
+"@prisma/sdk@0.0.221":
+  version "0.0.221"
+  resolved "https://registry.yarnpkg.com/@prisma/sdk/-/sdk-0.0.221.tgz#368fddd87fc968faf1b8b8c9ac97bc407a37248e"
+  integrity sha512-MkMOsMkHbVV8j2K7gYIx8Qa6M5bNEiO7Y/jyN0G9vW64Yk2hZrwKcz/ho6WDSjenISfRK43R2wC5MpVcCtCmHQ==
   dependencies:
     "@apexearth/copy" "^1.4.4"
-    "@prisma/engine-core" "2.0.41"
+    "@prisma/engine-core" "2.0.119"
     "@prisma/fetch-engine" "0.3.34"
-    "@prisma/generator-helper" "0.0.40"
+    "@prisma/generator-helper" "0.0.42"
     "@prisma/get-platform" "0.1.23"
     archiver "3.0.0"
     chalk "^3.0.0"
@@ -913,6 +904,15 @@ bcryptjs@2.4.3:
   resolved "https://registry.npm.taobao.org/bcryptjs/download/bcryptjs-2.4.3.tgz#9ab5627b93e60621ff7cdac5da9733027df1d0cb"
   integrity sha1-mrVie5PmBiH/fNrF2pczAn3x0Ms=
 
+bent@^7.0.6:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/bent/-/bent-7.1.0.tgz#4d1ee379259e40ef39e4a8f80fc97ab07f43185b"
+  integrity sha512-oTkDz8lBsk+HQjJPVeHHejkse/PDaTFwTFVasoR1V3XEQw23KKdfNvRln3M9++qipIBObqVyhsvSGuquFebDvQ==
+  dependencies:
+    bytesish "^0.4.1"
+    caseless "~0.12.0"
+    is-stream "^2.0.0"
+
 bl@^1.0.0:
   version "1.2.2"
   resolved "https://registry.npm.taobao.org/bl/download/bl-1.2.2.tgz#a160911717103c07410cef63ef51b397c025af9c"
@@ -1019,6 +1019,11 @@ bytes@3.1.0:
   resolved "https://registry.npm.taobao.org/bytes/download/bytes-3.1.0.tgz#f6cf7933a360e0588fa9fde85651cdc7f805d1f6"
   integrity sha1-9s95M6Ng4FiPqf3oVlHNx/gF0fY=
 
+bytesish@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/bytesish/-/bytesish-0.4.1.tgz#5fe19b076037ffdfb63e083a53495b1d1c063f6f"
+  integrity sha512-j3l5QmnAbpOfcN/Z2Jcv4poQYfefs8rDdcbc6iEKm+OolvUXAE2APodpWj+DOzqX6Bl5Ys1cQkcIV2/doGvQxg==
+
 cache-base@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/cache-base/download/cache-base-1.0.1.tgz#0a7f46416831c8b662ee36fe4e7c59d76f666ab2"
@@ -1069,6 +1074,11 @@ camelcase@^5.3.1:
   version "5.3.1"
   resolved "https://registry.npm.taobao.org/camelcase/download/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha1-48mzFWnhBoEd8kL3FXJaH0xJQyA=
+
+caseless@~0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
+  integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
 chalk@^2.0.0:
   version "2.4.2"
@@ -1890,10 +1900,10 @@ globby@^9.2.0:
     pify "^4.0.1"
     slash "^2.0.0"
 
-got@9.6.0:
+got@^9.6.0:
   version "9.6.0"
-  resolved "https://registry.npm.taobao.org/got/download/got-9.6.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fgot%2Fdownload%2Fgot-9.6.0.tgz#edf45e7d67f99545705de1f7bbeeeb121765ed85"
-  integrity sha1-7fRefWf5lUVwXeH3u+7rEhdl7YU=
+  resolved "https://registry.yarnpkg.com/got/-/got-9.6.0.tgz#edf45e7d67f99545705de1f7bbeeeb121765ed85"
+  integrity sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==
   dependencies:
     "@sindresorhus/is" "^0.14.0"
     "@szmarczak/http-timer" "^1.1.2"
