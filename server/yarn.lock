@@ -344,14 +344,6 @@
   resolved "https://registry.npm.taobao.org/@types/events/download/@types/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
   integrity sha1-KGLz9Yqaf3w+eNefEw3U1xwlwqc=
 
-"@types/express-jwt@0.0.42":
-  version "0.0.42"
-  resolved "https://registry.npm.taobao.org/@types/express-jwt/download/@types/express-jwt-0.0.42.tgz#4f04e1fadf9d18725950dc041808a4a4adf7f5ae"
-  integrity sha1-TwTh+t+dGHJZUNwEGAikpK339a4=
-  dependencies:
-    "@types/express" "*"
-    "@types/express-unless" "*"
-
 "@types/express-serve-static-core@*":
   version "4.17.2"
   resolved "https://registry.npm.taobao.org/@types/express-serve-static-core/download/@types/express-serve-static-core-4.17.2.tgz#f6f41fa35d42e79dbf6610eccbb2637e6008a0cf"
@@ -359,13 +351,6 @@
   dependencies:
     "@types/node" "*"
     "@types/range-parser" "*"
-
-"@types/express-unless@*":
-  version "0.5.1"
-  resolved "https://registry.npm.taobao.org/@types/express-unless/download/@types/express-unless-0.5.1.tgz#4f440b905e42bbf53382b8207bc337dc5ff9fd1f"
-  integrity sha1-T0QLkF5Cu/Uzgrgge8M33F/5/R8=
-  dependencies:
-    "@types/express" "*"
 
 "@types/express@*", "@types/express@4.17.2":
   version "4.17.2"

@@ -32,7 +32,6 @@
   "devDependencies": {
     "@prisma/sdk": "0.0.221",
     "@types/bcryptjs": "2.4.2",
-    "@types/express-jwt": "0.0.42",
     "@types/jsonwebtoken": "8.3.8",
     "@types/ramda": "types/npm-ramda#dist",
     "create-nexus-type": "1.1.7",
