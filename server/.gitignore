@@ -1,6 +1,5 @@
 dist/
 build/
-schema.graphql
 
 # prisma
 prisma/migrations/

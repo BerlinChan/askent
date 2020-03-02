@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 import path from 'path'
 import { Dialect } from 'sequelize'
 
-const dotenvResult = dotenv.config({ path: path.join(__dirname, '../.env') })
+const dotenvResult = dotenv.config({ path: path.join(__dirname, '../../.env') })
 if (dotenvResult.error) {
   throw dotenvResult.error
 }

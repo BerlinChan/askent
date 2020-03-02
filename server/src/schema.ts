@@ -1,7 +1,7 @@
 import path from 'path'
 import {makeSchema} from 'nexus'
 import {nexusPrismaPlugin} from 'nexus-prisma'
-import * as types from './types'
+import * as types from './graphql'
 
 export const schema = makeSchema({
     types: types,
