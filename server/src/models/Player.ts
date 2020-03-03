@@ -24,7 +24,7 @@ Player.init(
   {
     sequelize,
     modelName: 'player',
-    timestamps:false
+    timestamps: false,
   },
 )
 

@@ -8,7 +8,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import CreateEventDialog from "./CreateEventDialog";
 import EventList from "./EventList";
-import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../constant";
+import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,7 +35,7 @@ const Events: React.FC<Props> = ({ searchString }) => {
     variables: {
       searchString,
       orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+      pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET }
     }
   });
   const { refetch: eventsByMeRefetch } = eventsByMeQueryResult;

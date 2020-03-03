@@ -16,7 +16,7 @@ import Confirm from "../../../../components/Confirm";
 import QuestionItem from "./QuestionItem";
 import EditIcon from "@material-ui/icons/Edit";
 import { Virtuoso } from "react-virtuoso";
-import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../../constant";
+import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
 
 interface Props {
   eventQuery: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
@@ -96,8 +96,8 @@ const QuestionList: React.FC<Props> = ({
       fetchMore({
         variables: {
           pagination: {
-            skip: data?.questionsByEvent.list.length || DEFAULT_PAGE_SKIP,
-            first: data?.questionsByEvent.first || DEFAULT_PAGE_FIRST
+            skip: data?.questionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
+            first: data?.questionsByEvent.first || DEFAULT_PAGE_LIMIT
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {

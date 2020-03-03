@@ -24,8 +24,6 @@ export const isEventOwnerByArgId = rule({ cache: 'strict' })(
 
 export default {
   Query: {
-    events: deny,
-    
     eventsByMe: isAuthedAdmin,
     checkEventCodeExist: isAuthedAdmin,
     isEventAudience: isAuthedAudience,

@@ -13,7 +13,7 @@ import {
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import Confirm from "../../../../components/Confirm";
-import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
 import { DataProxy } from "apollo-cache";
 
 interface Props {
@@ -57,8 +57,8 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
       update: (cache, mutationResult) => {
         updateCache(cache, id as string, QuestionReviewStatus.Review, {
           questionsByEvent: {
-            skip: DEFAULT_PAGE_SKIP,
-            first: DEFAULT_PAGE_FIRST,
+            skip: DEFAULT_PAGE_OFFSET,
+            first: DEFAULT_PAGE_LIMIT,
             totalCount: 0,
             hasNextPage: false,
             list: []
@@ -80,8 +80,8 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
       update: (cache, mutationResult) => {
         updateCache(cache, id as string, QuestionReviewStatus.Review, {
           questionsByEvent: {
-            skip: DEFAULT_PAGE_SKIP,
-            first: DEFAULT_PAGE_FIRST,
+            skip: DEFAULT_PAGE_OFFSET,
+            first: DEFAULT_PAGE_LIMIT,
             totalCount: 0,
             hasNextPage: false,
             list: []

@@ -25,7 +25,7 @@ import {
 import { DataProxy } from "apollo-cache";
 import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
-import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -76,7 +76,7 @@ const LiveQuestions: React.FC<Props> = ({
             : tabIndex === 0
             ? { createdAt: OrderByArg.Desc }
             : undefined,
-        pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+        pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET }
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

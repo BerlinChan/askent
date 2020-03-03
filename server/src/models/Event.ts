@@ -1,6 +1,7 @@
 import { BuildOptions, DataTypes, Model } from 'sequelize'
 import sequelize from '../db'
-import Question from './Question'
+import Question, { QuestionModelStatic } from './Question'
+import { UserModelStatic } from './User'
 
 const { BOOLEAN, STRING, UUID, UUIDV1, DATE } = DataTypes
 
@@ -10,7 +11,12 @@ export class Event extends Model {
   public name!: string
   public startAt!: Date
   public endAt!: Date
-  public moderation!: boolean
+  public moderation?: boolean
+
+  public owner!: UserModelStatic
+  public audiences!: UserModelStatic[]
+  public questions!: QuestionModelStatic[]
+
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
   public readonly deletedAt?: Date
@@ -33,6 +39,7 @@ Event.init(
     endAt: DATE,
     moderation: {
       type: BOOLEAN,
+      allowNull: true,
       defaultValue: false,
     },
   },

@@ -19,7 +19,7 @@ import {
   OrderByArg
 } from "../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
-import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../constant";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
 import QuestionList from "./QuestionList";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -148,7 +148,7 @@ const EventWall: React.FC<Props> = () => {
     wallQuestionsByEventLazyQuery({
       variables: {
         eventId: id as string,
-        pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP },
+        pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET },
         orderBy: { createdAt: OrderByArg.Desc }
       }
     });

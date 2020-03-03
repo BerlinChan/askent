@@ -7,8 +7,9 @@ export const Player = objectType({
     t.string('name')
     t.list.field('games', {
       type: 'Game',
-      resolve(root, args, ctx) {
-        return ctx.db.Game.findAll({ where: { playerId: root.id } })
+      resolve: async (root, args, ctx) => {
+        const player = await ctx.db.Player.findOne({ where: { id: root.id } })
+        return player.getGames()
       },
     })
   },

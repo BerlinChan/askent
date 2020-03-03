@@ -3,7 +3,7 @@ import sequelize from '../db'
 
 const { ENUM, UUID, UUIDV1 } = DataTypes
 
-enum RoleName {
+export enum RoleName {
   Admin = 'ADMIN',
   Audience = 'AUDIENCE',
   Wall = 'WALL',

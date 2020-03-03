@@ -1,8 +1,13 @@
-import { BuildOptions, DataTypes, Model } from 'sequelize'
+import {
+  BuildOptions,
+  DataTypes,
+  Model,
+  HasManyGetAssociationsMixin,
+} from 'sequelize'
 import sequelize from '../db'
-import Event from './Event'
-import Question from './Question'
-import Role from './Role'
+import Event, { EventModelStatic } from './Event'
+import Question, { QuestionModelStatic } from './Question'
+import Role, { RoleModelStatic } from './Role'
 
 const { STRING, UUID, UUIDV1 } = DataTypes
 
@@ -12,6 +17,14 @@ export class User extends Model {
   public email?: string
   public password?: string
   public name?: string
+
+  public roles!: RoleModelStatic[]
+  public events!: EventModelStatic[]
+  public questions!: QuestionModelStatic[]
+  public votedQuestions!: QuestionModelStatic[]
+
+  public getVotedQuestions!: HasManyGetAssociationsMixin<QuestionModelStatic> // Note the null assertions!
+
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
   public readonly deletedAt?: Date
@@ -46,11 +59,8 @@ User.init(
   },
 )
 
-User.hasMany(Event, { foreignKey: { name: 'ownerId', allowNull: false } })
-Event.belongsTo(User, {
-  foreignKey: { name: 'ownerId', allowNull: false },
-  as: 'owner',
-})
+User.hasMany(Event, { foreignKey: { name: 'ownerId' } })
+Event.belongsTo(User, { foreignKey: { name: 'ownerId' }, as: 'owner' })
 
 User.hasMany(Question, { foreignKey: { name: 'authorId' } })
 Question.belongsTo(User, { foreignKey: { name: 'authorId' } })

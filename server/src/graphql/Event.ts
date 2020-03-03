@@ -1,7 +1,5 @@
 import {
   objectType,
-  inputObjectType,
-  interfaceType,
   extendType,
   stringArg,
   subscriptionField,
@@ -13,48 +11,45 @@ import { getAuthedUser } from '../utils'
 import { Context } from '../context'
 import { Event as EventType } from '@prisma/client'
 import { withFilter } from 'apollo-server-express'
-import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from '../constant'
+import { Op } from 'sequelize'
 
 export const Event = objectType({
   name: 'Event',
   definition(t) {
-    t.model.id()
-    t.model.code()
-    t.model.name()
-    t.model.owner()
-    t.model.audiences()
-    t.model.createdAt()
-    t.model.updatedAt()
-    t.model.startAt()
-    t.model.endAt()
-    t.model.moderation()
-    t.model.questions()
-  },
-})
-export const PaginationInputType = inputObjectType({
-  name: 'PaginationInputType',
-  description: 'Pagination input type.',
-  definition(t) {
-    t.int('skip', {
-      default: DEFAULT_PAGE_SKIP,
-      required: true,
-      description: 'Default start from 0.',
+    t.id('id')
+    t.string('code')
+    t.string('name')
+    t.field('startAt', { type: 'DateTime' })
+    t.field('endAt', { type: 'DateTime' })
+    t.boolean('moderation')
+
+    t.field('owner', {
+      type: 'User',
+      resolve: async (root, args, ctx) => {
+        console.log(root)
+        const event = await ctx.db.Event.findOne({ where: { id: root.id } })
+        console.log(event)
+        return event.getOwner()
+      },
     })
-    t.int('first', {
-      default: DEFAULT_PAGE_FIRST,
-      required: true,
-      description: `Default first ${DEFAULT_PAGE_FIRST}`,
+    t.list.field('audiences', {
+      type: 'User',
+      resolve: async (root, args, ctx) => {
+        const event = await ctx.db.Event.findOne({ where: { id: root.id } })
+        return event.getAudiences()
+      },
     })
-  },
-})
-export const IPagedType = interfaceType({
-  name: 'IPagedType',
-  definition(t) {
-    t.int('skip')
-    t.int('first')
-    t.int('totalCount')
-    t.boolean('hasNextPage')
-    t.resolveType(() => null)
+    t.list.field('questions', {
+      type: 'User',
+      resolve: async (root, args, ctx) => {
+        const event = await ctx.db.Event.findOne({ where: { id: root.id } })
+        return event.getQuestions()
+      },
+    })
+
+    t.field('createdAt', { type: 'DateTime' })
+    t.field('updatedAt', { type: 'DateTime' })
+    t.field('deletedAt', { type: 'DateTime', nullable: true })
   },
 })
 export const PagedEvent = objectType({
@@ -68,19 +63,17 @@ export const PagedEvent = objectType({
 export const eventQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.crud.events({ ordering: true })
-
     t.field('eventById', {
       type: 'Event',
       args: {
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
-        const event = await ctx.prisma.event.findOne({
+        const event = await ctx.db.Event.findOne({
           where: { id: eventId },
         })
 
-        return event as EventType
+        return event
       },
     })
     t.field('eventsByMe', {
@@ -89,40 +82,37 @@ export const eventQuery = extendType({
       args: {
         searchString: stringArg(),
         pagination: arg({ type: 'PaginationInputType', required: true }),
-        orderBy: arg({ type: 'EventOrderByInput' }),
+        // TODO: orderBy: arg({ type: 'EventOrderByInput' }),
       },
-      resolve: async (root, { searchString, pagination, orderBy }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
-        // TODO:aggregate count not yet implemented, https://github.com/prisma/prisma-client-js/issues/5
-        const allEvents = await ctx.prisma.event.findMany({
+      resolve: async (root, { searchString, pagination }, ctx) => {
+        const userId = getAuthedUser(ctx)?.id as string
+        const eventsTotalCount = await ctx.db.Event.findAndCountAll({
           where: {
             owner: { id: userId },
-            OR: [
-              { name: { contains: searchString } },
-              { code: { contains: searchString } },
+            [Op.or]: [
+              { name: { [Op.substring]: searchString } },
+              { code: { [Op.substring]: searchString } },
             ],
           },
         })
-        const totalCount = allEvents.length
-        const { first, skip } = pagination
-        const events = await ctx.prisma.event.findMany({
+        const { limit, offset } = pagination
+        const events = await ctx.db.Event.findAll({
           where: {
             owner: { id: userId },
-            OR: [
-              { name: { contains: searchString } },
-              { code: { contains: searchString } },
+            [Op.or]: [
+              { name: { [Op.substring]: searchString } },
+              { code: { [Op.substring]: searchString } },
             ],
           },
-          orderBy,
           ...pagination,
         })
 
         return {
           list: events,
-          hasNextPage: first + skip < totalCount,
-          totalCount,
-          first,
-          skip,
+          hasNextPage: limit + offset < eventsTotalCount,
+          totalCount: eventsTotalCount,
+          limit,
+          offset,
         }
       },
     })
@@ -131,8 +121,8 @@ export const eventQuery = extendType({
       description: 'Get events by code.',
       args: { code: stringArg() },
       resolve: async (root, { code }, ctx) => {
-        const events = await ctx.prisma.event.findMany({
-          where: { code: { contains: code } },
+        const events = await ctx.db.Event.findAll({
+          where: { code: { [Op.substring]: code } },
         })
 
         return events
@@ -152,12 +142,13 @@ export const eventQuery = extendType({
       type: 'Boolean',
       args: { eventId: idArg({ required: true }) },
       resolve: async (root, { eventId }, ctx) => {
-        const audienceId = getAuthedUser(ctx)?.id
-        const audiences = await ctx.prisma.event
-          .findOne({ where: { id: eventId } })
-          .audiences({ where: { id: audienceId } })
+        const audienceId = getAuthedUser(ctx)?.id as string
+        const event = await ctx.db.Event.findOne({ where: { id: eventId } })
+        const audience = await ctx.db.User.findOne({
+          where: { id: audienceId },
+        })
 
-        return Boolean(audiences.length)
+        return event.hasAudience(audience)
       },
     })
   },
@@ -178,16 +169,12 @@ export const eventMutation = extendType({
         if (await checkEventCodeExist(ctx, code)) {
           throw new Error(`Code "${code}" has already exist.`)
         }
-        const userId = getAuthedUser(ctx)?.id
-        return ctx.prisma.event.create({
-          data: {
-            owner: { connect: { id: userId } },
-            code,
-            name,
-            startAt,
-            endAt,
-          },
-        })
+        const userId = getAuthedUser(ctx)?.id as string
+        const owner = await ctx.db.User.findOne({ where: { id: userId } })
+        const event = await ctx.db.Event.create({ code, name, startAt, endAt })
+        await event.setOwner(owner)
+
+        return event
       },
     })
     t.field('updateEvent', {
@@ -254,7 +241,7 @@ export const eventMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
+        const userId = getAuthedUser(ctx)?.id as string
         const updateEvent = await ctx.prisma.event.update({
           where: { id: eventId },
           data: { audiences: { connect: { id: userId } } },
@@ -287,14 +274,14 @@ export const eventUpdatedSubscription = subscriptionField<'eventUpdated'>(
 )
 
 async function checkEventCodeExist(ctx: Context, code: string) {
-  return Boolean(await ctx.prisma.event.findOne({ where: { code } }))
+  return Boolean(await ctx.db.Event.findOne({ where: { code } }))
 }
 
 async function checkEventExist(
   ctx: Context,
   eventId: EventType['id'],
 ): Promise<boolean> {
-  const findEvent = await ctx.prisma.event.findOne({
+  const findEvent = await ctx.db.Event.findOne({
     where: { id: eventId },
   })
   if (!findEvent) {
