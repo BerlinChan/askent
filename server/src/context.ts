@@ -1,21 +1,23 @@
 import { PrismaClient } from '@prisma/client'
 import { PubSub } from 'apollo-server-express'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
-import models, { ModelType } from './models'
+import db, { ModelType } from './models'
 
 const prisma = new PrismaClient()
 const pubsub = new PubSub()
 
 export interface Context extends ExpressContext {
-  models: ModelType
+  db: ModelType
   prisma: PrismaClient
   pubsub: PubSub
 }
+
+// TODO: n+1 query problem: https://github.com/mickhansen/graphql-sequelize/tree/master/examples/graphql-yoga
 
 export function createContext({
   req,
   res,
   connection,
 }: ExpressContext): Context {
-  return { models, prisma, pubsub, req, res, connection }
+  return { db, prisma, pubsub, req, res, connection }
 }

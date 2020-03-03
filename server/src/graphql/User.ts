@@ -10,6 +10,7 @@ import { NexusGenFieldTypes } from 'nexus-typegen'
 import { hash, compare } from 'bcryptjs'
 import { Context } from '../context'
 import { getAuthedUser, signToken } from '../utils'
+import { Op } from 'sequelize'
 
 export const User = objectType({
   name: 'User',
@@ -101,6 +102,15 @@ export const userMutation = extendType({
           RoleName.AUDIENCE,
           RoleName.WALL,
         ]
+        const roles = await ctx.db.Role.findAll({
+          where: { [Op.or]: userRoles.map(role => ({ name: role })) },
+        })
+        const user1 = await ctx.db.User.create({
+          ...args,
+          password: hashedPassword,
+        })
+        await user1.setRoles(roles)
+
         const user = await ctx.prisma.user.create({
           data: {
             ...args,

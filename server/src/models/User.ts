@@ -47,19 +47,29 @@ User.init(
 )
 
 User.hasMany(Event, { foreignKey: { name: 'ownerId', allowNull: false } })
-Event.belongsTo(User, { foreignKey: { name: 'ownerId', allowNull: false } })
+Event.belongsTo(User, {
+  foreignKey: { name: 'ownerId', allowNull: false },
+  as: 'owner',
+})
 
 User.hasMany(Question, { foreignKey: { name: 'authorId' } })
 Question.belongsTo(User, { foreignKey: { name: 'authorId' } })
 
-User.belongsToMany(Question, { through: 'usersVoteQuestions' })
-Question.belongsToMany(User, { through: 'usersVoteQuestions' })
+User.belongsToMany(Question, {
+  through: 'usersVoteQuestions',
+  as: 'votedQuestions',
+})
+Question.belongsToMany(User, {
+  through: 'usersVoteQuestions',
+  as: 'votedUsers',
+})
 
 User.belongsToMany(Event, {
   through: 'eventAudiences',
   foreignKey: 'audienceId',
+  as: 'joinedEvents',
 })
-Event.belongsToMany(User, { through: 'eventAudiences' })
+Event.belongsToMany(User, { through: 'eventAudiences', as: 'audiences' })
 
 User.belongsToMany(Role, { through: 'userRoles', targetKey: 'name' })
 Role.belongsToMany(User, { through: 'userRoles', sourceKey: 'name' })
