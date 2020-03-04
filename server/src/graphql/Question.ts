@@ -5,23 +5,16 @@ import {
   stringArg,
   idArg,
   arg,
-  subscriptionField,
   booleanArg,
 } from 'nexus'
-import { User, RoleName } from '@prisma/client'
-import { getAuthedUser, TokenPayload } from '../utils'
-import { withFilter } from 'apollo-server-express'
+import { getAuthedUser } from '../utils'
 import { Context } from '../context'
+import { AudienceRole } from './Role'
 import { ReviewStatus } from '../models/Question'
 import { Op } from 'sequelize'
 import { QuestionModelStatic } from '../models/Question'
-import { UserModelStatic } from '../models/User'
+import { RoleName } from '../models/Role'
 
-enum AudienceRole {
-  All,
-  ExcludeAuthor,
-  OnlyAuthor,
-}
 export const ReviewStatusEnum = enumType({
   name: 'ReviewStatus',
   members: ReviewStatus,
@@ -272,13 +265,13 @@ export const questionMutation = extendType({
           authorId: author.id,
           toRoles:
             newQuestion.reviewStatus === ReviewStatus.Review
-              ? [RoleName.ADMIN, RoleName.AUDIENCE, AudienceRole.OnlyAuthor]
+              ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
               : newQuestion.reviewStatus === ReviewStatus.Publish
               ? [
-                  RoleName.ADMIN,
-                  RoleName.AUDIENCE,
+                  RoleName.Admin,
+                  RoleName.Audience,
                   AudienceRole.All,
-                  RoleName.WALL,
+                  RoleName.Wall,
                 ]
               : [],
           questionAdded: newQuestion,
@@ -331,9 +324,9 @@ export const questionMutation = extendType({
             eventId: prevQuestion?.event?.id,
             authorId: prevQuestion?.author?.id,
             toRoles: [
-              RoleName.AUDIENCE,
+              RoleName.Audience,
               AudienceRole.ExcludeAuthor,
-              RoleName.WALL,
+              RoleName.Wall,
             ],
             questionRemoved: updateQuestion,
           })
@@ -344,9 +337,9 @@ export const questionMutation = extendType({
             questionEventOwnerId: prevQuestion?.event?.owner?.id,
             authorId: prevQuestion?.author?.id,
             toRoles: [
-              RoleName.AUDIENCE,
+              RoleName.Audience,
               AudienceRole.ExcludeAuthor,
-              RoleName.WALL,
+              RoleName.Wall,
             ],
             questionAdded: updateQuestion,
           })
@@ -355,21 +348,21 @@ export const questionMutation = extendType({
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: prevQuestion?.event?.id,
           authorId: prevQuestion?.author?.id,
-          toRoles: [RoleName.AUDIENCE, AudienceRole.OnlyAuthor],
+          toRoles: [RoleName.Audience, AudienceRole.OnlyAuthor],
           questionUpdated: updateQuestion,
         })
         // update for admin
         ctx.pubsub.publish('QUESTION_REMOVED', {
           eventId: prevQuestion?.event?.id,
           authorId: prevQuestion?.author?.id,
-          toRoles: [RoleName.ADMIN],
+          toRoles: [RoleName.Admin],
           questionRemoved: prevQuestion,
         })
         ctx.pubsub.publish('QUESTION_ADDED', {
           eventId: prevQuestion?.event?.id,
           questionEventOwnerId: prevQuestion?.event?.owner?.id,
           authorId: prevQuestion?.author?.id,
-          toRoles: [RoleName.ADMIN],
+          toRoles: [RoleName.Admin],
           questionAdded: updateQuestion,
         })
 
@@ -403,16 +396,16 @@ export const questionMutation = extendType({
           authorId: question?.author?.id,
           toRoles:
             updateQuestion.reviewStatus === ReviewStatus.Review
-              ? [RoleName.ADMIN, RoleName.AUDIENCE, AudienceRole.OnlyAuthor]
+              ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
               : updateQuestion.reviewStatus === ReviewStatus.Publish
               ? [
-                  RoleName.ADMIN,
-                  RoleName.AUDIENCE,
+                  RoleName.Admin,
+                  RoleName.Audience,
                   AudienceRole.All,
-                  RoleName.WALL,
+                  RoleName.Wall,
                 ]
               : updateQuestion.reviewStatus === ReviewStatus.Archive
-              ? [RoleName.ADMIN]
+              ? [RoleName.Admin]
               : [],
           questionUpdated: updateQuestion,
         })
@@ -447,16 +440,16 @@ export const questionMutation = extendType({
           authorId: question?.author?.id,
           toRoles:
             updateQuestion.reviewStatus === ReviewStatus.Review
-              ? [RoleName.ADMIN, RoleName.AUDIENCE, AudienceRole.OnlyAuthor]
+              ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
               : updateQuestion.reviewStatus === ReviewStatus.Publish
               ? [
-                  RoleName.ADMIN,
-                  RoleName.AUDIENCE,
+                  RoleName.Admin,
+                  RoleName.Audience,
                   AudienceRole.All,
-                  RoleName.WALL,
+                  RoleName.Wall,
                 ]
               : updateQuestion.reviewStatus === ReviewStatus.Archive
-              ? [RoleName.ADMIN]
+              ? [RoleName.Admin]
               : [],
           questionUpdated: updateQuestion,
         })
@@ -505,10 +498,10 @@ export const questionMutation = extendType({
           ctx.pubsub.publish('QUESTION_UPDATED', {
             eventId: question?.event?.id,
             toRoles: [
-              RoleName.ADMIN,
-              RoleName.AUDIENCE,
+              RoleName.Admin,
+              RoleName.Audience,
               AudienceRole.All,
-              RoleName.WALL,
+              RoleName.Wall,
             ],
             questionUpdated: questionItem,
           }),
@@ -541,16 +534,16 @@ export const questionMutation = extendType({
           authorId: question?.author?.id,
           toRoles:
             question.reviewStatus === ReviewStatus.Review
-              ? [RoleName.ADMIN, RoleName.AUDIENCE, AudienceRole.OnlyAuthor]
+              ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
               : question.reviewStatus === ReviewStatus.Publish
               ? [
-                  RoleName.ADMIN,
-                  RoleName.AUDIENCE,
+                  RoleName.Admin,
+                  RoleName.Audience,
                   AudienceRole.All,
-                  RoleName.WALL,
+                  RoleName.Wall,
                 ]
               : question.reviewStatus === ReviewStatus.Archive
-              ? [RoleName.ADMIN]
+              ? [RoleName.Admin]
               : [],
           questionRemoved: question,
         })
@@ -580,8 +573,8 @@ export const questionMutation = extendType({
               eventId,
               authorId: delQuestion?.author?.id,
               toRoles: [
-                RoleName.ADMIN,
-                RoleName.AUDIENCE,
+                RoleName.Admin,
+                RoleName.Audience,
                 AudienceRole.OnlyAuthor,
               ],
               questionRemoved: delQuestion,
@@ -637,30 +630,30 @@ export const questionMutation = extendType({
               questionEventOwnerId: event?.owner?.id,
               authorId: questionItem?.author?.id,
               toRoles: [
-                RoleName.AUDIENCE,
+                RoleName.Audience,
                 AudienceRole.ExcludeAuthor,
-                RoleName.WALL,
+                RoleName.Wall,
               ],
               questionAdded: questionItem,
             })
             ctx.pubsub.publish('QUESTION_UPDATED', {
               eventId,
               authorId: questionItem?.author?.id,
-              toRoles: [RoleName.AUDIENCE, AudienceRole.OnlyAuthor],
+              toRoles: [RoleName.Audience, AudienceRole.OnlyAuthor],
               questionUpdated: questionItem,
             })
             // update for admin
             ctx.pubsub.publish('QUESTION_REMOVED', {
               eventId,
               authorId: questionItem?.author?.id,
-              toRoles: [RoleName.ADMIN],
+              toRoles: [RoleName.Admin],
               questionRemoved: questionItem,
             })
             ctx.pubsub.publish('QUESTION_ADDED', {
               eventId,
               questionEventOwnerId: event?.owner?.id,
               authorId: questionItem?.author?.id,
-              toRoles: [RoleName.ADMIN],
+              toRoles: [RoleName.Admin],
               questionAdded: questionItem,
             })
           },
@@ -692,10 +685,10 @@ export const questionMutation = extendType({
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: question?.event?.id,
           toRoles: [
-            RoleName.ADMIN,
-            RoleName.AUDIENCE,
+            RoleName.Admin,
+            RoleName.Audience,
             AudienceRole.All,
-            RoleName.WALL,
+            RoleName.Wall,
           ],
           questionUpdated: question,
         })
@@ -705,140 +698,6 @@ export const questionMutation = extendType({
     })
   },
 })
-
-export const questionAddedSubscription = subscriptionField<'questionAdded'>(
-  'questionAdded',
-  {
-    type: 'Question',
-    args: {
-      eventId: idArg({ required: true }),
-      role: arg({ type: 'RoleName', required: true }),
-    },
-    subscribe: withFilter(
-      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_ADDED']),
-      async (payload, args, ctx) => {
-        const { id, roles } = ctx.connection.context as TokenPayload
-        const role: RoleName = args.role
-        const {
-          eventId,
-          questionEventOwnerId,
-          authorId,
-          toRoles,
-          questionAdded,
-        } = payload
-
-        if (
-          eventId === args.eventId &&
-          toRoles.includes(role) &&
-          roles.includes(role)
-        ) {
-          switch (role) {
-            case RoleName.ADMIN:
-              return id === questionEventOwnerId
-            case RoleName.AUDIENCE:
-              if (toRoles.includes(AudienceRole.All)) {
-                return true
-              }
-              if (toRoles.includes(AudienceRole.ExcludeAuthor)) {
-                return id !== authorId
-              } else if (toRoles.includes(AudienceRole.OnlyAuthor)) {
-                return id === authorId
-              }
-            case RoleName.WALL:
-              return questionAdded.reviewStatus === ReviewStatus.Publish
-            default:
-              return false
-          }
-        } else {
-          return false
-        }
-      },
-    ),
-    resolve: (payload, args, ctx) => payload.questionAdded,
-  },
-)
-export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
-  'questionUpdated',
-  {
-    type: 'Question',
-    args: {
-      eventId: idArg({ required: true }),
-      role: arg({ type: 'RoleName', required: true }),
-    },
-    subscribe: withFilter(
-      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_UPDATED']),
-      async (payload, args, ctx) => {
-        const { id, roles } = ctx.connection.context as TokenPayload
-        const role: RoleName = args.role
-        const { eventId, authorId, toRoles } = payload
-
-        if (
-          eventId === args.eventId &&
-          toRoles.includes(role) &&
-          roles.includes(role)
-        ) {
-          switch (role) {
-            case RoleName.AUDIENCE:
-              if (toRoles.includes(AudienceRole.All)) {
-                return true
-              }
-              if (toRoles.includes(AudienceRole.ExcludeAuthor)) {
-                return id !== authorId
-              } else if (toRoles.includes(AudienceRole.OnlyAuthor)) {
-                return id === authorId
-              }
-            default:
-              return true
-          }
-        } else {
-          return false
-        }
-      },
-    ),
-    resolve: payload => payload.questionUpdated,
-  },
-)
-export const questionRemovedSubscription = subscriptionField<'questionRemoved'>(
-  'questionRemoved',
-  {
-    type: 'Question',
-    args: {
-      eventId: idArg({ required: true }),
-      role: arg({ type: 'RoleName', required: true }),
-    },
-    subscribe: withFilter(
-      (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_REMOVED']),
-      async (payload, args, ctx) => {
-        const { id, roles } = ctx.connection.context as TokenPayload
-        const role: RoleName = args.role
-        const { eventId, authorId, toRoles } = payload
-
-        if (
-          eventId === args.eventId &&
-          toRoles.includes(role) &&
-          roles.includes(role)
-        ) {
-          switch (role) {
-            case RoleName.AUDIENCE:
-              if (toRoles.includes(AudienceRole.All)) {
-                return true
-              }
-              if (toRoles.includes(AudienceRole.ExcludeAuthor)) {
-                return id !== authorId
-              } else if (toRoles.includes(AudienceRole.OnlyAuthor)) {
-                return id === authorId
-              }
-            default:
-              return true
-          }
-        } else {
-          return false
-        }
-      },
-    ),
-    resolve: payload => payload.questionRemoved,
-  },
-)
 
 async function getVoted(ctx: Context, questionId: string) {
   const userId = getAuthedUser(ctx)?.id as string

@@ -1,5 +1,10 @@
 import { objectType, extendType } from 'nexus'
 
+export enum AudienceRole {
+  All = 'ALL',
+  ExcludeAuthor = 'EXCLUDE_AUTHOR',
+  OnlyAuthor = 'ONLY_AUTHOR',
+}
 export const Role = objectType({
   name: 'Role',
   definition(t) {

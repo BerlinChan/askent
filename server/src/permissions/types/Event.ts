@@ -5,20 +5,24 @@ import { isAuthedAdmin, isAuthedAudience } from './User'
 export const isEventOwner = rule({ cache: 'contextual' })(
   async ({ id }, args, ctx) => {
     const userId = getAuthedUser(ctx)?.id
-    const owner = await ctx.prisma.event.findOne({ where: { id } }).owner()
+    const event = await ctx.db.Event.findOne({
+      where: { id },
+      include: [{ association: 'owner', attributes: ['id'] }],
+    })
 
-    return userId === owner.id
+    return userId === event?.owner.id
   },
 )
 
 export const isEventOwnerByArgId = rule({ cache: 'strict' })(
   async (parent, { eventId }, ctx) => {
     const userId = getAuthedUser(ctx)?.id
-    const owner = await ctx.prisma.event
-      .findOne({ where: { id: eventId } })
-      .owner()
+    const event = await ctx.db.Event.findOne({
+      where: { id: eventId },
+      include: [{ association: 'owner', attributes: ['id'] }],
+    })
 
-    return userId === owner.id
+    return userId === event?.owner.id
   },
 )
 
