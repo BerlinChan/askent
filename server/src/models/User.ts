@@ -63,7 +63,7 @@ User.hasMany(Event, { foreignKey: { name: 'ownerId' } })
 Event.belongsTo(User, { foreignKey: { name: 'ownerId' }, as: 'owner' })
 
 User.hasMany(Question, { foreignKey: { name: 'authorId' } })
-Question.belongsTo(User, { foreignKey: { name: 'authorId' } })
+Question.belongsTo(User, { foreignKey: { name: 'authorId' }, as: 'author' })
 
 User.belongsToMany(Question, {
   through: 'usersVoteQuestions',

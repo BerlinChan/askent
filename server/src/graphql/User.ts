@@ -198,21 +198,19 @@ export const userMutation = extendType({
     t.field('updateUser', {
       type: 'User',
       args: { input: arg({ type: 'UpdateUserInput', required: true }) },
-      resolve: (root, { input }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
+      resolve: async (root, { input }, ctx) => {
+        const userId = getAuthedUser(ctx)?.id as string
+        await ctx.db.User.update(input, { where: { id: userId } })
+        const user = await ctx.db.User.findOne({ where: { id: userId } })
 
-        return ctx.db.User.update(input, { where: { id: userId as string } })
+        return user
       },
     })
   },
 })
 
 async function checkEmailExist(ctx: Context, email: string): Promise<boolean> {
-  return Boolean(
-    await ctx.db.User.findOne({
-      where: { email },
-    }),
-  )
+  return Boolean(await ctx.db.User.count({ where: { email } }))
 }
 
 const ERROR_MESSAGE = {

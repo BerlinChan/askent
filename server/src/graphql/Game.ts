@@ -5,6 +5,14 @@ export const Game = objectType({
   definition(t) {
     t.id('id')
     t.string('title')
+
+    t.field('player', {
+      type: 'Player',
+      resolve: async (root, args, ctx) => {
+        const game = await ctx.db.Game.findOne({ where: { id: root.id } })
+        return game.getPlayer()
+      },
+    })
   },
 })
 

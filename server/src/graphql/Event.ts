@@ -9,7 +9,6 @@ import {
 } from 'nexus'
 import { getAuthedUser } from '../utils'
 import { Context } from '../context'
-import { Event as EventType } from '@prisma/client'
 import { withFilter } from 'apollo-server-express'
 import { Op } from 'sequelize'
 
@@ -26,9 +25,7 @@ export const Event = objectType({
     t.field('owner', {
       type: 'User',
       resolve: async (root, args, ctx) => {
-        console.log(root)
         const event = await ctx.db.Event.findOne({ where: { id: root.id } })
-        console.log(event)
         return event.getOwner()
       },
     })
@@ -49,7 +46,6 @@ export const Event = objectType({
 
     t.field('createdAt', { type: 'DateTime' })
     t.field('updatedAt', { type: 'DateTime' })
-    t.field('deletedAt', { type: 'DateTime', nullable: true })
   },
 })
 export const PagedEvent = objectType({
@@ -86,19 +82,19 @@ export const eventQuery = extendType({
       },
       resolve: async (root, { searchString, pagination }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
-        const eventsTotalCount = await ctx.db.Event.findAndCountAll({
+        const { limit, offset } = pagination
+        const eventsCount = await ctx.db.Event.count({
           where: {
-            owner: { id: userId },
+            ownerId: userId,
             [Op.or]: [
               { name: { [Op.substring]: searchString } },
               { code: { [Op.substring]: searchString } },
             ],
           },
         })
-        const { limit, offset } = pagination
         const events = await ctx.db.Event.findAll({
           where: {
-            owner: { id: userId },
+            ownerId: userId,
             [Op.or]: [
               { name: { [Op.substring]: searchString } },
               { code: { [Op.substring]: searchString } },
@@ -109,8 +105,8 @@ export const eventQuery = extendType({
 
         return {
           list: events,
-          hasNextPage: limit + offset < eventsTotalCount,
-          totalCount: eventsTotalCount,
+          hasNextPage: limit + offset < eventsCount,
+          totalCount: eventsCount,
           limit,
           offset,
         }
@@ -181,17 +177,16 @@ export const eventMutation = extendType({
       type: 'Event',
       args: {
         eventId: idArg({ required: true }),
-        code: stringArg({ nullable: true }),
-        name: stringArg({ nullable: true }),
-        startAt: arg({ type: 'DateTime', nullable: true }),
-        endAt: arg({ type: 'DateTime', nullable: true }),
-        moderation: booleanArg({ nullable: true }),
+        code: stringArg(),
+        name: stringArg(),
+        startAt: arg({ type: 'DateTime' }),
+        endAt: arg({ type: 'DateTime' }),
+        moderation: booleanArg(),
       },
       resolve: async (root, args, ctx) => {
-        await checkEventExist(ctx, args.eventId)
-        const findEvent = await ctx.prisma.event.findOne({
+        const findEvent = await ctx.db.Event.findOne({
           where: { id: args.eventId },
-          select: { code: true },
+          attributes: ['code'],
         })
         if (
           args.code &&
@@ -200,38 +195,37 @@ export const eventMutation = extendType({
         ) {
           throw new Error(`Code "${args.code}" has already exist.`)
         }
-        let event = Object.assign(
-          {},
-          args?.code ? { code: args?.code } : {},
-          args?.name ? { name: args?.name } : {},
-          args?.startAt ? { startAt: args?.startAt } : {},
-          args?.endAt ? { codendAte: args?.endAt } : {},
-          typeof args?.moderation === 'boolean'
-            ? { moderation: args?.moderation }
-            : {},
-        )
+        const eventData = {
+          code: args?.code,
+          name: args?.name,
+          startAt: args?.startAt,
+          endAt: args?.endAt,
+          moderation: args?.moderation,
+        }
 
-        const updateEvent = ctx.prisma.event.update({
+        await ctx.db.Event.update(eventData, {
           where: { id: args.eventId },
-          data: event,
+        })
+        const updatedEvent = await ctx.db.Event.findOne({
+          where: { id: args.eventId },
         })
 
         ctx.pubsub.publish('EVENT_UPDATED', {
           eventId: args.eventId,
-          eventUpdated: updateEvent,
+          eventUpdated: updatedEvent,
         })
 
-        return updateEvent
+        return updatedEvent
       },
     })
     t.field('deleteEvent', {
-      type: 'Event',
+      type: 'ID',
       args: {
         eventId: idArg({ required: true }),
       },
-      resolve: async (root, args, ctx) => {
-        await checkEventExist(ctx, args.eventId as string)
-        return ctx.prisma.event.delete({ where: { id: args.eventId } })
+      resolve: async (root, { eventId }, ctx) => {
+        await ctx.db.Event.destroy({ where: { id: eventId } })
+        return eventId
       },
     })
     t.field('joinEvent', {
@@ -242,17 +236,16 @@ export const eventMutation = extendType({
       },
       resolve: async (root, { eventId }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
-        const updateEvent = await ctx.prisma.event.update({
-          where: { id: eventId },
-          data: { audiences: { connect: { id: userId } } },
-        })
+        const event = await ctx.db.Event.findOne({ where: { id: eventId } })
+        const audience = await ctx.db.User.findOne({ where: { id: userId } })
+        await event.addAudience(audience)
 
         ctx.pubsub.publish('EVENT_UPDATED', {
           eventId: eventId,
-          eventUpdated: updateEvent,
+          eventUpdated: event,
         })
 
-        return updateEvent
+        return event
       },
     })
   },
@@ -274,18 +267,5 @@ export const eventUpdatedSubscription = subscriptionField<'eventUpdated'>(
 )
 
 async function checkEventCodeExist(ctx: Context, code: string) {
-  return Boolean(await ctx.db.Event.findOne({ where: { code } }))
-}
-
-async function checkEventExist(
-  ctx: Context,
-  eventId: EventType['id'],
-): Promise<boolean> {
-  const findEvent = await ctx.db.Event.findOne({
-    where: { id: eventId },
-  })
-  if (!findEvent) {
-    throw new Error(`No event for id: ${eventId}`)
-  }
-  return true
+  return Boolean(await ctx.db.Event.count({ where: { code } }))
 }
