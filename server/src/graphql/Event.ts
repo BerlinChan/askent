@@ -24,22 +24,22 @@ export const Event = objectType({
 
     t.field('owner', {
       type: 'User',
-      resolve: async (root, args, ctx) => {
-        const event = await ctx.db.Event.findOne({ where: { id: root.id } })
+      async resolve({ id }, args, ctx) {
+        const event = await ctx.db.Event.findOne({ where: { id } })
         return event.getOwner()
       },
     })
     t.list.field('audiences', {
       type: 'User',
-      resolve: async (root, args, ctx) => {
-        const event = await ctx.db.Event.findOne({ where: { id: root.id } })
+      async resolve({ id }, args, ctx) {
+        const event = await ctx.db.Event.findOne({ where: { id } })
         return event.getAudiences()
       },
     })
     t.list.field('questions', {
       type: 'User',
-      resolve: async (root, args, ctx) => {
-        const event = await ctx.db.Event.findOne({ where: { id: root.id } })
+      async resolve({ id }, args, ctx) {
+        const event = await ctx.db.Event.findOne({ where: { id } })
         return event.getQuestions()
       },
     })
@@ -64,12 +64,10 @@ export const eventQuery = extendType({
       args: {
         eventId: idArg({ required: true }),
       },
-      resolve: async (root, { eventId }, ctx) => {
-        const event = await ctx.db.Event.findOne({
+      resolve: (root, { eventId }, ctx) => {
+        return ctx.db.Event.findOne({
           where: { id: eventId },
         })
-
-        return event
       },
     })
     t.field('eventsByMe', {

@@ -15,29 +15,29 @@ export const User = objectType({
 
     t.list.field('roles', {
       type: 'Role',
-      resolve: async (root, args, ctx) => {
-        const user = await ctx.db.User.findOne({ where: { id: root.id } })
+      async resolve({ id }, args, ctx) {
+        const user = await ctx.db.User.findOne({ where: { id } })
         return user.getRoles()
       },
     })
     t.list.field('events', {
       type: 'Event',
-      resolve: async (root, args, ctx) => {
-        const user = await ctx.db.User.findOne({ where: { id: root.id } })
+      async resolve({ id }, args, ctx) {
+        const user = await ctx.db.User.findOne({ where: { id } })
         return user.getEvents()
       },
     })
     t.list.field('questions', {
       type: 'Question',
-      resolve: async (root, args, ctx) => {
-        const user = await ctx.db.User.findOne({ where: { id: root.id } })
+      async resolve({ id }, args, ctx) {
+        const user = await ctx.db.User.findOne({ where: { id } })
         return user.getQuestions()
       },
     })
     t.list.field('votedQuestions', {
       type: 'Question',
-      resolve: async (root, args, ctx) => {
-        const user = await ctx.db.User.findOne({ where: { id: root.id } })
+      async resolve({ id }, args, ctx) {
+        const user = await ctx.db.User.findOne({ where: { id } })
         return user.getVotedQuestions()
       },
     })

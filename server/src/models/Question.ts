@@ -1,9 +1,11 @@
 import { BuildOptions, DataTypes, Model } from 'sequelize'
 import sequelize from '../db'
+import { UserModelStatic } from './User'
+import { EventModelStatic } from './Event'
 
 const { BOOLEAN, STRING, UUID, UUIDV1, ENUM } = DataTypes
 
-enum ReviewStatus {
+export enum ReviewStatus {
   Review = 'REVIEW',
   Publish = 'PUBLISH',
   Archive = 'ARCHIVE',
@@ -15,6 +17,11 @@ export class Question extends Model {
   public reviewStatus!: ReviewStatus
   public star!: boolean
   public top!: boolean
+
+  public event!: EventModelStatic
+  public author!: UserModelStatic
+  public votedUsers!: UserModelStatic[]
+
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
   public readonly deletedAt?: Date

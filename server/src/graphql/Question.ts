@@ -1,225 +1,237 @@
 import {
   objectType,
   extendType,
+  enumType,
   stringArg,
   idArg,
   arg,
   subscriptionField,
   booleanArg,
 } from 'nexus'
-import { User, RoleName, QuestionReviewStatus } from '@prisma/client'
+import { User, RoleName } from '@prisma/client'
 import { getAuthedUser, TokenPayload } from '../utils'
 import { withFilter } from 'apollo-server-express'
 import { Context } from '../context'
+import { ReviewStatus } from '../models/Question'
+import { Op } from 'sequelize'
+import { QuestionModelStatic } from '../models/Question'
+import { UserModelStatic } from '../models/User'
 
-export const Question = objectType({
-  name: 'Question',
-  definition(t) {
-    t.model.id()
-    t.model.event()
-    t.model.author()
-    t.model.createdAt()
-    t.model.updatedAt()
-    t.model.content()
-    t.model.reviewStatus()
-    t.model.star()
-    t.model.top()
-    // t.model.votedUsers()
-
-    t.boolean('voted', {
-      resolve: (root, args, ctx) => {
-        return getVoted(ctx, root.id)
-      },
-    })
-    t.int('voteCount', {
-      async resolve({ id }, _args, ctx) {
-        const users = await ctx.prisma.question
-          .findOne({ where: { id } })
-          .votedUsers()
-
-        return users?.length || 0
-      },
-    })
-  },
-})
-export const PagedQuestion = objectType({
-  name: 'PagedQuestion',
-  definition(t) {
-    t.implements('IPagedType')
-    t.list.field('list', { type: 'Question' })
-  },
-})
 enum AudienceRole {
   All,
   ExcludeAuthor,
   OnlyAuthor,
 }
+export const ReviewStatusEnum = enumType({
+  name: 'ReviewStatus',
+  members: ReviewStatus,
+})
+export const Question = objectType({
+  name: 'Question',
+  definition(t) {
+    t.id('id')
+    t.string('content')
+    t.field('reviewStatus', { type: 'ReviewStatus' })
+    t.boolean('star')
+    t.boolean('top')
+
+    t.field('event', {
+      type: 'Event',
+      async resolve({ id }, args, ctx) {
+        const question = await ctx.db.Question.findOne({ where: { id } })
+        return question.getEvent()
+      },
+    })
+    t.field('author', {
+      type: 'User',
+      async resolve({ id }, args, ctx) {
+        const question = await ctx.db.Question.findOne({ where: { id } })
+        return question.getAuthor()
+      },
+    })
+
+    t.boolean('voted', {
+      resolve(root, args, ctx) {
+        return getVoted(ctx, root.id)
+      },
+    })
+    t.int('voteCount', {
+      async resolve({ id }, _args, ctx) {
+        const question = await ctx.db.Question.findOne({ where: { id } })
+        return question.countVotedUsers()
+      },
+    })
+
+    t.field('createdAt', { type: 'DateTime' })
+    t.field('updatedAt', { type: 'DateTime' })
+    t.field('deletedAt', { type: 'DateTime', nullable: true })
+
+    // t.list.field('votedUsers', {
+    //   type: 'User',
+    //   resolve: async (root, args, ctx) => {
+    //     const question = await ctx.db.Question.findOne({ where: { id: root.id } })
+    //     return question.getVotedUsers()
+    //   },
+    // })
+  },
+})
+export const QuestionPaged = objectType({
+  name: 'QuestionPaged',
+  definition(t) {
+    t.implements('IPagedType')
+    t.list.field('list', { type: 'Question' })
+  },
+})
 
 export const questionQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.crud.questions({ ordering: true, filtering: true })
-
     t.field('questionsByEvent', {
-      type: 'PagedQuestion',
+      type: 'QuestionPaged',
       args: {
         eventId: idArg({ required: true }),
         pagination: arg({ type: 'PaginationInputType', required: true }),
-        where: arg({ type: 'QuestionWhereInput' }),
-        orderBy: arg({ type: 'QuestionOrderByInput' }),
+        // TODO: where: arg({ type: 'QuestionWhereInput' }),
+        // TODO: orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
-      resolve: async (root, args, ctx) => {
-        const allQuestions = await ctx.prisma.question.findMany({
-          where: {
-            ...args.where,
-            event: { id: args.eventId },
-          },
+      resolve: async (root, { eventId, pagination }, ctx) => {
+        const { offset, limit } = pagination
+        const totalCount = await ctx.db.Question.count({
+          where: { eventId },
         })
-        const totalCount = allQuestions.length
-        const { first, skip } = args.pagination
-        const questions = await ctx.prisma.question.findMany({
-          where: {
-            ...args.where,
-            event: { id: args.eventId },
-          },
-          orderBy: args.orderBy,
-          ...args.pagination,
+        const questions = await ctx.db.Question.findAll({
+          where: { eventId: eventId },
+          ...pagination,
         })
 
         return {
           list: questions,
-          hasNextPage: first + skip < totalCount,
+          hasNextPage: offset + limit < totalCount,
           totalCount,
-          first,
-          skip,
+          ...pagination,
         }
       },
     })
     t.field('liveQuestionsByEvent', {
-      type: 'PagedQuestion',
+      type: 'QuestionPaged',
       args: {
         eventId: idArg({ required: true }),
         pagination: arg({ type: 'PaginationInputType', required: true }),
-        orderBy: arg({ type: 'QuestionOrderByInput' }),
+        // TODO: orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
-      resolve: async (root, { eventId, pagination, orderBy }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
-        const allQuestions = await ctx.prisma.question.findMany({
+      resolve: async (root, { eventId, pagination }, ctx) => {
+        const { offset, limit } = pagination
+        const userId = getAuthedUser(ctx)?.id as string
+        const totalCount = await ctx.db.Question.count({
           where: {
-            event: { id: eventId },
-            OR: [
-              { reviewStatus: QuestionReviewStatus.PUBLISH },
+            eventId,
+            [Op.or]: [
+              { reviewStatus: ReviewStatus.Publish },
               {
-                AND: [
+                [Op.and]: [
                   { author: { id: userId } },
-                  { reviewStatus: QuestionReviewStatus.REVIEW },
+                  { reviewStatus: ReviewStatus.Review },
                 ],
               },
             ],
           },
         })
-        const totalCount = allQuestions.length
-        const { first, skip } = pagination
-        const questions = await ctx.prisma.question.findMany({
+        const questions = await ctx.db.Question.findAll({
           where: {
             event: { id: eventId },
-            OR: [
-              { reviewStatus: QuestionReviewStatus.PUBLISH },
+            [Op.or]: [
+              { reviewStatus: ReviewStatus.Publish },
               {
-                AND: [
+                [Op.and]: [
                   { author: { id: userId } },
-                  { reviewStatus: QuestionReviewStatus.REVIEW },
+                  { reviewStatus: ReviewStatus.Review },
                 ],
               },
             ],
           },
-          orderBy,
           ...pagination,
         })
 
         return {
           list: questions,
-          hasNextPage: first + skip < totalCount,
+          hasNextPage: offset + limit < totalCount,
           totalCount,
-          first,
-          skip,
+          ...pagination,
         }
       },
     })
     t.field('questionsByMe', {
-      type: 'PagedQuestion',
+      type: 'QuestionPaged',
       args: {
         pagination: arg({ type: 'PaginationInputType', required: true }),
-        orderBy: arg({ type: 'QuestionOrderByInput' }),
+        // TODO: orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
-      resolve: async (root, { pagination, orderBy }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
-        const allQuestions = await ctx.prisma.question.findMany({
+      resolve: async (root, { pagination }, ctx) => {
+        const { offset, limit } = pagination
+        const userId = getAuthedUser(ctx)?.id as string
+        const totalCount = await ctx.db.Question.count({
           where: {
             author: { id: userId },
-            OR: [
-              { reviewStatus: QuestionReviewStatus.PUBLISH },
-              { reviewStatus: QuestionReviewStatus.REVIEW },
+            [Op.or]: [
+              { reviewStatus: ReviewStatus.Publish },
+              { reviewStatus: ReviewStatus.Review },
             ],
           },
         })
-        const totalCount = allQuestions.length
-        const { first, skip } = pagination
-        const questions = await ctx.prisma.question.findMany({
+        const questions = await ctx.db.Question.findAll({
           where: {
             author: { id: userId },
-            OR: [
-              { reviewStatus: QuestionReviewStatus.PUBLISH },
-              { reviewStatus: QuestionReviewStatus.REVIEW },
+            [Op.or]: [
+              { reviewStatus: ReviewStatus.Publish },
+              { reviewStatus: ReviewStatus.Review },
             ],
           },
-          orderBy,
           ...pagination,
         })
 
         return {
           list: questions,
-          hasNextPage: first + skip < totalCount,
+          hasNextPage: offset + limit < totalCount,
           totalCount,
-          first,
-          skip,
+          ...pagination,
         }
       },
     })
     t.field('wallQuestionsByEvent', {
-      type: 'PagedQuestion',
+      type: 'QuestionPaged',
       args: {
         eventId: idArg({ required: true }),
         star: booleanArg(),
         pagination: arg({ type: 'PaginationInputType', required: true }),
-        orderBy: arg({ type: 'QuestionOrderByInput' }),
+        // TODO: orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
-      resolve: async (root, args, ctx) => {
-        const allQuestions = await ctx.prisma.question.findMany({
-          where: {
-            event: { id: args.eventId },
-            star: args.star,
-            reviewStatus: QuestionReviewStatus.PUBLISH,
-          },
+      resolve: async (root, { eventId, star, pagination }, ctx) => {
+        const { offset, limit } = pagination
+        const totalCount = await ctx.db.Question.count({
+          where: Object.assign(
+            {
+              eventId,
+              reviewStatus: ReviewStatus.Publish,
+            },
+            typeof star === 'boolean' ? { star } : {},
+          ),
         })
-        const totalCount = allQuestions.length
-        const { first, skip } = args.pagination
-        const questions = await ctx.prisma.question.findMany({
-          where: {
-            event: { id: args.eventId },
-            star: args.star,
-            reviewStatus: QuestionReviewStatus.PUBLISH,
-          },
-          orderBy: args.orderBy,
-          ...args.pagination,
+        const questions = await ctx.db.Question.findAll({
+          where: Object.assign(
+            {
+              eventId,
+              reviewStatus: ReviewStatus.Publish,
+            },
+            typeof star === 'boolean' ? { star } : {},
+          ),
+          ...pagination,
         })
 
         return {
           list: questions,
-          hasNextPage: first + skip < totalCount,
+          hasNextPage: offset + limit < totalCount,
           totalCount,
-          first,
-          skip,
+          ...pagination,
         }
       },
     })
@@ -237,27 +249,31 @@ export const questionMutation = extendType({
         content: stringArg({ required: true }),
       },
       resolve: async (root, { eventId, content }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
-        const event = await ctx.prisma.event.findOne({
+        const userId = getAuthedUser(ctx)?.id as string
+        const event = await ctx.db.Event.findOne({
           where: { id: eventId },
+          include: [{ association: 'owner', attributes: ['id'] }],
         })
-        const newQuestion = await ctx.prisma.question.create({
-          data: {
-            reviewStatus: event?.moderation
-              ? QuestionReviewStatus.REVIEW
-              : QuestionReviewStatus.PUBLISH,
-            content,
-            event: { connect: { id: eventId } },
-            author: { connect: { id: userId } },
-          },
+        const author = await ctx.db.User.findOne({
+          where: { id: userId },
         })
+        const newQuestion = await ctx.db.Question.create({
+          reviewStatus: event?.moderation
+            ? ReviewStatus.Review
+            : ReviewStatus.Publish,
+          content,
+        })
+        newQuestion.setEvent(event)
+        newQuestion.setAuthor(author)
 
         ctx.pubsub.publish('QUESTION_ADDED', {
           eventId,
+          questionEventOwnerId: event?.owner?.id,
+          authorId: author.id,
           toRoles:
-            newQuestion.reviewStatus === QuestionReviewStatus.REVIEW
+            newQuestion.reviewStatus === ReviewStatus.Review
               ? [RoleName.ADMIN, RoleName.AUDIENCE, AudienceRole.OnlyAuthor]
-              : newQuestion.reviewStatus === QuestionReviewStatus.PUBLISH
+              : newQuestion.reviewStatus === ReviewStatus.Publish
               ? [
                   RoleName.ADMIN,
                   RoleName.AUDIENCE,
@@ -276,33 +292,44 @@ export const questionMutation = extendType({
       description: 'Update a question review status.',
       args: {
         questionId: idArg({ required: true }),
-        reviewStatus: arg({ type: 'QuestionReviewStatus', required: true }),
+        reviewStatus: arg({ type: 'ReviewStatus', required: true }),
       },
       resolve: async (root, { questionId, reviewStatus }, ctx) => {
-        const prevQuestion = await ctx.prisma.question.findOne({
+        const prevQuestion = await ctx.db.Question.findOne({
           where: { id: questionId },
-          include: { event: true },
+          include: [
+            {
+              association: 'event',
+              attributes: ['id'],
+              include: [{ association: 'owner', attributes: ['id'] }],
+            },
+            { association: 'author', attributes: ['id'] },
+          ],
         })
 
-        const updateQuestion = await ctx.prisma.question.update({
-          where: { id: questionId },
-          data: Object.assign(
+        await ctx.db.Question.update(
+          Object.assign(
             { reviewStatus },
-            reviewStatus === QuestionReviewStatus.ARCHIVE
+            reviewStatus === ReviewStatus.Archive
               ? { top: false }
-              : reviewStatus === QuestionReviewStatus.REVIEW
+              : reviewStatus === ReviewStatus.Review
               ? { top: false, star: false }
               : {},
           ),
+          { where: { id: questionId } },
+        )
+        const updateQuestion = await ctx.db.Question.findOne({
+          where: { id: questionId },
         })
 
         if (
-          reviewStatus === QuestionReviewStatus.ARCHIVE ||
-          reviewStatus === QuestionReviewStatus.REVIEW
+          reviewStatus === ReviewStatus.Archive ||
+          reviewStatus === ReviewStatus.Review
         ) {
           // remove for ExcludeAuthor
           ctx.pubsub.publish('QUESTION_REMOVED', {
-            eventId: prevQuestion?.event.id,
+            eventId: prevQuestion?.event?.id,
+            authorId: prevQuestion?.author?.id,
             toRoles: [
               RoleName.AUDIENCE,
               AudienceRole.ExcludeAuthor,
@@ -310,10 +337,12 @@ export const questionMutation = extendType({
             ],
             questionRemoved: updateQuestion,
           })
-        } else if (reviewStatus === QuestionReviewStatus.PUBLISH) {
+        } else if (reviewStatus === ReviewStatus.Publish) {
           // add for ExcludeAuthor
           ctx.pubsub.publish('QUESTION_ADDED', {
-            eventId: prevQuestion?.event.id,
+            eventId: prevQuestion?.event?.id,
+            questionEventOwnerId: prevQuestion?.event?.owner?.id,
+            authorId: prevQuestion?.author?.id,
             toRoles: [
               RoleName.AUDIENCE,
               AudienceRole.ExcludeAuthor,
@@ -324,18 +353,22 @@ export const questionMutation = extendType({
         }
         // update for OnlyAuthor
         ctx.pubsub.publish('QUESTION_UPDATED', {
-          eventId: prevQuestion?.event.id,
+          eventId: prevQuestion?.event?.id,
+          authorId: prevQuestion?.author?.id,
           toRoles: [RoleName.AUDIENCE, AudienceRole.OnlyAuthor],
           questionUpdated: updateQuestion,
         })
         // update for admin
         ctx.pubsub.publish('QUESTION_REMOVED', {
-          eventId: prevQuestion?.event.id,
+          eventId: prevQuestion?.event?.id,
+          authorId: prevQuestion?.author?.id,
           toRoles: [RoleName.ADMIN],
           questionRemoved: prevQuestion,
         })
         ctx.pubsub.publish('QUESTION_ADDED', {
-          eventId: prevQuestion?.event.id,
+          eventId: prevQuestion?.event?.id,
+          questionEventOwnerId: prevQuestion?.event?.owner?.id,
+          authorId: prevQuestion?.author?.id,
           toRoles: [RoleName.ADMIN],
           questionAdded: updateQuestion,
         })
@@ -351,30 +384,34 @@ export const questionMutation = extendType({
         content: stringArg({ required: true }),
       },
       resolve: async (root, { content, questionId }, ctx) => {
-        const questionEvent = await ctx.prisma.question
-          .findOne({
-            where: { id: questionId },
-          })
-          .event()
-
-        const updateQuestion = await ctx.prisma.question.update({
+        const question = await ctx.db.Question.findOne({
           where: { id: questionId },
-          data: { content },
+          attributes: ['id'],
+          include: [
+            { association: 'event', attributes: ['id'] },
+            { association: 'author', attributes: ['id'] },
+          ],
+        })
+
+        await ctx.db.Question.update({ content }, { where: { id: questionId } })
+        const updateQuestion = await ctx.db.Question.findOne({
+          where: { id: questionId },
         })
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
-          eventId: questionEvent?.id,
+          eventId: question?.event?.id,
+          authorId: question?.author?.id,
           toRoles:
-            updateQuestion.reviewStatus === QuestionReviewStatus.REVIEW
+            updateQuestion.reviewStatus === ReviewStatus.Review
               ? [RoleName.ADMIN, RoleName.AUDIENCE, AudienceRole.OnlyAuthor]
-              : updateQuestion.reviewStatus === QuestionReviewStatus.PUBLISH
+              : updateQuestion.reviewStatus === ReviewStatus.Publish
               ? [
                   RoleName.ADMIN,
                   RoleName.AUDIENCE,
                   AudienceRole.All,
                   RoleName.WALL,
                 ]
-              : updateQuestion.reviewStatus === QuestionReviewStatus.ARCHIVE
+              : updateQuestion.reviewStatus === ReviewStatus.Archive
               ? [RoleName.ADMIN]
               : [],
           questionUpdated: updateQuestion,
@@ -391,30 +428,34 @@ export const questionMutation = extendType({
         star: booleanArg({ required: true }),
       },
       resolve: async (root, { questionId, star }, ctx) => {
-        const questionEvent = await ctx.prisma.question
-          .findOne({
-            where: { id: questionId },
-          })
-          .event()
-
-        const updateQuestion = await ctx.prisma.question.update({
+        const question = await ctx.db.Question.findOne({
           where: { id: questionId },
-          data: { star },
+          attributes: ['id'],
+          include: [
+            { association: 'event', attributes: ['id'] },
+            { association: 'author', attributes: ['id'] },
+          ],
+        })
+
+        await ctx.db.Question.update({ star }, { where: { id: questionId } })
+        const updateQuestion = await ctx.db.Question.findOne({
+          where: { id: questionId },
         })
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
-          eventId: questionEvent?.id,
+          eventId: question?.event?.id,
+          authorId: question?.author?.id,
           toRoles:
-            updateQuestion.reviewStatus === QuestionReviewStatus.REVIEW
+            updateQuestion.reviewStatus === ReviewStatus.Review
               ? [RoleName.ADMIN, RoleName.AUDIENCE, AudienceRole.OnlyAuthor]
-              : updateQuestion.reviewStatus === QuestionReviewStatus.PUBLISH
+              : updateQuestion.reviewStatus === ReviewStatus.Publish
               ? [
                   RoleName.ADMIN,
                   RoleName.AUDIENCE,
                   AudienceRole.All,
                   RoleName.WALL,
                 ]
-              : updateQuestion.reviewStatus === QuestionReviewStatus.ARCHIVE
+              : updateQuestion.reviewStatus === ReviewStatus.Archive
               ? [RoleName.ADMIN]
               : [],
           questionUpdated: updateQuestion,
@@ -423,7 +464,7 @@ export const questionMutation = extendType({
         return updateQuestion
       },
     })
-    t.list.field('updateQuestionTop', {
+    t.field('updateQuestionTop', {
       type: 'Question',
       description: 'Top a question. Can only top one question at a time.',
       args: {
@@ -431,79 +472,90 @@ export const questionMutation = extendType({
         top: booleanArg({ required: true }),
       },
       resolve: async (root, { questionId, top }, ctx) => {
-        const questionEvent = await ctx.prisma.question
-          .findOne({
-            where: { id: questionId },
-          })
-          .event()
-
-        // can only top one question at a time
-        const prevTopQuestions = (
-          await ctx.prisma.question.findMany({
-            where: { top: true, event: { id: questionEvent?.id } },
-          })
-        ).map(item => ({
-          ...item,
-          top: false,
-        }))
-        await ctx.prisma.question.updateMany({
-          where: { top: true, event: { id: questionEvent?.id } },
-          data: { top: false },
-        })
-
-        const updateQuestion = await ctx.prisma.question.update({
+        const question = await ctx.db.Question.findOne({
           where: { id: questionId },
-          data: { top },
+          attributes: ['id'],
+          include: [{ association: 'event', attributes: ['id'] }],
         })
 
-        ctx.pubsub.publish('QUESTION_UPDATED', {
-          eventId: questionEvent?.id,
-          toRoles: [
-            RoleName.ADMIN,
-            RoleName.AUDIENCE,
-            AudienceRole.All,
-            RoleName.WALL,
-          ],
-          questionUpdated: updateQuestion,
+        let prevTopQuestions: Array<QuestionModelStatic> = []
+        if (top) {
+          // cancel preview top questions
+          prevTopQuestions = (
+            await ctx.db.Question.findAll({
+              where: { top: true, eventId: question.event?.id },
+            })
+          ).map((item: QuestionModelStatic) => ({
+            ...item,
+            top: false,
+          }))
+          await ctx.db.Question.update(
+            { top: false },
+            { where: { top: true, eventId: question.event?.id } },
+          )
+        }
+
+        await ctx.db.Question.update({ top }, { where: { id: questionId } })
+        const updateQuestion = await ctx.db.Question.findOne({
+          where: { id: questionId },
         })
 
-        return [updateQuestion].concat(prevTopQuestions)
+        const shouldPub = [updateQuestion].concat(prevTopQuestions)
+        shouldPub.forEach((questionItem: QuestionModelStatic) =>
+          ctx.pubsub.publish('QUESTION_UPDATED', {
+            eventId: question?.event?.id,
+            toRoles: [
+              RoleName.ADMIN,
+              RoleName.AUDIENCE,
+              AudienceRole.All,
+              RoleName.WALL,
+            ],
+            questionUpdated: questionItem,
+          }),
+        )
+
+        return updateQuestion
       },
     })
     t.field('deleteQuestion', {
-      type: 'Question',
+      type: 'ID',
       description: 'Delete a question by id.',
       args: {
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
-        const findQuestion = await ctx.prisma.question.findOne({
+        const question = await ctx.db.Question.findOne({
           where: { id: questionId },
-          include: { event: true },
+          attributes: ['id', 'reviewStatus'],
+          include: [
+            { association: 'event', attributes: ['id'] },
+            { association: 'author', attributes: ['id'] },
+          ],
         })
-        const delQuestion = await ctx.prisma.question.delete({
+        await ctx.db.Question.destroy({
           where: { id: questionId },
         })
 
         ctx.pubsub.publish('QUESTION_REMOVED', {
-          eventId: findQuestion?.event.id,
+          eventId: question?.event?.id,
+          authorId: question?.author?.id,
           toRoles:
-            delQuestion.reviewStatus === QuestionReviewStatus.REVIEW
+            question.reviewStatus === ReviewStatus.Review
               ? [RoleName.ADMIN, RoleName.AUDIENCE, AudienceRole.OnlyAuthor]
-              : delQuestion.reviewStatus === QuestionReviewStatus.PUBLISH
+              : question.reviewStatus === ReviewStatus.Publish
               ? [
                   RoleName.ADMIN,
                   RoleName.AUDIENCE,
                   AudienceRole.All,
                   RoleName.WALL,
                 ]
-              : delQuestion.reviewStatus === QuestionReviewStatus.ARCHIVE
+              : question.reviewStatus === ReviewStatus.Archive
               ? [RoleName.ADMIN]
               : [],
-          questionRemoved: delQuestion,
+          questionRemoved: question,
         })
 
-        return delQuestion
+        return questionId
       },
     })
     t.field('deleteAllReviewQuestions', {
@@ -513,29 +565,27 @@ export const questionMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
-        const shouldDelete = await ctx.prisma.question.findMany({
-          where: {
-            event: { id: eventId },
-            reviewStatus: QuestionReviewStatus.REVIEW,
-          },
+        const shouldDelete = await ctx.db.Question.findAll({
+          where: { eventId, reviewStatus: ReviewStatus.Review },
+          attributes: ['id', 'reviewStatus'],
+          include: [{ association: 'author', attributes: ['id'] }],
         })
-        const { count } = await ctx.prisma.question.deleteMany({
-          where: {
-            event: { id: eventId },
-            reviewStatus: QuestionReviewStatus.REVIEW,
-          },
+        const count = await ctx.db.Question.destroy({
+          where: { eventId, reviewStatus: ReviewStatus.Review },
         })
 
-        shouldDelete.forEach(delQuestion =>
-          ctx.pubsub.publish('QUESTION_REMOVED', {
-            eventId,
-            toRoles: [
-              RoleName.ADMIN,
-              RoleName.AUDIENCE,
-              AudienceRole.OnlyAuthor,
-            ],
-            questionRemoved: delQuestion,
-          }),
+        shouldDelete.forEach(
+          (delQuestion: QuestionModelStatic & { author: { id: string } }) =>
+            ctx.pubsub.publish('QUESTION_REMOVED', {
+              eventId,
+              authorId: delQuestion?.author?.id,
+              toRoles: [
+                RoleName.ADMIN,
+                RoleName.AUDIENCE,
+                AudienceRole.OnlyAuthor,
+              ],
+              questionRemoved: delQuestion,
+            }),
         )
 
         return count
@@ -548,52 +598,73 @@ export const questionMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
-        const shouldUpdate = (
-          await ctx.prisma.question.findMany({
-            where: {
-              event: { id: eventId },
-              reviewStatus: QuestionReviewStatus.REVIEW,
+        const event = await ctx.db.Event.findOne({
+          where: { id: eventId },
+          attributes: ['id'],
+          include: [
+            {
+              association: 'owner',
+              attributes: ['id'],
             },
+          ],
+        })
+        const shouldUpdate = (
+          await ctx.db.Question.findAll({
+            where: {
+              eventId,
+              reviewStatus: ReviewStatus.Review,
+            },
+            include: [{ association: 'author', attributes: ['id'] }],
           })
-        ).map(question => ({
-          ...question,
-          reviewStatus: QuestionReviewStatus.PUBLISH,
+        ).map((questionItem: QuestionModelStatic) => ({
+          ...questionItem,
+          reviewStatus: ReviewStatus.Publish,
         }))
-        const { count } = await ctx.prisma.question.updateMany({
-          where: {
-            event: { id: eventId },
-            reviewStatus: QuestionReviewStatus.REVIEW,
+        const count = await ctx.db.Question.update(
+          { reviewStatus: ReviewStatus.Publish },
+          {
+            where: {
+              eventId,
+              reviewStatus: ReviewStatus.Review,
+            },
           },
-          data: { reviewStatus: QuestionReviewStatus.PUBLISH },
-        })
+        )
 
-        shouldUpdate.forEach(question => {
-          ctx.pubsub.publish('QUESTION_ADDED', {
-            eventId,
-            toRoles: [
-              RoleName.AUDIENCE,
-              AudienceRole.ExcludeAuthor,
-              RoleName.WALL,
-            ],
-            questionAdded: question,
-          })
-          ctx.pubsub.publish('QUESTION_UPDATED', {
-            eventId,
-            toRoles: [RoleName.AUDIENCE, AudienceRole.OnlyAuthor],
-            questionUpdated: question,
-          })
-          // update for admin
-          ctx.pubsub.publish('QUESTION_REMOVED', {
-            eventId,
-            toRoles: [RoleName.ADMIN],
-            questionRemoved: question,
-          })
-          ctx.pubsub.publish('QUESTION_ADDED', {
-            eventId,
-            toRoles: [RoleName.ADMIN],
-            questionAdded: question,
-          })
-        })
+        shouldUpdate.forEach(
+          (questionItem: QuestionModelStatic & { author: { id: string } }) => {
+            ctx.pubsub.publish('QUESTION_ADDED', {
+              eventId,
+              questionEventOwnerId: event?.owner?.id,
+              authorId: questionItem?.author?.id,
+              toRoles: [
+                RoleName.AUDIENCE,
+                AudienceRole.ExcludeAuthor,
+                RoleName.WALL,
+              ],
+              questionAdded: questionItem,
+            })
+            ctx.pubsub.publish('QUESTION_UPDATED', {
+              eventId,
+              authorId: questionItem?.author?.id,
+              toRoles: [RoleName.AUDIENCE, AudienceRole.OnlyAuthor],
+              questionUpdated: questionItem,
+            })
+            // update for admin
+            ctx.pubsub.publish('QUESTION_REMOVED', {
+              eventId,
+              authorId: questionItem?.author?.id,
+              toRoles: [RoleName.ADMIN],
+              questionRemoved: questionItem,
+            })
+            ctx.pubsub.publish('QUESTION_ADDED', {
+              eventId,
+              questionEventOwnerId: event?.owner?.id,
+              authorId: questionItem?.author?.id,
+              toRoles: [RoleName.ADMIN],
+              questionAdded: questionItem,
+            })
+          },
+        )
 
         return count
       },
@@ -605,31 +676,31 @@ export const questionMutation = extendType({
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
-        const voted = await getVoted(ctx, questionId)
-
-        const updateQuestion = await ctx.prisma.question.update({
+        const userId = getAuthedUser(ctx)?.id as string
+        const user = await ctx.db.User.findOne({ where: { id: userId } })
+        const question = await ctx.db.Question.findOne({
           where: { id: questionId },
-          include: { event: true },
-          data: {
-            votedUsers: voted
-              ? { disconnect: { id: userId } }
-              : { connect: { id: userId } },
-          },
+          include: [{ association: 'event', attributes: ['id'] }],
         })
 
+        if (await getVoted(ctx, questionId)) {
+          await question.removeVotedUser(user)
+        } else {
+          await question.addVotedUser(user)
+        }
+
         ctx.pubsub.publish('QUESTION_UPDATED', {
-          eventId: updateQuestion.event.id,
+          eventId: question?.event?.id,
           toRoles: [
             RoleName.ADMIN,
             RoleName.AUDIENCE,
             AudienceRole.All,
             RoleName.WALL,
           ],
-          questionUpdated: updateQuestion,
+          questionUpdated: question,
         })
 
-        return updateQuestion
+        return question
       },
     })
   },
@@ -648,7 +719,13 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
       async (payload, args, ctx) => {
         const { id, roles } = ctx.connection.context as TokenPayload
         const role: RoleName = args.role
-        const { eventId, toRoles, questionAdded } = payload
+        const {
+          eventId,
+          questionEventOwnerId,
+          authorId,
+          toRoles,
+          questionAdded,
+        } = payload
 
         if (
           eventId === args.eventId &&
@@ -657,25 +734,18 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
         ) {
           switch (role) {
             case RoleName.ADMIN:
-              const owner = await ctx.prisma.question
-                .findOne({ where: { id: questionAdded.id } })
-                .event()
-                .owner()
-              return id === owner.id
+              return id === questionEventOwnerId
             case RoleName.AUDIENCE:
               if (toRoles.includes(AudienceRole.All)) {
                 return true
               }
-              const author = await ctx.prisma.question
-                .findOne({ where: { id: questionAdded.id } })
-                .author()
               if (toRoles.includes(AudienceRole.ExcludeAuthor)) {
-                return id !== author.id
+                return id !== authorId
               } else if (toRoles.includes(AudienceRole.OnlyAuthor)) {
-                return id === author.id
+                return id === authorId
               }
             case RoleName.WALL:
-              return questionAdded.reviewStatus === QuestionReviewStatus.PUBLISH
+              return questionAdded.reviewStatus === ReviewStatus.Publish
             default:
               return false
           }
@@ -700,7 +770,7 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
       async (payload, args, ctx) => {
         const { id, roles } = ctx.connection.context as TokenPayload
         const role: RoleName = args.role
-        const { eventId, toRoles, questionUpdated } = payload
+        const { eventId, authorId, toRoles } = payload
 
         if (
           eventId === args.eventId &&
@@ -712,13 +782,10 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
               if (toRoles.includes(AudienceRole.All)) {
                 return true
               }
-              const author = await ctx.prisma.question
-                .findOne({ where: { id: questionUpdated.id } })
-                .author()
               if (toRoles.includes(AudienceRole.ExcludeAuthor)) {
-                return id !== author.id
+                return id !== authorId
               } else if (toRoles.includes(AudienceRole.OnlyAuthor)) {
-                return id === author.id
+                return id === authorId
               }
             default:
               return true
@@ -744,7 +811,7 @@ export const questionRemovedSubscription = subscriptionField<'questionRemoved'>(
       async (payload, args, ctx) => {
         const { id, roles } = ctx.connection.context as TokenPayload
         const role: RoleName = args.role
-        const { eventId, toRoles, questionRemoved } = payload
+        const { eventId, authorId, toRoles } = payload
 
         if (
           eventId === args.eventId &&
@@ -756,13 +823,10 @@ export const questionRemovedSubscription = subscriptionField<'questionRemoved'>(
               if (toRoles.includes(AudienceRole.All)) {
                 return true
               }
-              const author = await ctx.prisma.question
-                .findOne({ where: { id: questionRemoved.id } })
-                .author()
               if (toRoles.includes(AudienceRole.ExcludeAuthor)) {
-                return id !== author.id
+                return id !== authorId
               } else if (toRoles.includes(AudienceRole.OnlyAuthor)) {
-                return id === author.id
+                return id === authorId
               }
             default:
               return true
@@ -777,11 +841,10 @@ export const questionRemovedSubscription = subscriptionField<'questionRemoved'>(
 )
 
 async function getVoted(ctx: Context, questionId: string) {
-  const userId = getAuthedUser(ctx)?.id
+  const userId = getAuthedUser(ctx)?.id as string
+  const question = await ctx.db.Question.findOne({ where: { id: questionId } })
   if (!userId) return false
-  const audiences: User[] = await ctx.prisma.question
-    .findOne({ where: { id: questionId } })
-    .votedUsers({ where: { id: userId } })
+  const user = await ctx.db.User.findOne({ where: { id: userId } })
 
-  return Boolean(audiences.length)
+  return question.hasVotedUser(user)
 }

@@ -1,4 +1,6 @@
 import { objectType, extendType, stringArg } from 'nexus'
+import { GameModelStatic } from '../models/Game'
+import { PlayerModelStatic } from '../models/Player'
 
 export const Game = objectType({
   name: 'Game',
@@ -11,6 +13,18 @@ export const Game = objectType({
       resolve: async (root, args, ctx) => {
         const game = await ctx.db.Game.findOne({ where: { id: root.id } })
         return game.getPlayer()
+      },
+    })
+
+    t.list.field('chain', {
+      type: 'Game',
+      resolve(root, args, ctx) {
+        const games = ctx.db.Game.findOne({
+          where: { id: root.id },
+        })
+          .then((game: GameModelStatic) => game.getPlayer())
+          .then((player: PlayerModelStatic) => player.getGames())
+        return games
       },
     })
   },

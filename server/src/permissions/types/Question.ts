@@ -51,8 +51,6 @@ export const isQuestionTopByArg = rule({ cache: 'strict' })(
 
 export default {
   Query: {
-    questions: deny,
-
     questionsByEvent: isAuthedAdmin,
     questionsByMe: isAuthedAudience,
     liveQuestionsByEvent: isAuthedAudience,

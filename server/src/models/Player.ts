@@ -1,4 +1,9 @@
-import { BuildOptions, DataTypes, Model } from 'sequelize'
+import {
+  BuildOptions,
+  DataTypes,
+  Model,
+  HasManyGetAssociationsMixin,
+} from 'sequelize'
 import sequelize from '../db'
 import Game, { GameModelStatic } from './Game'
 
@@ -7,6 +12,8 @@ const { STRING, UUID, UUIDV1 } = DataTypes
 export class Player extends Model {
   public id!: string
   public name!: string
+
+  public getGames!: HasManyGetAssociationsMixin<GameModelStatic>
 
   public readonly games?: GameModelStatic[]
 }
