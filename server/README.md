@@ -6,10 +6,7 @@
 
 ```sh
 yarn install
-yarn prisma:migrate-save
-yarn prisma:migrate-up
 yarn generate
-yarn prisma:seed
 yarn dev
 ```
 

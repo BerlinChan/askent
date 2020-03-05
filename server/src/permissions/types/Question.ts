@@ -1,4 +1,4 @@
-import { rule, or, not, and, deny } from 'graphql-shield'
+import { rule, or, not, and } from 'graphql-shield'
 import { getAuthedUser } from '../../utils'
 import { isAuthedAdmin, isAuthedAudience, isAuthedWall } from './User'
 import { isEventOwnerByArgId } from './Event'
@@ -6,43 +6,51 @@ import { isEventOwnerByArgId } from './Event'
 export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
     const userId = getAuthedUser(ctx)?.id
-    const questionAuthor = await ctx.prisma.question
-      .findOne({
-        where: { id: args.questionId },
-      })
-      .author()
+    const question = await ctx.db.Question.findByPk(args.questionId, {
+      include: [{ association: 'author', attributes: ['id'] }],
+    })
 
-    return userId === questionAuthor.id
+    return userId === question?.author.id
   },
 )
 export const isQuestionEventOwnerByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
     const userId = getAuthedUser(ctx)?.id
-    const eventOwner = await ctx.prisma.question
-      .findOne({
-        where: { id: args.questionId },
-      })
-      .event()
-      .owner()
+    const question = await ctx.db.Question.findByPk(args.questionId, {
+      include: [
+        {
+          association: 'event',
+          attributes: ['id'],
+          include: [{ association: 'owner', attributes: ['id'] }],
+        },
+      ],
+    })
 
-    return userId === eventOwner.id
+    return userId === question?.event?.owner.id
   },
 )
 export const isQuestionEventAudienceByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
     const userId = getAuthedUser(ctx)?.id
-    const audience = await ctx.prisma.question
-      .findOne({ where: { id: args.questionId } })
-      .event()
-      .audiences({ where: { id: userId } })
+    const question = await ctx.db.Question.findByPk(args.questionId, {
+      include: [
+        {
+          association: 'event',
+          attributes: ['id'],
+          include: [
+            { association: 'owner', where: { id: userId }, attributes: ['id'] },
+          ],
+        },
+      ],
+    })
 
-    return Boolean(audience.length)
+    return Boolean(question?.event?.owner?.id)
   },
 )
 export const isQuestionTopByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
-    const question = await ctx.prisma.question.findOne({
-      where: { id: args.questionId },
+    const question = await ctx.db.Question.findByPk(args.questionId, {
+      attributes: ['top'],
     })
 
     return question.top
@@ -51,8 +59,6 @@ export const isQuestionTopByArg = rule({ cache: 'strict' })(
 
 export default {
   Query: {
-    questions: deny,
-
     questionsByEvent: isAuthedAdmin,
     questionsByMe: isAuthedAudience,
     liveQuestionsByEvent: isAuthedAudience,

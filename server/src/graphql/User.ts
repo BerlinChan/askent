@@ -1,31 +1,53 @@
 import { objectType, extendType, stringArg, inputObjectType, arg } from 'nexus'
-import {
-  RoleName,
-  User as UserType,
-  UserCreateInput,
-  UserWhereUniqueInput,
-  UserWhereInput,
-} from '@prisma/client'
 import { NexusGenFieldTypes } from 'nexus-typegen'
 import { hash, compare } from 'bcryptjs'
 import { Context } from '../context'
 import { getAuthedUser, signToken } from '../utils'
+import { Op } from 'sequelize'
+import { RoleModelStatic, RoleName } from '../models/Role'
 
 export const User = objectType({
   name: 'User',
   definition(t) {
-    t.model.id()
-    t.model.createdAt()
-    t.model.updatedAt()
-    t.model.lastLoginAt()
-    t.model.roles()
-    t.model.name()
-    t.model.email()
-    t.model.events()
-    t.model.questions()
-    t.model.votedQuestions()
-    // t.model.fingerprint()
-    // t.model.password()
+    t.id('id')
+    t.string('email', { nullable: true })
+    t.string('name', { nullable: true })
+
+    t.list.field('roles', {
+      type: 'Role',
+      async resolve({ id }, args, ctx) {
+        const user = await ctx.db.User.findByPk(id)
+        return user.getRoles()
+      },
+    })
+    t.list.field('events', {
+      type: 'Event',
+      async resolve({ id }, args, ctx) {
+        const user = await ctx.db.User.findByPk(id)
+        return user.getEvents()
+      },
+    })
+    t.list.field('questions', {
+      type: 'Question',
+      async resolve({ id }, args, ctx) {
+        const user = await ctx.db.User.findByPk(id)
+        return user.getQuestions()
+      },
+    })
+    t.list.field('votedQuestions', {
+      type: 'Question',
+      async resolve({ id }, args, ctx) {
+        const user = await ctx.db.User.findByPk(id)
+        return user.getVotedQuestions()
+      },
+    })
+
+    t.field('createdAt', { type: 'DateTime' })
+    t.field('updatedAt', { type: 'DateTime' })
+    t.field('deletedAt', { type: 'DateTime', nullable: true })
+
+    // t.string('fingerprint', { nullable: true })
+    // t.string('password', { nullable: true })
   },
 })
 export const AuthPayload = objectType({
@@ -57,9 +79,7 @@ export const userQuery = extendType({
       type: 'User',
       description: 'Query my user info.',
       resolve: (root, args, ctx) => {
-        return ctx.prisma.user.findOne({
-          where: { id: getAuthedUser(ctx)?.id },
-        }) as Promise<UserType>
+        return ctx.db.User.findByPk(getAuthedUser(ctx)?.id as string)
       },
     })
     t.field('checkEmailExist', {
@@ -75,7 +95,7 @@ export const userQuery = extendType({
     t.field('PGP', {
       type: 'PGP',
       resolve: (root, args, ctx) => {
-        return { pubKey: process.env.PGP_PUB_KEY } as NexusGenFieldTypes['PGP']
+        return { pubKey: process.env.JWT_PUB_KEY } as NexusGenFieldTypes['PGP']
       },
     })
   },
@@ -92,22 +112,21 @@ export const userMutation = extendType({
         password: stringArg({ required: true }),
       },
       resolve: async (root, args, ctx, info) => {
-        if (await checkEmailExist(ctx, args.email)) {
-          throw new Error(ERROR_MESSAGE.emailExist(args.email))
-        }
         const hashedPassword = await hash(args.password, 10)
         const userRoles: Array<RoleName> = [
-          RoleName.ADMIN,
-          RoleName.AUDIENCE,
-          RoleName.WALL,
+          RoleName.Admin,
+          RoleName.Audience,
+          RoleName.Wall,
         ]
-        const user = await ctx.prisma.user.create({
-          data: {
-            ...args,
-            password: hashedPassword,
-            roles: { connect: userRoles.map(role => ({ name: role })) },
-          } as UserCreateInput,
+
+        const roles = await ctx.db.Role.findAll({
+          where: { [Op.or]: userRoles.map(role => ({ name: role })) },
         })
+        const user = await ctx.db.User.create({
+          ...args,
+          password: hashedPassword,
+        })
+        await user.setRoles(roles)
 
         return {
           token: signToken({ id: user.id, roles: userRoles }),
@@ -121,18 +140,17 @@ export const userMutation = extendType({
         email: stringArg({ required: true, description: 'User Email' }),
         password: stringArg({ required: true }),
       },
-      resolve: async (parent, args: UserWhereInput, ctx, info) => {
-        const user = await ctx.prisma.user.findOne({
-          where: { email: args.email } as UserWhereUniqueInput,
-          include: { roles: true },
+      resolve: async (parent, { email, password }, ctx, info) => {
+        const user = await ctx.db.User.findOne({
+          where: { email },
+          include: ['roles'],
         })
+        // const roles = await user.getRoles()
+
         if (!user) {
-          throw new Error(`No user found for email: ${args.email}`)
+          throw new Error(`No user found for email: ${email}`)
         }
-        const passwordValid = await compare(
-          args.password as string,
-          user.password as string,
-        )
+        const passwordValid = await compare(password, user.password)
         if (!passwordValid) {
           throw new Error('Invalid password')
         }
@@ -140,7 +158,7 @@ export const userMutation = extendType({
         return {
           token: signToken({
             id: user.id,
-            roles: user.roles.map(role => role.name),
+            roles: user.roles.map((role: RoleModelStatic) => role.name),
           }),
           user,
         }
@@ -153,21 +171,22 @@ export const userMutation = extendType({
       若 fingerprint 的 User 不存在则 create 并返回 token`,
       args: { fingerprint: stringArg({ required: true }) },
       resolve: async (root, { fingerprint }, ctx) => {
-        let user = await ctx.prisma.user.findOne({
+        let user = await ctx.db.User.findOne({
           where: { fingerprint },
         })
-        const userRoles: Array<RoleName> = ['AUDIENCE']
+        const roleNames: Array<RoleName> = [RoleName.Audience]
         if (!user) {
-          user = await ctx.prisma.user.create({
-            data: {
-              fingerprint,
-              roles: { connect: userRoles.map(role => ({ name: role })) },
-            },
+          const roles: Array<RoleModelStatic> = await ctx.db.Role.findAll({
+            where: { [Op.or]: roleNames },
           })
+          user = await ctx.db.User.create({
+            fingerprint,
+          })
+          user.setRoles(roles)
         }
 
         return {
-          token: signToken({ id: user.id, roles: userRoles }),
+          token: signToken({ id: user.id, roles: roleNames }),
           user,
         }
       },
@@ -175,23 +194,19 @@ export const userMutation = extendType({
     t.field('updateUser', {
       type: 'User',
       args: { input: arg({ type: 'UpdateUserInput', required: true }) },
-      resolve: (root, { input }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id
-        return ctx.prisma.user.update({
-          where: { id: userId },
-          data: input,
-        })
+      resolve: async (root, { input }, ctx) => {
+        const userId = getAuthedUser(ctx)?.id as string
+        await ctx.db.User.update(input, { where: { id: userId } })
+        const user = await ctx.db.User.findByPk(userId)
+
+        return user
       },
     })
   },
 })
 
 async function checkEmailExist(ctx: Context, email: string): Promise<boolean> {
-  return Boolean(
-    await ctx.prisma.user.findOne({
-      where: { email } as UserWhereUniqueInput,
-    }),
-  )
+  return Boolean(await ctx.db.User.count({ where: { email } }))
 }
 
 const ERROR_MESSAGE = {

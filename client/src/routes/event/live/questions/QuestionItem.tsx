@@ -29,7 +29,7 @@ import {
   useVoteQuestionMutation,
   LiveQuestionFieldsFragment,
   useUpdateQuestionContentMutation,
-  QuestionReviewStatus
+  ReviewStatus
 } from "../../../../generated/graphqlHooks";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
@@ -226,7 +226,7 @@ const QuestionItem: React.FC<Props> = ({
             )}
           </Typography>
           <Box className={classes.questionActionBox}>
-            {question.reviewStatus === QuestionReviewStatus.Review && (
+            {question.reviewStatus === ReviewStatus.Review && (
               <Tooltip
                 title={formatMessage({
                   id: "Waiting_review",

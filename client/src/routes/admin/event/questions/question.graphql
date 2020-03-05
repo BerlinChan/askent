@@ -1,6 +1,6 @@
-fragment PagedQuestionFields on PagedQuestion {
-  first
-  skip
+fragment QuestionPagedFields on QuestionPaged {
+  limit
+  offset
   totalCount
   hasNextPage
 }
@@ -21,17 +21,19 @@ fragment QuestionFields on Question {
 
 query QuestionsByEvent(
   $eventId: ID!
-  $where: QuestionWhereInput
-  $pagination: PaginationInputType!
-  $orderBy: QuestionOrderByInput
+  $reviewStatus: [ReviewStatus!]
+  $searchString: String
+  $pagination: PaginationInputType! # $orderBy: QuestionOrderByInput
 ) {
   questionsByEvent(
     eventId: $eventId
-    where: $where
+    reviewStatus: $reviewStatus
+    searchString: $searchString
     pagination: $pagination
-    orderBy: $orderBy
-  ) @connection(key: "questionsByEvent", filter: ["eventId", "where"]) {
-    ...PagedQuestionFields
+  )
+    # orderBy: $orderBy
+    @connection(key: "questionsByEvent", filter: ["eventId", "reviewStatus"]) {
+    ...QuestionPagedFields
     list {
       ...QuestionFields
     }
@@ -39,9 +41,7 @@ query QuestionsByEvent(
 }
 
 mutation DeleteQuestion($questionId: ID!) {
-  deleteQuestion(questionId: $questionId) {
-    id
-  }
+  deleteQuestion(questionId: $questionId)
 }
 
 mutation DeleteAllReviewQuestions($eventId: ID!) {
@@ -54,7 +54,7 @@ mutation PublishAllReviewQuestions($eventId: ID!) {
 
 mutation UpdateQuestionReviewStatus(
   $questionId: ID!
-  $reviewStatus: QuestionReviewStatus!
+  $reviewStatus: ReviewStatus!
 ) {
   updateQuestionReviewStatus(
     questionId: $questionId

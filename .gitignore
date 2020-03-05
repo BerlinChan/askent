@@ -1,5 +1,6 @@
 .idea/
 .DS_Store
+package-lock.json
 
 # Logs
 logs
@@ -13,4 +14,3 @@ node_modules/
 
 # dotenv environment variables file
 .env
-.env.test

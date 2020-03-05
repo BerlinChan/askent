@@ -20,12 +20,11 @@ import {
   useLiveQuestionRemovedSubscription,
   LiveQuestionsByEventDocument,
   RoleName,
-  OrderByArg
 } from "../../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
 import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
-import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -70,13 +69,13 @@ const LiveQuestions: React.FC<Props> = ({
     liveQuestionsByEventLazyQuery({
       variables: {
         eventId: id as string,
-        orderBy:
-          tabIndex === 0
-            ? { createdAt: OrderByArg.Desc } // TODO: cant orderBy voteCount
-            : tabIndex === 0
-            ? { createdAt: OrderByArg.Desc }
-            : undefined,
-        pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+        // orderBy:
+        //   tabIndex === 0
+        //     ? { createdAt: OrderByArg.Desc } // TODO: cant orderBy voteCount
+        //     : tabIndex === 0
+        //     ? { createdAt: OrderByArg.Desc }
+        //     : undefined,
+        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

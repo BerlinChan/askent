@@ -13,7 +13,7 @@ import {
   WallQuestionFieldsFragment,
   useUpdateQuestionReviewStatusMutation,
   useUpdateQuestionTopMutation,
-  QuestionReviewStatus
+  ReviewStatus
 } from "../../../generated/graphqlHooks";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import UnarchiveIcon from "@material-ui/icons/Unarchive";
@@ -98,8 +98,8 @@ const QuestionListItem: React.FC<Props> = ({ question }) => {
       variables: {
         questionId: id,
         reviewStatus: currentStatus
-          ? QuestionReviewStatus.Publish
-          : QuestionReviewStatus.Archive
+          ? ReviewStatus.Publish
+          : ReviewStatus.Archive
       }
     });
   };
@@ -159,7 +159,7 @@ const QuestionListItem: React.FC<Props> = ({ question }) => {
           <QuestionToggleButton
             className="questionHover"
             id={question.id}
-            status={question.reviewStatus === QuestionReviewStatus.Archive}
+            status={question.reviewStatus === ReviewStatus.Archive}
             disabled={updateQuestionReviewStatusLoading}
             onTitle={formatMessage({
               id: "Unarchive",

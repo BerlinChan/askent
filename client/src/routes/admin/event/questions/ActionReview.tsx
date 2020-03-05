@@ -9,11 +9,11 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
   QuestionsByEventQuery,
-  QuestionReviewStatus
+  ReviewStatus
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import Confirm from "../../../../components/Confirm";
-import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
 import { DataProxy } from "apollo-cache";
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
   updateCache: (
     cache: DataProxy,
     eventId: string,
-    reviewStatus: QuestionReviewStatus,
+    reviewStatus: ReviewStatus,
     data: QuestionsByEventQuery
   ) => void;
 }
@@ -55,10 +55,10 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
     await deleteAllReviewQuestionsMutation({
       variables: { eventId: id as string },
       update: (cache, mutationResult) => {
-        updateCache(cache, id as string, QuestionReviewStatus.Review, {
+        updateCache(cache, id as string, ReviewStatus.Review, {
           questionsByEvent: {
-            skip: DEFAULT_PAGE_SKIP,
-            first: DEFAULT_PAGE_FIRST,
+            offset: DEFAULT_PAGE_OFFSET,
+            limit: DEFAULT_PAGE_LIMIT,
             totalCount: 0,
             hasNextPage: false,
             list: []
@@ -78,10 +78,10 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
     await publishAllReviewQuestionsMutation({
       variables: { eventId: id as string },
       update: (cache, mutationResult) => {
-        updateCache(cache, id as string, QuestionReviewStatus.Review, {
+        updateCache(cache, id as string, ReviewStatus.Review, {
           questionsByEvent: {
-            skip: DEFAULT_PAGE_SKIP,
-            first: DEFAULT_PAGE_FIRST,
+            offset: DEFAULT_PAGE_OFFSET,
+            limit: DEFAULT_PAGE_LIMIT,
             totalCount: 0,
             hasNextPage: false,
             list: []

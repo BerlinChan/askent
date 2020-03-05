@@ -24,7 +24,7 @@ import { QueryResult } from "@apollo/react-common";
 import { useHistory } from "react-router-dom";
 import { FormattedMessage, FormattedDate } from "react-intl";
 import Confirm from "../../../components/Confirm";
-import { DEFAULT_PAGE_SKIP, DEFAULT_PAGE_FIRST } from "../../../constant";
+import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
 import DeleteIcon from "@material-ui/icons/Delete";
 import DvrIcon from "@material-ui/icons/Dvr";
 import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
@@ -126,8 +126,8 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
       fetchMore({
         variables: {
           pagination: {
-            skip: data?.eventsByMe.list.length || DEFAULT_PAGE_SKIP,
-            first: data?.eventsByMe.first || DEFAULT_PAGE_FIRST
+            offset: data?.eventsByMe.list.length || DEFAULT_PAGE_OFFSET,
+            limit: data?.eventsByMe.limit || DEFAULT_PAGE_LIMIT
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {

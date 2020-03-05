@@ -9,7 +9,7 @@ import {
 import { useQuestionsByMeQuery } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 // import QuestionList from "./questions/QuestionList";
-import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../constant";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../constant";
 
 interface Props {
   open: boolean;
@@ -19,7 +19,7 @@ interface Props {
 const MyQuestionsDialog: React.FC<Props> = ({ open, onClose }) => {
   const myQuestionsResult = useQuestionsByMeQuery({
     variables: {
-      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });
 

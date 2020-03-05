@@ -14,14 +14,13 @@ import {
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument,
   RoleName,
-  QuestionReviewStatus,
-  OrderByArg
+  ReviewStatus
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
 import ActionRight from "./ActionRight";
-import { DEFAULT_PAGE_FIRST, DEFAULT_PAGE_SKIP } from "../../../../constant";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
 import { DataProxy } from "apollo-cache";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -71,71 +70,57 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const questionsByEventQuery = useQuestionsByEventQuery({
     variables: {
       eventId: id as string,
-      where: { reviewStatus: QuestionReviewStatus.Publish },
-      orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+      reviewStatus: [ReviewStatus.Publish],
+      // orderBy: { createdAt: OrderByArg.Desc },
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });
   const questionsByEventQueryReview = useQuestionsByEventQuery({
     variables: {
       eventId: id as string,
-      where: { reviewStatus: QuestionReviewStatus.Review },
-      orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+      reviewStatus: [ReviewStatus.Review],
+      // orderBy: { createdAt: OrderByArg.Desc },
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });
   const questionsByEventQueryArchive = useQuestionsByEventQuery({
     variables: {
       eventId: id as string,
-      where: { reviewStatus: QuestionReviewStatus.Archive },
-      orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { first: DEFAULT_PAGE_FIRST, skip: DEFAULT_PAGE_SKIP }
+      reviewStatus: [ReviewStatus.Archive],
+      // orderBy: { createdAt: OrderByArg.Desc },
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });
   const questionsByEventQuerySearch = useQuestionsByEventQuery({
     variables: {
       eventId: id as string,
-      where: {
-        AND: [
-          {
-            OR: [
-              { reviewStatus: QuestionReviewStatus.Publish },
-              { reviewStatus: QuestionReviewStatus.Archive }
-            ]
-          },
-          {
-            OR: [
-              { content: { contains: searchState[0]?.value } },
-              { author: { name: { contains: searchState[0]?.value } } }
-            ]
-          }
-        ]
-      },
-      orderBy: { createdAt: OrderByArg.Desc },
+      reviewStatus: [ReviewStatus.Archive],
+      searchString: searchState[0]?.value,
+      // orderBy: { createdAt: OrderByArg.Desc },
       pagination: {
-        first: DEFAULT_PAGE_FIRST,
-        skip: DEFAULT_PAGE_SKIP
+        limit: DEFAULT_PAGE_LIMIT,
+        offset: DEFAULT_PAGE_OFFSET
       }
     }
   });
 
   // subscriptions
   const getPrev = (
-    reviewStatus: QuestionReviewStatus
+    reviewStatus: ReviewStatus
   ): QuestionsByEventQuery | undefined => {
     switch (reviewStatus) {
-      case QuestionReviewStatus.Review:
+      case ReviewStatus.Review:
         return questionsByEventQueryReview.data;
-      case QuestionReviewStatus.Publish:
+      case ReviewStatus.Publish:
         return questionsByEventQuery.data;
-      case QuestionReviewStatus.Archive:
+      case ReviewStatus.Archive:
         return questionsByEventQueryArchive.data;
     }
   };
   const updateCache = (
     cache: DataProxy,
     eventId: string,
-    reviewStatus: QuestionReviewStatus,
+    reviewStatus: ReviewStatus,
     data: QuestionsByEventQuery
   ) => {
     cache.writeQuery<
@@ -145,7 +130,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       query: QuestionsByEventDocument,
       variables: {
         eventId,
-        where: { reviewStatus }
+        reviewStatus: [reviewStatus]
       },
       data
     });
