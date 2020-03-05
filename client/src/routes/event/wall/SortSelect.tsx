@@ -96,7 +96,7 @@ const SortSelect: React.FC<Props> = ({
       variables: {
         eventId: id as string,
         star: selected === TopSort.Starred ? true : undefined,
-        pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET },
+        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
         orderBy:
           selected === TopSort.Recent
             ? { createdAt: OrderByArg.Desc }

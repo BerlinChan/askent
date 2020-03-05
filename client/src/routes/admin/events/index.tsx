@@ -35,7 +35,7 @@ const Events: React.FC<Props> = ({ searchString }) => {
     variables: {
       searchString,
       orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET }
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });
   const { refetch: eventsByMeRefetch } = eventsByMeQueryResult;

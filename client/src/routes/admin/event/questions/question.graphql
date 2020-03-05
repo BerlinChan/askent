@@ -1,6 +1,6 @@
-fragment PagedQuestionFields on PagedQuestion {
-  first
-  skip
+fragment QuestionPagedFields on QuestionPaged {
+  limit
+  offset
   totalCount
   hasNextPage
 }
@@ -31,7 +31,7 @@ query QuestionsByEvent(
     pagination: $pagination
     orderBy: $orderBy
   ) @connection(key: "questionsByEvent", filter: ["eventId", "where"]) {
-    ...PagedQuestionFields
+    ...QuestionPagedFields
     list {
       ...QuestionFields
     }

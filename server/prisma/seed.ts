@@ -58,7 +58,7 @@ async function main() {
 
   const user1Events = await prisma.event.findMany({
     where: { owner: { name: 'w' } },
-    first: 1,
+    limit: 1,
   })
   await prisma.event.update({
     where: { id: user1Events[0].id },

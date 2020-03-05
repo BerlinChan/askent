@@ -57,8 +57,8 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
       update: (cache, mutationResult) => {
         updateCache(cache, id as string, QuestionReviewStatus.Review, {
           questionsByEvent: {
-            skip: DEFAULT_PAGE_OFFSET,
-            first: DEFAULT_PAGE_LIMIT,
+            offset: DEFAULT_PAGE_OFFSET,
+            limit: DEFAULT_PAGE_LIMIT,
             totalCount: 0,
             hasNextPage: false,
             list: []
@@ -80,8 +80,8 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
       update: (cache, mutationResult) => {
         updateCache(cache, id as string, QuestionReviewStatus.Review, {
           questionsByEvent: {
-            skip: DEFAULT_PAGE_OFFSET,
-            first: DEFAULT_PAGE_LIMIT,
+            offset: DEFAULT_PAGE_OFFSET,
+            limit: DEFAULT_PAGE_LIMIT,
             totalCount: 0,
             hasNextPage: false,
             list: []

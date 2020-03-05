@@ -23,7 +23,7 @@ query LiveQuestionsByEvent(
     pagination: $pagination
     orderBy: $orderBy
   ) @connection(key: "liveQuestionsByEvent", filter: ["eventId"]) {
-    ...PagedQuestionFields
+    ...QuestionPagedFields
     list {
       ...LiveQuestionFields
     }
@@ -35,7 +35,7 @@ query QuestionsByMe(
   $orderBy: QuestionOrderByInput
 ) {
   questionsByMe(pagination: $pagination, orderBy: $orderBy) {
-    ...PagedQuestionFields
+    ...QuestionPagedFields
     list {
       ...LiveQuestionFields
     }

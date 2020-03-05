@@ -16,8 +16,8 @@ query EventsByMe(
     pagination: $pagination
     orderBy: $orderBy
   ) {
-    first
-    skip
+    limit
+    offset
     totalCount
     hasNextPage
     list {

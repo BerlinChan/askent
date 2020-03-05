@@ -76,7 +76,7 @@ const LiveQuestions: React.FC<Props> = ({
             : tabIndex === 0
             ? { createdAt: OrderByArg.Desc }
             : undefined,
-        pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET }
+        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

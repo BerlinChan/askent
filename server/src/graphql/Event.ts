@@ -48,8 +48,8 @@ export const Event = objectType({
     t.field('updatedAt', { type: 'DateTime' })
   },
 })
-export const PagedEvent = objectType({
-  name: 'PagedEvent',
+export const EventPaged = objectType({
+  name: 'EventPaged',
   definition(t) {
     t.implements('IPagedType')
     t.list.field('list', { type: 'Event' })
@@ -71,7 +71,7 @@ export const eventQuery = extendType({
       },
     })
     t.field('eventsByMe', {
-      type: 'PagedEvent',
+      type: 'EventPaged',
       description: 'Get all my events.',
       args: {
         searchString: stringArg(),

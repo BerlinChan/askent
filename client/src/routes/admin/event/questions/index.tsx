@@ -73,7 +73,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       eventId: id as string,
       where: { reviewStatus: QuestionReviewStatus.Publish },
       orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET }
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });
   const questionsByEventQueryReview = useQuestionsByEventQuery({
@@ -81,7 +81,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       eventId: id as string,
       where: { reviewStatus: QuestionReviewStatus.Review },
       orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET }
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });
   const questionsByEventQueryArchive = useQuestionsByEventQuery({
@@ -89,7 +89,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       eventId: id as string,
       where: { reviewStatus: QuestionReviewStatus.Archive },
       orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET }
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });
   const questionsByEventQuerySearch = useQuestionsByEventQuery({
@@ -113,8 +113,8 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       },
       orderBy: { createdAt: OrderByArg.Desc },
       pagination: {
-        first: DEFAULT_PAGE_LIMIT,
-        skip: DEFAULT_PAGE_OFFSET
+        limit: DEFAULT_PAGE_LIMIT,
+        offset: DEFAULT_PAGE_OFFSET
       }
     }
   });

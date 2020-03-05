@@ -148,7 +148,7 @@ const EventWall: React.FC<Props> = () => {
     wallQuestionsByEventLazyQuery({
       variables: {
         eventId: id as string,
-        pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET },
+        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
         orderBy: { createdAt: OrderByArg.Desc }
       }
     });

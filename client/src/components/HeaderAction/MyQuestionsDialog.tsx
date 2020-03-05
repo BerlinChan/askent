@@ -19,7 +19,7 @@ interface Props {
 const MyQuestionsDialog: React.FC<Props> = ({ open, onClose }) => {
   const myQuestionsResult = useQuestionsByMeQuery({
     variables: {
-      pagination: { first: DEFAULT_PAGE_LIMIT, skip: DEFAULT_PAGE_OFFSET }
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });
 

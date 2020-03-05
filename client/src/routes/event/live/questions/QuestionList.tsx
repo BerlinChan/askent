@@ -114,8 +114,8 @@ const QuestionList: React.FC<Props> = ({
       fetchMore({
         variables: {
           pagination: {
-            skip: data?.liveQuestionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
-            first: data?.liveQuestionsByEvent.first || DEFAULT_PAGE_LIMIT
+            offset: data?.liveQuestionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
+            limit: data?.liveQuestionsByEvent.limit || DEFAULT_PAGE_LIMIT
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {

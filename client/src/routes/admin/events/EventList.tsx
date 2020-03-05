@@ -126,8 +126,8 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
       fetchMore({
         variables: {
           pagination: {
-            skip: data?.eventsByMe.list.length || DEFAULT_PAGE_OFFSET,
-            first: data?.eventsByMe.first || DEFAULT_PAGE_LIMIT
+            offset: data?.eventsByMe.list.length || DEFAULT_PAGE_OFFSET,
+            limit: data?.eventsByMe.limit || DEFAULT_PAGE_LIMIT
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {

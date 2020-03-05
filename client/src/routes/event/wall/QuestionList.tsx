@@ -38,8 +38,8 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
       fetchMore({
         variables: {
           pagination: {
-            skip: data?.wallQuestionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
-            first: data?.wallQuestionsByEvent.first || DEFAULT_PAGE_LIMIT
+            offset: data?.wallQuestionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
+            limit: data?.wallQuestionsByEvent.limit || DEFAULT_PAGE_LIMIT
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {
