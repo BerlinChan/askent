@@ -99,12 +99,14 @@ export const questionQuery = extendType({
             eventId,
             [Op.and]: [
               { [Op.or]: reviewStatus?.map(item => ({ reviewStatus: item })) },
-              {
-                [Op.or]: [
-                  { content: { [Op.substring]: searchString } },
-                  { '$author.name$': { [Op.substring]: searchString } },
-                ],
-              },
+              searchString
+                ? {
+                    [Op.or]: [
+                      { content: { [Op.substring]: searchString } },
+                      { '$author.name$': { [Op.substring]: searchString } },
+                    ],
+                  }
+                : {},
             ],
           },
           include: searchString ? ['author'] : [],
@@ -180,23 +182,18 @@ export const questionQuery = extendType({
       resolve: async (root, { pagination }, ctx) => {
         const { offset, limit } = pagination
         const userId = getAuthedUser(ctx)?.id as string
-        const totalCount = await ctx.db.Question.count({
+        const option = {
           where: {
-            author: { id: userId },
+            authorId: userId,
             [Op.or]: [
               { reviewStatus: ReviewStatus.Publish },
               { reviewStatus: ReviewStatus.Review },
             ],
           },
-        })
+        }
+        const totalCount = await ctx.db.Question.count(option)
         const questions = await ctx.db.Question.findAll({
-          where: {
-            author: { id: userId },
-            [Op.or]: [
-              { reviewStatus: ReviewStatus.Publish },
-              { reviewStatus: ReviewStatus.Review },
-            ],
-          },
+          ...option,
           ...pagination,
         })
 

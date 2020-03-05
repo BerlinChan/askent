@@ -17,6 +17,7 @@ export const User = objectType({
       type: 'Role',
       async resolve({ id }, args, ctx) {
         const user = await ctx.db.User.findByPk(id)
+        console.log('roles')
         return user.getRoles()
       },
     })

@@ -81,8 +81,8 @@ User.belongsToMany(Event, {
 })
 Event.belongsToMany(User, { through: 'eventAudiences', as: 'audiences' })
 
-User.belongsToMany(Role, { through: 'userRoles', targetKey: 'name' })
-Role.belongsToMany(User, { through: 'userRoles', sourceKey: 'name' })
+User.belongsToMany(Role, { through: 'userRoles' })
+Role.belongsToMany(User, { through: 'userRoles' })
 
 export type UserModelStatic = typeof Model & {
   new (values?: object, options?: BuildOptions): User

@@ -29,7 +29,8 @@ type ConnectionParamsType = {
   Authorization?: string
 }
 const server = new ApolloServer({
-  schema: applyMiddleware(schema, permissions),
+  schema: schema,
+  // TODO: schema: applyMiddleware(schema, permissions),
   context: createContext,
   subscriptions: {
     onConnect: (connectionParams: ConnectionParamsType, websocket, context) => {
