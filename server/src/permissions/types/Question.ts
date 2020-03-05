@@ -6,8 +6,7 @@ import { isEventOwnerByArgId } from './Event'
 export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
     const userId = getAuthedUser(ctx)?.id
-    const question = await ctx.db.Question.findOne({
-      where: { id: args.questionId },
+    const question = await ctx.db.Question.findByPk(args.questionId, {
       include: [{ association: 'author', attributes: ['id'] }],
     })
 
@@ -17,8 +16,7 @@ export const isQuestionAuthorByArg = rule({ cache: 'strict' })(
 export const isQuestionEventOwnerByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
     const userId = getAuthedUser(ctx)?.id
-    const question = await ctx.db.Question.findOne({
-      where: { id: args.questionId },
+    const question = await ctx.db.Question.findByPk(args.questionId, {
       include: [
         {
           association: 'event',
@@ -34,18 +32,24 @@ export const isQuestionEventOwnerByArg = rule({ cache: 'strict' })(
 export const isQuestionEventAudienceByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
     const userId = getAuthedUser(ctx)?.id
-    const audience = await ctx.prisma.question
-      .findOne({ where: { id: args.questionId } })
-      .event()
-      .audiences({ where: { id: userId } })
+    const question = await ctx.db.Question.findByPk(args.questionId, {
+      include: [
+        {
+          association: 'event',
+          attributes: ['id'],
+          include: [
+            { association: 'owner', where: { id: userId }, attributes: ['id'] },
+          ],
+        },
+      ],
+    })
 
-    return Boolean(audience.length)
+    return Boolean(question?.event?.owner?.id)
   },
 )
 export const isQuestionTopByArg = rule({ cache: 'strict' })(
   async (root, args, ctx) => {
-    const question = await ctx.db.Question.findOne({
-      where: { id: args.questionId },
+    const question = await ctx.db.Question.findByPk(args.questionId, {
       attributes: ['top'],
     })
 

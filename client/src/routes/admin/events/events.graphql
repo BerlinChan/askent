@@ -9,13 +9,13 @@ fragment AdminEventFields on Event {
 query EventsByMe(
   $searchString: String
   $pagination: PaginationInputType!
-  $orderBy: EventOrderByInput
-) {
+) # $orderBy: EventOrderByInput
+{
   eventsByMe(
     searchString: $searchString
     pagination: $pagination
-    orderBy: $orderBy
-  ) {
+  ) # orderBy: $orderBy
+  {
     limit
     offset
     totalCount
@@ -48,7 +48,5 @@ mutation CreateEvent(
 }
 
 mutation DeleteEvent($eventId: ID!) {
-  deleteEvent(eventId: $eventId) {
-    ...AdminEventFields
-  }
+  deleteEvent(eventId: $eventId)
 }

@@ -31,7 +31,7 @@ import {
   useUpdateQuestionStarMutation,
   useUpdateQuestionTopMutation,
   useUpdateQuestionContentMutation,
-  QuestionReviewStatus
+  ReviewStatus
 } from "../../../../generated/graphqlHooks";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
@@ -129,8 +129,8 @@ const QuestionListItem: React.FC<Props> = ({
       variables: {
         questionId: id,
         reviewStatus: currentStatus
-          ? QuestionReviewStatus.Publish
-          : QuestionReviewStatus.Archive
+          ? ReviewStatus.Publish
+          : ReviewStatus.Archive
       }
     });
   };
@@ -139,8 +139,8 @@ const QuestionListItem: React.FC<Props> = ({
       variables: {
         questionId: id,
         reviewStatus: currentStatus
-          ? QuestionReviewStatus.Review
-          : QuestionReviewStatus.Publish
+          ? ReviewStatus.Review
+          : ReviewStatus.Publish
       }
     });
   };
@@ -277,8 +277,8 @@ const QuestionListItem: React.FC<Props> = ({
               {question.content}
             </Typography>
             <Box className={classes.questionActionBox}>
-              {(question.reviewStatus === QuestionReviewStatus.Publish ||
-                question.reviewStatus === QuestionReviewStatus.Archive) && (
+              {(question.reviewStatus === ReviewStatus.Publish ||
+                question.reviewStatus === ReviewStatus.Archive) && (
                 <QuestionToggleButton
                   className="questionHover"
                   id={question.id}
@@ -297,7 +297,7 @@ const QuestionListItem: React.FC<Props> = ({
                   handleToggle={handleStarClick}
                 />
               )}
-              {question.reviewStatus === QuestionReviewStatus.Publish && (
+              {question.reviewStatus === ReviewStatus.Publish && (
                 <QuestionToggleButton
                   className="questionHover"
                   id={question.id}
@@ -314,13 +314,13 @@ const QuestionListItem: React.FC<Props> = ({
                 />
               )}
               {data?.eventById.moderation &&
-                (question.reviewStatus === QuestionReviewStatus.Publish ||
-                  question.reviewStatus === QuestionReviewStatus.Review) && (
+                (question.reviewStatus === ReviewStatus.Publish ||
+                  question.reviewStatus === ReviewStatus.Review) && (
                   <QuestionToggleButton
                     className="questionHover"
                     id={question.id}
                     status={
-                      question.reviewStatus === QuestionReviewStatus.Publish
+                      question.reviewStatus === ReviewStatus.Publish
                     }
                     onTitle={formatMessage({
                       id: "Unpublish",
@@ -336,13 +336,13 @@ const QuestionListItem: React.FC<Props> = ({
                     handleToggle={handlePublishClick}
                   />
                 )}
-              {(question.reviewStatus === QuestionReviewStatus.Publish ||
-                question.reviewStatus === QuestionReviewStatus.Archive) && (
+              {(question.reviewStatus === ReviewStatus.Publish ||
+                question.reviewStatus === ReviewStatus.Archive) && (
                 <QuestionToggleButton
                   className="questionHover"
                   id={question.id}
                   status={
-                    question.reviewStatus === QuestionReviewStatus.Archive
+                    question.reviewStatus === ReviewStatus.Archive
                   }
                   onTitle={formatMessage({
                     id: "Unarchive",

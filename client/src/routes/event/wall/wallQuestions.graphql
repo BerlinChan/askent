@@ -17,14 +17,11 @@ query WallQuestionsByEvent(
   $eventId: ID!
   $star: Boolean
   $pagination: PaginationInputType!
-  $orderBy: QuestionOrderByInput
-) {
-  wallQuestionsByEvent(
-    eventId: $eventId
-    star: $star
-    pagination: $pagination
-    orderBy: $orderBy
-  ) @connection(key: "wallQuestionsByEvent", filter: ["eventId"]) {
+) # $orderBy: QuestionOrderByInput
+{
+  wallQuestionsByEvent(eventId: $eventId, star: $star, pagination: $pagination)
+    # orderBy: $orderBy
+    @connection(key: "wallQuestionsByEvent", filter: ["eventId"]) {
     ...QuestionPagedFields
     list {
       ...WallQuestionFields

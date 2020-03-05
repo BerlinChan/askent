@@ -20,7 +20,6 @@ import {
   useLiveQuestionRemovedSubscription,
   LiveQuestionsByEventDocument,
   RoleName,
-  OrderByArg
 } from "../../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
 import Logo from "../../../../components/Logo";
@@ -70,12 +69,12 @@ const LiveQuestions: React.FC<Props> = ({
     liveQuestionsByEventLazyQuery({
       variables: {
         eventId: id as string,
-        orderBy:
-          tabIndex === 0
-            ? { createdAt: OrderByArg.Desc } // TODO: cant orderBy voteCount
-            : tabIndex === 0
-            ? { createdAt: OrderByArg.Desc }
-            : undefined,
+        // orderBy:
+        //   tabIndex === 0
+        //     ? { createdAt: OrderByArg.Desc } // TODO: cant orderBy voteCount
+        //     : tabIndex === 0
+        //     ? { createdAt: OrderByArg.Desc }
+        //     : undefined,
         pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
       }
     });

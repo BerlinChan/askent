@@ -16,28 +16,28 @@ export const User = objectType({
     t.list.field('roles', {
       type: 'Role',
       async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findOne({ where: { id } })
+        const user = await ctx.db.User.findByPk(id)
         return user.getRoles()
       },
     })
     t.list.field('events', {
       type: 'Event',
       async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findOne({ where: { id } })
+        const user = await ctx.db.User.findByPk(id)
         return user.getEvents()
       },
     })
     t.list.field('questions', {
       type: 'Question',
       async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findOne({ where: { id } })
+        const user = await ctx.db.User.findByPk(id)
         return user.getQuestions()
       },
     })
     t.list.field('votedQuestions', {
       type: 'Question',
       async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findOne({ where: { id } })
+        const user = await ctx.db.User.findByPk(id)
         return user.getVotedQuestions()
       },
     })
@@ -79,11 +79,7 @@ export const userQuery = extendType({
       type: 'User',
       description: 'Query my user info.',
       resolve: (root, args, ctx) => {
-        return ctx.db.User.findOne({
-          where: {
-            id: getAuthedUser(ctx)?.id as string,
-          },
-        })
+        return ctx.db.User.findByPk(getAuthedUser(ctx)?.id as string)
       },
     })
     t.field('checkEmailExist', {
@@ -201,7 +197,7 @@ export const userMutation = extendType({
       resolve: async (root, { input }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
         await ctx.db.User.update(input, { where: { id: userId } })
-        const user = await ctx.db.User.findOne({ where: { id: userId } })
+        const user = await ctx.db.User.findByPk(userId)
 
         return user
       },

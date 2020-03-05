@@ -4,7 +4,6 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import {
   useEventsByMeQuery,
-  OrderByArg
 } from "../../../generated/graphqlHooks";
 import CreateEventDialog from "./CreateEventDialog";
 import EventList from "./EventList";
@@ -34,7 +33,7 @@ const Events: React.FC<Props> = ({ searchString }) => {
   const eventsByMeQueryResult = useEventsByMeQuery({
     variables: {
       searchString,
-      orderBy: { createdAt: OrderByArg.Desc },
+      // orderBy: { createdAt: OrderByArg.Desc },
       pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
     }
   });

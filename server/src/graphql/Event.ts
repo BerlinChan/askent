@@ -25,21 +25,21 @@ export const Event = objectType({
     t.field('owner', {
       type: 'User',
       async resolve({ id }, args, ctx) {
-        const event = await ctx.db.Event.findOne({ where: { id } })
+        const event = await ctx.db.Event.findByPk(id)
         return event.getOwner()
       },
     })
     t.list.field('audiences', {
       type: 'User',
       async resolve({ id }, args, ctx) {
-        const event = await ctx.db.Event.findOne({ where: { id } })
+        const event = await ctx.db.Event.findByPk(id)
         return event.getAudiences()
       },
     })
     t.list.field('questions', {
       type: 'User',
       async resolve({ id }, args, ctx) {
-        const event = await ctx.db.Event.findOne({ where: { id } })
+        const event = await ctx.db.Event.findByPk(id)
         return event.getQuestions()
       },
     })
@@ -65,9 +65,7 @@ export const eventQuery = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: (root, { eventId }, ctx) => {
-        return ctx.db.Event.findOne({
-          where: { id: eventId },
-        })
+        return ctx.db.Event.findByPk(eventId)
       },
     })
     t.field('eventsByMe', {
@@ -137,10 +135,8 @@ export const eventQuery = extendType({
       args: { eventId: idArg({ required: true }) },
       resolve: async (root, { eventId }, ctx) => {
         const audienceId = getAuthedUser(ctx)?.id as string
-        const event = await ctx.db.Event.findOne({ where: { id: eventId } })
-        const audience = await ctx.db.User.findOne({
-          where: { id: audienceId },
-        })
+        const event = await ctx.db.Event.findByPk(eventId)
+        const audience = await ctx.db.User.findByPk(audienceId)
 
         return event.hasAudience(audience)
       },
@@ -164,7 +160,7 @@ export const eventMutation = extendType({
           throw new Error(`Code "${code}" has already exist.`)
         }
         const userId = getAuthedUser(ctx)?.id as string
-        const owner = await ctx.db.User.findOne({ where: { id: userId } })
+        const owner = await ctx.db.User.findByPk(userId)
         const event = await ctx.db.Event.create({ code, name, startAt, endAt })
         await event.setOwner(owner)
 
@@ -182,8 +178,7 @@ export const eventMutation = extendType({
         moderation: booleanArg(),
       },
       resolve: async (root, args, ctx) => {
-        const findEvent = await ctx.db.Event.findOne({
-          where: { id: args.eventId },
+        const findEvent = await ctx.db.Event.findByPk(args.eventId, {
           attributes: ['code'],
         })
         if (
@@ -204,9 +199,7 @@ export const eventMutation = extendType({
         await ctx.db.Event.update(eventData, {
           where: { id: args.eventId },
         })
-        const updatedEvent = await ctx.db.Event.findOne({
-          where: { id: args.eventId },
-        })
+        const updatedEvent = await ctx.db.Event.findByPk(args.eventId)
 
         ctx.pubsub.publish('EVENT_UPDATED', {
           eventId: args.eventId,
@@ -234,8 +227,8 @@ export const eventMutation = extendType({
       },
       resolve: async (root, { eventId }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
-        const event = await ctx.db.Event.findOne({ where: { id: eventId } })
-        const audience = await ctx.db.User.findOne({ where: { id: userId } })
+        const event = await ctx.db.Event.findByPk(eventId)
+        const audience = await ctx.db.User.findByPk(userId)
         await event.addAudience(audience)
 
         ctx.pubsub.publish('EVENT_UPDATED', {

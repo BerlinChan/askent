@@ -16,13 +16,11 @@ fragment LiveQuestionFields on Question {
 query LiveQuestionsByEvent(
   $eventId: ID!
   $pagination: PaginationInputType!
-  $orderBy: QuestionOrderByInput
-) {
-  liveQuestionsByEvent(
-    eventId: $eventId
-    pagination: $pagination
-    orderBy: $orderBy
-  ) @connection(key: "liveQuestionsByEvent", filter: ["eventId"]) {
+) # $orderBy: QuestionOrderByInput
+{
+  liveQuestionsByEvent(eventId: $eventId, pagination: $pagination)
+    # orderBy: $orderBy
+    @connection(key: "liveQuestionsByEvent", filter: ["eventId"]) {
     ...QuestionPagedFields
     list {
       ...LiveQuestionFields
@@ -32,9 +30,9 @@ query LiveQuestionsByEvent(
 
 query QuestionsByMe(
   $pagination: PaginationInputType!
-  $orderBy: QuestionOrderByInput
-) {
-  questionsByMe(pagination: $pagination, orderBy: $orderBy) {
+) # $orderBy: QuestionOrderByInput
+{
+  questionsByMe(pagination: $pagination) {
     ...QuestionPagedFields
     list {
       ...LiveQuestionFields

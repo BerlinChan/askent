@@ -1,4 +1,4 @@
-import { objectType, extendType, stringArg } from 'nexus'
+import { objectType, extendType, stringArg } from './nexus'
 import { GameModelStatic } from '../models/Game'
 import { PlayerModelStatic } from '../models/Player'
 

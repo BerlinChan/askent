@@ -9,7 +9,7 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
   QuestionsByEventQuery,
-  QuestionReviewStatus
+  ReviewStatus
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import Confirm from "../../../../components/Confirm";
@@ -21,7 +21,7 @@ interface Props {
   updateCache: (
     cache: DataProxy,
     eventId: string,
-    reviewStatus: QuestionReviewStatus,
+    reviewStatus: ReviewStatus,
     data: QuestionsByEventQuery
   ) => void;
 }
@@ -55,7 +55,7 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
     await deleteAllReviewQuestionsMutation({
       variables: { eventId: id as string },
       update: (cache, mutationResult) => {
-        updateCache(cache, id as string, QuestionReviewStatus.Review, {
+        updateCache(cache, id as string, ReviewStatus.Review, {
           questionsByEvent: {
             offset: DEFAULT_PAGE_OFFSET,
             limit: DEFAULT_PAGE_LIMIT,
@@ -78,7 +78,7 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
     await publishAllReviewQuestionsMutation({
       variables: { eventId: id as string },
       update: (cache, mutationResult) => {
-        updateCache(cache, id as string, QuestionReviewStatus.Review, {
+        updateCache(cache, id as string, ReviewStatus.Review, {
           questionsByEvent: {
             offset: DEFAULT_PAGE_OFFSET,
             limit: DEFAULT_PAGE_LIMIT,

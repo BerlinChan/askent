@@ -31,14 +31,14 @@ export const Question = objectType({
     t.field('event', {
       type: 'Event',
       async resolve({ id }, args, ctx) {
-        const question = await ctx.db.Question.findOne({ where: { id } })
+        const question = await ctx.db.Question.findByPk(id)
         return question.getEvent()
       },
     })
     t.field('author', {
       type: 'User',
       async resolve({ id }, args, ctx) {
-        const question = await ctx.db.Question.findOne({ where: { id } })
+        const question = await ctx.db.Question.findByPk(id)
         return question.getAuthor()
       },
     })
@@ -50,7 +50,7 @@ export const Question = objectType({
     })
     t.int('voteCount', {
       async resolve({ id }, _args, ctx) {
-        const question = await ctx.db.Question.findOne({ where: { id } })
+        const question = await ctx.db.Question.findByPk(id)
         return question.countVotedUsers()
       },
     })
@@ -62,7 +62,7 @@ export const Question = objectType({
     // t.list.field('votedUsers', {
     //   type: 'User',
     //   resolve: async (root, args, ctx) => {
-    //     const question = await ctx.db.Question.findOne({ where: { id: root.id } })
+    //     const question = await ctx.db.Question.findByPk(root.id)
     //     return question.getVotedUsers()
     //   },
     // })
@@ -83,17 +83,35 @@ export const questionQuery = extendType({
       type: 'QuestionPaged',
       args: {
         eventId: idArg({ required: true }),
+        reviewStatus: arg({ type: 'ReviewStatus', list: true }),
+        searchString: stringArg(),
         pagination: arg({ type: 'PaginationInputType', required: true }),
-        // TODO: where: arg({ type: 'QuestionWhereInput' }),
         // TODO: orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
-      resolve: async (root, { eventId, pagination }, ctx) => {
+      resolve: async (
+        root,
+        { eventId, reviewStatus, searchString, pagination },
+        ctx,
+      ) => {
         const { offset, limit } = pagination
-        const totalCount = await ctx.db.Question.count({
-          where: { eventId },
-        })
+        const option = {
+          where: {
+            eventId,
+            [Op.and]: [
+              { [Op.or]: reviewStatus?.map(item => ({ reviewStatus: item })) },
+              {
+                [Op.or]: [
+                  { content: { [Op.substring]: searchString } },
+                  { '$author.name$': { [Op.substring]: searchString } },
+                ],
+              },
+            ],
+          },
+          include: searchString ? ['author'] : [],
+        }
+        const totalCount = await ctx.db.Question.count(option)
         const questions = await ctx.db.Question.findAll({
-          where: { eventId: eventId },
+          ...option,
           ...pagination,
         })
 
@@ -243,13 +261,10 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { eventId, content }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
-        const event = await ctx.db.Event.findOne({
-          where: { id: eventId },
+        const event = await ctx.db.Event.findByPk(eventId, {
           include: [{ association: 'owner', attributes: ['id'] }],
         })
-        const author = await ctx.db.User.findOne({
-          where: { id: userId },
-        })
+        const author = await ctx.db.User.findByPk(userId)
         const newQuestion = await ctx.db.Question.create({
           reviewStatus: event?.moderation
             ? ReviewStatus.Review
@@ -288,8 +303,7 @@ export const questionMutation = extendType({
         reviewStatus: arg({ type: 'ReviewStatus', required: true }),
       },
       resolve: async (root, { questionId, reviewStatus }, ctx) => {
-        const prevQuestion = await ctx.db.Question.findOne({
-          where: { id: questionId },
+        const prevQuestion = await ctx.db.Question.findByPk(questionId, {
           include: [
             {
               association: 'event',
@@ -311,9 +325,7 @@ export const questionMutation = extendType({
           ),
           { where: { id: questionId } },
         )
-        const updateQuestion = await ctx.db.Question.findOne({
-          where: { id: questionId },
-        })
+        const updateQuestion = await ctx.db.Question.findByPk(questionId)
 
         if (
           reviewStatus === ReviewStatus.Archive ||
@@ -377,8 +389,7 @@ export const questionMutation = extendType({
         content: stringArg({ required: true }),
       },
       resolve: async (root, { content, questionId }, ctx) => {
-        const question = await ctx.db.Question.findOne({
-          where: { id: questionId },
+        const question = await ctx.db.Question.findByPk(questionId, {
           attributes: ['id'],
           include: [
             { association: 'event', attributes: ['id'] },
@@ -387,9 +398,7 @@ export const questionMutation = extendType({
         })
 
         await ctx.db.Question.update({ content }, { where: { id: questionId } })
-        const updateQuestion = await ctx.db.Question.findOne({
-          where: { id: questionId },
-        })
+        const updateQuestion = await ctx.db.Question.findByPk(questionId)
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: question?.event?.id,
@@ -421,8 +430,7 @@ export const questionMutation = extendType({
         star: booleanArg({ required: true }),
       },
       resolve: async (root, { questionId, star }, ctx) => {
-        const question = await ctx.db.Question.findOne({
-          where: { id: questionId },
+        const question = await ctx.db.Question.findByPk(questionId, {
           attributes: ['id'],
           include: [
             { association: 'event', attributes: ['id'] },
@@ -431,9 +439,7 @@ export const questionMutation = extendType({
         })
 
         await ctx.db.Question.update({ star }, { where: { id: questionId } })
-        const updateQuestion = await ctx.db.Question.findOne({
-          where: { id: questionId },
-        })
+        const updateQuestion = await ctx.db.Question.findByPk(questionId)
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: question?.event?.id,
@@ -465,8 +471,7 @@ export const questionMutation = extendType({
         top: booleanArg({ required: true }),
       },
       resolve: async (root, { questionId, top }, ctx) => {
-        const question = await ctx.db.Question.findOne({
-          where: { id: questionId },
+        const question = await ctx.db.Question.findByPk(questionId, {
           attributes: ['id'],
           include: [{ association: 'event', attributes: ['id'] }],
         })
@@ -489,9 +494,7 @@ export const questionMutation = extendType({
         }
 
         await ctx.db.Question.update({ top }, { where: { id: questionId } })
-        const updateQuestion = await ctx.db.Question.findOne({
-          where: { id: questionId },
-        })
+        const updateQuestion = await ctx.db.Question.findByPk(questionId)
 
         const shouldPub = [updateQuestion].concat(prevTopQuestions)
         shouldPub.forEach((questionItem: QuestionModelStatic) =>
@@ -517,8 +520,7 @@ export const questionMutation = extendType({
         questionId: idArg({ required: true }),
       },
       resolve: async (root, { questionId }, ctx) => {
-        const question = await ctx.db.Question.findOne({
-          where: { id: questionId },
+        const question = await ctx.db.Question.findByPk(questionId, {
           attributes: ['id', 'reviewStatus'],
           include: [
             { association: 'event', attributes: ['id'] },
@@ -591,8 +593,7 @@ export const questionMutation = extendType({
         eventId: idArg({ required: true }),
       },
       resolve: async (root, { eventId }, ctx) => {
-        const event = await ctx.db.Event.findOne({
-          where: { id: eventId },
+        const event = await ctx.db.Event.findByPk(eventId, {
           attributes: ['id'],
           include: [
             {
@@ -670,9 +671,8 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { questionId }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
-        const user = await ctx.db.User.findOne({ where: { id: userId } })
-        const question = await ctx.db.Question.findOne({
-          where: { id: questionId },
+        const user = await ctx.db.User.findByPk(userId)
+        const question = await ctx.db.Question.findByPk(questionId, {
           include: [{ association: 'event', attributes: ['id'] }],
         })
 
@@ -701,9 +701,9 @@ export const questionMutation = extendType({
 
 async function getVoted(ctx: Context, questionId: string) {
   const userId = getAuthedUser(ctx)?.id as string
-  const question = await ctx.db.Question.findOne({ where: { id: questionId } })
+  const question = await ctx.db.Question.findByPk(questionId)
   if (!userId) return false
-  const user = await ctx.db.User.findOne({ where: { id: userId } })
+  const user = await ctx.db.User.findByPk(userId)
 
   return question.hasVotedUser(user)
 }

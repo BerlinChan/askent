@@ -1,6 +1,6 @@
 import { sign, verify } from 'jsonwebtoken'
 import { Context } from './context'
-import { RoleName } from '@prisma/client'
+import { RoleName } from './models/Role'
 
 export interface TokenPayload {
   id: string

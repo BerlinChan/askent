@@ -8,7 +8,7 @@ export const Player = objectType({
     t.list.field('games', {
       type: 'Game',
       resolve: async (root, args, ctx) => {
-        const player = await ctx.db.Player.findOne({ where: { id: root.id } })
+        const player = await ctx.db.Player.findByPk(root.id)
         return player.getGames()
       },
     })
@@ -37,7 +37,7 @@ export const playerMutation = extendType({
       },
       resolve: async (root, { name, gameId }, ctx, info) => {
         const player = await ctx.db.Player.create({ name })
-        const game = await ctx.db.Game.findOne({ where: { id: gameId } })
+        const game = await ctx.db.Game.findByPk(gameId)
         await player.addGame(game)
 
         return player

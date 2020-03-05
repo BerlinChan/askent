@@ -1,6 +1,2 @@
 dist/
 build/
-
-# prisma
-prisma/migrations/
-prisma/dev.db

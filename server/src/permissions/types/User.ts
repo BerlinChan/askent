@@ -1,23 +1,23 @@
 import { rule, or } from 'graphql-shield'
 import { getAuthedUser } from '../../utils'
-import { RoleName } from '@prisma/client'
+import { RoleName } from '../../models/Role'
 
 export const isAuthedAdmin = rule({ cache: 'contextual' })(
   (parent, args, ctx) => {
     const getUser = getAuthedUser(ctx)
-    return Boolean(getUser?.roles.includes(RoleName.ADMIN) && getUser?.id)
+    return Boolean(getUser?.roles.includes(RoleName.Admin) && getUser?.id)
   },
 )
 export const isAuthedAudience = rule({ cache: 'contextual' })(
   (parent, args, ctx) => {
     const getUser = getAuthedUser(ctx)
-    return Boolean(getUser?.roles.includes(RoleName.AUDIENCE) && getUser?.id)
+    return Boolean(getUser?.roles.includes(RoleName.Audience) && getUser?.id)
   },
 )
 export const isAuthedWall = rule({ cache: 'contextual' })(
   (parent, args, ctx) => {
     const getUser = getAuthedUser(ctx)
-    return Boolean(getUser?.roles.includes(RoleName.WALL) && getUser?.id)
+    return Boolean(getUser?.roles.includes(RoleName.Wall) && getUser?.id)
   },
 )
 

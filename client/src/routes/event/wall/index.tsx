@@ -15,8 +15,7 @@ import {
   useWallQuestionAddedSubscription,
   useWallQuestionUpdatedSubscription,
   useWallQuestionRemovedSubscription,
-  RoleName,
-  OrderByArg
+  RoleName
 } from "../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
@@ -148,8 +147,8 @@ const EventWall: React.FC<Props> = () => {
     wallQuestionsByEventLazyQuery({
       variables: {
         eventId: id as string,
-        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-        orderBy: { createdAt: OrderByArg.Desc }
+        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
+        // orderBy: { createdAt: OrderByArg.Desc }
       }
     });
 
