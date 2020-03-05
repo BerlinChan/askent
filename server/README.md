@@ -10,8 +10,6 @@ yarn generate
 yarn dev
 ```
 
-其他 script 请参照 [GraphQL Apollo Server Example](https://github.com/prisma/prisma-examples/tree/prisma2/typescript/graphql-apollo-server) 的说明
-
 ## TODO
 
 - [ ] Build for production
