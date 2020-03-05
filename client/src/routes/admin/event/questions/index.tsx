@@ -14,7 +14,7 @@ import {
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument,
   RoleName,
-  ReviewStatus,
+  ReviewStatus
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
@@ -130,7 +130,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       query: QuestionsByEventDocument,
       variables: {
         eventId,
-        where: { reviewStatus }
+        reviewStatus: [reviewStatus]
       },
       data
     });

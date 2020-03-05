@@ -32,7 +32,7 @@ query QuestionsByEvent(
     pagination: $pagination
   )
     # orderBy: $orderBy
-    @connection(key: "questionsByEvent", filter: ["eventId", "where"]) {
+    @connection(key: "questionsByEvent", filter: ["eventId", "reviewStatus"]) {
     ...QuestionPagedFields
     list {
       ...QuestionFields
