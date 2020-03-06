@@ -151,7 +151,8 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       query: QuestionsByEventDocument,
       variables: {
         eventId,
-        reviewStatus: [reviewStatus]
+        reviewStatus: [reviewStatus],
+        searchString: ""
       },
       data
     });
