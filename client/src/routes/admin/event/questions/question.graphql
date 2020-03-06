@@ -92,7 +92,5 @@ subscription QuestionUpdated($eventId: ID!, $role: RoleName!) {
 }
 
 subscription QuestionRemoved($eventId: ID!, $role: RoleName!) {
-  questionRemoved(eventId: $eventId, role: $role) {
-    ...QuestionFields
-  }
+  questionRemoved(eventId: $eventId, role: $role)
 }

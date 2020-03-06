@@ -33,7 +33,9 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
         ) {
           switch (role) {
             case RoleName.Admin:
-              return id === questionEventOwnerId
+              if (toRoles.includes(RoleName.Admin)) {
+                return id === questionEventOwnerId
+              }
             case RoleName.Audience:
               if (toRoles.includes(AudienceRole.All)) {
                 return true
@@ -44,7 +46,9 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
                 return id === authorId
               }
             case RoleName.Wall:
-              return questionAdded.reviewStatus === ReviewStatus.Publish
+              if (toRoles.includes(RoleName.Wall)) {
+                return questionAdded.reviewStatus === ReviewStatus.Publish
+              }
             default:
               return false
           }
@@ -77,6 +81,10 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
           roles.includes(role)
         ) {
           switch (role) {
+            case RoleName.Admin:
+              if (toRoles.includes(RoleName.Admin)) {
+                return true
+              }
             case RoleName.Audience:
               if (toRoles.includes(AudienceRole.All)) {
                 return true
@@ -86,8 +94,12 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
               } else if (toRoles.includes(AudienceRole.OnlyAuthor)) {
                 return id === authorId
               }
+            case RoleName.Wall:
+              if (toRoles.includes(RoleName.Wall)) {
+                return true
+              }
             default:
-              return true
+              return false
           }
         } else {
           return false
@@ -100,7 +112,7 @@ export const questionUpdatedSubscription = subscriptionField<'questionUpdated'>(
 export const questionRemovedSubscription = subscriptionField<'questionRemoved'>(
   'questionRemoved',
   {
-    type: 'Question',
+    type: 'ID',
     args: {
       eventId: idArg({ required: true }),
       role: arg({ type: 'RoleName', required: true }),
@@ -118,6 +130,10 @@ export const questionRemovedSubscription = subscriptionField<'questionRemoved'>(
           roles.includes(role)
         ) {
           switch (role) {
+            case RoleName.Admin:
+              if (toRoles.includes(RoleName.Admin)) {
+                return true
+              }
             case RoleName.Audience:
               if (toRoles.includes(AudienceRole.All)) {
                 return true
@@ -127,8 +143,12 @@ export const questionRemovedSubscription = subscriptionField<'questionRemoved'>(
               } else if (toRoles.includes(AudienceRole.OnlyAuthor)) {
                 return id === authorId
               }
+            case RoleName.Wall:
+              if (toRoles.includes(RoleName.Wall)) {
+                return true
+              }
             default:
-              return true
+              return false
           }
         } else {
           return false

@@ -17,7 +17,7 @@ import { RoleName } from '../models/Role'
 
 export const ReviewStatusEnum = enumType({
   name: 'ReviewStatus',
-  members: ReviewStatus,
+  members: Object.values(ReviewStatus),
 })
 export const Question = objectType({
   name: 'Question',
@@ -325,7 +325,7 @@ export const questionMutation = extendType({
                 AudienceRole.ExcludeAuthor,
                 RoleName.Wall,
               ],
-              questionRemoved: updateQuestion,
+              questionRemoved: questionId,
             })
             // update for OnlyAuthor
             ctx.pubsub.publish('QUESTION_UPDATED', {
@@ -385,7 +385,7 @@ export const questionMutation = extendType({
           eventId: prevQuestion?.eventId,
           authorId: prevQuestion?.authorId,
           toRoles: [RoleName.Admin],
-          questionRemoved: prevQuestion,
+          questionRemoved: questionId,
         })
         ctx.pubsub.publish('QUESTION_ADDED', {
           eventId: prevQuestion?.eventId,
@@ -541,9 +541,8 @@ export const questionMutation = extendType({
               : question.reviewStatus === ReviewStatus.Archive
               ? [RoleName.Admin]
               : [],
-          questionRemoved: question,
+          questionRemoved: questionId,
         })
-        console.log(1, question)
 
         return questionId
       },
@@ -557,14 +556,17 @@ export const questionMutation = extendType({
       resolve: async (root, { eventId }, ctx) => {
         const shouldDelete = await ctx.db.Question.findAll({
           where: { eventId, reviewStatus: ReviewStatus.Review },
-          attributes: ['id', 'reviewStatus'],
+          attributes: ['id', 'authorId'],
         })
         const count = await ctx.db.Question.destroy({
           where: { eventId, reviewStatus: ReviewStatus.Review },
         })
 
+        // TODO: replace by deleteAllReviewQuestions pubsub event
         shouldDelete.forEach(
-          (delQuestion: QuestionModelStatic & { authorId: string }) =>
+          (
+            delQuestion: QuestionModelStatic & { id: string; authorId: string },
+          ) =>
             ctx.pubsub.publish('QUESTION_REMOVED', {
               eventId,
               authorId: delQuestion?.authorId,
@@ -573,7 +575,7 @@ export const questionMutation = extendType({
                 RoleName.Audience,
                 AudienceRole.OnlyAuthor,
               ],
-              questionRemoved: delQuestion,
+              questionRemoved: delQuestion.id,
             }),
         )
 
@@ -588,21 +590,15 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { eventId }, ctx) => {
         const event = await ctx.db.Event.findByPk(eventId, {
-          attributes: ['id'],
+          attributes: ['id', 'ownerId'],
           include: [
-            { association: 'owner', attributes: ['id'] },
-            { association: 'questions' },
+            {
+              association: 'questions',
+              where: { reviewStatus: ReviewStatus.Review },
+            },
           ],
         })
-        console.log(1, event)
-        const shouldUpdate = event.questions.map(
-          (questionItem: QuestionModelStatic) => ({
-            ...questionItem,
-            reviewStatus: ReviewStatus.Publish,
-          }),
-        )
-        console.log(2, shouldUpdate)
-        const count = await ctx.db.Question.update(
+        const [count] = await ctx.db.Question.update(
           { reviewStatus: ReviewStatus.Publish },
           {
             where: {
@@ -611,13 +607,19 @@ export const questionMutation = extendType({
             },
           },
         )
-        console.log(3, count)
 
-        shouldUpdate.forEach(
-          (questionItem: QuestionModelStatic & { authorId: string }) => {
+        event.questions.forEach(
+          (
+            questionItem: QuestionModelStatic & {
+              id: string
+              authorId: string
+              reviewStatus: ReviewStatus
+            },
+          ) => {
+            questionItem.reviewStatus = ReviewStatus.Publish
             ctx.pubsub.publish('QUESTION_ADDED', {
               eventId,
-              questionEventOwnerId: event?.owner?.id,
+              questionEventOwnerId: event?.ownerId,
               authorId: questionItem?.authorId,
               toRoles: [
                 RoleName.Audience,
@@ -637,11 +639,11 @@ export const questionMutation = extendType({
               eventId,
               authorId: questionItem?.authorId,
               toRoles: [RoleName.Admin],
-              questionRemoved: questionItem,
+              questionRemoved: questionItem.id,
             })
             ctx.pubsub.publish('QUESTION_ADDED', {
               eventId,
-              questionEventOwnerId: event?.owner?.id,
+              questionEventOwnerId: event?.ownerId,
               authorId: questionItem?.authorId,
               toRoles: [RoleName.Admin],
               questionAdded: questionItem,

@@ -137,7 +137,7 @@ const LiveQuestions: React.FC<Props> = ({
             totalCount: prev.liveQuestionsByEvent.totalCount - 1,
             list: prev.liveQuestionsByEvent.list.filter(
               preQuestion =>
-                subscriptionData.data?.questionRemoved.id !== preQuestion.id
+                subscriptionData.data?.questionRemoved !== preQuestion.id
             )
           }
         });

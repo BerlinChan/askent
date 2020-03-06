@@ -42,7 +42,5 @@ subscription WallQuestionUpdated($eventId: ID!, $role: RoleName!) {
 }
 
 subscription WallQuestionRemoved($eventId: ID!, $role: RoleName!) {
-  questionRemoved(eventId: $eventId, role: $role) {
-    ...WallQuestionFields
-  }
+  questionRemoved(eventId: $eventId, role: $role) 
 }

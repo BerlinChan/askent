@@ -126,7 +126,7 @@ const EventWall: React.FC<Props> = () => {
               ...prev.wallQuestionsByEvent,
               totalCount: prev.wallQuestionsByEvent.totalCount - 1,
               list: prev.wallQuestionsByEvent.list.filter(
-                preQuestion => questionRemoved.id !== preQuestion.id
+                preQuestion => questionRemoved !== preQuestion.id
               )
             }
           });

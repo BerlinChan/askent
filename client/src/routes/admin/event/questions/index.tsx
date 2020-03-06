@@ -105,6 +105,27 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   });
 
   // subscriptions
+  const getReviewStatusById = (id: string): ReviewStatus | undefined => {
+    if (
+      questionsByEventQueryReview.data?.questionsByEvent.list.find(
+        item => item.id === id
+      )
+    ) {
+      return ReviewStatus.Review;
+    } else if (
+      questionsByEventQuery.data?.questionsByEvent.list.find(
+        item => item.id === id
+      )
+    ) {
+      return ReviewStatus.Publish;
+    } else if (
+      questionsByEventQueryArchive.data?.questionsByEvent.list.find(
+        item => item.id === id
+      )
+    ) {
+      return ReviewStatus.Archive;
+    }
+  };
   const getPrev = (
     reviewStatus: ReviewStatus
   ): QuestionsByEventQuery | undefined => {
@@ -167,19 +188,22 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRemoved) {
         const { questionRemoved } = subscriptionData.data;
-        const prev = getPrev(questionRemoved.reviewStatus);
+        const reviewStatus = getReviewStatusById(questionRemoved);
+        if (reviewStatus) {
+          const prev = getPrev(reviewStatus);
 
-        if (prev) {
-          // remove
-          updateCache(client, id as string, questionRemoved.reviewStatus, {
-            questionsByEvent: {
-              ...prev.questionsByEvent,
-              totalCount: prev.questionsByEvent.totalCount - 1,
-              list: prev.questionsByEvent.list.filter(
-                preQuestion => questionRemoved.id !== preQuestion.id
-              )
-            }
-          });
+          if (prev) {
+            // remove
+            updateCache(client, id as string, reviewStatus, {
+              questionsByEvent: {
+                ...prev.questionsByEvent,
+                totalCount: prev.questionsByEvent.totalCount - 1,
+                list: prev.questionsByEvent.list.filter(
+                  preQuestion => questionRemoved !== preQuestion.id
+                )
+              }
+            });
+          }
         }
       }
     }

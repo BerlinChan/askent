@@ -8,7 +8,7 @@ export enum AudienceRole {
 }
 export const RoleNameEnum = enumType({
   name: 'RoleName',
-  members: RoleName,
+  members: Object.values(RoleName),
 })
 export const Role = objectType({
   name: 'Role',
