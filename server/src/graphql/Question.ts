@@ -27,6 +27,7 @@ export const Question = objectType({
     t.field('reviewStatus', { type: 'ReviewStatus' })
     t.boolean('star')
     t.boolean('top')
+    t.int('voteUpCount')
 
     t.field('event', {
       type: 'Event',
@@ -52,22 +53,16 @@ export const Question = objectType({
         return getVoted(ctx, root.id)
       },
     })
-    t.int('voteCount', {
-      async resolve({ id }, _args, ctx) {
-        const question = await ctx.db.Question.findByPk(id)
-        return question.countVotedUsers()
-      },
-    })
 
     t.field('createdAt', { type: 'DateTime' })
     t.field('updatedAt', { type: 'DateTime' })
     t.field('deletedAt', { type: 'DateTime', nullable: true })
 
-    // t.list.field('votedUsers', {
+    // t.list.field('voteUpUsers', {
     //   type: 'User',
     //   resolve: async (root, args, ctx) => {
     //     const question = await ctx.db.Question.findByPk(root.id)
-    //     return question.getVotedUsers()
+    //     return question.getVoteUpUsers()
     //   },
     // })
   },
@@ -119,6 +114,11 @@ export const questionQuery = extendType({
         const questions = await ctx.db.Question.findAll({
           ...option,
           ...pagination,
+          order: [
+            ['top', 'DESC'],
+            ['voteUpCount', 'DESC'],
+            ['createdAt', 'DESC'],
+          ],
         })
 
         return {
@@ -209,7 +209,7 @@ export const questionQuery = extendType({
       },
       resolve: async (root, { eventId, star, pagination }, ctx) => {
         const { offset, limit } = pagination
-        const totalCount = await ctx.db.Question.count({
+        const option = {
           where: Object.assign(
             {
               eventId,
@@ -217,15 +217,10 @@ export const questionQuery = extendType({
             },
             typeof star === 'boolean' ? { star } : {},
           ),
-        })
+        }
+        const totalCount = await ctx.db.Question.count(option)
         const questions = await ctx.db.Question.findAll({
-          where: Object.assign(
-            {
-              eventId,
-              reviewStatus: ReviewStatus.Publish,
-            },
-            typeof star === 'boolean' ? { star } : {},
-          ),
+          ...option,
           ...pagination,
         })
 
@@ -654,7 +649,7 @@ export const questionMutation = extendType({
         return count
       },
     })
-    t.field('voteQuestion', {
+    t.field('voteUpQuestion', {
       type: 'Question',
       description: 'Vote a question.',
       args: {
@@ -666,10 +661,13 @@ export const questionMutation = extendType({
         const question = await ctx.db.Question.findByPk(questionId)
 
         if (await getVoted(ctx, questionId)) {
-          await question.removeVotedUser(user)
+          await question.removeVoteUpUser(user)
         } else {
-          await question.addVotedUser(user)
+          await question.addVoteUpUser(user)
         }
+        await question.update({
+          voteUpCount: await question.countVoteUpUsers(),
+        })
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: question?.eventId,
@@ -694,5 +692,5 @@ async function getVoted(ctx: Context, questionId: string) {
   if (!userId) return false
   const user = await ctx.db.User.findByPk(userId)
 
-  return question.hasVotedUser(user)
+  return question.hasVoteUpUser(user)
 }

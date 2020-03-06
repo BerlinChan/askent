@@ -175,7 +175,7 @@ const QuestionListItem: React.FC<Props> = ({ question }) => {
           />
           <Box color="inherit" className={classes.thumbUpBox}>
             <Typography color="inherit" className={classes.voteCount}>
-              {question.voteCount}
+              {question.voteUpCount}
             </Typography>
             <ThumbUpIcon color="inherit" className={classes.thumbUpIcon} />
           </Box>

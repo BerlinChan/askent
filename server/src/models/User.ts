@@ -21,7 +21,7 @@ export class User extends Model {
   public roles!: RoleModelStatic[]
   public events!: EventModelStatic[]
   public questions!: QuestionModelStatic[]
-  public votedQuestions!: QuestionModelStatic[]
+  public voteUpQuestions!: QuestionModelStatic[]
 
   public getVotedQuestions!: HasManyGetAssociationsMixin<QuestionModelStatic> // Note the null assertions!
 
@@ -66,12 +66,12 @@ User.hasMany(Question, { foreignKey: { name: 'authorId' } })
 Question.belongsTo(User, { foreignKey: { name: 'authorId' }, as: 'author' })
 
 User.belongsToMany(Question, {
-  through: 'usersVoteQuestions',
-  as: 'votedQuestions',
+  through: 'usersVoteUpQuestions',
+  as: 'voteUpQuestions',
 })
 Question.belongsToMany(User, {
-  through: 'usersVoteQuestions',
-  as: 'votedUsers',
+  through: 'usersVoteUpQuestions',
+  as: 'voteUpUsers',
 })
 
 User.belongsToMany(Event, {

@@ -189,7 +189,7 @@ const LiveQuestions: React.FC<Props> = ({
           liveQuestionsResult={liveQuestionsResult}
           sortComparator={
             tabIndex === 0
-              ? [R.descend(R.prop("voteCount"))]
+              ? [R.descend(R.prop("voteUpCount"))]
               : tabIndex === 1
               ? [R.descend(R.prop("createdAt"))]
               : undefined

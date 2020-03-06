@@ -190,7 +190,7 @@ const QuestionListItem: React.FC<Props> = ({
                 variant="body2"
                 color="inherit"
               >
-                {question.voteCount}
+                {question.voteUpCount}
               </Typography>
               <AccessTimeIcon style={{ fontSize: 12 }} />
               <Typography

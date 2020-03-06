@@ -6,7 +6,7 @@ fragment WallQuestionFields on Question {
   reviewStatus
   top
   star
-  voteCount
+  voteUpCount
   author {
     id
     name
@@ -16,9 +16,8 @@ fragment WallQuestionFields on Question {
 query WallQuestionsByEvent(
   $eventId: ID!
   $star: Boolean
-  $pagination: PaginationInputType!
-) # $orderBy: QuestionOrderByInput
-{
+  $pagination: PaginationInputType! # $orderBy: QuestionOrderByInput
+) {
   wallQuestionsByEvent(eventId: $eventId, star: $star, pagination: $pagination)
     # orderBy: $orderBy
     @connection(key: "wallQuestionsByEvent", filter: ["eventId"]) {
@@ -42,5 +41,5 @@ subscription WallQuestionUpdated($eventId: ID!, $role: RoleName!) {
 }
 
 subscription WallQuestionRemoved($eventId: ID!, $role: RoleName!) {
-  questionRemoved(eventId: $eventId, role: $role) 
+  questionRemoved(eventId: $eventId, role: $role)
 }

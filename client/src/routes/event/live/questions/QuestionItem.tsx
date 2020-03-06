@@ -26,7 +26,7 @@ import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
   MeQueryVariables,
-  useVoteQuestionMutation,
+  useVoteUpQuestionMutation,
   LiveQuestionFieldsFragment,
   useUpdateQuestionContentMutation,
   ReviewStatus
@@ -101,16 +101,16 @@ const QuestionItem: React.FC<Props> = ({
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [
-    voteQuestionMutation,
+    voteUpQuestionMutation,
     { loading: voteLoading }
-  ] = useVoteQuestionMutation();
+  ] = useVoteUpQuestionMutation();
   const [
     updateQuestionContentMutation,
     { loading: updateQuestionContentLoading }
   ] = useUpdateQuestionContentMutation();
 
   const handleThumbUpClick = (questionId: string) => {
-    voteQuestionMutation({ variables: { questionId } });
+    voteUpQuestionMutation({ variables: { questionId } });
   };
 
   return (
@@ -251,7 +251,7 @@ const QuestionItem: React.FC<Props> = ({
               onClick={() => handleThumbUpClick(question.id)}
             >
               <Typography color="inherit" className={classes.voteCount}>
-                {question.voteCount}
+                {question.voteUpCount}
               </Typography>
               <ThumbUpIcon color="inherit" className={classes.thumbUpIcon} />
             </Button>

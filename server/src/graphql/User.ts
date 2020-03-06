@@ -34,11 +34,11 @@ export const User = objectType({
         return user.getQuestions()
       },
     })
-    t.list.field('votedQuestions', {
+    t.list.field('voteUpQuestions', {
       type: 'Question',
       async resolve({ id }, args, ctx) {
         const user = await ctx.db.User.findByPk(id)
-        return user.getVotedQuestions()
+        return user.getVoteUpQuestions()
       },
     })
 

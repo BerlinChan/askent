@@ -3,7 +3,7 @@ import sequelize from '../db'
 import { UserModelStatic } from './User'
 import { EventModelStatic } from './Event'
 
-const { BOOLEAN, STRING, UUID, UUIDV1, ENUM } = DataTypes
+const { BOOLEAN, STRING, INTEGER, UUID, UUIDV1, ENUM } = DataTypes
 
 export enum ReviewStatus {
   Review = 'REVIEW',
@@ -17,10 +17,11 @@ export class Question extends Model {
   public reviewStatus!: ReviewStatus
   public star!: boolean
   public top!: boolean
+  public voteUpCount!: number
 
   public event!: EventModelStatic
   public author!: UserModelStatic
-  public votedUsers!: UserModelStatic[]
+  public voteUpUsers!: UserModelStatic[]
 
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
@@ -50,6 +51,11 @@ Question.init(
     top: {
       type: BOOLEAN,
       defaultValue: false,
+    },
+    voteUpCount: {
+      type: INTEGER,
+      defaultValue: 0,
+      allowNull: false,
     },
   },
   {
