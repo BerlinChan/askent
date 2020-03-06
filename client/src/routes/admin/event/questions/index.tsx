@@ -94,7 +94,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const questionsByEventQuerySearch = useQuestionsByEventQuery({
     variables: {
       eventId: id as string,
-      reviewStatus: [ReviewStatus.Archive],
+      reviewStatus: [ReviewStatus.Publish, ReviewStatus.Archive],
       searchString: searchState[0]?.value,
       // orderBy: { createdAt: OrderByArg.Desc },
       pagination: {

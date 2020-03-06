@@ -124,6 +124,7 @@ const QuestionList: React.FC<Props> = ({
         totalCount={orderList.length}
         endReached={loadMore}
         item={index => {
+          if (!orderList[index]) return <div />;
           return (
             <QuestionItem
               question={orderList[index]}

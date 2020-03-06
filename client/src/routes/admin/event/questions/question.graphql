@@ -21,7 +21,7 @@ fragment QuestionFields on Question {
 
 query QuestionsByEvent(
   $eventId: ID!
-  $reviewStatus: [ReviewStatus!]
+  $reviewStatus: [ReviewStatus!]!
   $searchString: String
   $pagination: PaginationInputType! # $orderBy: QuestionOrderByInput
 ) {
