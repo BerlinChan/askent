@@ -60,7 +60,7 @@
     ]
   },
   "devDependencies": {
-    "@formatjs/cli": "1.1.20",
+    "@formatjs/cli": "1.1.22",
     "@graphql-codegen/cli": "1.12.2",
     "@graphql-codegen/typescript-operations": "1.12.2",
     "@graphql-codegen/typescript-react-apollo": "1.12.2",
