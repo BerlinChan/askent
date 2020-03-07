@@ -196,8 +196,8 @@ export const userMutation = extendType({
       args: { input: arg({ type: 'UpdateUserInput', required: true }) },
       resolve: async (root, { input }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
-        await ctx.db.User.update(input, { where: { id: userId } })
         const user = await ctx.db.User.findByPk(userId)
+        await user.update(input)
 
         return user
       },

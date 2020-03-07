@@ -178,35 +178,28 @@ export const eventMutation = extendType({
         moderation: booleanArg(),
       },
       resolve: async (root, args, ctx) => {
-        const findEvent = await ctx.db.Event.findByPk(args.eventId, {
-          attributes: ['code'],
-        })
+        const event = await ctx.db.Event.findByPk(args.eventId)
         if (
           args.code &&
-          args.code !== findEvent?.code &&
+          args.code !== event?.code &&
           (await checkEventCodeExist(ctx, args.code))
         ) {
           throw new Error(`Code "${args.code}" has already exist.`)
         }
-        const eventData = {
+        await event.update({
           code: args?.code,
           name: args?.name,
           startAt: args?.startAt,
           endAt: args?.endAt,
           moderation: args?.moderation,
-        }
-
-        await ctx.db.Event.update(eventData, {
-          where: { id: args.eventId },
         })
-        const updatedEvent = await ctx.db.Event.findByPk(args.eventId)
 
         ctx.pubsub.publish('EVENT_UPDATED', {
           eventId: args.eventId,
-          eventUpdated: updatedEvent,
+          eventUpdated: event,
         })
 
-        return updatedEvent
+        return event
       },
     })
     t.field('deleteEvent', {

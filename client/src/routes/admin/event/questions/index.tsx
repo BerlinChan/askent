@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "space-between",
       alignItems: "center",
       flexWrap: "nowrap",
-      height: 38
     },
     gridItemPaper: {
       flex: 1,

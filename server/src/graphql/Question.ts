@@ -491,9 +491,8 @@ export const questionMutation = extendType({
         }
 
         await question.update({ top })
-        const updateQuestion = await ctx.db.Question.findByPk(questionId)
 
-        const shouldPub = [updateQuestion].concat(prevTopQuestions)
+        const shouldPub = [question].concat(prevTopQuestions)
         shouldPub.forEach((questionItem: QuestionModelStatic) =>
           ctx.pubsub.publish('QUESTION_UPDATED', {
             eventId: question?.eventId,
@@ -507,7 +506,7 @@ export const questionMutation = extendType({
           }),
         )
 
-        return updateQuestion
+        return question
       },
     })
     t.field('deleteQuestion', {

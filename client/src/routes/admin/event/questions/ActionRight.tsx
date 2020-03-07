@@ -13,6 +13,10 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       alignItems: "center"
     },
+    iconButton: {
+      width: 38,
+      height: 38
+    },
     searchInputRoot: {
       color: "inherit"
     },
@@ -109,11 +113,17 @@ const ActionRight: React.FC<Props> = ({ tabIndexState, searchState }) => {
             endAdornment: (
               <InputAdornment position="end">
                 {searchInput.active ? (
-                  <IconButton size="small" onClick={handleSearchClear}>
+                  <IconButton
+                    className={classes.iconButton}
+                    onClick={handleSearchClear}
+                  >
                     <ClearIcon color="inherit" fontSize="inherit" />
                   </IconButton>
                 ) : (
-                  <IconButton size="small" onClick={handleSearchFocus}>
+                  <IconButton
+                    className={classes.iconButton}
+                    onClick={handleSearchFocus}
+                  >
                     <SearchIcon color="inherit" fontSize="inherit" />
                   </IconButton>
                 )}
@@ -124,8 +134,8 @@ const ActionRight: React.FC<Props> = ({ tabIndexState, searchState }) => {
           onFocus={handleSearchFocus}
           onChange={handleSearchChange}
         />
-        <IconButton size="small">
-          <SortIcon fontSize="inherit" />
+        <IconButton className={classes.iconButton}>
+          <SortIcon color="inherit" fontSize="inherit" />
         </IconButton>
       </Box>
     </React.Fragment>
