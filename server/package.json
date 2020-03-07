@@ -31,7 +31,7 @@
     "@types/bcryptjs": "2.4.2",
     "@types/graphql-iso-date": "3.3.3",
     "@types/jsonwebtoken": "8.3.8",
-    "@types/node": "13.7.7",
+    "@types/node": "13.9.0",
     "@types/ramda": "types/npm-ramda#dist",
     "create-nexus-type": "1.1.7",
     "sequelize-cli": "5.5.1",
