@@ -79,7 +79,7 @@ export const eventQuery = extendType({
       resolve: async (root, { searchString, pagination }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
         const { limit, offset } = pagination
-        const eventsCount = await ctx.db.Event.count({
+        const option = {
           where: {
             ownerId: userId,
             [Op.or]: [
@@ -87,16 +87,16 @@ export const eventQuery = extendType({
               { code: { [Op.substring]: searchString } },
             ],
           },
-        })
+        }
+        const eventsCount = await ctx.db.Event.count(option)
         const events = await ctx.db.Event.findAll({
-          where: {
-            ownerId: userId,
-            [Op.or]: [
-              { name: { [Op.substring]: searchString } },
-              { code: { [Op.substring]: searchString } },
-            ],
-          },
+          ...option,
           ...pagination,
+          order: [
+            ['startAt', 'DESC'],
+            ['endAt', 'ASC'],
+          ],
+          group: ['eventId'],
         })
 
         return {

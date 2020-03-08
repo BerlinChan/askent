@@ -86,6 +86,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
   };
   const questionsByEventQuery = useQuestionsByEventQuery({
+    fetchPolicy: "network-only",
     variables: questionQueryVariables
   });
   const questionsByEventQueryReview = useQuestionsByEventQuery({
@@ -127,7 +128,24 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         const { questionAdded } = subscriptionData.data;
         const prevData = getPrevData(questionAdded.reviewStatus);
 
-        if (prevData) {
+        if (
+          prevData &&
+          // 在左侧 Review 列表中
+          (questionAdded.reviewStatus !== ReviewStatus.Review ||
+            // 在右侧列表中，判断是否匹配当前 filters
+            ((questionQueryVariables.filters as Array<string>).includes(
+              questionAdded.reviewStatus
+            ) &&
+              // 判断是否匹配当前 searchString
+              (!questionQueryVariables.searchString ||
+                questionAdded.content.includes(
+                  questionQueryVariables.searchString
+                ) ||
+                (questionAdded.author.name || "").includes(
+                  questionQueryVariables.searchString
+                ))))
+                // TODO: removed 是否需要添加这些判断
+        ) {
           // add
           updateCache(client, questionAdded.reviewStatus, {
             questionsByEvent: {
