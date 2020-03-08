@@ -21,21 +21,21 @@ fragment QuestionFields on Question {
 
 query QuestionsByEvent(
   $eventId: ID!
-  $reviewStatus: [ReviewStatus!]!
+  $filters: [QuestionFilter!]!
   $searchString: String
   $pagination: PaginationInputType!
   $order: QuestionOrder
 ) {
   questionsByEvent(
     eventId: $eventId
-    reviewStatus: $reviewStatus
+    filters: $filters
     searchString: $searchString
     pagination: $pagination
     order: $order
   )
     @connection(
       key: "questionsByEvent"
-      filter: ["eventId", "reviewStatus", "searchString", "order"]
+      filter: ["eventId", "filters", "searchString", "order"]
     ) {
     ...QuestionPagedFields
     list {

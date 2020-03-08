@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: 320,
       cursor: "pointer",
       height: "100%",
+      overflowX: "hidden",
       borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
       backgroundColor: theme.palette.background.paper,
       boxShadow: theme.shadows[1]
@@ -71,44 +72,32 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const questionFilterOptions: Array<{
-  label: React.ReactElement;
-  value: ReviewStatus | QuestionFilter;
-}> = [
-  {
-    label: <FormattedMessage id="Published" defaultMessage="Published" />,
-    value: ReviewStatus.Publish
-  },
-  {
-    label: <FormattedMessage id="Archived" defaultMessage="Archived" />,
-    value: ReviewStatus.Archive
-  },
-  {
-    label: <FormattedMessage id="Starred" defaultMessage="Starred" />,
-    value: QuestionFilter.Starred
+export const getQuestionFilterLabel = (
+  value: ReviewStatus | QuestionFilter
+) => {
+  switch (value) {
+    case ReviewStatus.Publish:
+      return <FormattedMessage id="Published" defaultMessage="Published" />;
+    case ReviewStatus.Archive:
+      return <FormattedMessage id="Archived" defaultMessage="Archived" />;
+    case QuestionFilter.Starred:
+      return <FormattedMessage id="Starred" defaultMessage="Starred" />;
   }
-];
-export const questionOrderOptions: Array<{
-  label: React.ReactElement;
-  value: QuestionOrder;
-}> = [
-  {
-    label: <FormattedMessage id="Popular" defaultMessage="Popular" />,
-    value: QuestionOrder.Popular
-  },
-  {
-    label: <FormattedMessage id="Recent" defaultMessage="Recent" />,
-    value: QuestionOrder.Recent
-  },
-  {
-    label: <FormattedMessage id="Oldest" defaultMessage="Oldest" />,
-    value: QuestionOrder.Oldest
+};
+export const getQuestionOrderLabel = (value: QuestionOrder) => {
+  switch (value) {
+    case QuestionOrder.Popular:
+      return <FormattedMessage id="Popular" defaultMessage="Popular" />;
+    case QuestionOrder.Recent:
+      return <FormattedMessage id="Recent" defaultMessage="Recent" />;
+    case QuestionOrder.Oldest:
+      return <FormattedMessage id="Oldest" defaultMessage="Oldest" />;
   }
-];
+};
 export type QuestionQueryStateType = {
-  filterOptionIndexes: Array<number>;
+  filterSelected: Array<QuestionFilter>;
   searchString: string;
-  orderOptionIndex: number;
+  orderSelected: QuestionOrder;
 };
 interface Props {
   questionQueryState: [
@@ -143,12 +132,12 @@ const ActionRight: React.FC<Props> = ({
   const handleFilterClose = () => {
     setFilterAnchorEl(null);
   };
-  const handleFilterOptionClick = (index: number) => {
+  const handleFilterOptionClick = (value: QuestionFilter) => {
     setQueryState({
       ...queryState,
-      filterOptionIndexes: queryState.filterOptionIndexes.includes(index)
-        ? queryState.filterOptionIndexes.filter(item => item !== index)
-        : queryState.filterOptionIndexes.concat([index])
+      filterSelected: queryState.filterSelected.includes(value)
+        ? queryState.filterSelected.filter(item => item !== value)
+        : queryState.filterSelected.concat([value])
     });
   };
 
@@ -172,10 +161,10 @@ const ActionRight: React.FC<Props> = ({
   const handleSortClose = () => {
     setSortAnchorEl(null);
   };
-  const handleSortOptionClick = (index: number) => {
+  const handleSortOptionClick = (value: QuestionOrder) => {
     setQueryState({
       ...queryState,
-      orderOptionIndex: index
+      orderSelected: value
     });
     setSortAnchorEl(null);
   };
@@ -186,15 +175,15 @@ const ActionRight: React.FC<Props> = ({
         <Typography className={classes.totalCount} color="textSecondary">
           {questionsQueryResult.data?.questionsByEvent.totalCount}
         </Typography>
-        {queryState.filterOptionIndexes.map(filterIndex => (
+        {queryState.filterSelected.map((selectedItem, index) => (
           <Chip
             className={classes.chip}
-            key={filterIndex}
+            key={index}
             size="small"
-            label={questionFilterOptions[filterIndex].label}
+            label={getQuestionFilterLabel(selectedItem)}
             onDelete={
-              queryState.filterOptionIndexes.length > 1
-                ? () => handleFilterOptionClick(filterIndex)
+              queryState.filterSelected.length > 1
+                ? () => handleFilterOptionClick(selectedItem)
                 : undefined
             }
           />
@@ -219,23 +208,27 @@ const ActionRight: React.FC<Props> = ({
                     className={classes.filterMenu}
                     autoFocusItem={Boolean(filterAnchorEl)}
                   >
-                    {questionFilterOptions.map((optionItem, index) => (
-                      <MenuItem
-                        key={index}
-                        disabled={
-                          queryState.filterOptionIndexes[0] === index &&
-                          queryState.filterOptionIndexes.length <= 1
-                        }
-                        onClick={e => handleFilterOptionClick(index)}
-                      >
-                        <Checkbox
-                          checked={queryState.filterOptionIndexes.includes(
-                            index
-                          )}
-                        />
-                        <ListItemText primary={optionItem.label} />
-                      </MenuItem>
-                    ))}
+                    {Object.values(QuestionFilter)
+                      .filter(item => item !== QuestionFilter.Review)
+                      .map((filterItem, index) => (
+                        <MenuItem
+                          key={index}
+                          disabled={
+                            queryState.filterSelected[0] === filterItem &&
+                            queryState.filterSelected.length <= 1
+                          }
+                          onClick={e => handleFilterOptionClick(filterItem)}
+                        >
+                          <Checkbox
+                            checked={queryState.filterSelected.includes(
+                              filterItem
+                            )}
+                          />
+                          <ListItemText
+                            primary={getQuestionFilterLabel(filterItem)}
+                          />
+                        </MenuItem>
+                      ))}
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
@@ -307,13 +300,13 @@ const ActionRight: React.FC<Props> = ({
           open={Boolean(sortAnchorEl)}
           onClose={handleSortClose}
         >
-          {questionOrderOptions.map((optionItem, index) => (
+          {Object.values(QuestionOrder).map((orderItem, index) => (
             <MenuItem
               key={index}
-              selected={queryState.orderOptionIndex === index}
-              onClick={e => handleSortOptionClick(index)}
+              selected={queryState.orderSelected === orderItem}
+              onClick={e => handleSortOptionClick(orderItem)}
             >
-              {optionItem.label}
+              {getQuestionOrderLabel(orderItem)}
             </MenuItem>
           ))}
         </Menu>

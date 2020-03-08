@@ -14,16 +14,13 @@ import {
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument,
   RoleName,
-  ReviewStatus
+  QuestionFilter,
+  QuestionOrder
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
-import ActionRight, {
-  QuestionQueryStateType,
-  questionFilterOptions,
-  questionOrderOptions
-} from "./ActionRight";
+import ActionRight, { QuestionQueryStateType } from "./ActionRight";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
 import { DataProxy } from "apollo-cache";
 
@@ -68,28 +65,23 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const { id } = useParams();
   const questionQueryState = React.useState<QuestionQueryStateType>({
-    filterOptionIndexes: [0],
+    filterSelected: [QuestionFilter.Publish],
     searchString: "",
-    orderOptionIndex: 0
+    orderSelected: QuestionOrder.Popular
   });
   const { data: eventData } = eventQuery;
   const questionQueryVariables = {
     eventId: id as string,
-    reviewStatus: questionQueryState[0].filterOptionIndexes
-      .filter(filterOptionIndex => filterOptionIndex < 2) // only ReviewStatus type
-      .map(
-        filterOptionIndex =>
-          questionFilterOptions[filterOptionIndex].value as ReviewStatus
-      ),
+    filters: questionQueryState[0].filterSelected,
     searchString: questionQueryState[0].searchString
       ? questionQueryState[0].searchString
       : undefined,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: questionOrderOptions[questionQueryState[0].orderOptionIndex].value
+    order: questionQueryState[0].orderSelected
   };
   const questionReviewQueryVariables = {
     eventId: id as string,
-    reviewStatus: [ReviewStatus.Review],
+    filters: [QuestionFilter.Review],
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
   };
   const questionsByEventQuery = useQuestionsByEventQuery({
@@ -101,10 +93,10 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
 
   // subscriptions
   const getPrevData = (
-    reviewStatus: ReviewStatus | null
+    filterString: string
   ): QuestionsByEventQuery | undefined => {
-    switch (reviewStatus) {
-      case ReviewStatus.Review:
+    switch (filterString) {
+      case QuestionFilter.Review as string:
         return questionsByEventQueryReview.data;
       default:
         return questionsByEventQuery.data;
@@ -112,7 +104,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   };
   const updateCache = (
     cache: DataProxy,
-    reviewStatus: ReviewStatus | null,
+    filterString: string,
     data: QuestionsByEventQuery
   ) => {
     cache.writeQuery<
@@ -121,7 +113,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     >({
       query: QuestionsByEventDocument,
       variables:
-        reviewStatus === ReviewStatus.Review
+        filterString === QuestionFilter.Review
           ? questionReviewQueryVariables
           : questionQueryVariables,
       data
@@ -159,11 +151,11 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRemoved) {
         const { questionRemoved } = subscriptionData.data;
-        const prevData = getPrevData(null);
+        const prevData = getPrevData("");
 
         if (prevData) {
           // remove
-          updateCache(client, null, {
+          updateCache(client, "", {
             questionsByEvent: {
               ...prevData.questionsByEvent,
               totalCount: prevData.questionsByEvent.totalCount - 1,
