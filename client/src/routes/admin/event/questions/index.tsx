@@ -19,7 +19,11 @@ import {
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
-import ActionRight from "./ActionRight";
+import ActionRight, {
+  QuestionQueryStateType,
+  questionFilterOptions,
+  questionOrderOptions
+} from "./ActionRight";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
 import { DataProxy } from "apollo-cache";
 
@@ -37,12 +41,15 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      flexWrap: "nowrap",
+      flexWrap: "nowrap"
     },
     gridItemPaper: {
       flex: 1,
       overflowX: "hidden",
       overflowY: "auto"
+    },
+    rightPaper: {
+      borderRadius: `0 ${theme.shape.borderRadius}px ${theme.shape.borderRadius}px`
     },
     moderationOffTips: {
       display: "flex",
@@ -60,87 +67,52 @@ interface Props {
 const Questions: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const { id } = useParams();
-  const tabIndexState = React.useState(0);
-  const searchState = React.useState({
-    value: "",
-    active: false
+  const questionQueryState = React.useState<QuestionQueryStateType>({
+    filterOptionIndexes: [0],
+    searchString: "",
+    orderOptionIndex: 0
   });
   const { data: eventData } = eventQuery;
+  const questionQueryVariables = {
+    eventId: id as string,
+    reviewStatus: questionQueryState[0].filterOptionIndexes
+      .filter(filterOptionIndex => filterOptionIndex < 2) // only ReviewStatus type
+      .map(
+        filterOptionIndex =>
+          questionFilterOptions[filterOptionIndex].value as ReviewStatus
+      ),
+    searchString: questionQueryState[0].searchString
+      ? questionQueryState[0].searchString
+      : undefined,
+    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+    order: questionOrderOptions[questionQueryState[0].orderOptionIndex].value
+  };
+  const questionReviewQueryVariables = {
+    eventId: id as string,
+    reviewStatus: [ReviewStatus.Review],
+    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
+  };
   const questionsByEventQuery = useQuestionsByEventQuery({
-    variables: {
-      eventId: id as string,
-      reviewStatus: [ReviewStatus.Publish],
-      // orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-    }
+    variables: questionQueryVariables
   });
   const questionsByEventQueryReview = useQuestionsByEventQuery({
-    variables: {
-      eventId: id as string,
-      reviewStatus: [ReviewStatus.Review],
-      // orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-    }
-  });
-  const questionsByEventQueryArchive = useQuestionsByEventQuery({
-    variables: {
-      eventId: id as string,
-      reviewStatus: [ReviewStatus.Archive],
-      // orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-    }
-  });
-  const questionsByEventQuerySearch = useQuestionsByEventQuery({
-    variables: {
-      eventId: id as string,
-      reviewStatus: [ReviewStatus.Publish, ReviewStatus.Archive],
-      searchString: searchState[0]?.value,
-      // orderBy: { createdAt: OrderByArg.Desc },
-      pagination: {
-        limit: DEFAULT_PAGE_LIMIT,
-        offset: DEFAULT_PAGE_OFFSET
-      }
-    }
+    variables: questionReviewQueryVariables
   });
 
   // subscriptions
-  const getReviewStatusById = (id: string): ReviewStatus | undefined => {
-    if (
-      questionsByEventQueryReview.data?.questionsByEvent.list.find(
-        item => item.id === id
-      )
-    ) {
-      return ReviewStatus.Review;
-    } else if (
-      questionsByEventQuery.data?.questionsByEvent.list.find(
-        item => item.id === id
-      )
-    ) {
-      return ReviewStatus.Publish;
-    } else if (
-      questionsByEventQueryArchive.data?.questionsByEvent.list.find(
-        item => item.id === id
-      )
-    ) {
-      return ReviewStatus.Archive;
-    }
-  };
-  const getPrev = (
-    reviewStatus: ReviewStatus
+  const getPrevData = (
+    reviewStatus: ReviewStatus | null
   ): QuestionsByEventQuery | undefined => {
     switch (reviewStatus) {
       case ReviewStatus.Review:
         return questionsByEventQueryReview.data;
-      case ReviewStatus.Publish:
+      default:
         return questionsByEventQuery.data;
-      case ReviewStatus.Archive:
-        return questionsByEventQueryArchive.data;
     }
   };
   const updateCache = (
     cache: DataProxy,
-    eventId: string,
-    reviewStatus: ReviewStatus,
+    reviewStatus: ReviewStatus | null,
     data: QuestionsByEventQuery
   ) => {
     cache.writeQuery<
@@ -148,11 +120,10 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       Omit<QuestionsByEventQueryVariables, "pagination">
     >({
       query: QuestionsByEventDocument,
-      variables: {
-        eventId,
-        reviewStatus: [reviewStatus],
-        searchString: ""
-      },
+      variables:
+        reviewStatus === ReviewStatus.Review
+          ? questionReviewQueryVariables
+          : questionQueryVariables,
       data
     });
   };
@@ -161,16 +132,16 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
         const { questionAdded } = subscriptionData.data;
-        const prev = getPrev(questionAdded.reviewStatus);
+        const prevData = getPrevData(questionAdded.reviewStatus);
 
-        if (prev) {
+        if (prevData) {
           // add
-          updateCache(client, id as string, questionAdded.reviewStatus, {
+          updateCache(client, questionAdded.reviewStatus, {
             questionsByEvent: {
-              ...prev.questionsByEvent,
-              totalCount: prev.questionsByEvent.totalCount + 1,
+              ...prevData.questionsByEvent,
+              totalCount: prevData.questionsByEvent.totalCount + 1,
               list: [questionAdded].concat(
-                prev.questionsByEvent.list.filter(
+                prevData.questionsByEvent.list.filter(
                   question => question.id !== questionAdded.id
                 )
               )
@@ -188,22 +159,19 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRemoved) {
         const { questionRemoved } = subscriptionData.data;
-        const reviewStatus = getReviewStatusById(questionRemoved);
-        if (reviewStatus) {
-          const prev = getPrev(reviewStatus);
+        const prevData = getPrevData(null);
 
-          if (prev) {
-            // remove
-            updateCache(client, id as string, reviewStatus, {
-              questionsByEvent: {
-                ...prev.questionsByEvent,
-                totalCount: prev.questionsByEvent.totalCount - 1,
-                list: prev.questionsByEvent.list.filter(
-                  preQuestion => questionRemoved !== preQuestion.id
-                )
-              }
-            });
-          }
+        if (prevData) {
+          // remove
+          updateCache(client, null, {
+            questionsByEvent: {
+              ...prevData.questionsByEvent,
+              totalCount: prevData.questionsByEvent.totalCount - 1,
+              list: prevData.questionsByEvent.list.filter(
+                preQuestion => questionRemoved !== preQuestion.id
+              )
+            }
+          });
         }
       }
     }
@@ -242,20 +210,14 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       <Grid item sm={6} className={classes.gridItem}>
         <Box className={classes.listActions}>
           <ActionRight
-            tabIndexState={tabIndexState}
-            searchState={searchState}
+            questionQueryState={questionQueryState}
+            questionsQueryResult={questionsByEventQuery}
           />
         </Box>
-        <Paper className={classes.gridItemPaper}>
+        <Paper className={classes.gridItemPaper + " " + classes.rightPaper}>
           <QuestionList
             eventQuery={eventQuery}
-            questionsByEventQuery={
-              searchState[0].active
-                ? questionsByEventQuerySearch
-                : tabIndexState[0] === 0
-                ? questionsByEventQuery
-                : questionsByEventQueryArchive
-            }
+            questionsByEventQuery={questionsByEventQuery}
           />
         </Paper>
       </Grid>

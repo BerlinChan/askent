@@ -14,6 +14,7 @@ import { ReviewStatus } from '../models/Question'
 import { Op } from 'sequelize'
 import { QuestionModelStatic } from '../models/Question'
 import { RoleName } from '../models/Role'
+import { QuestionOrderEnum } from './FilterOrder'
 
 export const ReviewStatusEnum = enumType({
   name: 'ReviewStatus',
@@ -85,11 +86,14 @@ export const questionQuery = extendType({
         reviewStatus: arg({ type: 'ReviewStatus', list: true, required: true }),
         searchString: stringArg(),
         pagination: arg({ type: 'PaginationInputType', required: true }),
-        // TODO: orderBy: arg({ type: 'QuestionOrderByInput' }),
+        order: arg({
+          type: 'QuestionOrder',
+          default: QuestionOrderEnum.Popular,
+        }),
       },
       resolve: async (
         root,
-        { eventId, reviewStatus, searchString, pagination },
+        { eventId, reviewStatus, searchString, pagination, order },
         ctx,
       ) => {
         const { offset, limit } = pagination
@@ -114,11 +118,26 @@ export const questionQuery = extendType({
         const questions = await ctx.db.Question.findAll({
           ...option,
           ...pagination,
-          order: [
-            ['top', 'DESC'],
-            ['voteUpCount', 'DESC'],
-            ['createdAt', 'DESC'],
-          ],
+          order:
+            order === QuestionOrderEnum.Popular
+              ? [
+                  ['top', 'DESC'],
+                  ['voteUpCount', 'DESC'],
+                  ['createdAt', 'DESC'],
+                ]
+              : order === QuestionOrderEnum.Recent
+              ? [
+                  ['top', 'DESC'],
+                  ['createdAt', 'DESC'],
+                  ['voteUpCount', 'DESC'],
+                ]
+              : order === QuestionOrderEnum.Oldest
+              ? [
+                  ['top', 'DESC'],
+                  ['createdAt', 'ASC'],
+                  ['voteUpCount', 'DESC'],
+                ]
+              : undefined,
         })
 
         return {

@@ -1,14 +1,53 @@
 import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { useIntl } from "react-intl";
-import { Box, IconButton, InputAdornment, TextField } from "@material-ui/core";
-import { SubTabs, SubTab } from "../../../../components/Tabs";
+import { useIntl, FormattedMessage } from "react-intl";
+import {
+  Box,
+  Chip,
+  Grow,
+  Paper,
+  Popper,
+  Menu,
+  MenuList,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Tooltip,
+  Typography,
+  ClickAwayListener
+} from "@material-ui/core";
+import { QueryResult } from "@apollo/react-common";
+import {
+  ReviewStatus,
+  QuestionFilter,
+  QuestionOrder,
+  QuestionsByEventQuery,
+  QuestionsByEventQueryVariables
+} from "../../../../generated/graphqlHooks";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import SortIcon from "@material-ui/icons/Sort";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    filterBox: {
+      display: "flex",
+      alignItems: "center",
+      width: 320,
+      cursor: "pointer",
+      height: "100%",
+      borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
+      backgroundColor: theme.palette.background.paper,
+      boxShadow: theme.shadows[1]
+    },
+    totalCount: { margin: theme.spacing(0, 1) },
+    chip: { marginRight: theme.spacing(1) },
+    filterMenu: {
+      width: 320
+    },
     searchAndSort: {
       display: "flex",
       alignItems: "center"
@@ -24,7 +63,7 @@ const useStyles = makeStyles((theme: Theme) =>
       transition: theme.transitions.create("width"),
       [theme.breakpoints.up("sm")]: {
         width: 50,
-        "&.active": {
+        "&:focus": {
           width: 100
         }
       }
@@ -32,70 +71,178 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+export const questionFilterOptions: Array<{
+  label: React.ReactElement;
+  value: ReviewStatus | QuestionFilter;
+}> = [
+  {
+    label: <FormattedMessage id="Published" defaultMessage="Published" />,
+    value: ReviewStatus.Publish
+  },
+  {
+    label: <FormattedMessage id="Archived" defaultMessage="Archived" />,
+    value: ReviewStatus.Archive
+  },
+  {
+    label: <FormattedMessage id="Starred" defaultMessage="Starred" />,
+    value: QuestionFilter.Starred
+  }
+];
+export const questionOrderOptions: Array<{
+  label: React.ReactElement;
+  value: QuestionOrder;
+}> = [
+  {
+    label: <FormattedMessage id="Popular" defaultMessage="Popular" />,
+    value: QuestionOrder.Popular
+  },
+  {
+    label: <FormattedMessage id="Recent" defaultMessage="Recent" />,
+    value: QuestionOrder.Recent
+  },
+  {
+    label: <FormattedMessage id="Oldest" defaultMessage="Oldest" />,
+    value: QuestionOrder.Oldest
+  }
+];
+export type QuestionQueryStateType = {
+  filterOptionIndexes: Array<number>;
+  searchString: string;
+  orderOptionIndex: number;
+};
 interface Props {
-  tabIndexState: [number, React.Dispatch<React.SetStateAction<number>>];
-  searchState: [
-    {
-      value: string;
-      active: boolean;
-    },
-    React.Dispatch<
-      React.SetStateAction<{
-        value: string;
-        active: boolean;
-      }>
-    >
+  questionQueryState: [
+    QuestionQueryStateType,
+    React.Dispatch<React.SetStateAction<QuestionQueryStateType>>
   ];
+  questionsQueryResult: QueryResult<
+    QuestionsByEventQuery,
+    QuestionsByEventQueryVariables
+  >;
 }
 
-const ActionRight: React.FC<Props> = ({ tabIndexState, searchState }) => {
+const ActionRight: React.FC<Props> = ({
+  questionQueryState,
+  questionsQueryResult
+}) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const [tabIndex, setTabIndex] = tabIndexState;
-  const [searchInput, setSearchInput] = searchState;
+  const [
+    filterAnchorEl,
+    setFilterAnchorEl
+  ] = React.useState<null | HTMLElement>(null);
   const searchRef = React.useRef<HTMLInputElement>(null);
+  const [sortAnchorEl, setSortAnchorEl] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [queryState, setQueryState] = questionQueryState;
 
-  const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setTabIndex(newValue);
+  const handleFilterOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+  };
+  const handleFilterOptionClick = (index: number) => {
+    setQueryState({
+      ...queryState,
+      filterOptionIndexes: queryState.filterOptionIndexes.includes(index)
+        ? queryState.filterOptionIndexes.filter(item => item !== index)
+        : queryState.filterOptionIndexes.concat([index])
+    });
   };
 
-  const handleSearchFocus = (
-    event:
-      | React.MouseEvent<HTMLButtonElement, MouseEvent>
-      | React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  const handleSearchClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     searchRef.current?.focus();
-    setSearchInput({ ...searchInput, active: true });
   };
   const handleSearchClear = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setSearchInput({ value: "", active: false });
+    setQueryState({ ...queryState, searchString: "" });
   };
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput({ ...searchInput, value: event.target.value });
+    setQueryState({ ...queryState, searchString: event.target.value });
+  };
+
+  const handleSortOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setSortAnchorEl(event.currentTarget);
+  };
+  const handleSortClose = () => {
+    setSortAnchorEl(null);
+  };
+  const handleSortOptionClick = (index: number) => {
+    setQueryState({
+      ...queryState,
+      orderOptionIndex: index
+    });
+    setSortAnchorEl(null);
   };
 
   return (
     <React.Fragment>
-      {searchInput.active ? (
-        <div />
-      ) : (
-        <SubTabs value={tabIndex} onChange={handleTabsChange}>
-          <SubTab
-            label={formatMessage({
-              id: "Live",
-              defaultMessage: "Live"
-            })}
+      <Box className={classes.filterBox} onClick={handleFilterOpen}>
+        <Typography className={classes.totalCount} color="textSecondary">
+          {questionsQueryResult.data?.questionsByEvent.totalCount}
+        </Typography>
+        {queryState.filterOptionIndexes.map(filterIndex => (
+          <Chip
+            className={classes.chip}
+            key={filterIndex}
+            size="small"
+            label={questionFilterOptions[filterIndex].label}
+            onDelete={
+              queryState.filterOptionIndexes.length > 1
+                ? () => handleFilterOptionClick(filterIndex)
+                : undefined
+            }
           />
-          <SubTab
-            label={formatMessage({
-              id: "Archive",
-              defaultMessage: "Archive"
-            })}
-          />
-        </SubTabs>
-      )}
+        ))}
+
+        <Popper
+          open={Boolean(filterAnchorEl)}
+          anchorEl={filterAnchorEl}
+          placement="bottom-start"
+          transition
+        >
+          {({ TransitionProps }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin: "left top"
+              }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={handleFilterClose}>
+                  <MenuList
+                    className={classes.filterMenu}
+                    autoFocusItem={Boolean(filterAnchorEl)}
+                  >
+                    {questionFilterOptions.map((optionItem, index) => (
+                      <MenuItem
+                        key={index}
+                        disabled={
+                          queryState.filterOptionIndexes[0] === index &&
+                          queryState.filterOptionIndexes.length <= 1
+                        }
+                        onClick={e => handleFilterOptionClick(index)}
+                      >
+                        <Checkbox
+                          checked={queryState.filterOptionIndexes.includes(
+                            index
+                          )}
+                        />
+                        <ListItemText primary={optionItem.label} />
+                      </MenuItem>
+                    ))}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </Box>
       <Box className={classes.searchAndSort}>
         <TextField
           inputRef={searchRef}
@@ -107,12 +254,11 @@ const ActionRight: React.FC<Props> = ({ tabIndexState, searchState }) => {
             disableUnderline: true,
             classes: {
               root: classes.searchInputRoot,
-              input:
-                classes.searchInputInput + (searchInput.active ? " active" : "")
+              input: classes.searchInputInput
             },
             endAdornment: (
               <InputAdornment position="end">
-                {searchInput.active ? (
+                {queryState.searchString ? (
                   <IconButton
                     className={classes.iconButton}
                     onClick={handleSearchClear}
@@ -120,23 +266,57 @@ const ActionRight: React.FC<Props> = ({ tabIndexState, searchState }) => {
                     <ClearIcon color="inherit" fontSize="inherit" />
                   </IconButton>
                 ) : (
-                  <IconButton
-                    className={classes.iconButton}
-                    onClick={handleSearchFocus}
+                  <Tooltip
+                    title={formatMessage({
+                      id: "Search",
+                      defaultMessage: "Search"
+                    })}
                   >
-                    <SearchIcon color="inherit" fontSize="inherit" />
-                  </IconButton>
+                    <IconButton
+                      className={classes.iconButton}
+                      onClick={handleSearchClick}
+                    >
+                      <SearchIcon color="inherit" fontSize="inherit" />
+                    </IconButton>
+                  </Tooltip>
                 )}
               </InputAdornment>
             )
           }}
-          value={searchInput.value}
-          onFocus={handleSearchFocus}
+          value={queryState.searchString}
           onChange={handleSearchChange}
         />
-        <IconButton className={classes.iconButton}>
-          <SortIcon color="inherit" fontSize="inherit" />
-        </IconButton>
+        <Tooltip title={formatMessage({ id: "Sort", defaultMessage: "Sort" })}>
+          <IconButton className={classes.iconButton} onClick={handleSortOpen}>
+            <SortIcon color="inherit" fontSize="inherit" />
+          </IconButton>
+        </Tooltip>
+
+        <Menu
+          keepMounted
+          anchorEl={sortAnchorEl}
+          getContentAnchorEl={null}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right"
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right"
+          }}
+          open={Boolean(sortAnchorEl)}
+          onClose={handleSortClose}
+        >
+          {questionOrderOptions.map((optionItem, index) => (
+            <MenuItem
+              key={index}
+              selected={queryState.orderOptionIndex === index}
+              onClick={e => handleSortOptionClick(index)}
+            >
+              {optionItem.label}
+            </MenuItem>
+          ))}
+        </Menu>
       </Box>
     </React.Fragment>
   );

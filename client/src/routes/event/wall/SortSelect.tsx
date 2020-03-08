@@ -3,12 +3,15 @@ import { Typography, Menu, MenuItem, Fade } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
 import { QueryLazyOptions } from "@apollo/react-hooks";
 import {
   WallQuestionsByEventQuery,
   WallQuestionsByEventQueryVariables,
+  ReviewStatus,
+  QuestionFilter,
+  QuestionOrder
 } from "../../../generated/graphqlHooks";
 import { useParams } from "react-router-dom";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
@@ -39,12 +42,27 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-enum TopSort {
-  Popular,
-  Recent,
-  Oldest,
-  Starred
-}
+const menuList: Array<{
+  label: React.ReactElement;
+  value: ReviewStatus | QuestionFilter | QuestionOrder;
+}> = [
+  {
+    label: <FormattedMessage id="Popular" defaultMessage="Popular" />,
+    value: QuestionOrder.Popular
+  },
+  {
+    label: <FormattedMessage id="Recent" defaultMessage="Recent" />,
+    value: QuestionOrder.Recent
+  },
+  {
+    label: <FormattedMessage id="Oldest" defaultMessage="Oldest" />,
+    value: QuestionOrder.Oldest
+  },
+  {
+    label: <FormattedMessage id="Starred" defaultMessage="Starred" />,
+    value: QuestionFilter.Starred
+  }
+];
 interface Props {
   wallQuestionsByEventLazyQuery: (
     options?: QueryLazyOptions<WallQuestionsByEventQueryVariables> | undefined
@@ -61,49 +79,32 @@ const SortSelect: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { id } = useParams();
-  const { formatMessage } = useIntl();
   const { data } = wallQuestionsResult;
   const [sortMenu, setSortMenu] = React.useState<{
-    selected: TopSort;
+    selected: ReviewStatus | QuestionFilter | QuestionOrder;
     anchorEl: null | HTMLElement;
-  }>({ selected: TopSort.Recent, anchorEl: null });
+  }>({ selected: QuestionOrder.Recent, anchorEl: null });
   const { mouseStop } = useMouseMove();
-  const menuList = [
-    {
-      label: formatMessage({ id: "Popular", defaultMessage: "Popular" }),
-      value: TopSort.Popular
-    },
-    {
-      label: formatMessage({ id: "Recent", defaultMessage: "Recent" }),
-      value: TopSort.Recent
-    },
-    {
-      label: formatMessage({ id: "Oldest", defaultMessage: "Oldest" }),
-      value: TopSort.Oldest
-    },
-    {
-      label: formatMessage({ id: "Starred", defaultMessage: "Starred" }),
-      value: TopSort.Starred
-    }
-  ];
 
   const handleSortOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setSortMenu({ ...sortMenu, anchorEl: event.currentTarget });
   };
-  const handleSortChange = (selected: TopSort) => {
+  const handleSortChange = (
+    selected: ReviewStatus | QuestionFilter | QuestionOrder
+  ) => {
     wallQuestionsByEventLazyQuery({
       variables: {
         eventId: id as string,
-        star: selected === TopSort.Starred ? true : undefined,
-        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+        star: selected === QuestionFilter.Starred ? true : undefined,
+        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
         // orderBy:
-        //   selected === TopSort.Recent
+        //   selected === QuestionOrder.Recent
         //     ? { createdAt: OrderByArg.Desc }
-        //     : selected === TopSort.Oldest
+        //     : selected === QuestionOrder.Oldest
         //     ? { createdAt: OrderByArg.Asc }
-        //     : selected === TopSort.Starred
+        //     : selected === QuestionOrder.Starred
         //     ? { createdAt: OrderByArg.Desc }
-        //     : selected === TopSort.Popular // TODO: cant orderBy voteCount
+        //     : selected === QuestionOrder.Popular // TODO: cant orderBy voteCount
         //     ? {}
         //     : {}
       }

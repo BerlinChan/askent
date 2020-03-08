@@ -23,18 +23,19 @@ query QuestionsByEvent(
   $eventId: ID!
   $reviewStatus: [ReviewStatus!]!
   $searchString: String
-  $pagination: PaginationInputType! # $orderBy: QuestionOrderByInput
+  $pagination: PaginationInputType!
+  $order: QuestionOrder
 ) {
   questionsByEvent(
     eventId: $eventId
     reviewStatus: $reviewStatus
     searchString: $searchString
     pagination: $pagination
+    order: $order
   )
-    # orderBy: $orderBy
     @connection(
       key: "questionsByEvent"
-      filter: ["eventId", "reviewStatus", "searchString"]
+      filter: ["eventId", "reviewStatus", "searchString", "order"]
     ) {
     ...QuestionPagedFields
     list {

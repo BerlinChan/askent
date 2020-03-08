@@ -19,7 +19,6 @@ interface Props {
   eventQuery: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
   updateCache: (
     cache: DataProxy,
-    eventId: string,
     reviewStatus: ReviewStatus,
     data: QuestionsByEventQuery
   ) => void;
