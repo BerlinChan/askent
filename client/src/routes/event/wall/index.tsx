@@ -8,14 +8,16 @@ import SortSelect from "./SortSelect";
 import {
   useEventByIdQuery,
   useEventUpdatedSubscription,
-  useWallQuestionsByEventLazyQuery,
-  WallQuestionsByEventQuery,
-  WallQuestionsByEventQueryVariables,
-  WallQuestionsByEventDocument,
-  useWallQuestionAddedSubscription,
-  useWallQuestionUpdatedSubscription,
-  useWallQuestionRemovedSubscription,
-  RoleName
+  useQuestionsByEventWallQuery,
+  QuestionsByEventWallQuery,
+  QuestionsByEventWallQueryVariables,
+  QuestionsByEventWallDocument,
+  useQuestionAddedWallSubscription,
+  useQuestionUpdatedWallSubscription,
+  useQuestionRemovedWallSubscription,
+  RoleName,
+  QuestionFilter,
+  QuestionOrder
 } from "../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
@@ -64,41 +66,47 @@ const EventWall: React.FC<Props> = () => {
   const eventByIdQueryResult = useEventByIdQuery({
     variables: { eventId: id as string }
   });
-  const [
-    wallQuestionsByEventLazyQuery,
-    wallQuestionsResult
-  ] = useWallQuestionsByEventLazyQuery();
+  const orderSelectedState = React.useState<QuestionFilter | QuestionOrder>(
+    QuestionOrder.Popular
+  );
+  const questionsWallQueryResult = useQuestionsByEventWallQuery({
+    variables: {
+      eventId: id as string,
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
+      // orderBy: { createdAt: OrderByArg.Desc }
+    }
+  });
 
   // subscription
   const updateCache = (
     cache: DataProxy,
     eventId: string,
-    data: WallQuestionsByEventQuery
+    data: QuestionsByEventWallQuery
   ) => {
     cache.writeQuery<
-      WallQuestionsByEventQuery,
-      Omit<WallQuestionsByEventQueryVariables, "pagination">
+      QuestionsByEventWallQuery,
+      Omit<QuestionsByEventWallQueryVariables, "pagination">
     >({
-      query: WallQuestionsByEventDocument,
+      query: QuestionsByEventWallDocument,
       variables: { eventId },
       data
     });
   };
-  useWallQuestionAddedSubscription({
+  useQuestionAddedWallSubscription({
     variables: { eventId: id as string, role: RoleName.Wall },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
         const { questionAdded } = subscriptionData.data;
-        const prev = wallQuestionsResult.data;
+        const prev = questionsWallQueryResult.data;
 
         if (prev) {
           // add
           updateCache(client, id as string, {
-            wallQuestionsByEvent: {
-              ...prev.wallQuestionsByEvent,
-              totalCount: prev.wallQuestionsByEvent.totalCount + 1,
+            questionsByEventWall: {
+              ...prev.questionsByEventWall,
+              totalCount: prev.questionsByEventWall.totalCount + 1,
               list: [questionAdded].concat(
-                prev.wallQuestionsByEvent.list.filter(
+                prev.questionsByEventWall.list.filter(
                   question =>
                     question.id !== subscriptionData.data?.questionAdded.id
                 )
@@ -109,23 +117,23 @@ const EventWall: React.FC<Props> = () => {
       }
     }
   });
-  useWallQuestionUpdatedSubscription({
+  useQuestionUpdatedWallSubscription({
     variables: { eventId: id as string, role: RoleName.Wall }
   });
-  useWallQuestionRemovedSubscription({
+  useQuestionRemovedWallSubscription({
     variables: { eventId: id as string, role: RoleName.Wall },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRemoved) {
         const { questionRemoved } = subscriptionData.data;
-        const prev = wallQuestionsResult.data;
+        const prev = questionsWallQueryResult.data;
 
         if (prev) {
           // remove
           updateCache(client, id as string, {
-            wallQuestionsByEvent: {
-              ...prev.wallQuestionsByEvent,
-              totalCount: prev.wallQuestionsByEvent.totalCount - 1,
-              list: prev.wallQuestionsByEvent.list.filter(
+            questionsByEventWall: {
+              ...prev.questionsByEventWall,
+              totalCount: prev.questionsByEventWall.totalCount - 1,
+              list: prev.questionsByEventWall.list.filter(
                 preQuestion => questionRemoved !== preQuestion.id
               )
             }
@@ -144,17 +152,9 @@ const EventWall: React.FC<Props> = () => {
   React.useEffect(() => {
     onResize();
     window.addEventListener("resize", onResize);
-    wallQuestionsByEventLazyQuery({
-      variables: {
-        eventId: id as string,
-        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-        // orderBy: { createdAt: OrderByArg.Desc }
-      }
-    });
 
     return () => window.removeEventListener("resize", onResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  });
 
   return (
     <Grid container className={classes.wallGrid}>
@@ -181,12 +181,12 @@ const EventWall: React.FC<Props> = () => {
       <Grid item xs={9} className={classes.gridItem}>
         <Box className={classes.rightTitleBox}>
           <SortSelect
-            wallQuestionsByEventLazyQuery={wallQuestionsByEventLazyQuery}
-            wallQuestionsResult={wallQuestionsResult}
+            orderSelectedState={orderSelectedState}
+            questionsWallQueryResult={questionsWallQueryResult}
           />
         </Box>
         <Box className={classes.listBox}>
-          <QuestionList questionsQueryResult={wallQuestionsResult} />
+          <QuestionList questionsQueryResult={questionsWallQueryResult} />
         </Box>
         {0 ? (
           <Typography variant="h6" color="inherit">

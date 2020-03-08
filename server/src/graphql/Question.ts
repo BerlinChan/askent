@@ -82,6 +82,7 @@ export const questionQuery = extendType({
   definition(t) {
     t.field('questionsByEvent', {
       type: 'QuestionPaged',
+      description:'Query question by event for Role.Admin.',
       args: {
         eventId: idArg({ required: true }),
         filters: arg({
@@ -143,8 +144,9 @@ export const questionQuery = extendType({
         }
       },
     })
-    t.field('liveQuestionsByEvent', {
+    t.field('questionsByEventAudience', {
       type: 'QuestionPaged',
+      description:'Query question by event for Role.Audience.',
       args: {
         eventId: idArg({ required: true }),
         pagination: arg({ type: 'PaginationInputType', required: true }),
@@ -185,8 +187,9 @@ export const questionQuery = extendType({
         }
       },
     })
-    t.field('wallQuestionsByEvent', {
+    t.field('questionsByEventWall', {
       type: 'QuestionPaged',
+      description:'Query question by event for Role.Wall.',
       args: {
         eventId: idArg({ required: true }),
         star: booleanArg(),

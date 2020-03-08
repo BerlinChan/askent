@@ -13,14 +13,14 @@ fragment WallQuestionFields on Question {
   }
 }
 
-query WallQuestionsByEvent(
+query QuestionsByEventWall(
   $eventId: ID!
   $star: Boolean
   $pagination: PaginationInputType! # $orderBy: QuestionOrderByInput
 ) {
-  wallQuestionsByEvent(eventId: $eventId, star: $star, pagination: $pagination)
+  questionsByEventWall(eventId: $eventId, star: $star, pagination: $pagination)
     # orderBy: $orderBy
-    @connection(key: "wallQuestionsByEvent", filter: ["eventId"]) {
+    @connection(key: "questionsByEventWall", filter: ["eventId"]) {
     ...QuestionPagedFields
     list {
       ...WallQuestionFields
@@ -28,18 +28,18 @@ query WallQuestionsByEvent(
   }
 }
 
-subscription WallQuestionAdded($eventId: ID!, $role: RoleName!) {
+subscription QuestionAddedWall($eventId: ID!, $role: RoleName!) {
   questionAdded(eventId: $eventId, role: $role) {
     ...WallQuestionFields
   }
 }
 
-subscription WallQuestionUpdated($eventId: ID!, $role: RoleName!) {
+subscription QuestionUpdatedWall($eventId: ID!, $role: RoleName!) {
   questionUpdated(eventId: $eventId, role: $role) {
     ...WallQuestionFields
   }
 }
 
-subscription WallQuestionRemoved($eventId: ID!, $role: RoleName!) {
+subscription QuestionRemovedWall($eventId: ID!, $role: RoleName!) {
   questionRemoved(eventId: $eventId, role: $role)
 }

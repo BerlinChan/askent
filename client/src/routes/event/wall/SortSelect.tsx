@@ -5,16 +5,12 @@ import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { FormattedMessage } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
-import { QueryLazyOptions } from "@apollo/react-hooks";
 import {
-  WallQuestionsByEventQuery,
-  WallQuestionsByEventQueryVariables,
-  ReviewStatus,
+  QuestionsByEventWallQuery,
+  QuestionsByEventWallQueryVariables,
   QuestionFilter,
   QuestionOrder
 } from "../../../generated/graphqlHooks";
-import { useParams } from "react-router-dom";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
 import { useMouseMove } from "../../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -44,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const menuList: Array<{
   label: React.ReactElement;
-  value: ReviewStatus | QuestionFilter | QuestionOrder;
+  value: QuestionFilter | QuestionOrder;
 }> = [
   {
     label: <FormattedMessage id="Popular" defaultMessage="Popular" />,
@@ -64,70 +60,48 @@ const menuList: Array<{
   }
 ];
 interface Props {
-  wallQuestionsByEventLazyQuery: (
-    options?: QueryLazyOptions<WallQuestionsByEventQueryVariables> | undefined
-  ) => void;
-  wallQuestionsResult: QueryResult<
-    WallQuestionsByEventQuery,
-    WallQuestionsByEventQueryVariables
+  orderSelectedState: [
+    QuestionFilter | QuestionOrder,
+    React.Dispatch<React.SetStateAction<QuestionFilter | QuestionOrder>>
+  ];
+  questionsWallQueryResult: QueryResult<
+    QuestionsByEventWallQuery,
+    QuestionsByEventWallQueryVariables
   >;
 }
 
 const SortSelect: React.FC<Props> = ({
-  wallQuestionsByEventLazyQuery,
-  wallQuestionsResult
+  orderSelectedState,
+  questionsWallQueryResult
 }) => {
   const classes = useStyles();
-  const { id } = useParams();
-  const { data } = wallQuestionsResult;
-  const [sortMenu, setSortMenu] = React.useState<{
-    selected: ReviewStatus | QuestionFilter | QuestionOrder;
-    anchorEl: null | HTMLElement;
-  }>({ selected: QuestionOrder.Recent, anchorEl: null });
+  const { data } = questionsWallQueryResult;
+  const [orderSelected, setOrderSelected] = orderSelectedState;
+  const [sortEl, setSortEl] = React.useState<null | HTMLElement>(null);
   const { mouseStop } = useMouseMove();
 
   const handleSortOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setSortMenu({ ...sortMenu, anchorEl: event.currentTarget });
-  };
-  const handleSortChange = (
-    selected: ReviewStatus | QuestionFilter | QuestionOrder
-  ) => {
-    wallQuestionsByEventLazyQuery({
-      variables: {
-        eventId: id as string,
-        star: selected === QuestionFilter.Starred ? true : undefined,
-        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-        // orderBy:
-        //   selected === QuestionOrder.Recent
-        //     ? { createdAt: OrderByArg.Desc }
-        //     : selected === QuestionOrder.Oldest
-        //     ? { createdAt: OrderByArg.Asc }
-        //     : selected === QuestionOrder.Starred
-        //     ? { createdAt: OrderByArg.Desc }
-        //     : selected === QuestionOrder.Popular // TODO: cant orderBy voteCount
-        //     ? {}
-        //     : {}
-      }
-    });
-    setSortMenu({ selected, anchorEl: null });
+    setSortEl(event.currentTarget);
   };
   const handleSortClose = () => {
-    setSortMenu({ ...sortMenu, anchorEl: null });
+    setSortEl(null);
   };
+  const handleSortChange = (selected: QuestionFilter | QuestionOrder) =>
+    setOrderSelected(selected);
 
   return (
     <React.Fragment>
       <Typography className={classes.sortSelect} onClick={handleSortOpen}>
         <QuestionAnswerIcon className={classes.icon} />
         <FormattedMessage id="Top_questions" defaultMessage="Top questions" />(
-        {data?.wallQuestionsByEvent.totalCount})
+        {data?.questionsByEventWall.totalCount})
         <Fade in={!mouseStop}>
           <ArrowDropDownIcon className="arrowIcon" />
         </Fade>
       </Typography>
 
       <Menu
-        anchorEl={sortMenu.anchorEl}
+        anchorEl={sortEl}
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
@@ -138,14 +112,14 @@ const SortSelect: React.FC<Props> = ({
           horizontal: "left"
         }}
         keepMounted
-        open={Boolean(sortMenu.anchorEl)}
+        open={Boolean(sortEl)}
         onClose={handleSortClose}
       >
         {menuList.map(item => (
           <MenuItem
             className={classes.menuItem}
             key={item.value}
-            selected={sortMenu.selected === item.value}
+            selected={orderSelected === item.value}
             onClick={() => handleSortChange(item.value)}
           >
             {item.label}

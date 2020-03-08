@@ -2,8 +2,8 @@ import React from "react";
 import * as R from "ramda";
 import { QueryResult } from "@apollo/react-common";
 import {
-  WallQuestionsByEventQuery,
-  WallQuestionsByEventQueryVariables,
+  QuestionsByEventWallQuery,
+  QuestionsByEventWallQueryVariables,
   WallQuestionFieldsFragment
 } from "../../../generated/graphqlHooks";
 import QuestionItem from "./QuestionItem";
@@ -12,8 +12,8 @@ import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
 
 interface Props {
   questionsQueryResult: QueryResult<
-    WallQuestionsByEventQuery,
-    WallQuestionsByEventQueryVariables
+    QuestionsByEventWallQuery,
+    QuestionsByEventWallQueryVariables
   >;
 }
 
@@ -24,11 +24,11 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
   const orderedList = React.useMemo(() => {
     const list = R.sortWith([
       R.descend<WallQuestionFieldsFragment>(R.prop("top"))
-    ])(data?.wallQuestionsByEvent.list || []);
+    ])(data?.questionsByEventWall.list || []);
 
     setEndReached(
-      Number(data?.wallQuestionsByEvent.list.length) >=
-        Number(data?.wallQuestionsByEvent.totalCount)
+      Number(data?.questionsByEventWall.list.length) >=
+        Number(data?.questionsByEventWall.totalCount)
     );
 
     return list;
@@ -38,19 +38,19 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
       fetchMore({
         variables: {
           pagination: {
-            offset: data?.wallQuestionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
-            limit: data?.wallQuestionsByEvent.limit || DEFAULT_PAGE_LIMIT
+            offset: data?.questionsByEventWall.list.length || DEFAULT_PAGE_OFFSET,
+            limit: data?.questionsByEventWall.limit || DEFAULT_PAGE_LIMIT
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
 
           return Object.assign({}, fetchMoreResult, {
-            wallQuestionsByEvent: {
-              ...fetchMoreResult.wallQuestionsByEvent,
+            questionsByEventWall: {
+              ...fetchMoreResult.questionsByEventWall,
               list: [
-                ...prev.wallQuestionsByEvent.list,
-                ...fetchMoreResult.wallQuestionsByEvent.list
+                ...prev.questionsByEventWall.list,
+                ...fetchMoreResult.questionsByEventWall.list
               ]
             }
           });

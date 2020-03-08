@@ -12,14 +12,14 @@ import {
   MeQueryVariables,
   EventByIdQuery,
   EventByIdQueryVariables,
-  LiveQuestionsByEventQuery,
-  LiveQuestionsByEventQueryVariables,
-  useLiveQuestionsByEventLazyQuery,
-  useLiveQuestionAddedSubscription,
-  useLiveQuestionUpdatedSubscription,
-  useLiveQuestionRemovedSubscription,
-  LiveQuestionsByEventDocument,
-  RoleName,
+  QuestionsByEventAudienceQuery,
+  QuestionsByEventAudienceQueryVariables,
+  useQuestionsByEventAudienceQuery,
+  useQuestionAddedAudienceSubscription,
+  useQuestionUpdatedAudienceSubscription,
+  useQuestionRemovedAudienceSubscription,
+  QuestionsByEventAudienceDocument,
+  RoleName
 } from "../../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
 import Logo from "../../../../components/Logo";
@@ -60,43 +60,35 @@ const LiveQuestions: React.FC<Props> = ({
   const { formatMessage } = useIntl();
   let { id } = useParams();
   const [tabIndex, setTabIndex] = React.useState(0);
-  const [
-    liveQuestionsByEventLazyQuery,
-    liveQuestionsResult
-  ] = useLiveQuestionsByEventLazyQuery();
-
-  React.useEffect(() => {
-    liveQuestionsByEventLazyQuery({
-      variables: {
-        eventId: id as string,
-        // orderBy:
-        //   tabIndex === 0
-        //     ? { createdAt: OrderByArg.Desc } // TODO: cant orderBy voteCount
-        //     : tabIndex === 0
-        //     ? { createdAt: OrderByArg.Desc }
-        //     : undefined,
-        pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, tabIndex]);
+  const liveQuestionsResult = useQuestionsByEventAudienceQuery({
+    variables: {
+      eventId: id as string,
+      // orderBy:
+      //   tabIndex === 0
+      //     ? { createdAt: OrderByArg.Desc } // TODO: cant orderBy voteCount
+      //     : tabIndex === 0
+      //     ? { createdAt: OrderByArg.Desc }
+      //     : undefined,
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
+    }
+  });
 
   // subscriptions
   const updateCache = (
     cache: DataProxy,
     eventId: string,
-    data: LiveQuestionsByEventQuery
+    data: QuestionsByEventAudienceQuery
   ) => {
     cache.writeQuery<
-      LiveQuestionsByEventQuery,
-      Omit<LiveQuestionsByEventQueryVariables, "pagination">
+      QuestionsByEventAudienceQuery,
+      Omit<QuestionsByEventAudienceQueryVariables, "pagination">
     >({
-      query: LiveQuestionsByEventDocument,
+      query: QuestionsByEventAudienceDocument,
       variables: { eventId },
       data
     });
   };
-  useLiveQuestionAddedSubscription({
+  useQuestionAddedAudienceSubscription({
     variables: { eventId: id as string, role: RoleName.Audience },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
@@ -106,11 +98,11 @@ const LiveQuestions: React.FC<Props> = ({
         if (prev) {
           // add
           updateCache(client, id as string, {
-            liveQuestionsByEvent: {
-              ...prev.liveQuestionsByEvent,
-              totalCount: prev.liveQuestionsByEvent.totalCount + 1,
+            questionsByEventAudience: {
+              ...prev.questionsByEventAudience,
+              totalCount: prev.questionsByEventAudience.totalCount + 1,
               list: [questionAdded].concat(
-                prev.liveQuestionsByEvent.list.filter(
+                prev.questionsByEventAudience.list.filter(
                   question =>
                     question.id !== subscriptionData.data?.questionAdded.id
                 )
@@ -121,10 +113,10 @@ const LiveQuestions: React.FC<Props> = ({
       }
     }
   });
-  useLiveQuestionUpdatedSubscription({
+  useQuestionUpdatedAudienceSubscription({
     variables: { eventId: id as string, role: RoleName.Audience }
   });
-  useLiveQuestionRemovedSubscription({
+  useQuestionRemovedAudienceSubscription({
     variables: { eventId: id as string, role: RoleName.Audience },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const prev = liveQuestionsResult.data;
@@ -132,10 +124,10 @@ const LiveQuestions: React.FC<Props> = ({
       if (prev) {
         // remove
         updateCache(client, id as string, {
-          liveQuestionsByEvent: {
-            ...prev.liveQuestionsByEvent,
-            totalCount: prev.liveQuestionsByEvent.totalCount - 1,
-            list: prev.liveQuestionsByEvent.list.filter(
+          questionsByEventAudience: {
+            ...prev.questionsByEventAudience,
+            totalCount: prev.questionsByEventAudience.totalCount - 1,
+            list: prev.questionsByEventAudience.list.filter(
               preQuestion =>
                 subscriptionData.data?.questionRemoved !== preQuestion.id
             )
@@ -178,7 +170,7 @@ const LiveQuestions: React.FC<Props> = ({
           />
         </SubTabs>
         <Typography color="textSecondary">
-          {liveQuestionsResult.data?.liveQuestionsByEvent.totalCount}{" "}
+          {liveQuestionsResult.data?.questionsByEventAudience.totalCount}{" "}
           <FormattedMessage id="questions" defaultMessage="questions" />
         </Typography>
       </Box>

@@ -14,8 +14,8 @@ import {
   MeQueryVariables,
   EventByIdQuery,
   EventByIdQueryVariables,
-  LiveQuestionsByEventQuery,
-  LiveQuestionsByEventQueryVariables,
+  QuestionsByEventAudienceQuery,
+  QuestionsByEventAudienceQueryVariables,
   useDeleteQuestionMutation,
   LiveQuestionFieldsFragment,
   ReviewStatus
@@ -31,8 +31,8 @@ interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
   liveQuestionsResult: QueryResult<
-    LiveQuestionsByEventQuery,
-    LiveQuestionsByEventQueryVariables
+    QuestionsByEventAudienceQuery,
+    QuestionsByEventAudienceQueryVariables
   >;
   sortComparator?: R.Comparator<LiveQuestionFieldsFragment, number>[];
 }
@@ -55,7 +55,7 @@ const QuestionList: React.FC<Props> = ({
     id: ""
   });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
-  const questionMoreTarget = data?.liveQuestionsByEvent.list.find(
+  const questionMoreTarget = data?.questionsByEventAudience.list.find(
     question => question.id === moreMenu.id
   );
 
@@ -100,11 +100,11 @@ const QuestionList: React.FC<Props> = ({
     const list = R.sortWith([
       R.descend<LiveQuestionFieldsFragment>(R.prop("top")),
       ...sortComparator
-    ])(data?.liveQuestionsByEvent.list || []);
+    ])(data?.questionsByEventAudience.list || []);
 
     setEndReached(
-      Number(data?.liveQuestionsByEvent.list.length) >=
-        Number(data?.liveQuestionsByEvent.totalCount)
+      Number(data?.questionsByEventAudience.list.length) >=
+        Number(data?.questionsByEventAudience.totalCount)
     );
 
     return list;
@@ -114,18 +114,18 @@ const QuestionList: React.FC<Props> = ({
       fetchMore({
         variables: {
           pagination: {
-            offset: data?.liveQuestionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
-            limit: data?.liveQuestionsByEvent.limit || DEFAULT_PAGE_LIMIT
+            offset: data?.questionsByEventAudience.list.length || DEFAULT_PAGE_OFFSET,
+            limit: data?.questionsByEventAudience.limit || DEFAULT_PAGE_LIMIT
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
           return Object.assign({}, fetchMoreResult, {
             questionsByEvent: {
-              ...fetchMoreResult.liveQuestionsByEvent,
+              ...fetchMoreResult.questionsByEventAudience,
               list: [
-                ...prev.liveQuestionsByEvent.list,
-                ...fetchMoreResult.liveQuestionsByEvent.list
+                ...prev.questionsByEventAudience.list,
+                ...fetchMoreResult.questionsByEventAudience.list
               ]
             }
           });

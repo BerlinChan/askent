@@ -61,8 +61,8 @@ export default {
   Query: {
     questionsByEvent: isAuthedAdmin,
     questionsByMe: isAuthedAudience,
-    liveQuestionsByEvent: isAuthedAudience,
-    wallQuestionsByEvent: isAuthedWall,
+    questionsByEventAudience: isAuthedAudience,
+    questionsByEventWall: isAuthedWall,
   },
   Mutation: {
     createQuestion: isAuthedAudience,
