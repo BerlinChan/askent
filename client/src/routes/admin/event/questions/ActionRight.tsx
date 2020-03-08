@@ -133,11 +133,15 @@ const ActionRight: React.FC<Props> = ({
     setFilterAnchorEl(null);
   };
   const handleFilterOptionClick = (value: QuestionFilter) => {
+    const filterSelected = queryState.filterSelected.includes(value)
+      ? queryState.filterSelected.filter(item => item !== value)
+      : queryState.filterSelected.concat([value]);
+    const orderedFilterSelected = Object.values(
+      QuestionFilter
+    ).filter(filterItem => filterSelected.includes(filterItem));
     setQueryState({
       ...queryState,
-      filterSelected: queryState.filterSelected.includes(value)
-        ? queryState.filterSelected.filter(item => item !== value)
-        : queryState.filterSelected.concat([value])
+      filterSelected: orderedFilterSelected
     });
   };
 
@@ -166,7 +170,7 @@ const ActionRight: React.FC<Props> = ({
       ...queryState,
       orderSelected: value
     });
-    setSortAnchorEl(null);
+    handleSortClose();
   };
 
   return (

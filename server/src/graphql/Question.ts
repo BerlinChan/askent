@@ -355,7 +355,7 @@ export const questionMutation = extendType({
               eventId: question?.eventId,
               authorId: question?.authorId,
               toRoles: [RoleName.Audience, AudienceRole.All, RoleName.Wall],
-              questionRemoved: question,
+              questionRemoved: questionId,
             })
             break
           case ReviewStatusEnum.Publish:
@@ -488,17 +488,15 @@ export const questionMutation = extendType({
       resolve: async (root, { questionId, top }, ctx) => {
         const question = await ctx.db.Question.findByPk(questionId)
 
-        let prevTopQuestions: Array<QuestionModelStatic> = []
+        let prevTopQuestions: Array<QuestionModelStatic & { top: boolean }> = []
         if (top) {
           // cancel preview top questions
-          prevTopQuestions = (
-            await ctx.db.Question.findAll({
-              where: { top: true, eventId: question.eventId },
-            })
-          ).map((item: QuestionModelStatic) => ({
-            ...item,
-            top: false,
-          }))
+          prevTopQuestions = await ctx.db.Question.findAll({
+            where: { top: true, eventId: question.eventId },
+          })
+          prevTopQuestions.forEach(questionItem => {
+            questionItem.top = false
+          })
           await ctx.db.Question.update(
             { top: false },
             { where: { top: true, eventId: question.eventId } },
@@ -507,8 +505,8 @@ export const questionMutation = extendType({
 
         await question.update({ top })
 
-        const shouldPub = [question].concat(prevTopQuestions)
-        shouldPub.forEach((questionItem: QuestionModelStatic) =>
+        const shouldPub = prevTopQuestions.concat([question])
+        shouldPub.forEach((questionItem: QuestionModelStatic) => {
           ctx.pubsub.publish('QUESTION_UPDATED', {
             eventId: question?.eventId,
             toRoles: [
@@ -518,8 +516,8 @@ export const questionMutation = extendType({
               RoleName.Wall,
             ],
             questionUpdated: questionItem,
-          }),
-        )
+          })
+        })
 
         return question
       },
