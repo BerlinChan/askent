@@ -38,7 +38,8 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
       fetchMore({
         variables: {
           pagination: {
-            offset: data?.questionsByEventWall.list.length || DEFAULT_PAGE_OFFSET,
+            offset:
+              data?.questionsByEventWall.list.length || DEFAULT_PAGE_OFFSET,
             limit: data?.questionsByEventWall.limit || DEFAULT_PAGE_LIMIT
           }
         },
@@ -65,6 +66,7 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
       totalCount={orderedList.length}
       endReached={loadMore}
       item={index => {
+        if (!orderedList[index]) return <div />;
         return <QuestionItem question={orderedList[index]} />;
       }}
       footer={() => {

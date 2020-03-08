@@ -14,6 +14,7 @@ import {
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument,
   RoleName,
+  ReviewStatus,
   QuestionFilter,
   QuestionOrder
 } from "../../../../generated/graphqlHooks";
@@ -151,11 +152,16 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRemoved) {
         const { questionRemoved } = subscriptionData.data;
-        const prevData = getPrevData("");
+        const reviewStatus = questionsByEventQueryReview.data?.questionsByEvent.list.find(
+          question => question.id === questionRemoved
+        )
+          ? ReviewStatus.Review
+          : "";
+        const prevData = getPrevData(reviewStatus);
 
         if (prevData) {
           // remove
-          updateCache(client, "", {
+          updateCache(client, reviewStatus, {
             questionsByEvent: {
               ...prevData.questionsByEvent,
               totalCount: prevData.questionsByEvent.totalCount - 1,

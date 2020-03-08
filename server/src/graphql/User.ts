@@ -118,7 +118,6 @@ export const userMutation = extendType({
           RoleName.Audience,
           RoleName.Wall,
         ]
-
         const roles = await ctx.db.Role.findAll({
           where: { [Op.or]: userRoles.map(role => ({ name: role })) },
         })

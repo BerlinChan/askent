@@ -82,7 +82,7 @@ export const questionQuery = extendType({
   definition(t) {
     t.field('questionsByEvent', {
       type: 'QuestionPaged',
-      description:'Query question by event for Role.Admin.',
+      description: 'Query question by event for Role.Admin.',
       args: {
         eventId: idArg({ required: true }),
         filters: arg({
@@ -146,7 +146,7 @@ export const questionQuery = extendType({
     })
     t.field('questionsByEventAudience', {
       type: 'QuestionPaged',
-      description:'Query question by event for Role.Audience.',
+      description: 'Query question by event for Role.Audience.',
       args: {
         eventId: idArg({ required: true }),
         pagination: arg({ type: 'PaginationInputType', required: true }),
@@ -189,7 +189,7 @@ export const questionQuery = extendType({
     })
     t.field('questionsByEventWall', {
       type: 'QuestionPaged',
-      description:'Query question by event for Role.Wall.',
+      description: 'Query question by event for Role.Wall.',
       args: {
         eventId: idArg({ required: true }),
         star: booleanArg(),
@@ -312,17 +312,12 @@ export const questionMutation = extendType({
         reviewStatus: arg({ type: 'ReviewStatus', required: true }),
       },
       resolve: async (root, { questionId, reviewStatus }, ctx) => {
-        const prevQuestion = await ctx.db.Question.findByPk(questionId, {
-          include: [
-            {
-              association: 'event',
-              attributes: ['id'],
-              include: [{ association: 'owner', attributes: ['id'] }],
-            },
-          ],
+        const question = await ctx.db.Question.findByPk(questionId, {
+          include: [{ association: 'event', attributes: ['ownerId'] }],
         })
+        const prevReviewStatus = question.reviewStatus
 
-        await prevQuestion.update(
+        await question.update(
           Object.assign(
             { reviewStatus },
             reviewStatus === ReviewStatusEnum.Archive
@@ -332,14 +327,13 @@ export const questionMutation = extendType({
               : {},
           ),
         )
-        const updateQuestion = await ctx.db.Question.findByPk(questionId)
 
         switch (reviewStatus) {
           case ReviewStatusEnum.Review:
             // remove for ExcludeAuthor
             ctx.pubsub.publish('QUESTION_REMOVED', {
-              eventId: prevQuestion?.eventId,
-              authorId: prevQuestion?.authorId,
+              eventId: question?.eventId,
+              authorId: question?.authorId,
               toRoles: [
                 RoleName.Audience,
                 AudienceRole.ExcludeAuthor,
@@ -349,52 +343,52 @@ export const questionMutation = extendType({
             })
             // update for OnlyAuthor
             ctx.pubsub.publish('QUESTION_UPDATED', {
-              eventId: prevQuestion?.eventId,
-              authorId: prevQuestion?.authorId,
+              eventId: question?.eventId,
+              authorId: question?.authorId,
               toRoles: [RoleName.Audience, AudienceRole.OnlyAuthor],
-              questionUpdated: updateQuestion,
+              questionUpdated: question,
             })
             break
           case ReviewStatusEnum.Archive:
             // remove for all Audience & Wall
             ctx.pubsub.publish('QUESTION_REMOVED', {
-              eventId: prevQuestion?.eventId,
-              authorId: prevQuestion?.authorId,
+              eventId: question?.eventId,
+              authorId: question?.authorId,
               toRoles: [RoleName.Audience, AudienceRole.All, RoleName.Wall],
-              questionRemoved: updateQuestion,
+              questionRemoved: question,
             })
             break
           case ReviewStatusEnum.Publish:
-            switch (prevQuestion.reviewStatus) {
+            switch (prevReviewStatus) {
               case ReviewStatusEnum.Review:
                 // add for ExcludeAuthor
                 ctx.pubsub.publish('QUESTION_ADDED', {
-                  eventId: prevQuestion?.eventId,
-                  questionEventOwnerId: prevQuestion?.event?.owner?.id,
-                  authorId: prevQuestion?.authorId,
+                  eventId: question?.eventId,
+                  questionEventOwnerId: question?.event?.ownerId,
+                  authorId: question?.authorId,
                   toRoles: [
                     RoleName.Audience,
                     AudienceRole.ExcludeAuthor,
                     RoleName.Wall,
                   ],
-                  questionAdded: updateQuestion,
+                  questionAdded: question,
                 })
                 // update for OnlyAuthor
                 ctx.pubsub.publish('QUESTION_UPDATED', {
-                  eventId: prevQuestion?.eventId,
-                  authorId: prevQuestion?.authorId,
+                  eventId: question?.eventId,
+                  authorId: question?.authorId,
                   toRoles: [RoleName.Audience, AudienceRole.OnlyAuthor],
-                  questionUpdated: updateQuestion,
+                  questionUpdated: question,
                 })
                 break
               case ReviewStatusEnum.Archive:
                 // add for all Audience & Wall
                 ctx.pubsub.publish('QUESTION_ADDED', {
-                  eventId: prevQuestion?.eventId,
-                  questionEventOwnerId: prevQuestion?.event?.owner?.id,
-                  authorId: prevQuestion?.authorId,
+                  eventId: question?.eventId,
+                  questionEventOwnerId: question?.event?.ownerId,
+                  authorId: question?.authorId,
                   toRoles: [RoleName.Audience, AudienceRole.All, RoleName.Wall],
-                  questionAdded: updateQuestion,
+                  questionAdded: question,
                 })
                 break
             }
@@ -402,20 +396,20 @@ export const questionMutation = extendType({
         }
         // update for admin
         ctx.pubsub.publish('QUESTION_REMOVED', {
-          eventId: prevQuestion?.eventId,
-          authorId: prevQuestion?.authorId,
+          eventId: question?.eventId,
+          authorId: question?.authorId,
           toRoles: [RoleName.Admin],
           questionRemoved: questionId,
         })
         ctx.pubsub.publish('QUESTION_ADDED', {
-          eventId: prevQuestion?.eventId,
-          questionEventOwnerId: prevQuestion?.event?.owner?.id,
-          authorId: prevQuestion?.authorId,
+          eventId: question?.eventId,
+          questionEventOwnerId: question?.event?.ownerId,
+          authorId: question?.authorId,
           toRoles: [RoleName.Admin],
-          questionAdded: updateQuestion,
+          questionAdded: question,
         })
 
-        return updateQuestion
+        return question
       },
     })
     t.field('updateQuestionContent', {
@@ -427,30 +421,28 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { content, questionId }, ctx) => {
         const question = await ctx.db.Question.findByPk(questionId)
-
         await question.update({ content })
-        const updateQuestion = await ctx.db.Question.findByPk(questionId)
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: question?.eventId,
           authorId: question?.authorId,
           toRoles:
-            updateQuestion.reviewStatus === ReviewStatusEnum.Review
+            question.reviewStatus === ReviewStatusEnum.Review
               ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
-              : updateQuestion.reviewStatus === ReviewStatusEnum.Publish
+              : question.reviewStatus === ReviewStatusEnum.Publish
               ? [
                   RoleName.Admin,
                   RoleName.Audience,
                   AudienceRole.All,
                   RoleName.Wall,
                 ]
-              : updateQuestion.reviewStatus === ReviewStatusEnum.Archive
+              : question.reviewStatus === ReviewStatusEnum.Archive
               ? [RoleName.Admin]
               : [],
-          questionUpdated: updateQuestion,
+          questionUpdated: question,
         })
 
-        return updateQuestion
+        return question
       },
     })
     t.field('updateQuestionStar', {
@@ -462,30 +454,28 @@ export const questionMutation = extendType({
       },
       resolve: async (root, { questionId, star }, ctx) => {
         const question = await ctx.db.Question.findByPk(questionId)
-
         await question.update({ star })
-        const updateQuestion = await ctx.db.Question.findByPk(questionId)
 
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: question?.eventId,
           authorId: question?.authorId,
           toRoles:
-            updateQuestion.reviewStatus === ReviewStatusEnum.Review
+            question.reviewStatus === ReviewStatusEnum.Review
               ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
-              : updateQuestion.reviewStatus === ReviewStatusEnum.Publish
+              : question.reviewStatus === ReviewStatusEnum.Publish
               ? [
                   RoleName.Admin,
                   RoleName.Audience,
                   AudienceRole.All,
                   RoleName.Wall,
                 ]
-              : updateQuestion.reviewStatus === ReviewStatusEnum.Archive
+              : question.reviewStatus === ReviewStatusEnum.Archive
               ? [RoleName.Admin]
               : [],
-          questionUpdated: updateQuestion,
+          questionUpdated: question,
         })
 
-        return updateQuestion
+        return question
       },
     })
     t.field('updateQuestionTop', {
