@@ -10,7 +10,8 @@ import {
 import { getAuthedUser } from '../utils'
 import { Context } from '../context'
 import { withFilter } from 'apollo-server-express'
-import { Op } from 'sequelize'
+import sequelize, { Op } from 'sequelize'
+import { EventDateFilterEnum } from './FilterOrder'
 
 export const Event = objectType({
   name: 'Event',
@@ -74,29 +75,53 @@ export const eventQuery = extendType({
       args: {
         searchString: stringArg(),
         pagination: arg({ type: 'PaginationInputType', required: true }),
-        // TODO: orderBy: arg({ type: 'EventOrderByInput' }),
+        dateFilter: arg({ type: 'EventDateFilter' }),
       },
-      resolve: async (root, { searchString, pagination }, ctx) => {
+      resolve: async (root, { searchString, pagination, dateFilter }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
         const { limit, offset } = pagination
         const option = {
-          where: {
-            ownerId: userId,
-            [Op.or]: [
-              { name: { [Op.substring]: searchString } },
-              { code: { [Op.substring]: searchString } },
-            ],
-          },
+          where: Object.assign(
+            {
+              [Op.and]: [
+                { ownerId: userId },
+                dateFilter === EventDateFilterEnum.Active
+                  ? sequelize.literal(
+                      'NOW() BETWEEN `event`.`startAt` AND `event`.`endAt`',
+                    )
+                  : dateFilter === EventDateFilterEnum.Upcoming
+                  ? sequelize.literal('NOW() <= `event`.`startAt`')
+                  : dateFilter === EventDateFilterEnum.Past
+                  ? sequelize.literal('NOW() >= `event`.`endAt`')
+                  : undefined,
+              ],
+            },
+            searchString
+              ? {
+                  [Op.or]: [
+                    { name: { [Op.substring]: searchString } },
+                    { code: { [Op.substring]: searchString } },
+                  ],
+                }
+              : {},
+          ),
         }
         const eventsCount = await ctx.db.Event.count(option)
         const events = await ctx.db.Event.findAll({
           ...option,
           ...pagination,
           order: [
+            [
+              sequelize.literal(
+                'NOW() BETWEEN `event`.`startAt` AND `event`.`endAt`',
+              ),
+              'DESC',
+            ],
+            [sequelize.literal('NOW() <= `event`.`startAt`'), 'DESC'],
+            [sequelize.literal('NOW() >= `event`.`endAt`'), 'DESC'],
             ['startAt', 'DESC'],
             ['endAt', 'ASC'],
           ],
-          // group: ['eventId'],
         })
 
         return {

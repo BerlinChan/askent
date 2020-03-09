@@ -18,7 +18,8 @@ import {
   EventsByMeQuery,
   EventsByMeQueryVariables,
   useDeleteEventMutation,
-  AdminEventFieldsFragment
+  AdminEventFieldsFragment,
+  EventDateFilter
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { useHistory } from "react-router-dom";
@@ -31,7 +32,8 @@ import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
 import EventIcon from "@material-ui/icons/Event";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import EventBusyIcon from "@material-ui/icons/EventBusy";
-import { EventDateStatus, getEventDateStatus } from "../../../utils";
+import { getEventDateStatus } from "../../../utils";
+import { getEventDateFilterLabel } from "./index";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: 1
     },
     header: {
-      backgroundColor: theme.palette.background.paper
+      backgroundColor: theme.palette.background.default
     },
     listItem: {
       "& .actionHover": { display: "none" },
@@ -102,11 +104,8 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
 
   const [endReached, setEndReached] = React.useState(false);
   const { groupKeys, groupCounts } = React.useMemo(() => {
-    // the code below calculates the group counts
-    // for the users loaded so far;
-    // this should be performed on the server too
-    const groupedEvents = R.groupBy<AdminEventFieldsFragment>(item =>
-      item.name.indexOf("5") >= 0 ? "5" : "Current"
+    const groupedEvents = R.groupBy<AdminEventFieldsFragment>(
+      item => getEventDateStatus(item, new Date()) as string
     )(data?.eventsByMe.list || []);
     const groupKeys = Object.keys(groupedEvents);
     const groupCounts = Object.values(groupedEvents).map(item => item.length);
@@ -159,7 +158,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
               {children}
             </ListSubheader>
           )}
-          group={index => <div>Group {groupKeys[index]}</div>}
+          group={index => getEventDateFilterLabel(groupKeys[index] as EventDateFilter)}
           item={index => {
             const event = data?.eventsByMe.list[index];
 
@@ -176,10 +175,10 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
                   <ListItemAvatar>
                     <Avatar>
                       {getEventDateStatus(event, new Date()) ===
-                      EventDateStatus.Current ? (
+                      EventDateFilter.Active ? (
                         <EventAvailableIcon />
                       ) : getEventDateStatus(event, new Date()) ===
-                        EventDateStatus.Future ? (
+                        EventDateFilter.Upcoming ? (
                         <EventIcon />
                       ) : (
                         <EventBusyIcon />

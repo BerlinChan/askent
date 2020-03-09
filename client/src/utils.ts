@@ -1,25 +1,29 @@
-import { isAfter, isBefore } from "date-fns";
-import { AdminEventFieldsFragment } from "./generated/graphqlHooks";
+import { isAfter, isBefore, isEqual } from "date-fns";
+import {
+  AdminEventFieldsFragment,
+  EventDateFilter
+} from "./generated/graphqlHooks";
 
-export enum EventDateStatus {
-  Current,
-  Past,
-  Future
-}
 export function getEventDateStatus(
   event: AdminEventFieldsFragment | undefined,
   currentDate: Date
-): EventDateStatus | undefined {
+): EventDateFilter | undefined {
   if (event) {
     if (
       isAfter(currentDate, new Date(event.startAt)) &&
       isBefore(currentDate, new Date(event.endAt))
     ) {
-      return EventDateStatus.Current;
-    } else if (isAfter(currentDate, new Date(event.endAt))) {
-      return EventDateStatus.Past;
-    } else if (isBefore(currentDate, new Date(event.startAt))) {
-      return EventDateStatus.Future;
+      return EventDateFilter.Active;
+    } else if (
+      isAfter(currentDate, new Date(event.endAt)) ||
+      isEqual(currentDate, new Date(event.endAt))
+    ) {
+      return EventDateFilter.Past;
+    } else if (
+      isBefore(currentDate, new Date(event.startAt)) ||
+      isEqual(currentDate, new Date(event.startAt))
+    ) {
+      return EventDateFilter.Upcoming;
     }
   }
 }

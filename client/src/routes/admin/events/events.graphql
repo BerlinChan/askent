@@ -9,13 +9,13 @@ fragment AdminEventFields on Event {
 query EventsByMe(
   $searchString: String
   $pagination: PaginationInputType!
-) # $orderBy: EventOrderByInput
-{
+  $dateFilter: EventDateFilter
+) {
   eventsByMe(
     searchString: $searchString
     pagination: $pagination
-  ) # orderBy: $orderBy
-  {
+    dateFilter: $dateFilter
+  ) {
     limit
     offset
     totalCount

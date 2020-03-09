@@ -1,9 +1,10 @@
 import React from "react";
-import { Box, Button } from "@material-ui/core";
+import { Box, Button, Select, MenuItem } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import {
   useEventsByMeQuery,
+  EventDateFilter
 } from "../../../generated/graphqlHooks";
 import CreateEventDialog from "./CreateEventDialog";
 import EventList from "./EventList";
@@ -19,9 +20,29 @@ const useStyles = makeStyles((theme: Theme) =>
     actionBox: {
       display: "flex",
       justifyContent: "flex-end"
+    },
+    actionField: {
+      marginRight: theme.spacing(2),
+      "&.eventDateFilter": {
+        width: 120
+      }
     }
   })
 );
+
+export const getEventDateFilterLabel = (value: EventDateFilter) => {
+  switch (value) {
+    case EventDateFilter.All:
+      return <FormattedMessage id="All" defaultMessage="All" />;
+    case EventDateFilter.Active:
+      return <FormattedMessage id="Active" defaultMessage="Active" />;
+    case EventDateFilter.Upcoming:
+      return <FormattedMessage id="Upcoming" defaultMessage="Upcoming" />;
+    default:
+      // case EventDateFilter.All:
+      return <FormattedMessage id="Past" defaultMessage="Past" />;
+  }
+};
 
 interface Props {
   searchString: string;
@@ -29,34 +50,57 @@ interface Props {
 
 const Events: React.FC<Props> = ({ searchString }) => {
   const classes = useStyles();
-  const [openCreate, setOpenCreate] = React.useState(false);
+  const createDialogOpenState = React.useState(false);
+  const [eventDateFilter, setEventDateFilter] = React.useState(
+    EventDateFilter.All
+  );
   const eventsByMeQueryResult = useEventsByMeQuery({
     variables: {
       searchString,
-      // orderBy: { createdAt: OrderByArg.Desc },
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+      dateFilter: eventDateFilter
     }
   });
-  const { refetch: eventsByMeRefetch } = eventsByMeQueryResult;
 
-  const handleClickOpen = () => {
-    setOpenCreate(true);
+  const handleEventDateFilterChange = (
+    e: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    setEventDateFilter(e.target.value as EventDateFilter);
   };
-  const handleClose = () => {
-    eventsByMeRefetch();
-    setOpenCreate(false);
+
+  const handleCreateOpen = () => {
+    createDialogOpenState[1](true);
   };
 
   return (
     <Box className={classes.eventsBox}>
       <Box className={classes.actionBox}>
-        <Button variant="contained" color="primary" onClick={handleClickOpen}>
+        <Select
+          className={classes.actionField + " eventDateFilter"}
+          value={eventDateFilter}
+          onChange={handleEventDateFilterChange}
+        >
+          {Object.values(EventDateFilter).map((item, index) => (
+            <MenuItem key={index} value={item}>
+              {getEventDateFilterLabel(item)}
+            </MenuItem>
+          ))}
+        </Select>
+        <Button
+          className={classes.actionField}
+          variant="contained"
+          color="primary"
+          onClick={handleCreateOpen}
+        >
           <FormattedMessage id="CREAT_EVENT" defaultMessage="Create Event" />
         </Button>
       </Box>
       <EventList eventsByMeQueryResult={eventsByMeQueryResult} />
 
-      <CreateEventDialog open={openCreate} onClose={handleClose} />
+      <CreateEventDialog
+        openState={createDialogOpenState}
+        eventsQueryResult={eventsByMeQueryResult}
+      />
     </Box>
   );
 };

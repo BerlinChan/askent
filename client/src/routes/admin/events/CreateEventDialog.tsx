@@ -5,8 +5,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
-  DialogProps
+  DialogActions
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
@@ -14,9 +13,12 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../components/Form";
 import { add } from "date-fns";
+import { QueryResult } from "@apollo/react-common";
 import {
   useCheckEventCodeExistLazyQuery,
-  useCreateEventMutation
+  useCreateEventMutation,
+  EventsByMeQuery,
+  EventsByMeQueryVariables
 } from "../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
 import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../../constant";
@@ -38,12 +40,17 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  onClose: () => void;
+  openState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
+  eventsQueryResult: QueryResult<EventsByMeQuery, EventsByMeQueryVariables>;
 }
 
-const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
+const CreateEventDialog: React.ComponentType<Props> = ({
+  openState,
+  eventsQueryResult,
+}) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const [open, setOpen] = openState;
   const [
     checkEventCodeExistLazyQuery,
     { data: checkEventCodeData, loading: checkEventCodeLoading }
@@ -53,8 +60,13 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
     { loading: createEventLoading }
   ] = useCreateEventMutation();
 
+  const handleClose = () => {
+    eventsQueryResult.refetch();
+    setOpen(false);
+  };
+
   return (
-    <Dialog {...props}>
+    <Dialog open={open}>
       <Formik
         initialValues={{
           name: "",
@@ -102,7 +114,7 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
             enqueueSnackbar("Create success!", {
               variant: "success"
             });
-            props.onClose();
+            handleClose();
           }
         }}
       >
@@ -155,7 +167,7 @@ const CreateEventDialog: React.ComponentType<Props & DialogProps> = props => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={props.onClose}>
+            <Button onClick={handleClose}>
               <FormattedMessage id="CANCEL" defaultMessage="Cancel" />
             </Button>
             <ButtonLoading
