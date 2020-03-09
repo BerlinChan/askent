@@ -62,7 +62,7 @@ const LiveQuestions: React.FC<Props> = ({
   const [orderTab, setOrderTab] = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
-  const liveQuestionsResult = useQuestionsByEventAudienceQuery({
+  const questionsQueryResult = useQuestionsByEventAudienceQuery({
     variables: {
       eventId: id as string,
       // orderBy:
@@ -95,7 +95,7 @@ const LiveQuestions: React.FC<Props> = ({
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
         const { questionAdded } = subscriptionData.data;
-        const prev = liveQuestionsResult.data;
+        const prev = questionsQueryResult.data;
 
         if (prev) {
           // add
@@ -121,7 +121,7 @@ const LiveQuestions: React.FC<Props> = ({
   useQuestionRemovedAudienceSubscription({
     variables: { eventId: id as string, role: RoleName.Audience },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      const prev = liveQuestionsResult.data;
+      const prev = questionsQueryResult.data;
 
       if (prev) {
         // remove
@@ -172,7 +172,7 @@ const LiveQuestions: React.FC<Props> = ({
           />
         </SubTabs>
         <Typography color="textSecondary">
-          {liveQuestionsResult.data?.questionsByEventAudience.totalCount}{" "}
+          {questionsQueryResult.data?.questionsByEventAudience.totalCount}{" "}
           <FormattedMessage id="questions" defaultMessage="questions" />
         </Typography>
       </Box>
@@ -180,7 +180,7 @@ const LiveQuestions: React.FC<Props> = ({
         <QuestionList
           userQueryResult={userQueryResult}
           eventQueryResult={eventQueryResult}
-          questionsQueryResult={liveQuestionsResult}
+          questionsQueryResult={questionsQueryResult}
           order={orderTab}
         />
       </Paper>
