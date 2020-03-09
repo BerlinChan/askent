@@ -80,6 +80,7 @@ const QuestionList: React.FC<Props> = ({
 
   const [endReached, setEndReached] = React.useState(false);
   const orderList = React.useMemo(() => {
+    // TODO: same sort with API request var
     const list = R.sortWith([R.descend<QuestionFieldsFragment>(R.prop("top"))])(
       data?.questionsByEvent.list || []
     );

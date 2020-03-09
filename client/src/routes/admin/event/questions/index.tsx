@@ -13,6 +13,7 @@ import {
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
   QuestionsByEventDocument,
+  QuestionFieldsFragment,
   RoleName,
   ReviewStatus,
   QuestionFilter,
@@ -104,6 +105,36 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         return questionsByEventQuery.data;
     }
   };
+  const questionMatchCurrentFilter = (
+    questionId: string | null,
+    question?: QuestionFieldsFragment
+  ): boolean => {
+    if (questionId) {
+      // question removed
+      return true;
+    } else {
+      // question added
+      return Boolean(
+        question &&
+          // 在左侧 Review 列表中
+          (question.reviewStatus === ReviewStatus.Review ||
+            // 或，在右侧列表中，匹配当前 filters
+            ((questionQueryVariables.filters as Array<string>).includes(
+              question.reviewStatus
+            ) &&
+              // 且，匹配当前 searchString
+              (!questionQueryVariables.searchString ||
+                // searchString 匹配 content
+                question.content.includes(
+                  questionQueryVariables.searchString
+                ) ||
+                // 或，searchString 匹配 user.name
+                question.author.name?.includes(
+                  questionQueryVariables.searchString
+                ))))
+      );
+    }
+  };
   const updateCache = (
     cache: DataProxy,
     filterString: string,
@@ -128,24 +159,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         const { questionAdded } = subscriptionData.data;
         const prevData = getPrevData(questionAdded.reviewStatus);
 
-        if (
-          prevData &&
-          // 在左侧 Review 列表中
-          (questionAdded.reviewStatus !== ReviewStatus.Review ||
-            // 在右侧列表中，判断是否匹配当前 filters
-            ((questionQueryVariables.filters as Array<string>).includes(
-              questionAdded.reviewStatus
-            ) &&
-              // 判断是否匹配当前 searchString
-              (!questionQueryVariables.searchString ||
-                questionAdded.content.includes(
-                  questionQueryVariables.searchString
-                ) ||
-                (questionAdded.author.name || "").includes(
-                  questionQueryVariables.searchString
-                ))))
-                // TODO: removed 是否需要添加这些判断
-        ) {
+        if (prevData && questionMatchCurrentFilter(null, questionAdded)) {
           // add
           updateCache(client, questionAdded.reviewStatus, {
             questionsByEvent: {
@@ -177,7 +191,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           : "";
         const prevData = getPrevData(reviewStatus);
 
-        if (prevData) {
+        if (prevData && questionMatchCurrentFilter(questionRemoved)) {
           // remove
           updateCache(client, reviewStatus, {
             questionsByEvent: {

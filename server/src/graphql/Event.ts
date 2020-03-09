@@ -96,7 +96,7 @@ export const eventQuery = extendType({
             ['startAt', 'DESC'],
             ['endAt', 'ASC'],
           ],
-          group: ['eventId'],
+          // group: ['eventId'],
         })
 
         return {
