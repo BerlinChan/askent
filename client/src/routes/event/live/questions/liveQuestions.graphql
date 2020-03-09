@@ -1,4 +1,4 @@
-fragment LiveQuestionFields on Question {
+fragment QuestionAudienceFields on Question {
   id
   createdAt
   updatedAt
@@ -23,7 +23,7 @@ query QuestionsByEventAudience(
     @connection(key: "questionsByEventAudience", filter: ["eventId"]) {
     ...QuestionPagedFields
     list {
-      ...LiveQuestionFields
+      ...QuestionAudienceFields
     }
   }
 }
@@ -35,32 +35,32 @@ query QuestionsByMe(
   questionsByMe(pagination: $pagination) {
     ...QuestionPagedFields
     list {
-      ...LiveQuestionFields
+      ...QuestionAudienceFields
     }
   }
 }
 
 mutation CreateQuestion($eventId: ID!, $content: String!) {
   createQuestion(eventId: $eventId, content: $content) {
-    ...LiveQuestionFields
+    ...QuestionAudienceFields
   }
 }
 
 mutation VoteUpQuestion($questionId: ID!) {
   voteUpQuestion(questionId: $questionId) {
-    ...LiveQuestionFields
+    ...QuestionAudienceFields
   }
 }
 
 subscription QuestionAddedAudience($eventId: ID!, $role: RoleName!) {
   questionAdded(eventId: $eventId, role: $role) {
-    ...LiveQuestionFields
+    ...QuestionAudienceFields
   }
 }
 
 subscription QuestionUpdatedAudience($eventId: ID!, $role: RoleName!) {
   questionUpdated(eventId: $eventId, role: $role) {
-    ...LiveQuestionFields
+    ...QuestionAudienceFields
   }
 }
 

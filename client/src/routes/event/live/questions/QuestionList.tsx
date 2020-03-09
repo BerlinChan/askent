@@ -17,8 +17,9 @@ import {
   QuestionsByEventAudienceQuery,
   QuestionsByEventAudienceQueryVariables,
   useDeleteQuestionMutation,
-  LiveQuestionFieldsFragment,
-  ReviewStatus
+  QuestionAudienceFieldsFragment,
+  ReviewStatus,
+  QuestionOrder
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
@@ -30,21 +31,21 @@ import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  liveQuestionsResult: QueryResult<
+  questionsQueryResult: QueryResult<
     QuestionsByEventAudienceQuery,
     QuestionsByEventAudienceQueryVariables
   >;
-  sortComparator?: R.Comparator<LiveQuestionFieldsFragment, number>[];
+  order?: QuestionOrder;
 }
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
   eventQueryResult,
-  liveQuestionsResult,
-  sortComparator = []
+  questionsQueryResult,
+  order = QuestionOrder.Popular
 }) => {
   const { formatMessage } = useIntl();
-  const { data, fetchMore } = liveQuestionsResult;
+  const { data, fetchMore } = questionsQueryResult;
   const [deleteQuestionMutation] = useDeleteQuestionMutation();
   const [moreMenu, setMoreMenu] = React.useState<{
     anchorEl: null | HTMLElement;
@@ -96,11 +97,27 @@ const QuestionList: React.FC<Props> = ({
   };
 
   const [endReached, setEndReached] = React.useState(false);
-  const orderList = React.useMemo(() => {
-    const list = R.sortWith([
-      R.descend<LiveQuestionFieldsFragment>(R.prop("top")),
-      ...sortComparator
-    ])(data?.questionsByEventAudience.list || []);
+  const orderedList = React.useMemo(() => {
+    const list = R.sortWith(
+      [R.descend<QuestionAudienceFieldsFragment>(R.prop("top"))].concat(
+        order === QuestionOrder.Popular
+          ? [
+              R.descend<QuestionAudienceFieldsFragment>(R.prop("voteUpCount")),
+              R.descend<QuestionAudienceFieldsFragment>(R.prop("createdAt"))
+            ]
+          : order === QuestionOrder.Recent
+          ? [
+              R.descend<QuestionAudienceFieldsFragment>(R.prop("createdAt")),
+              R.descend<QuestionAudienceFieldsFragment>(R.prop("voteUpCount"))
+            ]
+          : order === QuestionOrder.Oldest
+          ? [
+              R.ascend<QuestionAudienceFieldsFragment>(R.prop("createdAt")),
+              R.descend<QuestionAudienceFieldsFragment>(R.prop("voteUpCount"))
+            ]
+          : []
+      )
+    )(data?.questionsByEventAudience.list || []);
 
     setEndReached(
       Number(data?.questionsByEventAudience.list.length) >=
@@ -108,13 +125,14 @@ const QuestionList: React.FC<Props> = ({
     );
 
     return list;
-  }, [data, sortComparator]);
+  }, [data, order]);
   const loadMore = () => {
     if (!endReached) {
       fetchMore({
         variables: {
           pagination: {
-            offset: data?.questionsByEventAudience.list.length || DEFAULT_PAGE_OFFSET,
+            offset:
+              data?.questionsByEventAudience.list.length || DEFAULT_PAGE_OFFSET,
             limit: data?.questionsByEventAudience.limit || DEFAULT_PAGE_LIMIT
           }
         },
@@ -139,15 +157,16 @@ const QuestionList: React.FC<Props> = ({
       {0 ? (
         <Virtuoso
           style={{ height: "100%", width: "100%" }}
-          totalCount={orderList.length}
+          totalCount={orderedList.length}
           endReached={loadMore}
           item={index => {
+            if (!orderedList[index]) return <div />;
             return (
               <QuestionItem
-                question={orderList[index]}
+                question={orderedList[index]}
                 userQueryResult={userQueryResult}
                 handleMoreClick={handleMoreClick}
-                editContent={editContentIds.includes(orderList[index].id)}
+                editContent={editContentIds.includes(orderedList[index].id)}
                 handleEditContentToggle={handleEditContentToggle}
                 editContentInputRef={editContentInputRef}
               />
@@ -159,7 +178,7 @@ const QuestionList: React.FC<Props> = ({
         />
       ) : (
         <List disablePadding>
-          {orderList.map((item, index) => (
+          {orderedList.map((item, index) => (
             <QuestionItem
               key={index}
               question={item}

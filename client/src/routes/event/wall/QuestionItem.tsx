@@ -10,7 +10,7 @@ import {
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useIntl, FormattedMessage } from "react-intl";
 import {
-  WallQuestionFieldsFragment,
+  QuestionWallFieldsFragment,
   useUpdateQuestionReviewStatusMutation,
   useUpdateQuestionTopMutation,
   ReviewStatus
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  question: WallQuestionFieldsFragment;
+  question: QuestionWallFieldsFragment;
 }
 
 const QuestionListItem: React.FC<Props> = ({ question }) => {

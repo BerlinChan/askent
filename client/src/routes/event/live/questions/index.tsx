@@ -1,5 +1,4 @@
 import React from "react";
-import * as R from "ramda";
 import { useParams } from "react-router-dom";
 import { Box, Typography, Container, Paper } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -19,7 +18,8 @@ import {
   useQuestionUpdatedAudienceSubscription,
   useQuestionRemovedAudienceSubscription,
   QuestionsByEventAudienceDocument,
-  RoleName
+  RoleName,
+  QuestionOrder
 } from "../../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
 import Logo from "../../../../components/Logo";
@@ -59,14 +59,16 @@ const LiveQuestions: React.FC<Props> = ({
   const classes = useStyles();
   const { formatMessage } = useIntl();
   let { id } = useParams();
-  const [tabIndex, setTabIndex] = React.useState(0);
+  const [orderTab, setOrderTab] = React.useState<QuestionOrder>(
+    QuestionOrder.Popular
+  );
   const liveQuestionsResult = useQuestionsByEventAudienceQuery({
     variables: {
       eventId: id as string,
       // orderBy:
-      //   tabIndex === 0
+      //   orderTab === 0
       //     ? { createdAt: OrderByArg.Desc } // TODO: cant orderBy voteCount
-      //     : tabIndex === 0
+      //     : orderTab === 0
       //     ? { createdAt: OrderByArg.Desc }
       //     : undefined,
       pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
@@ -138,7 +140,7 @@ const LiveQuestions: React.FC<Props> = ({
   });
 
   const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setTabIndex(newValue);
+    setOrderTab(newValue === 0 ? QuestionOrder.Popular : QuestionOrder.Recent);
   };
 
   return (
@@ -155,7 +157,7 @@ const LiveQuestions: React.FC<Props> = ({
       </Typography>
       <QuestionForm userQueryResult={userQueryResult} />
       <Box className={classes.listActions}>
-        <SubTabs value={tabIndex} onChange={handleTabsChange}>
+        <SubTabs value={orderTab} onChange={handleTabsChange}>
           <SubTab
             label={formatMessage({
               id: "Popular",
@@ -178,14 +180,8 @@ const LiveQuestions: React.FC<Props> = ({
         <QuestionList
           userQueryResult={userQueryResult}
           eventQueryResult={eventQueryResult}
-          liveQuestionsResult={liveQuestionsResult}
-          sortComparator={
-            tabIndex === 0
-              ? [R.descend(R.prop("voteUpCount"))]
-              : tabIndex === 1
-              ? [R.descend(R.prop("createdAt"))]
-              : undefined
-          }
+          questionsQueryResult={liveQuestionsResult}
+          order={orderTab}
         />
       </Paper>
       <Box className={classes.bottomLogoBox}>

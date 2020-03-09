@@ -4,7 +4,7 @@ import { QueryResult } from "@apollo/react-common";
 import {
   QuestionsByEventWallQuery,
   QuestionsByEventWallQueryVariables,
-  WallQuestionFieldsFragment
+  QuestionWallFieldsFragment
 } from "../../../generated/graphqlHooks";
 import QuestionItem from "./QuestionItem";
 import { Virtuoso } from "react-virtuoso";
@@ -22,8 +22,9 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
 
   const [endReached, setEndReached] = React.useState(false);
   const orderedList = React.useMemo(() => {
+    // TODO: order
     const list = R.sortWith([
-      R.descend<WallQuestionFieldsFragment>(R.prop("top"))
+      R.descend<QuestionWallFieldsFragment>(R.prop("top"))
     ])(data?.questionsByEventWall.list || []);
 
     setEndReached(

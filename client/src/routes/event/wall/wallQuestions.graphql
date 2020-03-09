@@ -1,4 +1,4 @@
-fragment WallQuestionFields on Question {
+fragment QuestionWallFields on Question {
   id
   createdAt
   updatedAt
@@ -23,20 +23,20 @@ query QuestionsByEventWall(
     @connection(key: "questionsByEventWall", filter: ["eventId"]) {
     ...QuestionPagedFields
     list {
-      ...WallQuestionFields
+      ...QuestionWallFields
     }
   }
 }
 
 subscription QuestionAddedWall($eventId: ID!, $role: RoleName!) {
   questionAdded(eventId: $eventId, role: $role) {
-    ...WallQuestionFields
+    ...QuestionWallFields
   }
 }
 
 subscription QuestionUpdatedWall($eventId: ID!, $role: RoleName!) {
   questionUpdated(eventId: $eventId, role: $role) {
-    ...WallQuestionFields
+    ...QuestionWallFields
   }
 }
 

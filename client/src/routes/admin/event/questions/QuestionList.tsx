@@ -9,7 +9,8 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
   useDeleteQuestionMutation,
-  QuestionFieldsFragment
+  QuestionFieldsFragment,
+  QuestionOrder
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
@@ -24,11 +25,13 @@ interface Props {
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables
   >;
+  order?: QuestionOrder;
 }
 
 const QuestionList: React.FC<Props> = ({
   eventQuery,
-  questionsByEventQuery
+  questionsByEventQuery,
+  order = QuestionOrder.Popular
 }) => {
   const { formatMessage } = useIntl();
   const { data, fetchMore } = questionsByEventQuery;
@@ -79,11 +82,27 @@ const QuestionList: React.FC<Props> = ({
   };
 
   const [endReached, setEndReached] = React.useState(false);
-  const orderList = React.useMemo(() => {
-    // TODO: same sort with API request var
-    const list = R.sortWith([R.descend<QuestionFieldsFragment>(R.prop("top"))])(
-      data?.questionsByEvent.list || []
-    );
+  const orderedList = React.useMemo(() => {
+    const list = R.sortWith(
+      [R.descend<QuestionFieldsFragment>(R.prop("top"))].concat(
+        order === QuestionOrder.Popular
+          ? [
+              R.descend<QuestionFieldsFragment>(R.prop("voteUpCount")),
+              R.descend<QuestionFieldsFragment>(R.prop("createdAt"))
+            ]
+          : order === QuestionOrder.Recent
+          ? [
+              R.descend<QuestionFieldsFragment>(R.prop("createdAt")),
+              R.descend<QuestionFieldsFragment>(R.prop("voteUpCount"))
+            ]
+          : order === QuestionOrder.Oldest
+          ? [
+              R.ascend<QuestionFieldsFragment>(R.prop("createdAt")),
+              R.descend<QuestionFieldsFragment>(R.prop("voteUpCount"))
+            ]
+          : []
+      )
+    )(data?.questionsByEvent.list || []);
 
     setEndReached(
       Number(data?.questionsByEvent.list.length) >=
@@ -91,7 +110,7 @@ const QuestionList: React.FC<Props> = ({
     );
 
     return list;
-  }, [data]);
+  }, [data,order]);
   const loadMore = () => {
     if (!endReached) {
       fetchMore({
@@ -122,16 +141,16 @@ const QuestionList: React.FC<Props> = ({
     <React.Fragment>
       <Virtuoso
         style={{ height: "100%", width: "100%" }}
-        totalCount={orderList.length}
+        totalCount={orderedList.length}
         endReached={loadMore}
         item={index => {
-          if (!orderList[index]) return <div />;
+          if (!orderedList[index]) return <div />;
           return (
             <QuestionItem
-              question={orderList[index]}
+              question={orderedList[index]}
               eventQuery={eventQuery}
               handleMoreClick={handleMoreClick}
-              editContent={editContentIds.includes(orderList[index].id)}
+              editContent={editContentIds.includes(orderedList[index].id)}
               handleEditContentToggle={handleEditContentToggle}
               editContentInputRef={editContentInputRef}
             />

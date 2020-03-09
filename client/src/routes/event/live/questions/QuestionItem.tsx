@@ -27,7 +27,7 @@ import {
   MeQuery,
   MeQueryVariables,
   useVoteUpQuestionMutation,
-  LiveQuestionFieldsFragment,
+  QuestionAudienceFieldsFragment,
   useUpdateQuestionContentMutation,
   ReviewStatus
 } from "../../../../generated/graphqlHooks";
@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  question: LiveQuestionFieldsFragment;
+  question: QuestionAudienceFieldsFragment;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
