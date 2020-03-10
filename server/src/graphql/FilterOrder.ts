@@ -6,17 +6,6 @@ export const OrderByArg = enumType({
   members: { Asc: 'ASC', Desc: 'DESC' },
 })
 
-export enum EventDateFilterEnum {
-  All = 'ALL',
-  Active = 'Active',
-  Upcoming = 'UPCOMING',
-  Past = 'PAST',
-}
-export const EventDateFilter = enumType({
-  name: 'EventDateFilter',
-  members: Object.values(EventDateFilterEnum),
-})
-
 export enum QuestionFilterEnum {
   Starred = 'STARRED',
   // Anwsered = 'ANWSERED',

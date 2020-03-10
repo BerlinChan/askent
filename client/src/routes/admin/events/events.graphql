@@ -4,17 +4,18 @@ fragment AdminEventFields on Event {
   code
   startAt
   endAt
+  dateStatus
 }
 
 query EventsByMe(
   $searchString: String
   $pagination: PaginationInputType!
-  $dateFilter: EventDateFilter
+  $dateStatusFilter: EventDateStatus
 ) {
   eventsByMe(
     searchString: $searchString
     pagination: $pagination
-    dateFilter: $dateFilter
+    dateStatusFilter: $dateStatusFilter
   ) {
     limit
     offset

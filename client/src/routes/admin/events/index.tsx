@@ -4,7 +4,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import {
   useEventsByMeQuery,
-  EventDateFilter
+  EventDateStatus
 } from "../../../generated/graphqlHooks";
 import CreateEventDialog from "./CreateEventDialog";
 import EventList from "./EventList";
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "flex-end"
     },
     actionField: {
-      marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(2),
       "&.eventDateFilter": {
         width: 120
       }
@@ -30,17 +30,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const getEventDateFilterLabel = (value: EventDateFilter) => {
+export const getEventDateFilterLabel = (value: EventDateStatus | "ALL") => {
   switch (value) {
-    case EventDateFilter.All:
-      return <FormattedMessage id="All" defaultMessage="All" />;
-    case EventDateFilter.Active:
+    case EventDateStatus.Active:
       return <FormattedMessage id="Active" defaultMessage="Active" />;
-    case EventDateFilter.Upcoming:
+    case EventDateStatus.Upcoming:
       return <FormattedMessage id="Upcoming" defaultMessage="Upcoming" />;
-    default:
-      // case EventDateFilter.All:
+    case EventDateStatus.Past:
       return <FormattedMessage id="Past" defaultMessage="Past" />;
+    default:
+      return <FormattedMessage id="All" defaultMessage="All" />;
   }
 };
 
@@ -51,21 +50,21 @@ interface Props {
 const Events: React.FC<Props> = ({ searchString }) => {
   const classes = useStyles();
   const createDialogOpenState = React.useState(false);
-  const [eventDateFilter, setEventDateFilter] = React.useState(
-    EventDateFilter.All
-  );
+  const [eventDateFilter, setEventDateFilter] = React.useState<
+    EventDateStatus | "ALL"
+  >("ALL");
   const eventsByMeQueryResult = useEventsByMeQuery({
     variables: {
       searchString,
       pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-      dateFilter: eventDateFilter
+      dateStatusFilter: eventDateFilter !== "ALL" ? eventDateFilter : undefined
     }
   });
 
   const handleEventDateFilterChange = (
     e: React.ChangeEvent<{ value: unknown }>
   ) => {
-    setEventDateFilter(e.target.value as EventDateFilter);
+    setEventDateFilter(e.target.value as EventDateStatus);
   };
 
   const handleCreateOpen = () => {
@@ -80,9 +79,9 @@ const Events: React.FC<Props> = ({ searchString }) => {
           value={eventDateFilter}
           onChange={handleEventDateFilterChange}
         >
-          {Object.values(EventDateFilter).map((item, index) => (
+          {["ALL"].concat(Object.values(EventDateStatus)).map((item, index) => (
             <MenuItem key={index} value={item}>
-              {getEventDateFilterLabel(item)}
+              {getEventDateFilterLabel(item as EventDateStatus | "ALL")}
             </MenuItem>
           ))}
         </Select>

@@ -19,7 +19,7 @@ import {
   EventsByMeQueryVariables,
   useDeleteEventMutation,
   AdminEventFieldsFragment,
-  EventDateFilter
+  EventDateStatus
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { useHistory } from "react-router-dom";
@@ -32,7 +32,6 @@ import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
 import EventIcon from "@material-ui/icons/Event";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import EventBusyIcon from "@material-ui/icons/EventBusy";
-import { getEventDateStatus } from "../../../utils";
 import { getEventDateFilterLabel } from "./index";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -105,7 +104,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   const [endReached, setEndReached] = React.useState(false);
   const { groupKeys, groupCounts } = React.useMemo(() => {
     const groupedEvents = R.groupBy<AdminEventFieldsFragment>(
-      item => getEventDateStatus(item, new Date()) as string
+      item => item.dateStatus
     )(data?.eventsByMe.list || []);
     const groupKeys = Object.keys(groupedEvents);
     const groupCounts = Object.values(groupedEvents).map(item => item.length);
@@ -158,9 +157,12 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
               {children}
             </ListSubheader>
           )}
-          group={index => getEventDateFilterLabel(groupKeys[index] as EventDateFilter)}
+          group={index =>
+            getEventDateFilterLabel(groupKeys[index] as EventDateStatus)
+          }
           item={index => {
             const event = data?.eventsByMe.list[index];
+            if (!event) return <div />;
 
             return (
               <ListItem
@@ -174,11 +176,9 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
                 <React.Fragment>
                   <ListItemAvatar>
                     <Avatar>
-                      {getEventDateStatus(event, new Date()) ===
-                      EventDateFilter.Active ? (
+                      {event.dateStatus === EventDateStatus.Active ? (
                         <EventAvailableIcon />
-                      ) : getEventDateStatus(event, new Date()) ===
-                        EventDateFilter.Upcoming ? (
+                      ) : event.dateStatus === EventDateStatus.Upcoming ? (
                         <EventIcon />
                       ) : (
                         <EventBusyIcon />

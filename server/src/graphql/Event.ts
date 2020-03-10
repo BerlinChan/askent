@@ -2,6 +2,7 @@ import {
   objectType,
   extendType,
   stringArg,
+  enumType,
   subscriptionField,
   arg,
   idArg,
@@ -11,8 +12,12 @@ import { getAuthedUser } from '../utils'
 import { Context } from '../context'
 import { withFilter } from 'apollo-server-express'
 import sequelize, { Op } from 'sequelize'
-import { EventDateFilterEnum } from './FilterOrder'
+import { EventDateStatusEnum } from '../models/Event'
 
+export const EventDateStatus = enumType({
+  name: 'EventDateStatus',
+  members: Object.values(EventDateStatusEnum),
+})
 export const Event = objectType({
   name: 'Event',
   definition(t) {
@@ -22,6 +27,7 @@ export const Event = objectType({
     t.field('startAt', { type: 'DateTime' })
     t.field('endAt', { type: 'DateTime' })
     t.boolean('moderation')
+    t.field('dateStatus', { type: 'EventDateStatus' })
 
     t.field('owner', {
       type: 'User',
@@ -75,9 +81,13 @@ export const eventQuery = extendType({
       args: {
         searchString: stringArg(),
         pagination: arg({ type: 'PaginationInputType', required: true }),
-        dateFilter: arg({ type: 'EventDateFilter' }),
+        dateStatusFilter: arg({ type: 'EventDateStatus' }),
       },
-      resolve: async (root, { searchString, pagination, dateFilter }, ctx) => {
+      resolve: async (
+        root,
+        { searchString, pagination, dateStatusFilter },
+        ctx,
+      ) => {
         const userId = getAuthedUser(ctx)?.id as string
         const { limit, offset } = pagination
         const option = {
@@ -85,13 +95,13 @@ export const eventQuery = extendType({
             {
               [Op.and]: [
                 { ownerId: userId },
-                dateFilter === EventDateFilterEnum.Active
+                dateStatusFilter === EventDateStatusEnum.Active
                   ? sequelize.literal(
                       'NOW() BETWEEN `event`.`startAt` AND `event`.`endAt`',
                     )
-                  : dateFilter === EventDateFilterEnum.Upcoming
+                  : dateStatusFilter === EventDateStatusEnum.Upcoming
                   ? sequelize.literal('NOW() <= `event`.`startAt`')
-                  : dateFilter === EventDateFilterEnum.Past
+                  : dateStatusFilter === EventDateStatusEnum.Past
                   ? sequelize.literal('NOW() >= `event`.`endAt`')
                   : undefined,
               ],
