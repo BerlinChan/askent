@@ -192,23 +192,19 @@ export const questionQuery = extendType({
       description: 'Query question by event for Role.Wall.',
       args: {
         eventId: idArg({ required: true }),
-        star: booleanArg(),
         pagination: arg({ type: 'PaginationInputType', required: true }),
         order: arg({
           type: 'QuestionOrder',
           default: QuestionOrderEnum.Popular,
         }),
       },
-      resolve: async (root, { eventId, star, pagination, order }, ctx) => {
+      resolve: async (root, { eventId, pagination, order }, ctx) => {
         const { offset, limit } = pagination
         const option = {
-          where: Object.assign(
-            {
-              eventId,
-              reviewStatus: ReviewStatusEnum.Publish,
-            },
-            typeof star === 'boolean' ? { star } : {},
-          ),
+          where: {
+            eventId,
+            reviewStatus: ReviewStatusEnum.Publish,
+          },
         }
         const totalCount = await ctx.db.Question.count(option)
         const questions = await ctx.db.Question.findAll({

@@ -7,11 +7,14 @@
 ## TODO
 
 - [x] seed Event
+- [ ] extract EventList item component
 - [ ] admin event edit dialog
 - [ ] admin event list - duplicate event
 - [ ] audience question input for mobile
 - [ ] audience my questions dialog
 - [ ] audience question list use infinite scroll
+- [ ] reply question
+- [ ] question support voteDown
 - [ ] infinite list end / loading / more
 - [ ] Build server for production
 - [ ] [Benchmark](https://github.com/benawad/node-graphql-benchmarks)

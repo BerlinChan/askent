@@ -10,7 +10,9 @@ import {
   ListItemAvatar,
   ListItemText,
   ListItemSecondaryAction,
-  CircularProgress
+  CircularProgress,
+  Menu,
+  MenuItem
 } from "@material-ui/core";
 import { GroupedVirtuoso } from "react-virtuoso";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -26,12 +28,12 @@ import { useHistory } from "react-router-dom";
 import { FormattedMessage, FormattedDate } from "react-intl";
 import Confirm from "../../../components/Confirm";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
-import DeleteIcon from "@material-ui/icons/Delete";
 import DvrIcon from "@material-ui/icons/Dvr";
 import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
 import EventIcon from "@material-ui/icons/Event";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import EventBusyIcon from "@material-ui/icons/EventBusy";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { getEventDateFilterLabel } from "./index";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -63,6 +65,10 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   const classes = useStyles();
   const history = useHistory();
   const { data, loading, refetch, fetchMore } = eventsByMeQueryResult;
+  const [moreMenu, setMoreMenu] = React.useState<{
+    anchorEl: null | HTMLElement;
+    id: string;
+  }>({ anchorEl: null, id: "" });
   const [deleteConfirm, setDeleteConfirm] = React.useState({
     open: false,
     id: ""
@@ -83,12 +89,24 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     event.stopPropagation();
     window.open(`/event/${id}/wall`);
   };
+
+  const handleMoreOpen = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    event.stopPropagation();
+    setMoreMenu({ anchorEl: event.currentTarget, id });
+  };
+  const handleMoreClose = () => {
+    setMoreMenu({ anchorEl: null, id: "" });
+  };
   const handleOpenDelete = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     id: string
   ) => {
     event.stopPropagation();
     setDeleteConfirm({ open: true, id });
+    handleMoreClose();
   };
   const handleCloseDelete = () => {
     setDeleteConfirm({ open: false, id: "" });
@@ -145,6 +163,41 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     }
   };
 
+  const moreMenuList = [
+    {
+      disabled: true,
+      text: <FormattedMessage id="Open" defaultMessage="Open" />,
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+    },
+    {
+      disabled: true,
+      text: <FormattedMessage id="Setting" defaultMessage="Setting" />,
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+    },
+    {
+      disabled: true,
+      text: (
+        <FormattedMessage id="Share_access" defaultMessage="Share_access" />
+      ),
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+    },
+    {
+      disabled: true,
+      text: <FormattedMessage id="Duplicate" defaultMessage="Duplicate" />,
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+    },
+    {
+      disabled: true,
+      text: <FormattedMessage id="Transfer" defaultMessage="Transfer" />,
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+    },
+    {
+      text: <FormattedMessage id="Delete" defaultMessage="Delete" />,
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
+        handleOpenDelete(e, moreMenu.id)
+    }
+  ];
+
   return (
     <Fragment>
       <Paper className={classes.eventList}>
@@ -170,7 +223,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
                 divider
                 className={classes.listItem}
                 onClick={() => {
-                  history.push(`/admin/event/${event?.id}`);
+                  history.push(`/admin/event/${event.id}`);
                 }}
               >
                 <React.Fragment>
@@ -189,43 +242,40 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
                     primary={
                       <Fragment>
                         <Typography color="inherit" display="inline">
-                          {event?.name}
+                          {event.name}
                         </Typography>
                         <Typography
                           className={classes.code}
                           color="textSecondary"
                           display="inline"
                         >
-                          # {event?.code}
+                          # {event.code}
                         </Typography>
                       </Fragment>
                     }
                     secondary={
                       <React.Fragment>
-                        <FormattedDate value={event?.startAt} />
+                        <FormattedDate value={event.startAt} />
                         {" ~ "}
-                        <FormattedDate value={event?.endAt} />
+                        <FormattedDate value={event.endAt} />
                       </React.Fragment>
                     }
                   />
                   <ListItemSecondaryAction>
                     <IconButton
                       className="actionHover"
-                      onClick={e => handlePhoneClick(e, event?.id as string)}
+                      onClick={e => handlePhoneClick(e, event.id)}
                     >
                       <PhoneAndroidIcon className={classes.actionHoverIcon} />
                     </IconButton>
                     <IconButton
                       className="actionHover"
-                      onClick={e => handleWallClick(e, event?.id as string)}
+                      onClick={e => handleWallClick(e, event.id)}
                     >
                       <DvrIcon className={classes.actionHoverIcon} />
                     </IconButton>
-                    <IconButton
-                      aria-label="delete"
-                      onClick={e => handleOpenDelete(e, event?.id as string)}
-                    >
-                      <DeleteIcon />
+                    <IconButton onClick={e => handleMoreOpen(e, event.id)}>
+                      <MoreVertIcon />
                     </IconButton>
                   </ListItemSecondaryAction>
                 </React.Fragment>
@@ -244,6 +294,31 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
         />
       </Paper>
 
+      <Menu
+        MenuListProps={{ dense: true }}
+        anchorEl={moreMenu.anchorEl}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right"
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+        open={Boolean(moreMenu.anchorEl)}
+        onClose={handleMoreClose}
+      >
+        {moreMenuList.map((menuItem, index) => (
+          <MenuItem
+            key={index}
+            disabled={menuItem.disabled}
+            onClick={menuItem.onClick}
+          >
+            {menuItem.text}
+          </MenuItem>
+        ))}
+      </Menu>
       <Confirm
         open={deleteConfirm.open}
         contentText={

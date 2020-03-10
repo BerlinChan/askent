@@ -46,7 +46,7 @@ const QuestionList: React.FC<Props> = ({
   const [deleteQuestionMutation] = useDeleteQuestionMutation();
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleMoreClick = (
+  const handleMoreOpen = (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
   ) => {
@@ -135,7 +135,7 @@ const QuestionList: React.FC<Props> = ({
             <QuestionItem
               question={question}
               eventQuery={eventQuery}
-              handleMoreClick={handleMoreClick}
+              handleMoreClick={handleMoreOpen}
               editContent={editContentIds.includes(question.id)}
               handleEditContentToggle={handleEditContentToggle}
               editContentInputRef={editContentInputRef}

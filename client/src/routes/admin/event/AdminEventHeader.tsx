@@ -9,7 +9,8 @@ import {
   Toolbar,
   Paper,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Tooltip
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
@@ -20,6 +21,7 @@ import {
 import { QueryResult } from "@apollo/react-common";
 import { FormattedDate, useIntl } from "react-intl";
 import HeaderAction from "../../../components/HeaderAction";
+import SettingsIcon from "@material-ui/icons/Settings";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,11 +32,16 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       flexWrap: "nowrap"
     },
-    actions: {
+    headAction: {
       display: "flex",
       alignItems: "center",
       flexWrap: "nowrap",
       "& > *": { margin: theme.spacing(1) }
+    },
+    tabAndActionBox: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
     }
   })
 );
@@ -82,7 +89,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                 <Typography color="inherit">#{data?.eventById.code}</Typography>
                 <Typography color="inherit">#{data?.eventById.code}</Typography>
               </Box>
-              <Box className={classes.actions}>
+              <Box className={classes.headAction}>
                 <HeaderAction />
               </Box>
             </React.Fragment>
@@ -90,7 +97,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
         </Toolbar>
       </Container>
       <Paper elevation={0} square>
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" className={classes.tabAndActionBox}>
           <RouteTabs
             tabs={[
               {
@@ -118,6 +125,18 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
             indicatorColor="primary"
             textColor="primary"
           />
+          <Box>
+            <Tooltip
+              title={formatMessage({
+                id: "Event_setting",
+                defaultMessage: "Event setting"
+              })}
+            >
+              <IconButton size="small">
+                <SettingsIcon fontSize="inherit" color="inherit" />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Container>
       </Paper>
     </AppBar>
