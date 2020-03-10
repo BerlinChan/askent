@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Menu, MenuItem, Fade } from "@material-ui/core";
+import { Typography, Fade } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
@@ -11,7 +11,7 @@ import {
   QuestionOrder
 } from "../../../generated/graphqlHooks";
 import { useMouseMove } from "../../../hooks";
-import { getQuestionOrderLabel } from "../../admin/event/questions/ActionRight";
+import QuestionOrderMenu from "../../../components/QuestionOrderMenu";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,19 +55,11 @@ const OrderSelect: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { data } = questionsWallQueryResult;
-  const [orderSelected, setOrderSelected] = orderSelectedState;
-  const [sortEl, setSortEl] = React.useState<null | HTMLElement>(null);
+  const menuElState = React.useState<null | HTMLElement>(null);
   const { mouseStop } = useMouseMove();
 
   const handleSortOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setSortEl(event.currentTarget);
-  };
-  const handleSortClose = () => {
-    setSortEl(null);
-  };
-  const handleSortChange = (selected: QuestionOrder) => {
-    setOrderSelected(selected);
-    handleSortClose();
+    menuElState[1](event.currentTarget);
   };
 
   return (
@@ -81,9 +73,8 @@ const OrderSelect: React.FC<Props> = ({
         </Fade>
       </Typography>
 
-      <Menu
-        anchorEl={sortEl}
-        getContentAnchorEl={null}
+      <QuestionOrderMenu
+        classes={{ menuItem: classes.menuItem }}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "left"
@@ -92,21 +83,9 @@ const OrderSelect: React.FC<Props> = ({
           vertical: "top",
           horizontal: "left"
         }}
-        keepMounted
-        open={Boolean(sortEl)}
-        onClose={handleSortClose}
-      >
-        {Object.values(QuestionOrder).map(item => (
-          <MenuItem
-            className={classes.menuItem}
-            key={item}
-            selected={orderSelected === item}
-            onClick={() => handleSortChange(item)}
-          >
-            {getQuestionOrderLabel(item)}
-          </MenuItem>
-        ))}
-      </Menu>
+        menuElState={menuElState}
+        orderSelectedState={orderSelectedState}
+      />
     </React.Fragment>
   );
 };

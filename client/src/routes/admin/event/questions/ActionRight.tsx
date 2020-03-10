@@ -7,7 +7,6 @@ import {
   Grow,
   Paper,
   Popper,
-  Menu,
   MenuList,
   MenuItem,
   Checkbox,
@@ -27,6 +26,7 @@ import {
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables
 } from "../../../../generated/graphqlHooks";
+import QuestionOrderMenu from "../../../../components/QuestionOrderMenu";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import SortIcon from "@material-ui/icons/Sort";
@@ -72,9 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const getQuestionFilterLabel = (
-  value: ReviewStatus | QuestionFilter
-) => {
+const getQuestionFilterLabel = (value: ReviewStatus | QuestionFilter) => {
   switch (value) {
     case ReviewStatus.Publish:
       return <FormattedMessage id="Published" defaultMessage="Published" />;
@@ -84,25 +82,18 @@ export const getQuestionFilterLabel = (
       return <FormattedMessage id="Starred" defaultMessage="Starred" />;
   }
 };
-export const getQuestionOrderLabel = (value: QuestionOrder) => {
-  switch (value) {
-    case QuestionOrder.Popular:
-      return <FormattedMessage id="Popular" defaultMessage="Popular" />;
-    case QuestionOrder.Recent:
-      return <FormattedMessage id="Recent" defaultMessage="Recent" />;
-    case QuestionOrder.Oldest:
-      return <FormattedMessage id="Oldest" defaultMessage="Oldest" />;
-  }
-};
 export type QuestionQueryStateType = {
   filterSelected: Array<QuestionFilter>;
   searchString: string;
-  orderSelected: QuestionOrder;
 };
 interface Props {
   questionQueryState: [
     QuestionQueryStateType,
     React.Dispatch<React.SetStateAction<QuestionQueryStateType>>
+  ];
+  orderSelectedState: [
+    QuestionOrder,
+    React.Dispatch<React.SetStateAction<QuestionOrder>>
   ];
   questionsQueryResult: QueryResult<
     QuestionsByEventQuery,
@@ -112,6 +103,7 @@ interface Props {
 
 const ActionRight: React.FC<Props> = ({
   questionQueryState,
+  orderSelectedState,
   questionsQueryResult
 }) => {
   const classes = useStyles();
@@ -121,9 +113,7 @@ const ActionRight: React.FC<Props> = ({
     setFilterAnchorEl
   ] = React.useState<null | HTMLElement>(null);
   const searchRef = React.useRef<HTMLInputElement>(null);
-  const [sortAnchorEl, setSortAnchorEl] = React.useState<null | HTMLElement>(
-    null
-  );
+  const orderMenuElState = React.useState<null | HTMLElement>(null);
   const [queryState, setQueryState] = questionQueryState;
 
   const handleFilterOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -159,18 +149,8 @@ const ActionRight: React.FC<Props> = ({
     setQueryState({ ...queryState, searchString: event.target.value });
   };
 
-  const handleSortOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setSortAnchorEl(event.currentTarget);
-  };
-  const handleSortClose = () => {
-    setSortAnchorEl(null);
-  };
-  const handleSortOptionClick = (value: QuestionOrder) => {
-    setQueryState({
-      ...queryState,
-      orderSelected: value
-    });
-    handleSortClose();
+  const handleOrderMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    orderMenuElState[1](event.currentTarget);
   };
 
   return (
@@ -284,15 +264,15 @@ const ActionRight: React.FC<Props> = ({
           onChange={handleSearchChange}
         />
         <Tooltip title={formatMessage({ id: "Sort", defaultMessage: "Sort" })}>
-          <IconButton className={classes.iconButton} onClick={handleSortOpen}>
+          <IconButton
+            className={classes.iconButton}
+            onClick={handleOrderMenuOpen}
+          >
             <SortIcon color="inherit" fontSize="inherit" />
           </IconButton>
         </Tooltip>
 
-        <Menu
-          keepMounted
-          anchorEl={sortAnchorEl}
-          getContentAnchorEl={null}
+        <QuestionOrderMenu
           anchorOrigin={{
             vertical: "bottom",
             horizontal: "right"
@@ -301,19 +281,9 @@ const ActionRight: React.FC<Props> = ({
             vertical: "top",
             horizontal: "right"
           }}
-          open={Boolean(sortAnchorEl)}
-          onClose={handleSortClose}
-        >
-          {Object.values(QuestionOrder).map((orderItem, index) => (
-            <MenuItem
-              key={index}
-              selected={queryState.orderSelected === orderItem}
-              onClick={e => handleSortOptionClick(orderItem)}
-            >
-              {getQuestionOrderLabel(orderItem)}
-            </MenuItem>
-          ))}
-        </Menu>
+          menuElState={orderMenuElState}
+          orderSelectedState={orderSelectedState}
+        />
       </Box>
     </React.Fragment>
   );

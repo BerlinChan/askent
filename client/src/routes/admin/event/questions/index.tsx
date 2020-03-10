@@ -68,9 +68,9 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const { id } = useParams();
   const questionQueryState = React.useState<QuestionQueryStateType>({
     filterSelected: [QuestionFilter.Publish],
-    searchString: "",
-    orderSelected: QuestionOrder.Popular
+    searchString: ""
   });
+  const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQuery;
   const questionQueryVariables = {
     eventId: id as string,
@@ -79,7 +79,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
       ? questionQueryState[0].searchString
       : undefined,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: questionQueryState[0].orderSelected
+    order: questionOrderSelectedState[0]
   };
   const questionReviewQueryVariables = {
     eventId: id as string,
@@ -241,6 +241,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         <Box className={classes.listActions}>
           <ActionRight
             questionQueryState={questionQueryState}
+            orderSelectedState={questionOrderSelectedState}
             questionsQueryResult={questionsByEventQuery}
           />
         </Box>
