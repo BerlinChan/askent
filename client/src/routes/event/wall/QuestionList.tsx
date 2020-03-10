@@ -1,31 +1,38 @@
 import React from "react";
-import * as R from "ramda";
 import { QueryResult } from "@apollo/react-common";
 import {
   QuestionsByEventWallQuery,
   QuestionsByEventWallQueryVariables,
-  QuestionWallFieldsFragment
+  QuestionWallFieldsFragment,
+  QuestionOrder,
+  QuestionFilter
 } from "../../../generated/graphqlHooks";
 import QuestionItem from "./QuestionItem";
 import { Virtuoso } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
+import { sortQuestionBy } from "../../../utils";
 
 interface Props {
   questionsQueryResult: QueryResult<
     QuestionsByEventWallQuery,
     QuestionsByEventWallQueryVariables
   >;
+  order?: QuestionOrder | QuestionFilter;
 }
 
-const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
+const QuestionList: React.FC<Props> = ({
+  questionsQueryResult,
+  order = QuestionOrder.Popular
+}) => {
   const { data, fetchMore } = questionsQueryResult;
 
   const [endReached, setEndReached] = React.useState(false);
   const orderedList = React.useMemo(() => {
-    // TODO: order
-    const list = R.sortWith([
-      R.descend<QuestionWallFieldsFragment>(R.prop("top"))
-    ])(data?.questionsByEventWall.list || []);
+    const list = sortQuestionBy<QuestionWallFieldsFragment>(
+      (order !== QuestionFilter.Starred
+        ? order
+        : QuestionOrder.Popular) as QuestionOrder
+    )(data?.questionsByEventWall.list || []);
 
     setEndReached(
       Number(data?.questionsByEventWall.list.length) >=
@@ -33,7 +40,7 @@ const QuestionList: React.FC<Props> = ({ questionsQueryResult }) => {
     );
 
     return list;
-  }, [data]);
+  }, [data, order]);
   const loadMore = () => {
     if (!endReached) {
       fetchMore({

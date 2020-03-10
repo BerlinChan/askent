@@ -4,7 +4,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useParams } from "react-router-dom";
 import QRCode from "qrcode.react";
 import { FormattedMessage } from "react-intl";
-import SortSelect from "./SortSelect";
+import OrderSelect from "./OrderSelect";
 import {
   useEventByIdQuery,
   useEventUpdatedSubscription,
@@ -16,7 +16,6 @@ import {
   useQuestionUpdatedWallSubscription,
   useQuestionRemovedWallSubscription,
   RoleName,
-  QuestionFilter,
   QuestionOrder
 } from "../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
@@ -66,29 +65,26 @@ const EventWall: React.FC<Props> = () => {
   const eventByIdQueryResult = useEventByIdQuery({
     variables: { eventId: id as string }
   });
-  const orderSelectedState = React.useState<QuestionFilter | QuestionOrder>(
+  const orderSelectedState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
+  const questionsQueryVariables = {
+    eventId: id as string,
+    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+    order: orderSelectedState[0]
+  };
   const questionsWallQueryResult = useQuestionsByEventWallQuery({
-    variables: {
-      eventId: id as string,
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-      // orderBy: { createdAt: OrderByArg.Desc }
-    }
+    variables: questionsQueryVariables
   });
 
   // subscription
-  const updateCache = (
-    cache: DataProxy,
-    eventId: string,
-    data: QuestionsByEventWallQuery
-  ) => {
+  const updateCache = (cache: DataProxy, data: QuestionsByEventWallQuery) => {
     cache.writeQuery<
       QuestionsByEventWallQuery,
       Omit<QuestionsByEventWallQueryVariables, "pagination">
     >({
       query: QuestionsByEventWallDocument,
-      variables: { eventId },
+      variables: questionsQueryVariables,
       data
     });
   };
@@ -101,7 +97,7 @@ const EventWall: React.FC<Props> = () => {
 
         if (prev) {
           // add
-          updateCache(client, id as string, {
+          updateCache(client, {
             questionsByEventWall: {
               ...prev.questionsByEventWall,
               totalCount: prev.questionsByEventWall.totalCount + 1,
@@ -129,7 +125,7 @@ const EventWall: React.FC<Props> = () => {
 
         if (prev) {
           // remove
-          updateCache(client, id as string, {
+          updateCache(client, {
             questionsByEventWall: {
               ...prev.questionsByEventWall,
               totalCount: prev.questionsByEventWall.totalCount - 1,
@@ -180,13 +176,16 @@ const EventWall: React.FC<Props> = () => {
       </Grid>
       <Grid item xs={9} className={classes.gridItem}>
         <Box className={classes.rightTitleBox}>
-          <SortSelect
+          <OrderSelect
             orderSelectedState={orderSelectedState}
             questionsWallQueryResult={questionsWallQueryResult}
           />
         </Box>
         <Box className={classes.listBox}>
-          <QuestionList questionsQueryResult={questionsWallQueryResult} />
+          <QuestionList
+            questionsQueryResult={questionsWallQueryResult}
+            order={orderSelectedState[0]}
+          />
         </Box>
         {0 ? (
           <Typography variant="h6" color="inherit">

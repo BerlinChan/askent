@@ -1,5 +1,4 @@
 import React from "react";
-import * as R from "ramda";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { useIntl, FormattedMessage } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
@@ -18,6 +17,7 @@ import QuestionItem from "./QuestionItem";
 import EditIcon from "@material-ui/icons/Edit";
 import { Virtuoso } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
+import { sortQuestionBy } from "../../../../utils";
 
 interface Props {
   eventQuery: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
@@ -83,26 +83,9 @@ const QuestionList: React.FC<Props> = ({
 
   const [endReached, setEndReached] = React.useState(false);
   const orderedList = React.useMemo(() => {
-    const list = R.sortWith(
-      [R.descend<QuestionFieldsFragment>(R.prop("top"))].concat(
-        order === QuestionOrder.Popular
-          ? [
-              R.descend<QuestionFieldsFragment>(R.prop("voteUpCount")),
-              R.descend<QuestionFieldsFragment>(R.prop("createdAt"))
-            ]
-          : order === QuestionOrder.Recent
-          ? [
-              R.descend<QuestionFieldsFragment>(R.prop("createdAt")),
-              R.descend<QuestionFieldsFragment>(R.prop("voteUpCount"))
-            ]
-          : order === QuestionOrder.Oldest
-          ? [
-              R.ascend<QuestionFieldsFragment>(R.prop("createdAt")),
-              R.descend<QuestionFieldsFragment>(R.prop("voteUpCount"))
-            ]
-          : []
-      )
-    )(data?.questionsByEvent.list || []);
+    const list = sortQuestionBy<QuestionFieldsFragment>(order)(
+      data?.questionsByEvent.list || []
+    );
 
     setEndReached(
       Number(data?.questionsByEvent.list.length) >=
@@ -110,7 +93,7 @@ const QuestionList: React.FC<Props> = ({
     );
 
     return list;
-  }, [data,order]);
+  }, [data, order]);
   const loadMore = () => {
     if (!endReached) {
       fetchMore({
@@ -144,13 +127,16 @@ const QuestionList: React.FC<Props> = ({
         totalCount={orderedList.length}
         endReached={loadMore}
         item={index => {
-          if (!orderedList[index]) return <div />;
+          const question = orderedList[index] as
+            | QuestionFieldsFragment
+            | undefined;
+          if (!question) return <div />;
           return (
             <QuestionItem
-              question={orderedList[index]}
+              question={question}
               eventQuery={eventQuery}
               handleMoreClick={handleMoreClick}
-              editContent={editContentIds.includes(orderedList[index].id)}
+              editContent={editContentIds.includes(question.id)}
               handleEditContentToggle={handleEditContentToggle}
               editContentInputRef={editContentInputRef}
             />

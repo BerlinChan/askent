@@ -59,26 +59,19 @@ const LiveQuestions: React.FC<Props> = ({
   const classes = useStyles();
   const { formatMessage } = useIntl();
   let { id } = useParams();
-  const [orderTab, setOrderTab] = React.useState<QuestionOrder>(
-    QuestionOrder.Popular
-  );
+  const [orderTab, setOrderTab] = React.useState(0);
+  const questionsQueryVariables = {
+    eventId: id as string,
+    order: orderTab === 0 ? QuestionOrder.Popular : QuestionOrder.Recent,
+    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
+  };
   const questionsQueryResult = useQuestionsByEventAudienceQuery({
-    variables: {
-      eventId: id as string,
-      // orderBy:
-      //   orderTab === 0
-      //     ? { createdAt: OrderByArg.Desc } // TODO: cant orderBy voteCount
-      //     : orderTab === 0
-      //     ? { createdAt: OrderByArg.Desc }
-      //     : undefined,
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-    }
+    variables: questionsQueryVariables
   });
 
   // subscriptions
   const updateCache = (
     cache: DataProxy,
-    eventId: string,
     data: QuestionsByEventAudienceQuery
   ) => {
     cache.writeQuery<
@@ -86,7 +79,7 @@ const LiveQuestions: React.FC<Props> = ({
       Omit<QuestionsByEventAudienceQueryVariables, "pagination">
     >({
       query: QuestionsByEventAudienceDocument,
-      variables: { eventId },
+      variables: questionsQueryVariables,
       data
     });
   };
@@ -99,7 +92,7 @@ const LiveQuestions: React.FC<Props> = ({
 
         if (prev) {
           // add
-          updateCache(client, id as string, {
+          updateCache(client, {
             questionsByEventAudience: {
               ...prev.questionsByEventAudience,
               totalCount: prev.questionsByEventAudience.totalCount + 1,
@@ -125,7 +118,7 @@ const LiveQuestions: React.FC<Props> = ({
 
       if (prev) {
         // remove
-        updateCache(client, id as string, {
+        updateCache(client, {
           questionsByEventAudience: {
             ...prev.questionsByEventAudience,
             totalCount: prev.questionsByEventAudience.totalCount - 1,
@@ -140,7 +133,7 @@ const LiveQuestions: React.FC<Props> = ({
   });
 
   const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setOrderTab(newValue === 0 ? QuestionOrder.Popular : QuestionOrder.Recent);
+    setOrderTab(newValue);
   };
 
   return (
@@ -181,7 +174,7 @@ const LiveQuestions: React.FC<Props> = ({
           userQueryResult={userQueryResult}
           eventQueryResult={eventQueryResult}
           questionsQueryResult={questionsQueryResult}
-          order={orderTab}
+          order={questionsQueryVariables.order}
         />
       </Paper>
       <Box className={classes.bottomLogoBox}>

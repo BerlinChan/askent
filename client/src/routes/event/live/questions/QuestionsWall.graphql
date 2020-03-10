@@ -16,11 +16,13 @@ fragment QuestionAudienceFields on Question {
 query QuestionsByEventAudience(
   $eventId: ID!
   $pagination: PaginationInputType!
-) # $orderBy: QuestionOrderByInput
-{
-  questionsByEventAudience(eventId: $eventId, pagination: $pagination)
-    # orderBy: $orderBy
-    @connection(key: "questionsByEventAudience", filter: ["eventId"]) {
+  $order: QuestionOrder
+) {
+  questionsByEventAudience(
+    eventId: $eventId
+    pagination: $pagination
+    order: $order
+  ) @connection(key: "questionsByEventAudience", filter: ["eventId", "order"]) {
     ...QuestionPagedFields
     list {
       ...QuestionAudienceFields
@@ -29,9 +31,8 @@ query QuestionsByEventAudience(
 }
 
 query QuestionsByMe(
-  $pagination: PaginationInputType!
-) # $orderBy: QuestionOrderByInput
-{
+  $pagination: PaginationInputType! # $orderBy: QuestionOrderByInput
+) {
   questionsByMe(pagination: $pagination) {
     ...QuestionPagedFields
     list {
@@ -65,5 +66,5 @@ subscription QuestionUpdatedAudience($eventId: ID!, $role: RoleName!) {
 }
 
 subscription QuestionRemovedAudience($eventId: ID!, $role: RoleName!) {
-  questionRemoved(eventId: $eventId, role: $role) 
+  questionRemoved(eventId: $eventId, role: $role)
 }

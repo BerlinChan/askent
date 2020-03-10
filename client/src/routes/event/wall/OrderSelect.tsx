@@ -8,10 +8,10 @@ import { QueryResult } from "@apollo/react-common";
 import {
   QuestionsByEventWallQuery,
   QuestionsByEventWallQueryVariables,
-  QuestionFilter,
   QuestionOrder
 } from "../../../generated/graphqlHooks";
 import { useMouseMove } from "../../../hooks";
+import { getQuestionOrderLabel } from "../../admin/event/questions/ActionRight";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,31 +38,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const menuList: Array<{
-  label: React.ReactElement;
-  value: QuestionFilter | QuestionOrder;
-}> = [
-  {
-    label: <FormattedMessage id="Popular" defaultMessage="Popular" />,
-    value: QuestionOrder.Popular
-  },
-  {
-    label: <FormattedMessage id="Recent" defaultMessage="Recent" />,
-    value: QuestionOrder.Recent
-  },
-  {
-    label: <FormattedMessage id="Oldest" defaultMessage="Oldest" />,
-    value: QuestionOrder.Oldest
-  },
-  {
-    label: <FormattedMessage id="Starred" defaultMessage="Starred" />,
-    value: QuestionFilter.Starred
-  }
-];
 interface Props {
   orderSelectedState: [
-    QuestionFilter | QuestionOrder,
-    React.Dispatch<React.SetStateAction<QuestionFilter | QuestionOrder>>
+    QuestionOrder,
+    React.Dispatch<React.SetStateAction<QuestionOrder>>
   ];
   questionsWallQueryResult: QueryResult<
     QuestionsByEventWallQuery,
@@ -70,7 +49,7 @@ interface Props {
   >;
 }
 
-const SortSelect: React.FC<Props> = ({
+const OrderSelect: React.FC<Props> = ({
   orderSelectedState,
   questionsWallQueryResult
 }) => {
@@ -86,8 +65,10 @@ const SortSelect: React.FC<Props> = ({
   const handleSortClose = () => {
     setSortEl(null);
   };
-  const handleSortChange = (selected: QuestionFilter | QuestionOrder) =>
+  const handleSortChange = (selected: QuestionOrder) => {
     setOrderSelected(selected);
+    handleSortClose();
+  };
 
   return (
     <React.Fragment>
@@ -115,14 +96,14 @@ const SortSelect: React.FC<Props> = ({
         open={Boolean(sortEl)}
         onClose={handleSortClose}
       >
-        {menuList.map(item => (
+        {Object.values(QuestionOrder).map(item => (
           <MenuItem
             className={classes.menuItem}
-            key={item.value}
-            selected={orderSelected === item.value}
-            onClick={() => handleSortChange(item.value)}
+            key={item}
+            selected={orderSelected === item}
+            onClick={() => handleSortChange(item)}
           >
-            {item.label}
+            {getQuestionOrderLabel(item)}
           </MenuItem>
         ))}
       </Menu>
@@ -130,4 +111,4 @@ const SortSelect: React.FC<Props> = ({
   );
 };
 
-export default SortSelect;
+export default OrderSelect;

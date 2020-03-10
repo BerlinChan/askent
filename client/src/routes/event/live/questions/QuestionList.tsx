@@ -1,5 +1,4 @@
 import React from "react";
-import * as R from "ramda";
 import {
   List,
   ListItemIcon,
@@ -27,6 +26,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import QuestionItem from "./QuestionItem";
 import { Virtuoso } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
+import { sortQuestionBy } from "../../../../utils";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
@@ -98,26 +98,9 @@ const QuestionList: React.FC<Props> = ({
 
   const [endReached, setEndReached] = React.useState(false);
   const orderedList = React.useMemo(() => {
-    const list = R.sortWith(
-      [R.descend<QuestionAudienceFieldsFragment>(R.prop("top"))].concat(
-        order === QuestionOrder.Popular
-          ? [
-              R.descend<QuestionAudienceFieldsFragment>(R.prop("voteUpCount")),
-              R.descend<QuestionAudienceFieldsFragment>(R.prop("createdAt"))
-            ]
-          : order === QuestionOrder.Recent
-          ? [
-              R.descend<QuestionAudienceFieldsFragment>(R.prop("createdAt")),
-              R.descend<QuestionAudienceFieldsFragment>(R.prop("voteUpCount"))
-            ]
-          : order === QuestionOrder.Oldest
-          ? [
-              R.ascend<QuestionAudienceFieldsFragment>(R.prop("createdAt")),
-              R.descend<QuestionAudienceFieldsFragment>(R.prop("voteUpCount"))
-            ]
-          : []
-      )
-    )(data?.questionsByEventAudience.list || []);
+    const list = sortQuestionBy<QuestionAudienceFieldsFragment>(order)(
+      data?.questionsByEventAudience.list || []
+    );
 
     setEndReached(
       Number(data?.questionsByEventAudience.list.length) >=
