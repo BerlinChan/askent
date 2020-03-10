@@ -7,7 +7,6 @@
 ## TODO
 
 - [x] seed Event
-- [ ] extract EventList item component
 - [ ] admin event edit dialog
 - [ ] admin event list - duplicate event
 - [ ] audience question input for mobile

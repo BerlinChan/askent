@@ -2,14 +2,7 @@ import React, { Fragment } from "react";
 import * as R from "ramda";
 import {
   Paper,
-  Typography,
-  Avatar,
-  IconButton,
   ListSubheader,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  ListItemSecondaryAction,
   CircularProgress,
   Menu,
   MenuItem
@@ -25,16 +18,11 @@ import {
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { useHistory } from "react-router-dom";
-import { FormattedMessage, FormattedDate } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import Confirm from "../../../components/Confirm";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
-import DvrIcon from "@material-ui/icons/Dvr";
-import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
-import EventIcon from "@material-ui/icons/Event";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
-import EventBusyIcon from "@material-ui/icons/EventBusy";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { getEventDateFilterLabel } from "./index";
+import EventItem from "./EventItem";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,15 +32,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     header: {
       backgroundColor: theme.palette.background.default
-    },
-    listItem: {
-      "& .actionHover": { display: "none" },
-      "&:hover .actionHover": { display: "inline-flex" }
-    },
-    code: { marginLeft: theme.spacing(2) },
-    actionHoverIcon: {
-      fontSize: theme.typography.pxToRem(18),
-      color: theme.palette.action.disabled
     }
   })
 );
@@ -65,7 +44,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   const classes = useStyles();
   const history = useHistory();
   const { data, loading, refetch, fetchMore } = eventsByMeQueryResult;
-  const [moreMenu, setMoreMenu] = React.useState<{
+  const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
     id: string;
   }>({ anchorEl: null, id: "" });
@@ -75,30 +54,8 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   });
   const [deleteEventMutation] = useDeleteEventMutation();
 
-  const handlePhoneClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    id: string
-  ) => {
-    event.stopPropagation();
-    window.open(`/event/${id}`);
-  };
-  const handleWallClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    id: string
-  ) => {
-    event.stopPropagation();
-    window.open(`/event/${id}/wall`);
-  };
-
-  const handleMoreOpen = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string
-  ) => {
-    event.stopPropagation();
-    setMoreMenu({ anchorEl: event.currentTarget, id });
-  };
   const handleMoreClose = () => {
-    setMoreMenu({ anchorEl: null, id: "" });
+    moreMenuState[1]({ anchorEl: null, id: "" });
   };
   const handleOpenDelete = (
     event: React.MouseEvent<HTMLLIElement, MouseEvent>,
@@ -165,9 +122,10 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
 
   const moreMenuList = [
     {
-      disabled: true,
       text: <FormattedMessage id="Open" defaultMessage="Open" />,
-      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+        history.push(`/admin/event/${moreMenuState[0].id}`);
+      }
     },
     {
       disabled: true,
@@ -194,7 +152,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     {
       text: <FormattedMessage id="Delete" defaultMessage="Delete" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
-        handleOpenDelete(e, moreMenu.id)
+        handleOpenDelete(e, moreMenuState[0].id)
     }
   ];
 
@@ -217,70 +175,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
             const event = data?.eventsByMe.list[index];
             if (!event) return <div />;
 
-            return (
-              <ListItem
-                button
-                divider
-                className={classes.listItem}
-                onClick={() => {
-                  history.push(`/admin/event/${event.id}`);
-                }}
-              >
-                <React.Fragment>
-                  <ListItemAvatar>
-                    <Avatar>
-                      {event.dateStatus === EventDateStatus.Active ? (
-                        <EventAvailableIcon />
-                      ) : event.dateStatus === EventDateStatus.Upcoming ? (
-                        <EventIcon />
-                      ) : (
-                        <EventBusyIcon />
-                      )}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Fragment>
-                        <Typography color="inherit" display="inline">
-                          {event.name}
-                        </Typography>
-                        <Typography
-                          className={classes.code}
-                          color="textSecondary"
-                          display="inline"
-                        >
-                          # {event.code}
-                        </Typography>
-                      </Fragment>
-                    }
-                    secondary={
-                      <React.Fragment>
-                        <FormattedDate value={event.startAt} />
-                        {" ~ "}
-                        <FormattedDate value={event.endAt} />
-                      </React.Fragment>
-                    }
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      className="actionHover"
-                      onClick={e => handlePhoneClick(e, event.id)}
-                    >
-                      <PhoneAndroidIcon className={classes.actionHoverIcon} />
-                    </IconButton>
-                    <IconButton
-                      className="actionHover"
-                      onClick={e => handleWallClick(e, event.id)}
-                    >
-                      <DvrIcon className={classes.actionHoverIcon} />
-                    </IconButton>
-                    <IconButton onClick={e => handleMoreOpen(e, event.id)}>
-                      <MoreVertIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </React.Fragment>
-              </ListItem>
-            );
+            return <EventItem event={event} moreMenuState={moreMenuState} />;
           }}
           footer={() => {
             return endReached ? (
@@ -296,7 +191,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
 
       <Menu
         MenuListProps={{ dense: true }}
-        anchorEl={moreMenu.anchorEl}
+        anchorEl={moreMenuState[0].anchorEl}
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
@@ -306,7 +201,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
           vertical: "top",
           horizontal: "right"
         }}
-        open={Boolean(moreMenu.anchorEl)}
+        open={Boolean(moreMenuState[0].anchorEl)}
         onClose={handleMoreClose}
       >
         {moreMenuList.map((menuItem, index) => (
