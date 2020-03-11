@@ -7,7 +7,7 @@
 ## TODO
 
 - [x] seed Event
-- [ ] admin event edit dialog
+- [ ] event edit dialog
 - [ ] admin event list - duplicate event
 - [ ] audience question input for mobile
 - [ ] audience my questions dialog

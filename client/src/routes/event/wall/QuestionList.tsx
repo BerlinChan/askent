@@ -26,7 +26,6 @@ const QuestionList: React.FC<Props> = ({
 }) => {
   const { data, fetchMore } = questionsQueryResult;
 
-  const [endReached, setEndReached] = React.useState(false);
   const orderedList = React.useMemo(() => {
     const list = sortQuestionBy<QuestionWallFieldsFragment>(
       (order !== QuestionFilter.Starred
@@ -34,15 +33,10 @@ const QuestionList: React.FC<Props> = ({
         : QuestionOrder.Popular) as QuestionOrder
     )(data?.questionsByEventWall.list || []);
 
-    setEndReached(
-      Number(data?.questionsByEventWall.list.length) >=
-        Number(data?.questionsByEventWall.totalCount)
-    );
-
     return list;
   }, [data, order]);
   const loadMore = () => {
-    if (!endReached) {
+    if (data?.questionsByEventWall.hasNextPage) {
       fetchMore({
         variables: {
           pagination: {
@@ -78,7 +72,11 @@ const QuestionList: React.FC<Props> = ({
         return <QuestionItem question={orderedList[index]} />;
       }}
       footer={() => {
-        return endReached ? <div>-- end --</div> : <div>Loading...</div>;
+        return !data?.questionsByEventWall.hasNextPage ? (
+          <div>-- end --</div>
+        ) : (
+          <div>Loading...</div>
+        );
       }}
     />
   );

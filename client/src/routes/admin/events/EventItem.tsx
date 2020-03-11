@@ -14,7 +14,7 @@ import {
   EventDateStatus
 } from "../../../generated/graphqlHooks";
 import { useHistory } from "react-router-dom";
-import { FormattedDate } from "react-intl";
+import { FormattedDate, FormattedTime } from "react-intl";
 import DvrIcon from "@material-ui/icons/Dvr";
 import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
 import EventIcon from "@material-ui/icons/Event";
@@ -118,8 +118,12 @@ const EventItem: React.FC<Props> = ({ event, moreMenuState }) => {
           secondary={
             <React.Fragment>
               <FormattedDate value={event.startAt} />
+              {", "}
+              <FormattedTime value={event.startAt} />
               {" ~ "}
               <FormattedDate value={event.endAt} />
+              {", "}
+              <FormattedTime value={event.endAt} />
             </React.Fragment>
           }
         />

@@ -23,15 +23,19 @@ import Confirm from "../../../components/Confirm";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
 import { getEventDateFilterLabel } from "./index";
 import EventItem from "./EventItem";
+import EventSettingDialog from "./EventSettingDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     eventList: {
       margin: theme.spacing(2, 0),
-      flex: 1
+      flex: 1,
+      overflow: "hidden"
     },
     header: {
-      backgroundColor: theme.palette.background.default
+      color: theme.palette.primary.contrastText,
+      fontWeight: theme.typography.fontWeightBold,
+      backgroundColor: theme.palette.primary.main
     }
   })
 );
@@ -52,6 +56,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     open: false,
     id: ""
   });
+  const eventSettingState = React.useState<string | null>('null');
   const [deleteEventMutation] = useDeleteEventMutation();
 
   const handleMoreClose = () => {
@@ -61,9 +66,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     event: React.MouseEvent<HTMLLIElement, MouseEvent>,
     id: string
   ) => {
-    event.stopPropagation();
     setDeleteConfirm({ open: true, id });
-    handleMoreClose();
   };
   const handleCloseDelete = () => {
     setDeleteConfirm({ open: false, id: "" });
@@ -76,7 +79,6 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     setDeleteConfirm({ open: false, id: "" });
   };
 
-  const [endReached, setEndReached] = React.useState(false);
   const { groupKeys, groupCounts } = React.useMemo(() => {
     const groupedEvents = R.groupBy<AdminEventFieldsFragment>(
       item => item.dateStatus
@@ -84,18 +86,13 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     const groupKeys = Object.keys(groupedEvents);
     const groupCounts = Object.values(groupedEvents).map(item => item.length);
 
-    setEndReached(
-      Number(data?.eventsByMe.list.length) >=
-        Number(data?.eventsByMe.totalCount)
-    );
-
     return {
       groupKeys,
       groupCounts
     };
   }, [data]);
   const loadMore = () => {
-    if (!endReached) {
+    if (data?.eventsByMe.hasNextPage) {
       fetchMore({
         variables: {
           pagination: {
@@ -128,14 +125,16 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
       }
     },
     {
-      disabled: true,
       text: <FormattedMessage id="Setting" defaultMessage="Setting" />,
-      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+        eventSettingState[1](moreMenuState[0].id);
+        handleMoreClose();
+      }
     },
     {
       disabled: true,
       text: (
-        <FormattedMessage id="Share_access" defaultMessage="Share_access" />
+        <FormattedMessage id="Share_access" defaultMessage="Share access" />
       ),
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
     },
@@ -151,8 +150,10 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     },
     {
       text: <FormattedMessage id="Delete" defaultMessage="Delete" />,
-      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) =>
-        handleOpenDelete(e, moreMenuState[0].id)
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+        handleOpenDelete(e, moreMenuState[0].id);
+        handleMoreClose();
+      }
     }
   ];
 
@@ -178,7 +179,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
             return <EventItem event={event} moreMenuState={moreMenuState} />;
           }}
           footer={() => {
-            return endReached ? (
+            return !data?.eventsByMe.hasNextPage ? (
               <div>-- end --</div>
             ) : loading ? (
               <CircularProgress />
@@ -226,6 +227,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
         onCancel={handleCloseDelete}
         onOk={handleDelete}
       />
+      <EventSettingDialog eventIdState={eventSettingState} />
     </Fragment>
   );
 };

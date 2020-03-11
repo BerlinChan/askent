@@ -96,21 +96,15 @@ const QuestionList: React.FC<Props> = ({
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
 
-  const [endReached, setEndReached] = React.useState(false);
   const orderedList = React.useMemo(() => {
     const list = sortQuestionBy<QuestionAudienceFieldsFragment>(order)(
       data?.questionsByEventAudience.list || []
     );
 
-    setEndReached(
-      Number(data?.questionsByEventAudience.list.length) >=
-        Number(data?.questionsByEventAudience.totalCount)
-    );
-
     return list;
   }, [data, order]);
   const loadMore = () => {
-    if (!endReached) {
+    if (data?.questionsByEventAudience.hasNextPage) {
       fetchMore({
         variables: {
           pagination: {
@@ -156,7 +150,11 @@ const QuestionList: React.FC<Props> = ({
             );
           }}
           footer={() => {
-            return endReached ? <div>-- end --</div> : <div>Loading...</div>;
+            return !data?.questionsByEventAudience.hasNextPage ? (
+              <div>-- end --</div>
+            ) : (
+              <div>Loading...</div>
+            );
           }}
         />
       ) : (

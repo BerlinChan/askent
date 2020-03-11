@@ -8,7 +8,7 @@ import {
   DialogActions
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../components/Form";
@@ -23,7 +23,7 @@ import {
 import { useSnackbar } from "notistack";
 import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../../constant";
 import { TextField } from "formik-material-ui";
-import { DatePicker } from "formik-material-ui-pickers";
+import { DateTimePicker } from "formik-material-ui-pickers";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,9 +46,10 @@ interface Props {
 
 const CreateEventDialog: React.ComponentType<Props> = ({
   openState,
-  eventsQueryResult,
+  eventsQueryResult
 }) => {
   const classes = useStyles();
+  const { formatMessage } = useIntl();
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = openState;
   const [
@@ -111,9 +112,15 @@ const CreateEventDialog: React.ComponentType<Props> = ({
         onSubmit={async values => {
           const { data } = await createEventMutation({ variables: values });
           if (data) {
-            enqueueSnackbar("Create success!", {
-              variant: "success"
-            });
+            enqueueSnackbar(
+              formatMessage({
+                id: "Event_created",
+                defaultMessage: "Event created"
+              }),
+              {
+                variant: "success"
+              }
+            );
             handleClose();
           }
         }}
@@ -134,7 +141,7 @@ const CreateEventDialog: React.ComponentType<Props> = ({
             />
             <Box className={classes.dateRange}>
               <Field
-                component={DatePicker}
+                component={DateTimePicker}
                 id="startAt"
                 name="startAt"
                 label="Start date"
@@ -145,7 +152,7 @@ const CreateEventDialog: React.ComponentType<Props> = ({
                 disablePast
               />
               <Field
-                component={DatePicker}
+                component={DateTimePicker}
                 id="endAt"
                 name="endAt"
                 label="End date"

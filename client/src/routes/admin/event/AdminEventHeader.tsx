@@ -19,7 +19,7 @@ import {
   EventByIdQueryVariables
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
-import { FormattedDate, useIntl } from "react-intl";
+import { FormattedDate, FormattedTime, useIntl } from "react-intl";
 import HeaderAction from "../../../components/HeaderAction";
 import SettingsIcon from "@material-ui/icons/Settings";
 
@@ -80,8 +80,13 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                     {data?.eventById.name}
                   </Typography>
                   <Typography color="inherit">
-                    <FormattedDate value={data?.eventById.startAt} /> ~{" "}
+                    <FormattedDate value={data?.eventById.startAt} />
+                    {", "}
+                    <FormattedTime value={data?.eventById.startAt} />
+                    {" ~ "}
                     <FormattedDate value={data?.eventById.endAt} />
+                    {", "}
+                    <FormattedTime value={data?.eventById.endAt} />
                   </Typography>
                 </Box>
               </Box>

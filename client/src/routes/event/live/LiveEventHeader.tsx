@@ -27,7 +27,7 @@ import HeaderAction from "../../../components/HeaderAction";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
-import { FormattedMessage, FormattedDate } from "react-intl";
+import { FormattedMessage, FormattedDate, FormattedTime } from "react-intl";
 
 const drawerWidth = 240;
 
@@ -167,8 +167,12 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
           <Typography>{data?.eventById.name}</Typography>
           <Typography variant="body2">
             <FormattedDate value={data?.eventById.startAt} />
+            {", "}
+            <FormattedTime value={data?.eventById.startAt} />
             {" ~ "}
             <FormattedDate value={data?.eventById.endAt} />
+            {", "}
+            <FormattedTime value={data?.eventById.endAt} />
           </Typography>
           <Typography variant="body2" color="textSecondary">
             # {data?.eventById.code}

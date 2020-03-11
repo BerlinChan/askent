@@ -9,7 +9,7 @@ import {
   Theme,
   fade
 } from "@material-ui/core/styles";
-import { FormattedMessage, FormattedDate } from "react-intl";
+import { FormattedMessage, FormattedDate, FormattedTime } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
 import {
   EventForLoginQuery,
@@ -101,8 +101,13 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
           {data?.eventById.code}
         </Typography>
         <Typography paragraph color="textSecondary">
-          <FormattedDate value={data?.eventById.startAt} /> ~
+          <FormattedDate value={data?.eventById.startAt} />
+          {", "}
+          <FormattedTime value={data?.eventById.startAt} />
+          {" ~ "}
           <FormattedDate value={data?.eventById.endAt} />
+          {", "}
+          <FormattedTime value={data?.eventById.endAt} />
         </Typography>
         <ButtonLoading
           variant="contained"

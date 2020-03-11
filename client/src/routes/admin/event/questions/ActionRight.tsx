@@ -156,9 +156,13 @@ const ActionRight: React.FC<Props> = ({
   return (
     <React.Fragment>
       <Box className={classes.filterBox} onClick={handleFilterOpen}>
-        <Typography className={classes.totalCount} color="textSecondary">
-          {questionsQueryResult.data?.questionsByEvent.totalCount}
-        </Typography>
+        <Tooltip
+          title={formatMessage({ id: "Total", defaultMessage: "Total" })}
+        >
+          <Typography className={classes.totalCount} color="textSecondary">
+            {questionsQueryResult.data?.questionsByEvent.totalCount}
+          </Typography>
+        </Tooltip>
         {queryState.filterSelected.map((selectedItem, index) => (
           <Chip
             className={classes.chip}
@@ -183,7 +187,7 @@ const ActionRight: React.FC<Props> = ({
             <Grow
               {...TransitionProps}
               style={{
-                transformOrigin: "left top"
+                transformOrigin: "center top"
               }}
             >
               <Paper>
