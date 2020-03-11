@@ -4,6 +4,10 @@ import {
   Tabs,
   Tab,
   Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   Button,
   Dialog,
   DialogTitle,
@@ -30,6 +34,7 @@ import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../../constant";
 import { TextField } from "formik-material-ui";
 import { DateTimePicker } from "formik-material-ui-pickers";
 import CloseIcon from "@material-ui/icons/Close";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import TabPanel from "../../../components/TabPanel";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -39,15 +44,25 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "space-between",
       alignItems: "center"
     },
-    containerGrid: { width: 900 },
+    dialogContent: {
+      display: "flex",
+      overflowY: "hidden"
+    },
     tabs: {
+      width: 180,
       borderRight: `1px solid ${theme.palette.divider}`
     },
     tabRoot: {
-      paddingRight: theme.spacing(3)
+      paddingRight: theme.spacing(2)
     },
     tabWrapper: {
       alignItems: "flex-end"
+    },
+    contentRightBox: {
+      width: 700,
+      height: "100%",
+      overflowY: "auto",
+      marginLeft: theme.spacing(2)
     }
   })
 );
@@ -103,49 +118,57 @@ const EventSettingDialog: React.ComponentType<Props> = ({
           <CloseIcon color="inherit" fontSize="small" />
         </IconButton>
       </DialogTitle>
-      <DialogContent>
-        <Grid container className={classes.containerGrid}>
-          <Grid item xs={2}>
-            <Tabs
-              orientation="vertical"
-              variant="scrollable"
-              className={classes.tabs}
-              value={tabIndex}
-              onChange={handleTabChange}
-            >
-              {tabList.map((item, index) => (
-                <Tab
-                  classes={{
-                    root: classes.tabRoot,
-                    wrapper: classes.tabWrapper
-                  }}
-                  key={index}
-                  label={item}
+      <DialogContent className={classes.dialogContent}>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          className={classes.tabs}
+          value={tabIndex}
+          onChange={handleTabChange}
+        >
+          {tabList.map((item, index) => (
+            <Tab
+              classes={{
+                root: classes.tabRoot,
+                wrapper: classes.tabWrapper
+              }}
+              key={index}
+              label={item}
+            />
+          ))}
+        </Tabs>
+        <Box className={classes.contentRightBox}>
+          <TabPanel value={tabIndex} index={0}>
+            <List>
+              <ListItem alignItems="flex-start" divider>
+                <ListItemIcon>
+                  <InfoOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={formatMessage({
+                    id: "Basic_information",
+                    defaultMessage: "Basic information"
+                  })}
                 />
-              ))}
-            </Tabs>
-          </Grid>
-          <Grid item xs={10}>
-            <TabPanel value={tabIndex} index={0}>
-              Item One
-            </TabPanel>
-            <TabPanel value={tabIndex} index={1}>
-              Item Two
-            </TabPanel>
-            <TabPanel value={tabIndex} index={2}>
-              Item Three
-            </TabPanel>
-            <TabPanel value={tabIndex} index={3}>
-              Item Four
-            </TabPanel>
-            <TabPanel value={tabIndex} index={4}>
-              Item Five
-            </TabPanel>
-          </Grid>
-        </Grid>
+              </ListItem>
+            </List>
+          </TabPanel>
+          <TabPanel value={tabIndex} index={1}>
+            Item Two
+          </TabPanel>
+          <TabPanel value={tabIndex} index={2}>
+            Item Three
+          </TabPanel>
+          <TabPanel value={tabIndex} index={3}>
+            Item Four
+          </TabPanel>
+          <TabPanel value={tabIndex} index={4}>
+            Item Five
+          </TabPanel>
+        </Box>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleClose} color="primary">
+        <Button variant="contained" color="primary" onClick={handleClose}>
           <FormattedMessage id="Save" defaultMessage="Save" />
         </Button>
       </DialogActions>

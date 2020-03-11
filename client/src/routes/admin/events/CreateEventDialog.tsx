@@ -101,12 +101,22 @@ const CreateEventDialog: React.ComponentType<Props> = ({
           }
 
           if (endAt < startAt) {
-            return { endAt: "End must after start" };
+            return {
+              endAt: formatMessage({
+                id: "End_must_after_start",
+                defaultMessage: "End must after start"
+              })
+            };
           }
 
           await checkEventCodeExistLazyQuery({ variables: { code } });
           if (checkEventCodeData?.checkEventCodeExist) {
-            return { code: "Code exist" };
+            return {
+              code: formatMessage({
+                id: "Code_existed",
+                defaultMessage: "Code existed"
+              })
+            };
           }
         }}
         onSubmit={async values => {
@@ -127,7 +137,7 @@ const CreateEventDialog: React.ComponentType<Props> = ({
       >
         <Form className={classes.createForm}>
           <DialogTitle>
-            <FormattedMessage id="CREAT_EVENT" />
+            <FormattedMessage id="Create_event" defaultMessage="Create event" />
           </DialogTitle>
           <DialogContent>
             <Field
@@ -144,7 +154,10 @@ const CreateEventDialog: React.ComponentType<Props> = ({
                 component={DateTimePicker}
                 id="startAt"
                 name="startAt"
-                label="Start date"
+                label={formatMessage({
+                  id: "Start_datetime",
+                  defaultMessage: "Start date time"
+                })}
                 variant="inline"
                 margin="normal"
                 autoOk
@@ -155,7 +168,10 @@ const CreateEventDialog: React.ComponentType<Props> = ({
                 component={DateTimePicker}
                 id="endAt"
                 name="endAt"
-                label="End date"
+                label={formatMessage({
+                  id: "End_datetime",
+                  defaultMessage: "End date time"
+                })}
                 variant="inline"
                 margin="normal"
                 autoOk
@@ -168,14 +184,16 @@ const CreateEventDialog: React.ComponentType<Props> = ({
               fullWidth
               id="code"
               name="code"
-              label="Event Code"
-              type="code"
+              label={formatMessage({
+                id: "Event_Code",
+                defaultMessage: "Event Code"
+              })}
               margin="normal"
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>
-              <FormattedMessage id="CANCEL" defaultMessage="Cancel" />
+              <FormattedMessage id="Cancel" defaultMessage="Cancel" />
             </Button>
             <ButtonLoading
               className={classes.boldButton}
@@ -184,7 +202,7 @@ const CreateEventDialog: React.ComponentType<Props> = ({
               disabled={createEventLoading || checkEventCodeLoading}
               loading={createEventLoading || checkEventCodeLoading}
             >
-              <FormattedMessage id="CREATE" defaultMessage="Create" />
+              <FormattedMessage id="Create" defaultMessage="Create" />
             </ButtonLoading>
           </DialogActions>
         </Form>
