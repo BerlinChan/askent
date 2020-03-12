@@ -611,7 +611,7 @@ export const questionMutation = extendType({
           },
         )
 
-        event.questions.forEach(
+        event?.questions.forEach(
           (
             questionItem: QuestionModelStatic & {
               id: string

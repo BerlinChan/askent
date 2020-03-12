@@ -10,19 +10,20 @@ import {
   DialogActions,
   IconButton,
   Typography,
-  InputAdornment
+  InputAdornment,
+  Tooltip
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { ButtonLoading } from "../../../components/Form";
+import { ButtonLoading } from "../Form";
 import {
   useCheckEventCodeExistLazyQuery,
   useEventByIdLazyQuery
-} from "../../../generated/graphqlHooks";
+} from "../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
-import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../../constant";
+import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../constant";
 import { TextField, Switch } from "formik-material-ui";
 import { DateTimePicker } from "formik-material-ui-pickers";
 import CloseIcon from "@material-ui/icons/Close";
@@ -30,7 +31,7 @@ import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import SecurityIcon from "@material-ui/icons/Security";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
-import TabPanel from "../../../components/TabPanel";
+import TabPanel from "../TabPanel";
 import CollapseList from "./CollapseList";
 import SwitchItem from "./SwitchItem";
 
@@ -161,6 +162,7 @@ const EventSettingDialog: React.ComponentType<Props> = ({
               code: eventData?.eventById.code || "",
               startAt: new Date(eventData?.eventById.startAt),
               endAt: new Date(eventData?.eventById.endAt),
+              eventLink: `${window.location.origin}/event/${eventData?.eventById.id}`,
               moderation: eventData?.eventById.moderation
             }}
             validate={async ({ name, code, startAt, endAt }) => {
@@ -294,12 +296,32 @@ const EventSettingDialog: React.ComponentType<Props> = ({
                               readOnly: true,
                               endAdornment: (
                                 <InputAdornment position="end">
-                                  <IconButton size="small" onClick={e => {}}>
-                                    <FileCopyOutlinedIcon
-                                      fontSize="inherit"
-                                      color="inherit"
-                                    />
-                                  </IconButton>
+                                  <Tooltip
+                                    placement="right"
+                                    title={formatMessage({
+                                      id: "Copy to clipboard",
+                                      defaultMessage: "Copy to clipboard"
+                                    })}
+                                  >
+                                    <IconButton
+                                      size="small"
+                                      onClick={e => {
+                                        // TODO: copy to clipboard
+                                        enqueueSnackbar(
+                                          formatMessage({
+                                            id: "Copied",
+                                            defaultMessage: "Copied"
+                                          }),
+                                          { variant: "success" }
+                                        );
+                                      }}
+                                    >
+                                      <FileCopyOutlinedIcon
+                                        fontSize="inherit"
+                                        color="inherit"
+                                      />
+                                    </IconButton>
+                                  </Tooltip>
                                 </InputAdornment>
                               )
                             }}

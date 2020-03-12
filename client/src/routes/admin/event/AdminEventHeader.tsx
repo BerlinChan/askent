@@ -22,6 +22,7 @@ import { QueryResult } from "@apollo/react-common";
 import { FormattedDate, FormattedTime, useIntl } from "react-intl";
 import HeaderAction from "../../../components/HeaderAction";
 import SettingsIcon from "@material-ui/icons/Settings";
+import EventSettingDialog from "../../../components/EventSettingDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,97 +55,112 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const history = useHistory();
   let { url } = useRouteMatch();
+  const eventSettingState = React.useState<string>("");
   const { formatMessage } = useIntl();
   const { data, loading } = eventQuery;
 
   return (
-    <AppBar position="static" elevation={2}>
-      <Container maxWidth="lg">
-        <Toolbar className={classes.toolbar}>
-          {loading ? (
-            <CircularProgress />
-          ) : (
-            <React.Fragment>
-              <Box className={classes.leftBox}>
-                <IconButton
-                  edge="start"
-                  color="inherit"
-                  size="small"
-                  style={{ width: 48 }}
-                  onClick={() => history.goBack()}
-                >
-                  <NavigateBeforeIcon fontSize="large" />
-                </IconButton>
+    <React.Fragment>
+      <AppBar position="static" elevation={2}>
+        <Container maxWidth="lg">
+          <Toolbar className={classes.toolbar}>
+            {loading ? (
+              <CircularProgress />
+            ) : (
+              <React.Fragment>
+                <Box className={classes.leftBox}>
+                  <IconButton
+                    edge="start"
+                    color="inherit"
+                    size="small"
+                    style={{ width: 48 }}
+                    onClick={() => history.goBack()}
+                  >
+                    <NavigateBeforeIcon fontSize="large" />
+                  </IconButton>
+                  <Box>
+                    <Typography color="inherit">
+                      {data?.eventById.name}
+                    </Typography>
+                    <Typography variant="body2" color="inherit">
+                      <FormattedDate value={data?.eventById.startAt} />
+                      {", "}
+                      <FormattedTime value={data?.eventById.startAt} />
+                      {" ~ "}
+                      <FormattedDate value={data?.eventById.endAt} />
+                      {", "}
+                      <FormattedTime value={data?.eventById.endAt} />
+                    </Typography>
+                  </Box>
+                </Box>
                 <Box>
                   <Typography color="inherit">
-                    {data?.eventById.name}
+                    #{data?.eventById.code}
                   </Typography>
                   <Typography color="inherit">
-                    <FormattedDate value={data?.eventById.startAt} />
-                    {", "}
-                    <FormattedTime value={data?.eventById.startAt} />
-                    {" ~ "}
-                    <FormattedDate value={data?.eventById.endAt} />
-                    {", "}
-                    <FormattedTime value={data?.eventById.endAt} />
+                    {data?.eventById.dateStatus}
                   </Typography>
                 </Box>
-              </Box>
-              <Box>
-                <Typography color="inherit">#{data?.eventById.code}</Typography>
-                <Typography color="inherit">#{data?.eventById.code}</Typography>
-              </Box>
-              <Box className={classes.headAction}>
-                <HeaderAction />
-              </Box>
-            </React.Fragment>
-          )}
-        </Toolbar>
-      </Container>
-      <Paper elevation={0} square>
-        <Container maxWidth="lg" className={classes.tabAndActionBox}>
-          <RouteTabs
-            tabs={[
-              {
-                label: formatMessage({
-                  id: "Audience_Q&A",
-                  defaultMessage: "Audience Q&A"
-                }),
-                to: `${url}/questions`
-              },
-              {
-                label: formatMessage({
-                  id: "Live_polls",
-                  defaultMessage: "Live polls"
-                }),
-                to: `${url}/polls`
-              },
-              {
-                label: formatMessage({
-                  id: "Analitics",
-                  defaultMessage: "Analitics"
-                }),
-                to: `${url}/analytics`
-              }
-            ]}
-            indicatorColor="primary"
-            textColor="primary"
-          />
-          <Box>
-            <Tooltip
-              title={formatMessage({
-                id: "Event_setting",
-                defaultMessage: "Event setting"
-              })}
-            >
-              <IconButton size="small">
-                <SettingsIcon fontSize="inherit" color="inherit" />
-              </IconButton>
-            </Tooltip>
-          </Box>
+                <Box className={classes.headAction}>
+                  <HeaderAction />
+                </Box>
+              </React.Fragment>
+            )}
+          </Toolbar>
         </Container>
-      </Paper>
-    </AppBar>
+        <Paper elevation={0} square>
+          <Container maxWidth="lg" className={classes.tabAndActionBox}>
+            <RouteTabs
+              tabs={[
+                {
+                  label: formatMessage({
+                    id: "Audience_Q&A",
+                    defaultMessage: "Audience Q&A"
+                  }),
+                  to: `${url}/questions`
+                },
+                {
+                  label: formatMessage({
+                    id: "Live_polls",
+                    defaultMessage: "Live polls"
+                  }),
+                  to: `${url}/polls`
+                },
+                {
+                  label: formatMessage({
+                    id: "Analitics",
+                    defaultMessage: "Analitics"
+                  }),
+                  to: `${url}/analytics`
+                }
+              ]}
+              indicatorColor="primary"
+              textColor="primary"
+            />
+            <Box>
+              <Tooltip
+                title={formatMessage({
+                  id: "Event_setting",
+                  defaultMessage: "Event setting"
+                })}
+              >
+                <IconButton
+                  size="small"
+                  disabled={loading && !data}
+                  onClick={e =>
+                    eventSettingState[1](data?.eventById.id as string)
+                  }
+                >
+                  <SettingsIcon fontSize="inherit" color="inherit" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Container>
+        </Paper>
+      </AppBar>
+
+      <EventSettingDialog eventIdState={eventSettingState} />
+    </React.Fragment>
   );
 };
 

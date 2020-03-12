@@ -23,7 +23,7 @@ import Confirm from "../../../components/Confirm";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
 import { getEventDateFilterLabel } from "./index";
 import EventItem from "./EventItem";
-import EventSettingDialog from "./EventSettingDialog";
+import EventSettingDialog from "../../../components/EventSettingDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
