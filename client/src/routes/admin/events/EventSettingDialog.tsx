@@ -17,8 +17,10 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../components/Form";
-import { add } from "date-fns";
-import { useCheckEventCodeExistLazyQuery } from "../../../generated/graphqlHooks";
+import {
+  useCheckEventCodeExistLazyQuery,
+  useEventByIdLazyQuery
+} from "../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
 import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../../constant";
 import { TextField, Switch } from "formik-material-ui";
@@ -80,10 +82,7 @@ const tabList = [
 ];
 
 interface Props {
-  eventIdState: [
-    string | null,
-    React.Dispatch<React.SetStateAction<string | null>>
-  ];
+  eventIdState: [string, React.Dispatch<React.SetStateAction<string>>];
   onClose?: (reason: "save" | "cancel") => void;
 }
 
@@ -97,15 +96,28 @@ const EventSettingDialog: React.ComponentType<Props> = ({
   const [eventId, setEventId] = eventIdState;
   const [tabIndex, setTabIndex] = React.useState(0);
   const [
+    eventByIdQuery,
+    { data: eventData, loading: eventLoading }
+  ] = useEventByIdLazyQuery();
+  const [
     checkEventCodeExistLazyQuery,
     { data: checkEventCodeData, loading: checkEventCodeLoading }
   ] = useCheckEventCodeExistLazyQuery();
+
+  React.useEffect(() => {
+    if (eventId) {
+      eventByIdQuery({ variables: { eventId } });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventId]);
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);
   };
   const handleClose = () => {
-    setEventId(null);
+    setEventId("");
+    setTabIndex(0);
     onClose && onClose("cancel");
   };
 
@@ -143,11 +155,13 @@ const EventSettingDialog: React.ComponentType<Props> = ({
         </Tabs>
         <Box className={classes.contentRightBox}>
           <Formik
+            enableReinitialize
             initialValues={{
-              name: "",
-              code: "",
-              startAt: new Date(),
-              endAt: add(new Date(), { days: 4 })
+              name: eventData?.eventById.name || "",
+              code: eventData?.eventById.code || "",
+              startAt: new Date(eventData?.eventById.startAt),
+              endAt: new Date(eventData?.eventById.endAt),
+              moderation: eventData?.eventById.moderation
             }}
             validate={async ({ name, code, startAt, endAt }) => {
               try {
@@ -304,6 +318,7 @@ const EventSettingDialog: React.ComponentType<Props> = ({
                       body: <Box></Box>
                     }
                   ]}
+                  defaultActiveKey={[0]}
                 />
               </TabPanel>
               <TabPanel value={tabIndex} index={1}>
@@ -333,7 +348,11 @@ const EventSettingDialog: React.ComponentType<Props> = ({
                               />
                             }
                             switchField={
-                              <Field component={Switch} name="moderation" />
+                              <Field
+                                component={Switch}
+                                type="checkbox"
+                                name="moderation"
+                              />
                             }
                           />
                         </React.Fragment>
@@ -363,9 +382,9 @@ const EventSettingDialog: React.ComponentType<Props> = ({
         <ButtonLoading
           variant="contained"
           color="primary"
+          style={{ width: 100 }}
           type="submit"
-          disabled={checkEventCodeLoading}
-          loading={checkEventCodeLoading}
+          loading={eventLoading || checkEventCodeLoading}
         >
           <FormattedMessage id="Save" defaultMessage="Save" />
         </ButtonLoading>

@@ -13,7 +13,7 @@ import {
   EventsByMeQuery,
   EventsByMeQueryVariables,
   useDeleteEventMutation,
-  AdminEventFieldsFragment,
+  EventFieldsFragment,
   EventDateStatus
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
@@ -56,7 +56,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
     open: false,
     id: ""
   });
-  const eventSettingState = React.useState<string | null>('null');
+  const eventSettingState = React.useState<string>("");
   const [deleteEventMutation] = useDeleteEventMutation();
 
   const handleMoreClose = () => {
@@ -80,7 +80,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   };
 
   const { groupKeys, groupCounts } = React.useMemo(() => {
-    const groupedEvents = R.groupBy<AdminEventFieldsFragment>(
+    const groupedEvents = R.groupBy<EventFieldsFragment>(
       item => item.dateStatus
     )(data?.eventsByMe.list || []);
     const groupKeys = Object.keys(groupedEvents);

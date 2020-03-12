@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
-  AdminEventFieldsFragment,
+  EventFieldsFragment,
   EventDateStatus
 } from "../../../generated/graphqlHooks";
 import { useHistory } from "react-router-dom";
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  event: AdminEventFieldsFragment;
+  event: EventFieldsFragment;
   moreMenuState: [
     {
       anchorEl: HTMLElement | null;

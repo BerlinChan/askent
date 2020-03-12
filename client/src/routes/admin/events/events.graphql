@@ -1,10 +1,19 @@
-fragment AdminEventFields on Event {
+fragment EventFields on Event {
   id
   name
   code
   startAt
   endAt
   dateStatus
+}
+fragment EventDetailFields on Event {
+  id
+  name
+  code
+  startAt
+  endAt
+  dateStatus
+  moderation
 }
 
 query EventsByMe(
@@ -22,8 +31,14 @@ query EventsByMe(
     totalCount
     hasNextPage
     list {
-      ...AdminEventFields
+      ...EventFields
     }
+  }
+}
+
+query EventById($eventId: ID!) {
+  eventById(eventId: $eventId) {
+    ...EventDetailFields
   }
 }
 
@@ -38,16 +53,41 @@ mutation CreateEvent(
   $endAt: DateTime!
 ) {
   createEvent(code: $code, name: $name, startAt: $startAt, endAt: $endAt) {
+    ...EventFields
+  }
+}
+
+mutation UpdateEvent(
+  $eventId: ID!
+  $code: String
+  $name: String
+  $startAt: DateTime
+  $endAt: DateTime
+  $moderation: Boolean
+) {
+  updateEvent(
+    eventId: $eventId
+    code: $code
+    name: $name
+    startAt: $startAt
+    endAt: $endAt
+    moderation: $moderation
+  ) {
     id
     code
     name
-    createdAt
-    updatedAt
     startAt
     endAt
+    moderation
   }
 }
 
 mutation DeleteEvent($eventId: ID!) {
   deleteEvent(eventId: $eventId)
+}
+
+subscription EventUpdated($eventId: ID!) {
+  eventUpdated(eventId: $eventId) {
+    ...EventDetailFields
+  }
 }
