@@ -15,7 +15,7 @@ fragment QuestionAudienceFields on Question {
 
 query QuestionsByEventAudience(
   $eventId: ID!
-  $pagination: PaginationInputType!
+  $pagination: PaginationInput!
   $order: QuestionOrder
 ) {
   questionsByEventAudience(
@@ -31,7 +31,7 @@ query QuestionsByEventAudience(
 }
 
 query QuestionsByMe(
-  $pagination: PaginationInputType! # $orderBy: QuestionOrderByInput
+  $pagination: PaginationInput! # $orderBy: QuestionOrderByInput
 ) {
   questionsByMe(pagination: $pagination) {
     ...QuestionPagedFields

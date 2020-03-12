@@ -11,7 +11,12 @@ import {
   IconButton,
   Typography
 } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  fade
+} from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -28,32 +33,55 @@ import TabPanelFeatures from "./TabPanelFeatures";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    paper: { overflowY: "hidden" },
     dialogTitle: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center"
     },
-    dialogContent: {
-      display: "flex",
-      overflowY: "hidden"
-    },
+    form: { display: "flex", flexDirection: "column", overflow: "hidden" },
+    dialogContent: { display: "flex", overflowY: "hidden" },
     tabs: {
       width: 200,
       borderRight: `1px solid ${theme.palette.divider}`
     },
-    tabRoot: {
-      paddingRight: theme.spacing(2)
-    },
-    tabWrapper: {
-      alignItems: "flex-end"
-    },
+    tabRoot: { paddingRight: theme.spacing(2) },
+    tabWrapper: { alignItems: "flex-end" },
     contentRightBox: {
       width: 650,
-      height: 400,
+      height: "100%",
+      maxHeight: 380,
       overflowY: "auto",
       marginLeft: theme.spacing(2),
       paddingLeft: 50,
-      paddingRight: 50
+      paddingRight: 50,
+      position: "relative",
+      "&:before": {
+        content: "' '",
+        display: "block",
+        position: "sticky",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: 12,
+        background: `linear-gradient(to top, ${fade(
+          theme.palette.background.paper,
+          0
+        )} 0%, ${theme.palette.background.paper} 100%)`
+      },
+      "&:after": {
+        content: "' '",
+        display: "block",
+        position: "sticky",
+        bottom: 0,
+        left: 0,
+        width: "100%",
+        height: 12,
+        background: `linear-gradient(to bottom, ${fade(
+          theme.palette.background.paper,
+          0
+        )} 0%, ${theme.palette.background.paper} 100%)`
+      }
     }
   })
 );
@@ -83,10 +111,10 @@ const tabList = [
 
 interface Props {
   eventIdState: [string, React.Dispatch<React.SetStateAction<string>>];
-  onClose?: (reason: "save" | "cancel") => void;
+  onExiting?: (reason: "save" | "cancel") => void;
 }
 
-const EventSettingDialog: React.FC<Props> = ({ eventIdState, onClose }) => {
+const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const { enqueueSnackbar } = useSnackbar();
@@ -115,13 +143,13 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onClose }) => {
   const handleClose = () => {
     setEventId("");
     setTabIndex(0);
-    onClose && onClose("cancel");
+    onExiting && onExiting("cancel");
   };
 
   return (
     <Dialog
+      classes={{ paper: classes.paper }}
       maxWidth="lg"
-      scroll="body"
       open={Boolean(eventId)}
       onClose={handleClose}
     >
@@ -205,7 +233,7 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onClose }) => {
           handleClose();
         }}
       >
-        <Form>
+        <Form className={classes.form}>
           <DialogContent className={classes.dialogContent}>
             <Tabs
               orientation="vertical"

@@ -18,7 +18,7 @@ fragment EventDetailFields on Event {
 
 query EventsByMe(
   $searchString: String
-  $pagination: PaginationInputType!
+  $pagination: PaginationInput!
   $dateStatusFilter: EventDateStatus
 ) {
   eventsByMe(
@@ -57,28 +57,9 @@ mutation CreateEvent(
   }
 }
 
-mutation UpdateEvent(
-  $eventId: ID!
-  $code: String
-  $name: String
-  $startAt: DateTime
-  $endAt: DateTime
-  $moderation: Boolean
-) {
-  updateEvent(
-    eventId: $eventId
-    code: $code
-    name: $name
-    startAt: $startAt
-    endAt: $endAt
-    moderation: $moderation
-  ) {
-    id
-    code
-    name
-    startAt
-    endAt
-    moderation
+mutation UpdateEvent($input: UpdateEventInput!) {
+  updateEvent(input: $input) {
+    ...EventFields
   }
 }
 

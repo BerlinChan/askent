@@ -91,7 +91,7 @@ export const questionQuery = extendType({
           required: true,
         }),
         searchString: stringArg(),
-        pagination: arg({ type: 'PaginationInputType', required: true }),
+        pagination: arg({ type: 'PaginationInput', required: true }),
         order: arg({
           type: 'QuestionOrder',
           default: QuestionOrderEnum.Popular,
@@ -133,7 +133,9 @@ export const questionQuery = extendType({
         const questions = await ctx.db.Question.findAll({
           ...option,
           ...pagination,
-          order: getQuestionOrder(order as NexusGenEnums['QuestionOrder']),
+          order: getQuestionOrderQueryObj(
+            order as NexusGenEnums['QuestionOrder'],
+          ),
         })
 
         return {
@@ -149,7 +151,7 @@ export const questionQuery = extendType({
       description: 'Query question by event for Role.Audience.',
       args: {
         eventId: idArg({ required: true }),
-        pagination: arg({ type: 'PaginationInputType', required: true }),
+        pagination: arg({ type: 'PaginationInput', required: true }),
         order: arg({
           type: 'QuestionOrder',
           default: QuestionOrderEnum.Popular,
@@ -176,7 +178,9 @@ export const questionQuery = extendType({
         const questions = await ctx.db.Question.findAll({
           ...option,
           ...pagination,
-          order: getQuestionOrder(order as NexusGenEnums['QuestionOrder']),
+          order: getQuestionOrderQueryObj(
+            order as NexusGenEnums['QuestionOrder'],
+          ),
         })
 
         return {
@@ -192,7 +196,7 @@ export const questionQuery = extendType({
       description: 'Query question by event for Role.Wall.',
       args: {
         eventId: idArg({ required: true }),
-        pagination: arg({ type: 'PaginationInputType', required: true }),
+        pagination: arg({ type: 'PaginationInput', required: true }),
         order: arg({
           type: 'QuestionOrder',
           default: QuestionOrderEnum.Popular,
@@ -210,7 +214,9 @@ export const questionQuery = extendType({
         const questions = await ctx.db.Question.findAll({
           ...option,
           ...pagination,
-          order: getQuestionOrder(order as NexusGenEnums['QuestionOrder']),
+          order: getQuestionOrderQueryObj(
+            order as NexusGenEnums['QuestionOrder'],
+          ),
         })
 
         return {
@@ -224,7 +230,7 @@ export const questionQuery = extendType({
     t.field('questionsByMe', {
       type: 'QuestionPaged',
       args: {
-        pagination: arg({ type: 'PaginationInputType', required: true }),
+        pagination: arg({ type: 'PaginationInput', required: true }),
         // TODO: orderBy: arg({ type: 'QuestionOrderByInput' }),
       },
       resolve: async (root, { pagination }, ctx) => {
@@ -703,7 +709,7 @@ async function getVoted(ctx: Context, questionId: string) {
   return question.hasVoteUpUser(user)
 }
 
-function getQuestionOrder(
+function getQuestionOrderQueryObj(
   questionOrder: NexusGenEnums['QuestionOrder'],
 ): Order {
   switch (questionOrder) {

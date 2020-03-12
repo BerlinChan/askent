@@ -6,7 +6,7 @@ import {
   subscriptionField,
   arg,
   idArg,
-  booleanArg,
+  inputObjectType,
 } from 'nexus'
 import { getAuthedUser } from '../utils'
 import { Context } from '../context'
@@ -62,6 +62,17 @@ export const EventPaged = objectType({
     t.list.field('list', { type: 'Event' })
   },
 })
+export const UpdateEventInput = inputObjectType({
+  name: 'UpdateEventInput',
+  definition(t) {
+    t.id('eventId', { required: true })
+    t.string('code')
+    t.string('name')
+    t.field('startAt', { type: 'DateTime' })
+    t.field('endAt', { type: 'DateTime' })
+    t.boolean('moderation')
+  },
+})
 
 export const eventQuery = extendType({
   type: 'Query',
@@ -80,7 +91,7 @@ export const eventQuery = extendType({
       description: 'Get all my events.',
       args: {
         searchString: stringArg(),
-        pagination: arg({ type: 'PaginationInputType', required: true }),
+        pagination: arg({ type: 'PaginationInput', required: true }),
         dateStatusFilter: arg({ type: 'EventDateStatus' }),
       },
       resolve: async (
@@ -191,9 +202,6 @@ export const eventMutation = extendType({
         endAt: arg({ type: 'DateTime', required: true }),
       },
       resolve: async (root, { code, name, startAt, endAt }, ctx) => {
-        if (await checkEventCodeExist(ctx, code)) {
-          throw new Error(`Code "${code}" has already exist.`)
-        }
         const userId = getAuthedUser(ctx)?.id as string
         const owner = await ctx.db.User.findByPk(userId)
         const event = await ctx.db.Event.create({ code, name, startAt, endAt })
@@ -205,32 +213,21 @@ export const eventMutation = extendType({
     t.field('updateEvent', {
       type: 'Event',
       args: {
-        eventId: idArg({ required: true }),
-        code: stringArg(),
-        name: stringArg(),
-        startAt: arg({ type: 'DateTime' }),
-        endAt: arg({ type: 'DateTime' }),
-        moderation: booleanArg(),
+        input: arg({ type: 'UpdateEventInput', required: true }),
       },
-      resolve: async (root, args, ctx) => {
-        const event = await ctx.db.Event.findByPk(args.eventId)
-        if (
-          args.code &&
-          args.code !== event?.code &&
-          (await checkEventCodeExist(ctx, args.code))
-        ) {
-          throw new Error(`Code "${args.code}" has already exist.`)
-        }
+      resolve: async (root, { input }, ctx) => {
+        const { eventId, code, name, startAt, endAt, moderation } = input
+        const event = await ctx.db.Event.findByPk(eventId)
         await event.update({
-          code: args?.code,
-          name: args?.name,
-          startAt: args?.startAt,
-          endAt: args?.endAt,
-          moderation: args?.moderation,
+          code: code,
+          name: name,
+          startAt: startAt,
+          endAt: endAt,
+          moderation: moderation,
         })
 
         ctx.pubsub.publish('EVENT_UPDATED', {
-          eventId: args.eventId,
+          eventId,
           eventUpdated: event,
         })
 

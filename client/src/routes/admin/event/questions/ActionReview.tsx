@@ -43,8 +43,10 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
     } else {
       await updateEventMutation({
         variables: {
-          eventId: id as string,
-          moderation: true
+          input: {
+            eventId: id as string,
+            moderation: true
+          }
         }
       });
     }
@@ -54,9 +56,9 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
       variables: { eventId: id as string }
     });
     await updateEventMutation({
-      variables: {
+      variables: {input:{
         eventId: id as string,
-        moderation: false
+        moderation: false}
       }
     });
     setConfirmModeration(false);
@@ -66,9 +68,9 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
       variables: { eventId: id as string }
     });
     await updateEventMutation({
-      variables: {
+      variables: {input:{
         eventId: id as string,
-        moderation: false
+        moderation: false}
       }
     });
     setConfirmModeration(false);

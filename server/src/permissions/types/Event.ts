@@ -16,7 +16,7 @@ export const isEventOwner = rule({ cache: 'contextual' })(
 export const isEventOwnerByArgId = rule({ cache: 'strict' })(
   async (parent, { eventId }, ctx) => {
     const userId = getAuthedUser(ctx)?.id
-    const event = await ctx.db.Event.findByPk(eventId,{
+    const event = await ctx.db.Event.findByPk(eventId, {
       include: [{ association: 'owner', attributes: ['id'] }],
     })
 

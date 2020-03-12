@@ -23,7 +23,7 @@ query QuestionsByEvent(
   $eventId: ID!
   $filters: [QuestionFilter!]!
   $searchString: String
-  $pagination: PaginationInputType!
+  $pagination: PaginationInput!
   $order: QuestionOrder
 ) {
   questionsByEvent(

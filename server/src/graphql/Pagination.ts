@@ -1,8 +1,8 @@
 import { inputObjectType, interfaceType } from 'nexus'
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from '../constant'
 
-export const PaginationInputType = inputObjectType({
-  name: 'PaginationInputType',
+export const PaginationInput = inputObjectType({
+  name: 'PaginationInput',
   description: 'Pagination input type.',
   definition(t) {
     t.int('offset', {
