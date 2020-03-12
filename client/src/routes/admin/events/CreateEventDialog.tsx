@@ -144,15 +144,16 @@ const CreateEventDialog: React.ComponentType<Props> = ({
               component={TextField}
               autoFocus
               fullWidth
-              id="name"
               name="name"
-              label="Event Name"
+              label={formatMessage({
+                id: "Event_name",
+                defaultMessage: "Event name"
+              })}
               margin="normal"
             />
             <Box className={classes.dateRange}>
               <Field
                 component={DateTimePicker}
-                id="startAt"
                 name="startAt"
                 label={formatMessage({
                   id: "Start_datetime",
@@ -162,11 +163,9 @@ const CreateEventDialog: React.ComponentType<Props> = ({
                 margin="normal"
                 autoOk
                 disableToolbar
-                disablePast
               />
               <Field
                 component={DateTimePicker}
-                id="endAt"
                 name="endAt"
                 label={formatMessage({
                   id: "End_datetime",
@@ -176,17 +175,15 @@ const CreateEventDialog: React.ComponentType<Props> = ({
                 margin="normal"
                 autoOk
                 disableToolbar
-                disablePast
               />
             </Box>
             <Field
               component={TextField}
               fullWidth
-              id="code"
               name="code"
               label={formatMessage({
-                id: "Event_Code",
-                defaultMessage: "Event Code"
+                id: "Event_code",
+                defaultMessage: "Event code"
               })}
               margin="normal"
             />
