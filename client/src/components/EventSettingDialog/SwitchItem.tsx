@@ -18,7 +18,7 @@ interface Props {
   switchField: React.ReactElement;
 }
 
-const SwitchItem: React.ComponentType<Props> = ({
+const SwitchItem: React.FC<Props> = ({
   label,
   description,
   switchField

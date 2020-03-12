@@ -44,7 +44,7 @@ interface Props {
   eventsQueryResult: QueryResult<EventsByMeQuery, EventsByMeQueryVariables>;
 }
 
-const CreateEventDialog: React.ComponentType<Props> = ({
+const CreateEventDialog: React.FC<Props> = ({
   openState,
   eventsQueryResult
 }) => {

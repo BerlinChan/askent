@@ -144,15 +144,17 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                   defaultMessage: "Event setting"
                 })}
               >
-                <IconButton
-                  size="small"
-                  disabled={loading && !data}
-                  onClick={e =>
-                    eventSettingState[1](data?.eventById.id as string)
-                  }
-                >
-                  <SettingsIcon fontSize="inherit" color="inherit" />
-                </IconButton>
+                <span>
+                  <IconButton
+                    size="small"
+                    disabled={loading && !data}
+                    onClick={e =>
+                      eventSettingState[1](data?.eventById.id as string)
+                    }
+                  >
+                    <SettingsIcon fontSize="inherit" color="inherit" />
+                  </IconButton>
+                </span>
               </Tooltip>
             </Box>
           </Container>

@@ -39,10 +39,7 @@ interface Props {
   defaultActiveKey?: Array<number>;
 }
 
-const CollapseList: React.ComponentType<Props> = ({
-  list,
-  defaultActiveKey = []
-}) => {
+const CollapseList: React.FC<Props> = ({ list, defaultActiveKey = [] }) => {
   const classes = useStyles();
   const [activeKey, setActiveKey] = React.useState<Array<number>>(
     defaultActiveKey
