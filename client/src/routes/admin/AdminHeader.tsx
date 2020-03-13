@@ -93,7 +93,6 @@ const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
               value={searchString}
               onChange={e => setSearchString(e.target.value)}
             />
-
             <HeaderAction />
           </Box>
         </Toolbar>

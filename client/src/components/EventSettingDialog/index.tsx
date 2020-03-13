@@ -30,8 +30,7 @@ import {
 import { useSnackbar } from "notistack";
 import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../constant";
 import CloseIcon from "@material-ui/icons/Close";
-import TabPanelGeneral from "./TabPanelGeneral";
-import TabPanelFeatures from "./TabPanelFeatures";
+import { tabList, TabPanel } from "./TabsPanels";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -90,30 +89,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const tabList = [
-  {
-    tab: <FormattedMessage id="General" defaultMessage="General" />,
-    panel: <TabPanelGeneral />
-  },
-  {
-    tab: <FormattedMessage id="Features" defaultMessage="Features" />,
-    panel: <TabPanelFeatures />
-  },
-  {
-    tab: <FormattedMessage id="Customization" defaultMessage="Customization" />,
-    panel: <div>Item Three</div>
-  },
-  {
-    tab: <FormattedMessage id="Integrations" defaultMessage="Integrations" />,
-    panel: <div>Item Four</div>
-  },
-  {
-    tab: <FormattedMessage id="Share_access" defaultMessage="Share access" />,
-    panel: <div>Item Five</div>
-  }
-];
-
-type FormikValues = {
+export type EventSettingValues = {
   name: string;
   code: string;
   startAt: Date;
@@ -122,11 +98,16 @@ type FormikValues = {
   moderation: boolean | undefined;
 };
 interface Props {
+  defaultFocus?: keyof EventSettingValues;
   eventIdState: [string, React.Dispatch<React.SetStateAction<string>>];
   onExiting?: (reason: "save" | "cancel") => void;
 }
 
-const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
+const EventSettingDialog: React.FC<Props> = ({
+  defaultFocus = "name",
+  eventIdState,
+  onExiting
+}) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const { enqueueSnackbar } = useSnackbar();
@@ -162,7 +143,7 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
     onExiting && onExiting("cancel");
   };
 
-  const initialValues: FormikValues = {
+  const initialValues: EventSettingValues = {
     name: eventData?.eventById.name || "",
     code: eventData?.eventById.code || "",
     startAt: new Date(eventData?.eventById.startAt),
@@ -171,8 +152,8 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
     moderation: eventData?.eventById.moderation
   };
   const handleValidate: (
-    values: FormikValues
-  ) => void | object | Promise<FormikErrors<FormikValues>> = async ({
+    values: EventSettingValues
+  ) => void | object | Promise<FormikErrors<EventSettingValues>> = async ({
     name,
     code,
     startAt,
@@ -224,8 +205,8 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
     }
   };
   const handleSubmit: (
-    values: FormikValues,
-    formikHelpers: FormikHelpers<FormikValues>
+    values: EventSettingValues,
+    formikHelpers: FormikHelpers<EventSettingValues>
   ) => void | Promise<any> = async values => {
     const { data } = await updateEventMutation({
       variables: {
@@ -290,12 +271,12 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
                     wrapper: classes.tabWrapper
                   }}
                   key={index}
-                  label={item.tab}
+                  label={item}
                 />
               ))}
             </Tabs>
             <Box className={classes.contentRightBox}>
-              {tabList[tabIndex].panel}
+              <TabPanel index={tabIndex} defaultFocus={defaultFocus} />
             </Box>
           </DialogContent>
           <DialogActions>

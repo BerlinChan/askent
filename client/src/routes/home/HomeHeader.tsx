@@ -13,8 +13,6 @@ const useStyles = makeStyles((theme: Theme) =>
     actions: {
       display: "flex",
       alignItems: "center",
-      flexWrap: "nowrap",
-      "& > *": { margin: theme.spacing(1) }
     }
   })
 );

@@ -3,14 +3,16 @@ import { useToken } from "../../hooks";
 import AuthedAction from "./AuthedAction";
 import UnauthAction from "./UnauthAction";
 
-interface Props {}
+interface Props {
+  hideUserInfo?: boolean;
+}
 
-const HeaderAction: React.FC<Props> = () => {
+const HeaderAction: React.FC<Props> = ({ hideUserInfo = false }) => {
   const { token } = useToken();
 
   return (
     <React.Fragment>
-      {token ? <AuthedAction /> : <UnauthAction />}
+      {token ? <AuthedAction hideUserInfo/> : <UnauthAction />}
     </React.Fragment>
   );
 };

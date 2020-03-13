@@ -39,9 +39,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props {}
+interface Props {
+  hideUserInfo?: boolean;
+}
 
-const AuthedAction: React.FC<Props> = () => {
+const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
   const classes = useStyles();
   const history = useHistory();
   const userQueryResult = useMeQuery();
@@ -66,16 +68,18 @@ const AuthedAction: React.FC<Props> = () => {
 
   return (
     <React.Fragment>
-      <Hidden smDown>
-        <Box className={classes.userInfo}>
-          <Typography className={classes.email}>
-            {userQueryResult.data?.me.email}
-          </Typography>
-          <Typography className={classes.role}>
-            {userQueryResult.data?.me.roles.map(role => role.name).join()}
-          </Typography>
-        </Box>
-      </Hidden>
+      {!hideUserInfo && (
+        <Hidden smDown>
+          <Box className={classes.userInfo}>
+            <Typography className={classes.email}>
+              {userQueryResult.data?.me.email}
+            </Typography>
+            <Typography className={classes.role}>
+              {userQueryResult.data?.me.roles.map(role => role.name).join()}
+            </Typography>
+          </Box>
+        </Hidden>
+      )}
       <IconButton size="small" onClick={handleMenuOpen}>
         <Avatar
           alt={userQueryResult.data?.me.name as string}

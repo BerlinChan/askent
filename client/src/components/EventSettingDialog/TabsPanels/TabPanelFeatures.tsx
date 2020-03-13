@@ -3,8 +3,8 @@ import { FormattedMessage } from "react-intl";
 import { Field } from "formik";
 import { Switch } from "formik-material-ui";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
-import CollapseList from "./CollapseList";
-import SwitchItem from "./SwitchItem";
+import CollapseList from "../CollapseList";
+import SwitchItem from "../SwitchItem";
 
 interface Props {}
 

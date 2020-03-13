@@ -8,7 +8,8 @@ import { DateTimePicker } from "formik-material-ui-pickers";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import SecurityIcon from "@material-ui/icons/Security";
-import CollapseList from "./CollapseList";
+import CollapseList from "../CollapseList";
+import { EventSettingValues } from "../index";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,9 +22,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props {}
+interface Props {
+  defaultFocus?: keyof EventSettingValues;
+}
 
-const TabPanelGeneral: React.FC<Props> = () => {
+const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const eventLinkRef = React.useRef<HTMLInputElement>(null);
@@ -60,8 +63,8 @@ const TabPanelGeneral: React.FC<Props> = () => {
             <Box className={classes.basicInfoField}>
               <Field
                 component={TextField}
-                autoFocus
                 fullWidth
+                autoFocus={defaultFocus === "name"}
                 name="name"
                 label={formatMessage({
                   id: "Event_name",
@@ -73,6 +76,7 @@ const TabPanelGeneral: React.FC<Props> = () => {
               <Box className={classes.dateRange}>
                 <Field
                   component={DateTimePicker}
+                  autoFocus={defaultFocus === "startAt"}
                   name="startAt"
                   label={formatMessage({
                     id: "Start_datetime",
@@ -86,6 +90,7 @@ const TabPanelGeneral: React.FC<Props> = () => {
                 />
                 <Field
                   component={DateTimePicker}
+                  autoFocus={defaultFocus === "endAt"}
                   name="endAt"
                   label={formatMessage({
                     id: "End_datetime",
@@ -101,6 +106,7 @@ const TabPanelGeneral: React.FC<Props> = () => {
               <Field
                 component={TextField}
                 fullWidth
+                autoFocus={defaultFocus === "code"}
                 name="code"
                 label={formatMessage({
                   id: "Event_code",
@@ -113,6 +119,7 @@ const TabPanelGeneral: React.FC<Props> = () => {
                 component={TextField}
                 inputRef={eventLinkRef}
                 fullWidth
+                autoFocus={defaultFocus === "eventLink"}
                 name="eventLink"
                 label={formatMessage({
                   id: "Event_link",

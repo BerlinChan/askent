@@ -10,7 +10,9 @@ import {
   Paper,
   IconButton,
   CircularProgress,
-  Tooltip
+  Tooltip,
+  Grid,
+  Button
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
@@ -19,25 +21,46 @@ import {
   EventByIdQueryVariables
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
-import { FormattedDate, FormattedTime, useIntl } from "react-intl";
+import {
+  FormattedDate,
+  FormattedTime,
+  useIntl,
+  FormattedMessage
+} from "react-intl";
 import HeaderAction from "../../../components/HeaderAction";
 import SettingsIcon from "@material-ui/icons/Settings";
-import EventSettingDialog from "../../../components/EventSettingDialog";
+import DvrIcon from "@material-ui/icons/Dvr";
+import EventSettingDialog, {
+  EventSettingValues
+} from "../../../components/EventSettingDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    toolbar: {
-      justifyContent: "space-between"
-    },
-    leftBox: {
+    toolbarLeft: {
       display: "flex",
-      flexWrap: "nowrap"
+      alignItems: "center"
     },
-    headAction: {
+    toolbarCenter: {
       display: "flex",
-      alignItems: "center",
-      flexWrap: "nowrap",
-      "& > *": { margin: theme.spacing(1) }
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center"
+    },
+    toolbarRight: {
+      display: "flex",
+      justifyContent: "flex-end",
+      alignItems: "center"
+    },
+    openSettingText: {
+      display: "inline-block",
+      cursor: "pointer"
+    },
+    presentModeBtn: {
+      marginRight: theme.spacing(1),
+      borderRadius: theme.spacing(2)
+    },
+    presentModeIcon: {
+      marginRight: theme.spacing(1)
     },
     tabAndActionBox: {
       display: "flex",
@@ -56,19 +79,31 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
   const history = useHistory();
   let { url } = useRouteMatch();
   const eventSettingState = React.useState<string>("");
+  const [
+    eventSettingDefaultFocus,
+    setEventSettingDefaultFocus
+  ] = React.useState<keyof EventSettingValues>("name");
   const { formatMessage } = useIntl();
   const { data, loading } = eventQuery;
+
+  const handleOpenSetting = (
+    id: string,
+    defaultFocus?: keyof EventSettingValues
+  ) => {
+    defaultFocus && setEventSettingDefaultFocus(defaultFocus);
+    eventSettingState[1](id);
+  };
 
   return (
     <React.Fragment>
       <AppBar position="static" elevation={2}>
         <Container maxWidth="lg">
-          <Toolbar className={classes.toolbar}>
+          <Toolbar disableGutters>
             {loading ? (
               <CircularProgress />
             ) : (
-              <React.Fragment>
-                <Box className={classes.leftBox}>
+              <Grid container>
+                <Grid item xs={4} className={classes.toolbarLeft}>
                   <IconButton
                     edge="start"
                     color="inherit"
@@ -79,32 +114,103 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                     <NavigateBeforeIcon fontSize="large" />
                   </IconButton>
                   <Box>
-                    <Typography color="inherit">
-                      {data?.eventById.name}
-                    </Typography>
-                    <Typography variant="body2" color="inherit">
-                      <FormattedDate value={data?.eventById.startAt} />
-                      {", "}
-                      <FormattedTime value={data?.eventById.startAt} />
-                      {" ~ "}
-                      <FormattedDate value={data?.eventById.endAt} />
-                      {", "}
-                      <FormattedTime value={data?.eventById.endAt} />
-                    </Typography>
+                    <Tooltip
+                      arrow
+                      title={formatMessage({
+                        id: "Edit event name",
+                        defaultMessage: "Edit event name"
+                      })}
+                      placement="right"
+                    >
+                      <Typography
+                        color="inherit"
+                        className={classes.openSettingText}
+                        onClick={() =>
+                          handleOpenSetting(
+                            data?.eventById.id as string,
+                            "name"
+                          )
+                        }
+                      >
+                        {data?.eventById.name}
+                      </Typography>
+                    </Tooltip>
+                    <Box>
+                      <Tooltip
+                        arrow
+                        title={formatMessage({
+                          id: "Edit event date",
+                          defaultMessage: "Edit event date"
+                        })}
+                        placement="right"
+                      >
+                        <Typography
+                          variant="body2"
+                          color="inherit"
+                          className={classes.openSettingText}
+                          onClick={() =>
+                            handleOpenSetting(
+                              data?.eventById.id as string,
+                              "startAt"
+                            )
+                          }
+                        >
+                          <FormattedDate value={data?.eventById.startAt} />
+                          {", "}
+                          <FormattedTime value={data?.eventById.startAt} />
+                          {" ~ "}
+                          <FormattedDate value={data?.eventById.endAt} />
+                          {", "}
+                          <FormattedTime value={data?.eventById.endAt} />
+                        </Typography>
+                      </Tooltip>
+                    </Box>
                   </Box>
-                </Box>
-                <Box>
-                  <Typography color="inherit">
-                    #{data?.eventById.code}
-                  </Typography>
+                </Grid>
+                <Grid item xs={4} className={classes.toolbarCenter}>
+                  <Tooltip
+                    arrow
+                    title={formatMessage({
+                      id: "Edit event code",
+                      defaultMessage: "Edit event code"
+                    })}
+                    placement="right"
+                  >
+                    <Typography
+                      color="inherit"
+                      className={classes.openSettingText}
+                      onClick={() =>
+                        handleOpenSetting(data?.eventById.id as string, "code")
+                      }
+                    >
+                      #{data?.eventById.code}
+                    </Typography>
+                  </Tooltip>
                   <Typography color="inherit">
                     {data?.eventById.dateStatus}
                   </Typography>
-                </Box>
-                <Box className={classes.headAction}>
-                  <HeaderAction />
-                </Box>
-              </React.Fragment>
+                </Grid>
+                <Grid item xs={4} className={classes.toolbarRight}>
+                  <Button
+                    className={classes.presentModeBtn}
+                    disableElevation
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                  >
+                    <DvrIcon
+                      className={classes.presentModeIcon}
+                      fontSize="inherit"
+                      color="inherit"
+                    />
+                    <FormattedMessage
+                      id="Present mode"
+                      defaultMessage="Present mode"
+                    />
+                  </Button>
+                  <HeaderAction hideUserInfo />
+                </Grid>
+              </Grid>
             )}
           </Toolbar>
         </Container>
@@ -140,8 +246,8 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
             <Box>
               <Tooltip
                 title={formatMessage({
-                  id: "Event_setting",
-                  defaultMessage: "Event setting"
+                  id: "Open_event_settings",
+                  defaultMessage: "Open event settings"
                 })}
               >
                 <span>
@@ -149,7 +255,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                     size="small"
                     disabled={loading && !data}
                     onClick={e =>
-                      eventSettingState[1](data?.eventById.id as string)
+                      handleOpenSetting(data?.eventById.id as string)
                     }
                   >
                     <SettingsIcon fontSize="inherit" color="inherit" />
@@ -161,7 +267,10 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
         </Paper>
       </AppBar>
 
-      <EventSettingDialog eventIdState={eventSettingState} />
+      <EventSettingDialog
+        eventIdState={eventSettingState}
+        defaultFocus={eventSettingDefaultFocus}
+      />
     </React.Fragment>
   );
 };
