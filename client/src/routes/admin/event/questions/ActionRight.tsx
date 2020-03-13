@@ -15,7 +15,6 @@ import {
   InputAdornment,
   TextField,
   Tooltip,
-  Typography,
   ClickAwayListener
 } from "@material-ui/core";
 import { QueryResult } from "@apollo/react-common";
@@ -37,15 +36,14 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       alignItems: "center",
       width: 320,
-      cursor: "pointer",
       height: "100%",
+      cursor: "pointer",
       overflowX: "hidden",
       borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
       backgroundColor: theme.palette.background.paper,
       boxShadow: theme.shadows[1]
     },
-    totalCount: { margin: theme.spacing(0, 1) },
-    chip: { marginRight: theme.spacing(1) },
+    chip: { marginLeft: theme.spacing(1) },
     filterMenu: {
       width: 320
     },
@@ -155,75 +153,27 @@ const ActionRight: React.FC<Props> = ({
 
   return (
     <React.Fragment>
-      <Box className={classes.filterBox} onClick={handleFilterOpen}>
-        <Tooltip
-          title={formatMessage({ id: "Total", defaultMessage: "Total" })}
-        >
-          <Typography className={classes.totalCount} color="textSecondary">
-            {questionsQueryResult.data?.questionsByEvent.totalCount}
-          </Typography>
-        </Tooltip>
-        {queryState.filterSelected.map((selectedItem, index) => (
-          <Chip
-            className={classes.chip}
-            key={index}
-            size="small"
-            label={getQuestionFilterLabel(selectedItem)}
-            onDelete={
-              queryState.filterSelected.length > 1
-                ? () => handleFilterOptionClick(selectedItem)
-                : undefined
-            }
-          />
-        ))}
-
-        <Popper
-          open={Boolean(filterAnchorEl)}
-          anchorEl={filterAnchorEl}
-          placement="bottom-start"
-          transition
-        >
-          {({ TransitionProps }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin: "center top"
-              }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={handleFilterClose}>
-                  <MenuList
-                    className={classes.filterMenu}
-                    autoFocusItem={Boolean(filterAnchorEl)}
-                  >
-                    {Object.values(QuestionFilter)
-                      .filter(item => item !== QuestionFilter.Review)
-                      .map((filterItem, index) => (
-                        <MenuItem
-                          key={index}
-                          disabled={
-                            queryState.filterSelected[0] === filterItem &&
-                            queryState.filterSelected.length <= 1
-                          }
-                          onClick={e => handleFilterOptionClick(filterItem)}
-                        >
-                          <Checkbox
-                            checked={queryState.filterSelected.includes(
-                              filterItem
-                            )}
-                          />
-                          <ListItemText
-                            primary={getQuestionFilterLabel(filterItem)}
-                          />
-                        </MenuItem>
-                      ))}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </Box>
+      <Tooltip
+        arrow
+        placement="top"
+        title={formatMessage({ id: "Filter", defaultMessage: "Filter" })}
+      >
+        <Box className={classes.filterBox} onClick={handleFilterOpen}>
+          {queryState.filterSelected.map((selectedItem, index) => (
+            <Chip
+              className={classes.chip}
+              key={index}
+              size="small"
+              label={getQuestionFilterLabel(selectedItem)}
+              onDelete={
+                queryState.filterSelected.length > 1
+                  ? () => handleFilterOptionClick(selectedItem)
+                  : undefined
+              }
+            />
+          ))}
+        </Box>
+      </Tooltip>
       <Box className={classes.searchAndSort}>
         <TextField
           inputRef={searchRef}
@@ -275,20 +225,67 @@ const ActionRight: React.FC<Props> = ({
             <SortIcon color="inherit" fontSize="inherit" />
           </IconButton>
         </Tooltip>
-
-        <QuestionOrderMenu
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right"
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right"
-          }}
-          menuElState={orderMenuElState}
-          orderSelectedState={orderSelectedState}
-        />
       </Box>
+
+      <Popper
+        open={Boolean(filterAnchorEl)}
+        anchorEl={filterAnchorEl}
+        placement="bottom-start"
+        transition
+      >
+        {({ TransitionProps }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin: "center top"
+            }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={handleFilterClose}>
+                <MenuList
+                  className={classes.filterMenu}
+                  autoFocusItem={Boolean(filterAnchorEl)}
+                >
+                  {Object.values(QuestionFilter)
+                    .filter(item => item !== QuestionFilter.Review)
+                    .map((filterItem, index) => (
+                      <MenuItem
+                        key={index}
+                        disabled={
+                          queryState.filterSelected[0] === filterItem &&
+                          queryState.filterSelected.length <= 1
+                        }
+                        onClick={e => handleFilterOptionClick(filterItem)}
+                      >
+                        <Checkbox
+                          checked={queryState.filterSelected.includes(
+                            filterItem
+                          )}
+                        />
+                        <ListItemText
+                          primary={getQuestionFilterLabel(filterItem)}
+                        />
+                      </MenuItem>
+                    ))}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+
+      <QuestionOrderMenu
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right"
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+        menuElState={orderMenuElState}
+        orderSelectedState={orderSelectedState}
+      />
     </React.Fragment>
   );
 };

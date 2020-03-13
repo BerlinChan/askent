@@ -11,8 +11,7 @@ import {
   IconButton,
   CircularProgress,
   Tooltip,
-  Grid,
-  Button
+  Grid
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
@@ -21,18 +20,14 @@ import {
   EventByIdQueryVariables
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
-import {
-  FormattedDate,
-  FormattedTime,
-  useIntl,
-  FormattedMessage
-} from "react-intl";
+import { FormattedDate, FormattedTime, useIntl } from "react-intl";
 import HeaderAction from "../../../components/HeaderAction";
 import SettingsIcon from "@material-ui/icons/Settings";
-import DvrIcon from "@material-ui/icons/Dvr";
+import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
 import EventSettingDialog, {
   EventSettingValues
 } from "../../../components/EventSettingDialog";
+import PresentModeButton from "./PresentModeButton";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,13 +49,6 @@ const useStyles = makeStyles((theme: Theme) =>
     openSettingText: {
       display: "inline-block",
       cursor: "pointer"
-    },
-    presentModeBtn: {
-      marginRight: theme.spacing(1),
-      borderRadius: theme.spacing(2)
-    },
-    presentModeIcon: {
-      marginRight: theme.spacing(1)
     },
     tabAndActionBox: {
       display: "flex",
@@ -90,7 +78,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
     id: string,
     defaultFocus?: keyof EventSettingValues
   ) => {
-    defaultFocus && setEventSettingDefaultFocus(defaultFocus);
+    setEventSettingDefaultFocus(defaultFocus || "name");
     eventSettingState[1](id);
   };
 
@@ -191,23 +179,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                   </Typography>
                 </Grid>
                 <Grid item xs={4} className={classes.toolbarRight}>
-                  <Button
-                    className={classes.presentModeBtn}
-                    disableElevation
-                    variant="contained"
-                    color="secondary"
-                    size="small"
-                  >
-                    <DvrIcon
-                      className={classes.presentModeIcon}
-                      fontSize="inherit"
-                      color="inherit"
-                    />
-                    <FormattedMessage
-                      id="Present mode"
-                      defaultMessage="Present mode"
-                    />
-                  </Button>
+                  <PresentModeButton />
                   <HeaderAction hideUserInfo />
                 </Grid>
               </Grid>
@@ -244,6 +216,16 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
               textColor="primary"
             />
             <Box>
+              <Tooltip
+                title={formatMessage({
+                  id: "Participant mode",
+                  defaultMessage: "Participant mode"
+                })}
+              >
+                <IconButton size="small" onClick={e => {}}>
+                  <PhoneAndroidIcon fontSize="inherit" color="inherit" />
+                </IconButton>
+              </Tooltip>
               <Tooltip
                 title={formatMessage({
                   id: "Open_event_settings",
