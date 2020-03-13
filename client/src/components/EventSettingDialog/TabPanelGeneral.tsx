@@ -68,6 +68,7 @@ const TabPanelGeneral: React.FC<Props> = () => {
                   defaultMessage: "Event name"
                 })}
                 margin="normal"
+                size="small"
               />
               <Box className={classes.dateRange}>
                 <Field
@@ -79,6 +80,7 @@ const TabPanelGeneral: React.FC<Props> = () => {
                   })}
                   variant="inline"
                   margin="normal"
+                  size="small"
                   autoOk
                   disableToolbar
                 />
@@ -91,6 +93,7 @@ const TabPanelGeneral: React.FC<Props> = () => {
                   })}
                   variant="inline"
                   margin="normal"
+                  size="small"
                   autoOk
                   disableToolbar
                 />
@@ -104,6 +107,7 @@ const TabPanelGeneral: React.FC<Props> = () => {
                   defaultMessage: "Event code"
                 })}
                 margin="normal"
+                size="small"
               />
               <Field
                 component={TextField}
@@ -114,6 +118,7 @@ const TabPanelGeneral: React.FC<Props> = () => {
                   id: "Event_link",
                   defaultMessage: "Event link"
                 })}
+                size="small"
                 InputProps={{
                   readOnly: true,
                   endAdornment: (

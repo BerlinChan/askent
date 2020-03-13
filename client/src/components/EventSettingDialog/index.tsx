@@ -18,12 +18,14 @@ import {
   fade
 } from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikErrors, FormikHelpers } from "formik";
 import * as Yup from "yup";
+import * as R from "ramda";
 import { ButtonLoading } from "../Form";
 import {
   useCheckEventCodeExistLazyQuery,
-  useEventByIdLazyQuery
+  useEventByIdLazyQuery,
+  useUpdateEventMutation
 } from "../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
 import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../constant";
@@ -48,9 +50,9 @@ const useStyles = makeStyles((theme: Theme) =>
     tabRoot: { paddingRight: theme.spacing(2) },
     tabWrapper: { alignItems: "flex-end" },
     contentRightBox: {
-      width: 650,
+      width: 680,
       height: "100%",
-      maxHeight: 380,
+      maxHeight: 420,
       overflowY: "auto",
       marginLeft: theme.spacing(2),
       paddingLeft: 50,
@@ -64,6 +66,7 @@ const useStyles = makeStyles((theme: Theme) =>
         left: 0,
         width: "100%",
         height: 12,
+        pointerEvents: "none",
         background: `linear-gradient(to top, ${fade(
           theme.palette.background.paper,
           0
@@ -77,6 +80,7 @@ const useStyles = makeStyles((theme: Theme) =>
         left: 0,
         width: "100%",
         height: 12,
+        pointerEvents: "none",
         background: `linear-gradient(to bottom, ${fade(
           theme.palette.background.paper,
           0
@@ -109,6 +113,14 @@ const tabList = [
   }
 ];
 
+type FormikValues = {
+  name: string;
+  code: string;
+  startAt: Date;
+  endAt: Date;
+  eventLink: string;
+  moderation: boolean | undefined;
+};
 interface Props {
   eventIdState: [string, React.Dispatch<React.SetStateAction<string>>];
   onExiting?: (reason: "save" | "cancel") => void;
@@ -128,6 +140,10 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
     checkEventCodeExistLazyQuery,
     { data: checkEventCodeData, loading: checkEventCodeLoading }
   ] = useCheckEventCodeExistLazyQuery();
+  const [
+    updateEventMutation,
+    { loading: updateEventLoading }
+  ] = useUpdateEventMutation();
 
   React.useEffect(() => {
     if (eventId) {
@@ -144,6 +160,93 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
     setEventId("");
     setTabIndex(0);
     onExiting && onExiting("cancel");
+  };
+
+  const initialValues: FormikValues = {
+    name: eventData?.eventById.name || "",
+    code: eventData?.eventById.code || "",
+    startAt: new Date(eventData?.eventById.startAt),
+    endAt: new Date(eventData?.eventById.endAt),
+    eventLink: `${window.location.origin}/event/${eventData?.eventById.id}`,
+    moderation: eventData?.eventById.moderation
+  };
+  const handleValidate: (
+    values: FormikValues
+  ) => void | object | Promise<FormikErrors<FormikValues>> = async ({
+    name,
+    code,
+    startAt,
+    endAt
+  }) => {
+    try {
+      await Yup.object({
+        name: Yup.string()
+          .max(USERNAME_MAX_LENGTH)
+          .required(),
+        code: Yup.string()
+          .max(EVENT_CODE_MAX_LENGTH)
+          .required(),
+        startAt: Yup.date(),
+        endAt: Yup.date()
+      }).validate({
+        name,
+        code,
+        startAt,
+        endAt
+      });
+    } catch (err) {
+      const { path, message } = err as Yup.ValidationError;
+      const error: any = {};
+      error[path] = message;
+
+      return error;
+    }
+
+    if (endAt < startAt) {
+      return {
+        endAt: formatMessage({
+          id: "End_must_after_start",
+          defaultMessage: "End must after start"
+        })
+      };
+    }
+
+    if (code !== initialValues.code) {
+      await checkEventCodeExistLazyQuery({ variables: { code } });
+      if (checkEventCodeData?.checkEventCodeExist) {
+        return {
+          code: formatMessage({
+            id: "Code_existed",
+            defaultMessage: "Code existed"
+          })
+        };
+      }
+    }
+  };
+  const handleSubmit: (
+    values: FormikValues,
+    formikHelpers: FormikHelpers<FormikValues>
+  ) => void | Promise<any> = async values => {
+    const { data } = await updateEventMutation({
+      variables: {
+        input: R.omit(["eventLink"], {
+          eventId,
+          ...values
+        })
+      }
+    });
+    if (data) {
+      enqueueSnackbar(
+        formatMessage({
+          id: "Event_updated",
+          defaultMessage: "Event updated"
+        }),
+        {
+          variant: "success"
+        }
+      );
+      handleClose();
+    }
   };
 
   return (
@@ -167,71 +270,9 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
 
       <Formik
         enableReinitialize
-        initialValues={{
-          name: eventData?.eventById.name || "",
-          code: eventData?.eventById.code || "",
-          startAt: new Date(eventData?.eventById.startAt),
-          endAt: new Date(eventData?.eventById.endAt),
-          eventLink: `${window.location.origin}/event/${eventData?.eventById.id}`,
-          moderation: eventData?.eventById.moderation
-        }}
-        validate={async ({ name, code, startAt, endAt }) => {
-          try {
-            await Yup.object({
-              name: Yup.string()
-                .max(USERNAME_MAX_LENGTH)
-                .required(),
-              code: Yup.string()
-                .max(EVENT_CODE_MAX_LENGTH)
-                .required(),
-              startAt: Yup.date(),
-              endAt: Yup.date()
-            }).validate({
-              name,
-              code,
-              startAt,
-              endAt
-            });
-          } catch (err) {
-            const { path, message } = err as Yup.ValidationError;
-            const error: any = {};
-            error[path] = message;
-
-            return error;
-          }
-
-          if (endAt < startAt) {
-            return {
-              endAt: formatMessage({
-                id: "End_must_after_start",
-                defaultMessage: "End must after start"
-              })
-            };
-          }
-
-          await checkEventCodeExistLazyQuery({ variables: { code } });
-          if (checkEventCodeData?.checkEventCodeExist) {
-            return {
-              code: formatMessage({
-                id: "Code_existed",
-                defaultMessage: "Code existed"
-              })
-            };
-          }
-        }}
-        onSubmit={async values => {
-          console.log("values", values);
-          enqueueSnackbar(
-            formatMessage({
-              id: "Event_updated",
-              defaultMessage: "Event updated"
-            }),
-            {
-              variant: "success"
-            }
-          );
-          handleClose();
-        }}
+        initialValues={initialValues}
+        validate={handleValidate}
+        onSubmit={handleSubmit}
       >
         <Form className={classes.form}>
           <DialogContent className={classes.dialogContent}>
@@ -266,7 +307,9 @@ const EventSettingDialog: React.FC<Props> = ({ eventIdState, onExiting }) => {
               color="primary"
               style={{ width: 100 }}
               type="submit"
-              loading={eventLoading || checkEventCodeLoading}
+              loading={
+                eventLoading || updateEventLoading || checkEventCodeLoading
+              }
             >
               <FormattedMessage id="Save" defaultMessage="Save" />
             </ButtonLoading>

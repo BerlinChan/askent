@@ -59,7 +59,7 @@ mutation CreateEvent(
 
 mutation UpdateEvent($input: UpdateEventInput!) {
   updateEvent(input: $input) {
-    ...EventFields
+    ...EventDetailFields
   }
 }
 
