@@ -69,7 +69,7 @@ const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
   return (
     <AppBar position="static" elevation={2}>
       <Container maxWidth="lg">
-        <Toolbar className={classes.toolbar}>
+        <Toolbar className={classes.toolbar} disableGutters>
           <Logo />
           <Box className={classes.actions}>
             <TextField

@@ -12,7 +12,7 @@ const HeaderAction: React.FC<Props> = ({ hideUserInfo = false }) => {
 
   return (
     <React.Fragment>
-      {token ? <AuthedAction hideUserInfo/> : <UnauthAction />}
+      {token ? <AuthedAction hideUserInfo={hideUserInfo} /> : <UnauthAction />}
     </React.Fragment>
   );
 };
