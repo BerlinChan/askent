@@ -6,15 +6,14 @@
 
 ## TODO
 
-- [x] seed Event
-- [ ] event edit dialog
-- [ ] admin event list - duplicate event
 - [ ] audience question input for mobile
 - [ ] audience my questions dialog
 - [ ] audience question list use infinite scroll
 - [ ] reply question
-- [ ] question support voteDown
+- [ ] event edit dialog
 - [ ] infinite list end / loading / more
+- [ ] admin event list - duplicate event
+- [ ] question support voteDown
 - [ ] Build server for production
 - [ ] [Benchmark](https://github.com/benawad/node-graphql-benchmarks)
 - [ ] [API logout, invalid JWT](https://www.npmjs.com/package/express-jwt)

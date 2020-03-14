@@ -10,6 +10,7 @@ import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import SecurityIcon from "@material-ui/icons/Security";
 import CollapseList from "../CollapseList";
 import { EventSettingValues } from "../index";
+import copy from "copy-to-clipboard";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,7 +40,7 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
     eventLinkRef.current?.focus();
     eventLinkRef.current?.select();
     try {
-      if (window.document.execCommand("copy")) {
+      if (eventLinkRef.current && copy(eventLinkRef.current?.value)) {
         setShowCopies(true);
         window.setTimeout(() => setShowCopies(false), 3000);
       }
