@@ -18,14 +18,9 @@ interface Props {
 
 const MyQuestionsDialog: React.FC<Props> = ({ open, onClose }) => {
   const myQuestionsResult = useQuestionsByMeQuery({
+    skip: true,
     variables: {
       pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-    }
-  });
-
-  React.useEffect(() => {
-    if (open) {
-      myQuestionsResult.refetch();
     }
   });
 

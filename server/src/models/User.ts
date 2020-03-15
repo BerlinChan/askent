@@ -9,7 +9,7 @@ import Event, { EventModelStatic } from './Event'
 import Question, { QuestionModelStatic } from './Question'
 import Role, { RoleModelStatic } from './Role'
 
-const { STRING, UUID, UUIDV1 } = DataTypes
+const { STRING, UUID, UUIDV4 } = DataTypes
 
 export class User extends Model {
   public id!: string
@@ -34,7 +34,7 @@ User.init(
   {
     id: {
       type: UUID,
-      defaultValue: UUIDV1,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
     },

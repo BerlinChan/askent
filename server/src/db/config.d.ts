@@ -7,6 +7,7 @@ declare const config: {
   username: string
   password: string
   database: string
+  benchmark: boolean
 }
 
 export default config

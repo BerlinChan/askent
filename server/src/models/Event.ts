@@ -4,7 +4,7 @@ import Question, { QuestionModelStatic } from './Question'
 import { UserModelStatic } from './User'
 import { isAfter, isBefore, isEqual } from 'date-fns'
 
-const { BOOLEAN, STRING, UUID, UUIDV1, DATE, VIRTUAL } = DataTypes
+const { BOOLEAN, STRING, UUID, UUIDV4, DATE, VIRTUAL } = DataTypes
 
 export enum EventDateStatusEnum {
   Active = 'ACTIVE',
@@ -34,7 +34,7 @@ Event.init(
   {
     id: {
       type: UUID,
-      defaultValue: UUIDV1,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
     },

@@ -7,7 +7,7 @@ import {
 import sequelize from '../db'
 import Game, { GameModelStatic } from './Game'
 
-const { STRING, UUID, UUIDV1 } = DataTypes
+const { STRING, UUID, UUIDV4 } = DataTypes
 
 export class Player extends Model {
   public id!: string
@@ -22,7 +22,7 @@ Player.init(
   {
     id: {
       type: UUID,
-      defaultValue: UUIDV1,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
     },

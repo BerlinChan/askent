@@ -16,6 +16,8 @@ import { QuestionModelStatic } from '../models/Question'
 import { RoleName } from '../models/Role'
 import { QuestionOrderEnum } from './FilterOrder'
 import { NexusGenEnums } from 'nexus-typegen'
+import { dataloaderContext } from '../context'
+const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 
 export const ReviewStatus = enumType({
   name: 'ReviewStatus',
@@ -36,6 +38,7 @@ export const Question = objectType({
       async resolve({ id }, args, ctx) {
         const question = await ctx.db.Question.findByPk(id, {
           include: ['event'],
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
         })
         return question.event
       },
@@ -45,6 +48,7 @@ export const Question = objectType({
       async resolve({ id }, args, ctx) {
         const question = await ctx.db.Question.findByPk(id, {
           include: ['author'],
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
         })
         return question.author
       },
@@ -129,8 +133,10 @@ export const questionQuery = extendType({
           },
           include: searchString ? ['author'] : [],
         }
-        const totalCount = await ctx.db.Question.count(option)
-        const questions = await ctx.db.Question.findAll({
+        const {
+          count: totalCount,
+          rows: questions,
+        } = await ctx.db.Question.findAndCountAll({
           ...option,
           ...pagination,
           order: getQuestionOrderQueryObj(
@@ -174,8 +180,10 @@ export const questionQuery = extendType({
             ],
           },
         }
-        const totalCount = await ctx.db.Question.count(option)
-        const questions = await ctx.db.Question.findAll({
+        const {
+          count: totalCount,
+          rows: questions,
+        } = await ctx.db.Question.findAndCountAll({
           ...option,
           ...pagination,
           order: getQuestionOrderQueryObj(
@@ -210,8 +218,10 @@ export const questionQuery = extendType({
             reviewStatus: ReviewStatusEnum.Publish,
           },
         }
-        const totalCount = await ctx.db.Question.count(option)
-        const questions = await ctx.db.Question.findAll({
+        const {
+          count: totalCount,
+          rows: questions,
+        } = await ctx.db.Question.findAndCountAll({
           ...option,
           ...pagination,
           order: getQuestionOrderQueryObj(
@@ -245,8 +255,10 @@ export const questionQuery = extendType({
             ],
           },
         }
-        const totalCount = await ctx.db.Question.count(option)
-        const questions = await ctx.db.Question.findAll({
+        const {
+          count: totalCount,
+          rows: questions,
+        } = await ctx.db.Question.findAndCountAll({
           ...option,
           ...pagination,
         })
@@ -702,9 +714,13 @@ export const questionMutation = extendType({
 
 async function getVoted(ctx: Context, questionId: string) {
   const userId = getAuthedUser(ctx)?.id as string
-  const question = await ctx.db.Question.findByPk(questionId)
   if (!userId) return false
-  const user = await ctx.db.User.findByPk(userId)
+  const user = await ctx.db.User.findByPk(userId, {
+    [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+  })
+  const question = await ctx.db.Question.findByPk(questionId, {
+    [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+  })
 
   return question.hasVoteUpUser(user)
 }

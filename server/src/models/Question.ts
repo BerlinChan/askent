@@ -3,7 +3,7 @@ import sequelize from '../db'
 import { UserModelStatic } from './User'
 import { EventModelStatic } from './Event'
 
-const { BOOLEAN, STRING, INTEGER, UUID, UUIDV1, ENUM } = DataTypes
+const { BOOLEAN, STRING, INTEGER, UUID, UUIDV4, ENUM } = DataTypes
 
 export enum ReviewStatus {
   Review = 'REVIEW',
@@ -32,7 +32,7 @@ Question.init(
   {
     id: {
       type: UUID,
-      defaultValue: UUIDV1,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
     },

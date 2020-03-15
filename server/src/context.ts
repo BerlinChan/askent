@@ -1,6 +1,12 @@
 import { PubSub } from 'apollo-server-express'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 import db, { ModelType } from './models'
+import sequelize from './db'
+const {
+  createContext: createDataloaderContext,
+} = require('dataloader-sequelize')
+
+export const dataloaderContext = createDataloaderContext(sequelize)
 
 const pubsub = new PubSub()
 

@@ -1,7 +1,7 @@
 import { BuildOptions, DataTypes, Model } from 'sequelize'
 import sequelize from '../db'
 
-const { ENUM, UUID, UUIDV1 } = DataTypes
+const { ENUM, UUID, UUIDV4 } = DataTypes
 
 export enum RoleName {
   Admin = 'ADMIN',
@@ -21,7 +21,7 @@ Role.init(
   {
     id: {
       type: UUID,
-      defaultValue: UUIDV1,
+      defaultValue: UUIDV4,
       allowNull: false,
       primaryKey: true,
     },

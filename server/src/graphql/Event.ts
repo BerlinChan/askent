@@ -13,6 +13,8 @@ import { Context } from '../context'
 import { withFilter } from 'apollo-server-express'
 import sequelize, { Op } from 'sequelize'
 import { EventDateStatusEnum } from '../models/Event'
+import { dataloaderContext } from '../context'
+const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 
 export const EventDateStatus = enumType({
   name: 'EventDateStatus',
@@ -32,22 +34,34 @@ export const Event = objectType({
     t.field('owner', {
       type: 'User',
       async resolve({ id }, args, ctx) {
-        const event = await ctx.db.Event.findByPk(id)
-        return event.getOwner()
+        const event = await ctx.db.Event.findByPk(id, {
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
+        return event.getOwner({
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
       },
     })
     t.list.field('audiences', {
       type: 'User',
       async resolve({ id }, args, ctx) {
-        const event = await ctx.db.Event.findByPk(id)
-        return event.getAudiences()
+        const event = await ctx.db.Event.findByPk(id, {
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
+        return event.getAudiences({
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
       },
     })
     t.list.field('questions', {
       type: 'User',
       async resolve({ id }, args, ctx) {
-        const event = await ctx.db.Event.findByPk(id)
-        return event.getQuestions()
+        const event = await ctx.db.Event.findByPk(id, {
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
+        return event.getQuestions({
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
       },
     })
 
@@ -127,8 +141,10 @@ export const eventQuery = extendType({
               : {},
           ),
         }
-        const eventsCount = await ctx.db.Event.count(option)
-        const events = await ctx.db.Event.findAll({
+        const {
+          count: eventsCount,
+          rows: events,
+        } = await ctx.db.Event.findAndCountAll({
           ...option,
           ...pagination,
           order: [

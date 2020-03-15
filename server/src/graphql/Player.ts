@@ -1,4 +1,6 @@
 import { objectType, extendType, stringArg, idArg } from 'nexus'
+import { dataloaderContext } from '../context'
+const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 
 export const Player = objectType({
   name: 'Player',
@@ -8,8 +10,13 @@ export const Player = objectType({
     t.list.field('games', {
       type: 'Game',
       resolve: async (root, args, ctx) => {
-        const player = await ctx.db.Player.findByPk(root.id)
-        return player.getGames()
+        const player = await ctx.db.Player.findByPk(root.id, {
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
+
+        return player.getGames({
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
       },
     })
   },

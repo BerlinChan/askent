@@ -5,6 +5,8 @@ import { Context } from '../context'
 import { getAuthedUser, signToken } from '../utils'
 import { Op } from 'sequelize'
 import { RoleModelStatic, RoleName } from '../models/Role'
+import { dataloaderContext } from '../context'
+const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 
 export const User = objectType({
   name: 'User',
@@ -16,29 +18,45 @@ export const User = objectType({
     t.list.field('roles', {
       type: 'Role',
       async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findByPk(id)
-        return user.getRoles()
+        const user = await ctx.db.User.findByPk(id, {
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
+        return user.getRoles({
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
       },
     })
     t.list.field('events', {
       type: 'Event',
       async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findByPk(id)
-        return user.getEvents()
+        const user = await ctx.db.User.findByPk(id, {
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
+        return user.getEvents({
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
       },
     })
     t.list.field('questions', {
       type: 'Question',
       async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findByPk(id)
-        return user.getQuestions()
+        const user = await ctx.db.User.findByPk(id, {
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
+        return user.getQuestions({
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
       },
     })
     t.list.field('voteUpQuestions', {
       type: 'Question',
       async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findByPk(id)
-        return user.getVoteUpQuestions()
+        const user = await ctx.db.User.findByPk(id, {
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
+        return user.getVoteUpQuestions({
+          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+        })
       },
     })
 
