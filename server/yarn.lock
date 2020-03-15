@@ -757,10 +757,10 @@ d@1, d@^1.0.1:
     es5-ext "^0.10.50"
     type "^1.0.1"
 
-dataloader-sequelize@^2.1.2:
+dataloader-sequelize@2.1.2:
   version "2.1.2"
-  resolved "https://registry.npm.taobao.org/dataloader-sequelize/download/dataloader-sequelize-2.1.2.tgz#bceb5d14cdfd6bd271be84bd6d23929a092ea5ea"
-  integrity sha1-vOtdFM39a9JxvoS9bSOSmgkupeo=
+  resolved "https://registry.yarnpkg.com/dataloader-sequelize/-/dataloader-sequelize-2.1.2.tgz#bceb5d14cdfd6bd271be84bd6d23929a092ea5ea"
+  integrity sha512-ZEQx/I7NbBPMqL2WTnnQmJXfbhEB3PcW+urDnMHL/qPfGgQZNvRyO4NAF9y6jJuJ0qMjAhh4IRNjBW/d1NNlGg==
   dependencies:
     dataloader "^1.2.0"
     lodash "^4.15.0"
