@@ -16,6 +16,7 @@ fragment QuestionFields on Question {
   author {
     id
     name
+    avatar
   }
 }
 

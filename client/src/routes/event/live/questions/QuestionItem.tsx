@@ -125,7 +125,7 @@ const QuestionItem: React.FC<Props> = ({
       <ListItemAvatar>
         <Avatar
           alt={question.author?.name as string}
-          src="/static/images/avatar/1.jpg"
+          src={question.author?.avatar}
         />
       </ListItemAvatar>
       <ListItemText

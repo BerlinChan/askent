@@ -222,7 +222,12 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                   defaultMessage: "Participant mode"
                 })}
               >
-                <IconButton size="small" onClick={e => {}}>
+                <IconButton
+                  size="small"
+                  onClick={e => {
+                    window.open(`/event/${data?.eventById.id}`);
+                  }}
+                >
                   <PhoneAndroidIcon fontSize="inherit" color="inherit" />
                 </IconButton>
               </Tooltip>

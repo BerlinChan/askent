@@ -138,9 +138,7 @@ const QuestionListItem: React.FC<Props> = ({
     await updateQuestionReviewStatusMutation({
       variables: {
         questionId: id,
-        reviewStatus: currentStatus
-          ? ReviewStatus.Review
-          : ReviewStatus.Publish
+        reviewStatus: currentStatus ? ReviewStatus.Review : ReviewStatus.Publish
       }
     });
   };
@@ -168,7 +166,7 @@ const QuestionListItem: React.FC<Props> = ({
         <ListItemAvatar>
           <Avatar
             alt={question.author?.name as string}
-            src="/static/images/avatar/1.jpg"
+            src={question.author?.avatar}
           />
         </ListItemAvatar>
         <ListItemText
@@ -319,9 +317,7 @@ const QuestionListItem: React.FC<Props> = ({
                   <QuestionToggleButton
                     className="questionHover"
                     id={question.id}
-                    status={
-                      question.reviewStatus === ReviewStatus.Publish
-                    }
+                    status={question.reviewStatus === ReviewStatus.Publish}
                     onTitle={formatMessage({
                       id: "Unpublish",
                       defaultMessage: "Unpublish"
@@ -341,9 +337,7 @@ const QuestionListItem: React.FC<Props> = ({
                 <QuestionToggleButton
                   className="questionHover"
                   id={question.id}
-                  status={
-                    question.reviewStatus === ReviewStatus.Archive
-                  }
+                  status={question.reviewStatus === ReviewStatus.Archive}
                   onTitle={formatMessage({
                     id: "Unarchive",
                     defaultMessage: "Unarchive"

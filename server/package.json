@@ -15,6 +15,7 @@
   "dependencies": {
     "apollo-server-express": "2.11.0",
     "bcryptjs": "2.4.3",
+    "crypto-js": "^4.0.0",
     "dataloader-sequelize": "^2.1.2",
     "date-fns": "2.11.0",
     "dotenv": "8.2.0",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
+    "@types/crypto-js": "^3.1.43",
     "@types/graphql-iso-date": "3.3.3",
     "@types/jsonwebtoken": "8.3.8",
     "@types/node": "13.9.1",

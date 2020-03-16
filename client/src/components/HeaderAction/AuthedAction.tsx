@@ -83,7 +83,7 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
       <IconButton size="small" onClick={handleMenuOpen}>
         <Avatar
           alt={userQueryResult.data?.me.name as string}
-          src="/broken-image.jpg"
+          src={userQueryResult.data?.me.avatar}
         />
       </IconButton>
 

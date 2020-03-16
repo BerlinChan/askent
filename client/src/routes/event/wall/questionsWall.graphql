@@ -10,6 +10,7 @@ fragment QuestionWallFields on Question {
   author {
     id
     name
+    avatar
   }
 }
 

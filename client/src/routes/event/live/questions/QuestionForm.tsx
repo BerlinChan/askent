@@ -6,6 +6,7 @@ import {
   CardActions,
   Typography,
   FormControl,
+  FormControlLabel,
   Collapse,
   FormHelperText,
   ClickAwayListener,
@@ -14,7 +15,7 @@ import {
 import { useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { ButtonLoading } from "../../../../components/Form";
-import { InputBase } from "formik-material-ui";
+import { InputBase, Switch } from "formik-material-ui";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -30,6 +31,7 @@ import {
   useCreateQuestionMutation,
   useUpdateUserMutation
 } from "../../../../generated/graphqlHooks";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -77,6 +79,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
   const classes = useStyles();
   let { id } = useParams();
   const { formatMessage } = useIntl();
+  const { enqueueSnackbar } = useSnackbar();
   const [expanded, setExpanded] = React.useState<boolean>(false);
   const [createQuestionMutation, { loading }] = useCreateQuestionMutation();
   const [
@@ -87,12 +90,29 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
   const handleClickAway = () => {
     setExpanded(false);
   };
+  const handleSwitchClick = (currentAnonymous: boolean) => {
+    enqueueSnackbar(
+      currentAnonymous
+        ? formatMessage({
+            id: "As",
+            defaultMessage: "As"
+          }) + " user"
+        : formatMessage({
+            id: "As anonymous",
+            defaultMessage: "As anonymous"
+          }),
+      {
+        variant: "success"
+      }
+    );
+  };
 
   return (
     <Formik
       initialValues={{
         question: "",
-        name: ""
+        name: "",
+        anonymous: false
       }}
       validationSchema={Yup.object({
         question: Yup.string()
@@ -173,7 +193,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                     <Avatar
                       className={classes.avatar}
                       alt={formProps.values.name}
-                      src="/example.jpg"
+                      src={userQueryResult.data?.me.avatar}
                     />
                     <Field
                       component={InputBase}
@@ -182,8 +202,41 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                         id: "Your_name(optional)",
                         defaultMessage: "Your name(optional)"
                       })}
-                      disabled={loading || updateUserLoading}
+                      disabled={
+                        loading ||
+                        updateUserLoading ||
+                        formProps.values.anonymous
+                      }
                       onFocus={() => setExpanded(true)}
+                    />
+                    <FormControlLabel
+                      labelPlacement="end"
+                      control={
+                        <Field
+                          component={Switch}
+                          name="anonymous"
+                          type="checkbox"
+                          size="small"
+                          onClick={() =>
+                            handleSwitchClick(formProps.values.anonymous)
+                          }
+                        />
+                      }
+                      label={
+                        <Typography
+                          variant="body2"
+                          color={
+                            formProps.values.anonymous
+                              ? "textPrimary"
+                              : "textSecondary"
+                          }
+                        >
+                          <FormattedMessage
+                            id="As anonymous"
+                            defaultMessage="As anonymous"
+                          />
+                        </Typography>
+                      }
                     />
                   </Box>
                   <ButtonLoading

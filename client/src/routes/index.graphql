@@ -2,6 +2,7 @@ fragment UserInfo on User {
   id
   name
   email
+  avatar
   roles {
     id
     name

@@ -6,6 +6,7 @@ import { getAuthedUser, signToken } from '../utils'
 import { Op } from 'sequelize'
 import { RoleModelStatic, RoleName } from '../models/Role'
 import { dataloaderContext } from '../context'
+import MD5 from 'crypto-js/md5'
 const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 
 export const User = objectType({
@@ -15,6 +16,20 @@ export const User = objectType({
     t.string('email', { nullable: true })
     t.string('name', { nullable: true })
 
+    // https://en.gravatar.com/site/implement/images/
+    t.string('avatar', {
+      async resolve({ email }, args, ctx) {
+        if (email) {
+          const emailMD5Hash = MD5(email.trim().toLowerCase()).toString()
+          return (
+            'https://www.gravatar.com/avatar/' +
+            `${emailMD5Hash}?s=${40}&d=retro`
+          )
+        } else {
+          return ''
+        }
+      },
+    })
     t.list.field('roles', {
       type: 'Role',
       async resolve({ id }, args, ctx) {

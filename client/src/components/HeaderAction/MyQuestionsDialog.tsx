@@ -6,10 +6,10 @@ import {
   DialogActions,
   DialogContent
 } from "@material-ui/core";
-import { useQuestionsByMeQuery } from "../../generated/graphqlHooks";
+// import { useQuestionsByMeQuery } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 // import QuestionList from "./questions/QuestionList";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../constant";
+// import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../constant";
 
 interface Props {
   open: boolean;
@@ -17,12 +17,11 @@ interface Props {
 }
 
 const MyQuestionsDialog: React.FC<Props> = ({ open, onClose }) => {
-  const myQuestionsResult = useQuestionsByMeQuery({
-    skip: true,
-    variables: {
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-    }
-  });
+  // const myQuestionsResult = useQuestionsByMeQuery({
+  //   variables: {
+  //     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
+  //   }
+  // });
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>

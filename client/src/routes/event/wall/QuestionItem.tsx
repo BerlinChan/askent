@@ -123,7 +123,7 @@ const QuestionListItem: React.FC<Props> = ({ question }) => {
               <Avatar
                 className={classes.avatar}
                 alt={question.author?.name as string}
-                src="/static/images/avatar/1.jpg"
+                src={question.author?.avatar}
               />
               <Typography component="span" variant="body1">
                 {question.author?.name ? (
