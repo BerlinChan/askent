@@ -15,11 +15,12 @@ export const User = objectType({
     t.id('id')
     t.string('email', { nullable: true })
     t.string('name', { nullable: true })
+    t.boolean('anonymous')
 
-    // https://en.gravatar.com/site/implement/images/
     t.string('avatar', {
       async resolve({ email }, args, ctx) {
         if (email) {
+          // https://en.gravatar.com/site/implement/images/
           const emailMD5Hash = MD5(email.trim().toLowerCase()).toString()
           return (
             'https://www.gravatar.com/avatar/' +
@@ -102,6 +103,7 @@ export const UpdateUserInput = inputObjectType({
   definition(t) {
     t.string('name')
     t.string('email')
+    t.boolean('anonymous')
   },
 })
 
@@ -229,7 +231,10 @@ export const userMutation = extendType({
       resolve: async (root, { input }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
         const user = await ctx.db.User.findByPk(userId)
-        await user.update(input)
+        await user.update({
+          ...input,
+          anonymous: input.name === '' ? true : input.anonymous,
+        })
 
         return user
       },

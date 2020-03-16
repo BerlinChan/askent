@@ -14,6 +14,7 @@ export enum ReviewStatus {
 export class Question extends Model {
   public id!: string
   public content!: string
+  public anonymous!: boolean
   public reviewStatus!: ReviewStatus
   public star!: boolean
   public top!: boolean
@@ -39,6 +40,10 @@ Question.init(
     content: {
       type: STRING,
       defaultValue: '',
+    },
+    anonymous: {
+      type: BOOLEAN,
+      defaultValue: false,
     },
     reviewStatus: {
       type: ENUM({ values: Object.values(ReviewStatus) }),

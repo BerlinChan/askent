@@ -6,6 +6,7 @@ import {
   idArg,
   arg,
   booleanArg,
+  inputObjectType,
 } from 'nexus'
 import { getAuthedUser } from '../utils'
 import { Context } from '../context'
@@ -28,6 +29,7 @@ export const Question = objectType({
   definition(t) {
     t.id('id')
     t.string('content')
+    t.boolean('anonymous')
     t.field('reviewStatus', { type: 'ReviewStatus' })
     t.boolean('star')
     t.boolean('top')
@@ -45,12 +47,16 @@ export const Question = objectType({
     })
     t.field('author', {
       type: 'User',
-      async resolve({ id }, args, ctx) {
-        const question = await ctx.db.Question.findByPk(id, {
-          include: ['author'],
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-        return question.author
+      nullable: true,
+      async resolve({ id, anonymous }, args, ctx) {
+        if (!anonymous) {
+          const question = await ctx.db.Question.findByPk(id, {
+            include: ['author'],
+            [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+          })
+
+          return question.author
+        }
       },
     })
 
@@ -78,6 +84,14 @@ export const QuestionPaged = objectType({
   definition(t) {
     t.implements('IPagedType')
     t.list.field('list', { type: 'Question' })
+  },
+})
+export const CreateQuestionInput = inputObjectType({
+  name: 'CreateQuestionInput',
+  definition(t) {
+    t.id('eventId', { required: true })
+    t.string('content', { required: true })
+    t.boolean('anonymous', { default: false })
   },
 })
 
@@ -281,10 +295,10 @@ export const questionMutation = extendType({
       type: 'Question',
       description: 'Create question',
       args: {
-        eventId: idArg({ required: true }),
-        content: stringArg({ required: true }),
+        input: arg({ type: 'CreateQuestionInput', required: true }),
       },
-      resolve: async (root, { eventId, content }, ctx) => {
+      resolve: async (root, { input }, ctx) => {
+        const { eventId, content, anonymous } = input
         const authorId = getAuthedUser(ctx)?.id as string
         const event = await ctx.db.Event.findByPk(eventId)
         const author = await ctx.db.User.findByPk(authorId)
@@ -293,6 +307,7 @@ export const questionMutation = extendType({
             ? ReviewStatusEnum.Review
             : ReviewStatusEnum.Publish,
           content,
+          anonymous,
         })
         await newQuestion.setEvent(event)
         await newQuestion.setAuthor(author)

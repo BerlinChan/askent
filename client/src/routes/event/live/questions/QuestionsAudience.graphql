@@ -42,8 +42,8 @@ query QuestionsByMe(
   }
 }
 
-mutation CreateQuestion($eventId: ID!, $content: String!) {
-  createQuestion(eventId: $eventId, content: $content) {
+mutation CreateQuestion($input: CreateQuestionInput!) {
+  createQuestion(input: $input) {
     ...QuestionAudienceFields
   }
 }

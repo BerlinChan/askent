@@ -1,6 +1,7 @@
 fragment UserInfo on User {
   id
   name
+  anonymous
   email
   avatar
   roles {

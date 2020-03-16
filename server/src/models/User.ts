@@ -9,7 +9,7 @@ import Event, { EventModelStatic } from './Event'
 import Question, { QuestionModelStatic } from './Question'
 import Role, { RoleModelStatic } from './Role'
 
-const { STRING, UUID, UUIDV4 } = DataTypes
+const { BOOLEAN, STRING, UUID, UUIDV4 } = DataTypes
 
 export class User extends Model {
   public id!: string
@@ -17,6 +17,7 @@ export class User extends Model {
   public email?: string
   public password?: string
   public name?: string
+  public anonymous!: boolean
 
   public roles!: RoleModelStatic[]
   public events!: EventModelStatic[]
@@ -50,6 +51,10 @@ User.init(
       type: STRING,
     },
     name: STRING,
+    anonymous: {
+      type: BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     sequelize,

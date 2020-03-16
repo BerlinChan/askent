@@ -16,7 +16,7 @@ import { useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { ButtonLoading } from "../../../../components/Form";
 import { InputBase, Switch } from "formik-material-ui";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, FormikProps, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
@@ -62,6 +62,8 @@ const useStyles = makeStyles((theme: Theme) =>
     cardActions: {
       justifyContent: "space-between"
     },
+    nameBox: { display: "flex", alignItems: "center" },
+    nameInput: { width: 140, marginRight: theme.spacing(2) },
     avatar: {
       width: theme.spacing(4),
       height: theme.spacing(4),
@@ -71,6 +73,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+type QuestionValues = { content: string; name: string; anonymous: boolean };
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
 }
@@ -87,6 +90,55 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
     { loading: updateUserLoading }
   ] = useUpdateUserMutation();
 
+  const initialValues: QuestionValues = {
+    content: "",
+    name: "",
+    anonymous: false
+  };
+  const handleSubmit: (
+    values: QuestionValues,
+    formikHelpers: FormikHelpers<QuestionValues>
+  ) => void | Promise<any> = async (values, formikBag) => {
+    if (
+      values.name !== userQueryResult.data?.me.name ||
+      values.anonymous !== userQueryResult.data?.me.anonymous
+    ) {
+      if (values.name !== userQueryResult.data?.me.name) {
+        // TODO: confirm. Change your name? You are about to change your name. All your previous questions or poll votes will use your new name. However, you will not be able to change it again for the next 1 hour.
+      }
+      await updateAudienceUserMutation({
+        variables: {
+          input:
+            values.anonymous !== userQueryResult.data?.me.anonymous &&
+            userQueryResult.data?.me.anonymous === true
+              ? { anonymous: true }
+              : { name: values.name }
+        }
+      });
+    }
+    await createQuestionMutation({
+      variables: {
+        input: {
+          eventId: id as string,
+          content: values.content,
+          anonymous: values.anonymous
+        }
+      }
+    });
+    setExpanded(false);
+    formikBag.resetForm();
+  };
+
+  const handleInputFocus = (formProps: FormikProps<QuestionValues>) => {
+    if (!expanded) {
+      formProps.setValues({
+        ...formProps.values,
+        name: userQueryResult.data?.me.name || "",
+        anonymous: Boolean(userQueryResult.data?.me.anonymous)
+      });
+      setExpanded(true);
+    }
+  };
   const handleClickAway = () => {
     setExpanded(false);
   };
@@ -109,29 +161,14 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
 
   return (
     <Formik
-      initialValues={{
-        question: "",
-        name: "",
-        anonymous: false
-      }}
+      initialValues={initialValues}
       validationSchema={Yup.object({
-        question: Yup.string()
+        content: Yup.string()
           .max(QUESTION_CONTENT_MAX_LENGTH)
           .required(),
         name: Yup.string().max(USERNAME_MAX_LENGTH)
       })}
-      onSubmit={async (values, formikBag) => {
-        if (values.name !== userQueryResult.data?.me.name) {
-          await updateAudienceUserMutation({
-            variables: { input: { name: values.name } }
-          });
-        }
-        await createQuestionMutation({
-          variables: { eventId: id as string, content: values.question }
-        });
-        setExpanded(false);
-        formikBag.resetForm();
-      }}
+      onSubmit={handleSubmit}
     >
       {formProps => (
         <ClickAwayListener onClickAway={handleClickAway}>
@@ -151,93 +188,108 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                     multiline
                     rows={3}
                     rowsMax={8}
-                    name="question"
+                    name="content"
                     className={classes.questionInput}
                     placeholder={formatMessage({
                       id: "Type_your_question",
                       defaultMessage: "Type your question"
                     })}
                     disabled={loading || updateUserLoading}
-                    onFocus={() => {
-                      if (!expanded && !formProps.touched.name) {
-                        formProps.setFieldValue(
-                          "name",
-                          userQueryResult.data?.me.name || ""
-                        );
-                      }
-                      setExpanded(true);
-                    }}
+                    onFocus={() => handleInputFocus(formProps)}
                   />
                 </FormControl>
                 <Collapse in={expanded}>
                   <Box className={classes.helperTextBox}>
                     <FormHelperText
                       error={Boolean(
-                        (formProps.touched.question &&
-                          formProps.errors.question) ||
+                        (formProps.touched.content &&
+                          formProps.errors.content) ||
                           (formProps.touched.name && formProps.errors.name)
                       )}
                     >
-                      {formProps.errors.question || formProps.errors.name}
+                      {formProps.errors.content || formProps.errors.name}
                     </FormHelperText>
                     <Typography variant="body2" color="textSecondary">
                       {QUESTION_CONTENT_MAX_LENGTH -
-                        formProps.values.question.length}
+                        formProps.values.content.length}
                     </Typography>
                   </Box>
                 </Collapse>
               </CardContent>
               <Collapse in={expanded}>
                 <CardActions className={classes.cardActions}>
-                  <Box display="flex">
-                    <Avatar
-                      className={classes.avatar}
-                      alt={formProps.values.name}
-                      src={userQueryResult.data?.me.avatar}
-                    />
-                    <Field
-                      component={InputBase}
-                      name="name"
-                      placeholder={formatMessage({
-                        id: "Your_name(optional)",
-                        defaultMessage: "Your name(optional)"
-                      })}
-                      disabled={
-                        loading ||
-                        updateUserLoading ||
-                        formProps.values.anonymous
-                      }
-                      onFocus={() => setExpanded(true)}
-                    />
-                    <FormControlLabel
-                      labelPlacement="end"
-                      control={
-                        <Field
-                          component={Switch}
-                          name="anonymous"
-                          type="checkbox"
-                          size="small"
-                          onClick={() =>
-                            handleSwitchClick(formProps.values.anonymous)
-                          }
+                  <Box className={classes.nameBox}>
+                    {formProps.values.anonymous ? (
+                      <React.Fragment>
+                        <Avatar
+                          className={classes.avatar}
+                          alt={formatMessage({
+                            id: "Anonymous",
+                            defaultMessage: "Anonymous"
+                          })}
                         />
-                      }
-                      label={
                         <Typography
-                          variant="body2"
-                          color={
-                            formProps.values.anonymous
-                              ? "textPrimary"
-                              : "textSecondary"
-                          }
+                          variant="body1"
+                          color="textSecondary"
+                          className={classes.nameInput}
                         >
                           <FormattedMessage
-                            id="As anonymous"
-                            defaultMessage="As anonymous"
+                            id="Anonymous"
+                            defaultMessage="Anonymous"
                           />
                         </Typography>
-                      }
-                    />
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment>
+                        <Avatar
+                          className={classes.avatar}
+                          alt={formProps.values.name}
+                          src={userQueryResult.data?.me.avatar}
+                        />
+                        <Field
+                          component={InputBase}
+                          className={classes.nameInput}
+                          name="name"
+                          placeholder={formatMessage({
+                            id: "Your_name(optional)",
+                            defaultMessage: "Your name(optional)"
+                          })}
+                          disabled={loading || updateUserLoading}
+                          onFocus={() => setExpanded(true)}
+                        />
+                      </React.Fragment>
+                    )}
+                    {formProps.values.name && (
+                      <FormControlLabel
+                        labelPlacement="end"
+                        control={
+                          <Field
+                            component={Switch}
+                            name="anonymous"
+                            type="checkbox"
+                            size="small"
+                            onClick={() =>
+                              handleSwitchClick(formProps.values.anonymous)
+                            }
+                          />
+                        }
+                        label={
+                          <Typography
+                            variant="body2"
+                            color={
+                              formProps.values.anonymous
+                                ? "textPrimary"
+                                : "textSecondary"
+                            }
+                          >
+                            <FormattedMessage
+                              id="As anonymous"
+                              defaultMessage="As anonymous"
+                            />
+                          </Typography>
+                        }
+                      />
+                    )}
                   </Box>
                   <ButtonLoading
                     variant="contained"
