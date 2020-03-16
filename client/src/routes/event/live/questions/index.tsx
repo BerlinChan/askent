@@ -24,6 +24,7 @@ import {
 import { DataProxy } from "apollo-cache";
 import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
+import AskDialog from "./AskDialog";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -137,50 +138,54 @@ const LiveQuestions: React.FC<Props> = ({
   };
 
   return (
-    <Container maxWidth="sm">
-      <Typography
-        variant="subtitle1"
-        color="textSecondary"
-        className={classes.title}
-      >
-        <FormattedMessage
-          id="Ask_the_speaker"
-          defaultMessage="Ask the speaker"
-        />
-      </Typography>
-      <QuestionForm userQueryResult={userQueryResult} />
-      <Box className={classes.listActions}>
-        <SubTabs value={orderTab} onChange={handleTabsChange}>
-          <SubTab
-            label={formatMessage({
-              id: "Popular",
-              defaultMessage: "Popular"
-            })}
+    <React.Fragment>
+      <Container maxWidth="sm">
+        <Typography
+          variant="subtitle1"
+          color="textSecondary"
+          className={classes.title}
+        >
+          <FormattedMessage
+            id="Ask_the_speaker"
+            defaultMessage="Ask the speaker"
           />
-          <SubTab
-            label={formatMessage({
-              id: "Recent",
-              defaultMessage: "Recent"
-            })}
-          />
-        </SubTabs>
-        <Typography color="textSecondary">
-          {questionsQueryResult.data?.questionsByEventAudience.totalCount}{" "}
-          <FormattedMessage id="questions" defaultMessage="questions" />
         </Typography>
-      </Box>
-      <Paper className={classes.panelPaper}>
-        <QuestionList
-          userQueryResult={userQueryResult}
-          eventQueryResult={eventQueryResult}
-          questionsQueryResult={questionsQueryResult}
-          order={questionsQueryVariables.order}
-        />
-      </Paper>
-      <Box className={classes.bottomLogoBox}>
-        <Logo />
-      </Box>
-    </Container>
+        <QuestionForm userQueryResult={userQueryResult} />
+        <Box className={classes.listActions}>
+          <SubTabs value={orderTab} onChange={handleTabsChange}>
+            <SubTab
+              label={formatMessage({
+                id: "Popular",
+                defaultMessage: "Popular"
+              })}
+            />
+            <SubTab
+              label={formatMessage({
+                id: "Recent",
+                defaultMessage: "Recent"
+              })}
+            />
+          </SubTabs>
+          <Typography color="textSecondary">
+            {questionsQueryResult.data?.questionsByEventAudience.totalCount}{" "}
+            <FormattedMessage id="questions" defaultMessage="questions" />
+          </Typography>
+        </Box>
+        <Paper className={classes.panelPaper}>
+          <QuestionList
+            userQueryResult={userQueryResult}
+            eventQueryResult={eventQueryResult}
+            questionsQueryResult={questionsQueryResult}
+            order={questionsQueryVariables.order}
+          />
+        </Paper>
+        <Box className={classes.bottomLogoBox}>
+          <Logo />
+        </Box>
+      </Container>
+
+      <AskDialog userQueryResult={userQueryResult} />
+    </React.Fragment>
   );
 };
 

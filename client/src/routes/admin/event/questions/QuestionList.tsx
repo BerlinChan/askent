@@ -81,12 +81,13 @@ const QuestionList: React.FC<Props> = ({
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
 
-  const orderedList = React.useMemo(() => {
-    const list = sortQuestionBy<QuestionFieldsFragment>(order)(
+  const { orderedList, topItems } = React.useMemo(() => {
+    const orderedList = sortQuestionBy<QuestionFieldsFragment>(order)(
       data?.questionsByEvent.list || []
     );
+    const topItems = orderedList.filter(item => item.top).length;
 
-    return list;
+    return { orderedList, topItems };
   }, [data, order]);
   const loadMore = () => {
     if (data?.questionsByEvent.hasNextPage) {
@@ -119,6 +120,7 @@ const QuestionList: React.FC<Props> = ({
       <Virtuoso
         style={{ height: "100%", width: "100%" }}
         totalCount={orderedList.length}
+        topItems={topItems}
         endReached={loadMore}
         item={index => {
           const question = orderedList[index] as

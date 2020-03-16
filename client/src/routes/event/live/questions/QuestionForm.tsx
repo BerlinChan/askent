@@ -75,10 +75,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type QuestionValues = { content: string; name: string; anonymous: boolean };
 interface Props {
+  autoFocus?: boolean;
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
+  onAfterSubmit?: () => void;
 }
 
-const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
+const QuestionForm: React.FC<Props> = ({
+  autoFocus = false,
+  userQueryResult,
+  onAfterSubmit
+}) => {
   const classes = useStyles();
   let { id } = useParams();
   const { formatMessage } = useIntl();
@@ -127,6 +133,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
     });
     setExpanded(false);
     formikBag.resetForm();
+    onAfterSubmit && onAfterSubmit();
   };
 
   const handleInputFocus = (formProps: FormikProps<QuestionValues>) => {
@@ -185,6 +192,7 @@ const QuestionForm: React.FC<Props> = ({ userQueryResult }) => {
                   </Box>
                   <Field
                     component={InputBase}
+                    autoFocus={autoFocus}
                     multiline
                     rows={3}
                     rowsMax={8}

@@ -5,11 +5,8 @@ import {
   Tab,
   Button,
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
-  IconButton,
-  Typography
+  DialogActions
 } from "@material-ui/core";
 import {
   createStyles,
@@ -22,6 +19,7 @@ import { Formik, Form, FormikErrors, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import * as R from "ramda";
 import { ButtonLoading } from "../Form";
+import DialogTitleWithClose from "../DialogTitleWithClose";
 import {
   useCheckEventCodeExistLazyQuery,
   useEventByIdLazyQuery,
@@ -29,17 +27,11 @@ import {
 } from "../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
 import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../constant";
-import CloseIcon from "@material-ui/icons/Close";
 import { tabList, TabPanel } from "./TabsPanels";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     paper: { overflowY: "hidden" },
-    dialogTitle: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center"
-    },
     form: { display: "flex", flexDirection: "column", overflow: "hidden" },
     dialogContent: { display: "flex", overflowY: "hidden" },
     tabs: {
@@ -237,17 +229,15 @@ const EventSettingDialog: React.FC<Props> = ({
       open={Boolean(eventId)}
       onClose={handleClose}
     >
-      <DialogTitle disableTypography className={classes.dialogTitle}>
-        <Typography variant="subtitle1" color="textSecondary">
+      <DialogTitleWithClose
+        title={
           <FormattedMessage
             id="Event_settings"
             defaultMessage="Event settings"
           />
-        </Typography>
-        <IconButton onClick={handleClose}>
-          <CloseIcon color="inherit" fontSize="small" />
-        </IconButton>
-      </DialogTitle>
+        }
+        onClose={handleClose}
+      />
 
       <Formik
         enableReinitialize
