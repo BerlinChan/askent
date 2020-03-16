@@ -12,13 +12,21 @@ export default function AppBarElevationScroll({
 }: Props & AppBarProps) {
   const [height, setHeight] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    setHeight(Number(ref?.current?.clientHeight));
-  }, [children]);
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0
   });
+  
+  const handleResize = () => {
+    setHeight(Number(ref?.current?.clientHeight));
+  };
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [children]);
 
   return (
     <Fragment>

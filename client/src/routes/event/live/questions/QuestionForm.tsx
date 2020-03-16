@@ -10,7 +10,8 @@ import {
   Collapse,
   FormHelperText,
   ClickAwayListener,
-  Avatar
+  Avatar,
+  Hidden
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -62,14 +63,20 @@ const useStyles = makeStyles((theme: Theme) =>
     cardActions: {
       justifyContent: "space-between"
     },
+    cardActionsMobile: { flexDirection: "column", alignItems: "flex-start" },
     nameBox: { display: "flex", alignItems: "center" },
-    nameInput: { width: 140, marginRight: theme.spacing(2) },
+    nameInput: { width: 140, marginRight: theme.spacing(1) },
     avatar: {
       width: theme.spacing(4),
       height: theme.spacing(4),
       marginRight: theme.spacing(1),
       fontSize: theme.typography.pxToRem(16)
-    }
+    },
+    anonymousSwitchLabel: {
+      marginLeft: "unset",
+      marginRight: "unset"
+    },
+    mobileSubmit: { width: "100%", marginTop: theme.spacing(1) }
   })
 );
 
@@ -131,7 +138,7 @@ const QuestionForm: React.FC<Props> = ({
         }
       }
     });
-    setExpanded(false);
+    !autoFocus && setExpanded(false);
     formikBag.resetForm();
     onAfterSubmit && onAfterSubmit();
   };
@@ -147,7 +154,7 @@ const QuestionForm: React.FC<Props> = ({
     }
   };
   const handleClickAway = () => {
-    setExpanded(false);
+    !autoFocus && setExpanded(false);
   };
   const handleSwitchClick = (currentAnonymous: boolean) => {
     enqueueSnackbar(
@@ -163,6 +170,91 @@ const QuestionForm: React.FC<Props> = ({
       {
         variant: "success"
       }
+    );
+  };
+
+  const renderAvatarName = (formProps: FormikProps<QuestionValues>) => {
+    return formProps.values.anonymous ? (
+      <React.Fragment>
+        <Avatar
+          className={classes.avatar}
+          alt={formatMessage({
+            id: "Anonymous",
+            defaultMessage: "Anonymous"
+          })}
+        />
+        <Typography
+          variant="body1"
+          color="textSecondary"
+          className={classes.nameInput}
+        >
+          <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
+        </Typography>
+      </React.Fragment>
+    ) : (
+      <React.Fragment>
+        <Avatar
+          className={classes.avatar}
+          alt={formProps.values.name}
+          src={userQueryResult.data?.me.avatar}
+        />
+        <Field
+          component={InputBase}
+          className={classes.nameInput}
+          name="name"
+          placeholder={formatMessage({
+            id: "Your_name(optional)",
+            defaultMessage: "Your name(optional)"
+          })}
+          disabled={loading || updateUserLoading}
+          onFocus={() => setExpanded(true)}
+        />
+      </React.Fragment>
+    );
+  };
+  const renderAnonymous = (formProps: FormikProps<QuestionValues>) => {
+    return (
+      formProps.values.name && (
+        <FormControlLabel
+          className={classes.anonymousSwitchLabel}
+          labelPlacement="end"
+          control={
+            <Field
+              component={Switch}
+              name="anonymous"
+              type="checkbox"
+              size="small"
+              onClick={() => handleSwitchClick(formProps.values.anonymous)}
+            />
+          }
+          label={
+            <Typography
+              variant="body2"
+              color={
+                formProps.values.anonymous ? "textPrimary" : "textSecondary"
+              }
+            >
+              <FormattedMessage
+                id="As anonymous"
+                defaultMessage="As anonymous"
+              />
+            </Typography>
+          }
+        />
+      )
+    );
+  };
+  const renderSubmitButton = (fullWidth: boolean = false) => {
+    return (
+      <ButtonLoading
+        fullWidth={fullWidth}
+        variant="contained"
+        color="primary"
+        type="submit"
+        loading={loading || updateUserLoading}
+      >
+        <FormattedMessage id="Send" defaultMessage="Send" />
+      </ButtonLoading>
     );
   };
 
@@ -225,89 +317,33 @@ const QuestionForm: React.FC<Props> = ({
                 </Collapse>
               </CardContent>
               <Collapse in={expanded}>
-                <CardActions className={classes.cardActions}>
-                  <Box className={classes.nameBox}>
-                    {formProps.values.anonymous ? (
-                      <React.Fragment>
-                        <Avatar
-                          className={classes.avatar}
-                          alt={formatMessage({
-                            id: "Anonymous",
-                            defaultMessage: "Anonymous"
-                          })}
-                        />
-                        <Typography
-                          variant="body1"
-                          color="textSecondary"
-                          className={classes.nameInput}
-                        >
-                          <FormattedMessage
-                            id="Anonymous"
-                            defaultMessage="Anonymous"
-                          />
-                        </Typography>
-                      </React.Fragment>
-                    ) : (
-                      <React.Fragment>
-                        <Avatar
-                          className={classes.avatar}
-                          alt={formProps.values.name}
-                          src={userQueryResult.data?.me.avatar}
-                        />
-                        <Field
-                          component={InputBase}
-                          className={classes.nameInput}
-                          name="name"
-                          placeholder={formatMessage({
-                            id: "Your_name(optional)",
-                            defaultMessage: "Your name(optional)"
-                          })}
-                          disabled={loading || updateUserLoading}
-                          onFocus={() => setExpanded(true)}
-                        />
-                      </React.Fragment>
-                    )}
-                    {formProps.values.name && (
-                      <FormControlLabel
-                        labelPlacement="end"
-                        control={
-                          <Field
-                            component={Switch}
-                            name="anonymous"
-                            type="checkbox"
-                            size="small"
-                            onClick={() =>
-                              handleSwitchClick(formProps.values.anonymous)
-                            }
-                          />
-                        }
-                        label={
-                          <Typography
-                            variant="body2"
-                            color={
-                              formProps.values.anonymous
-                                ? "textPrimary"
-                                : "textSecondary"
-                            }
-                          >
-                            <FormattedMessage
-                              id="As anonymous"
-                              defaultMessage="As anonymous"
-                            />
-                          </Typography>
-                        }
-                      />
-                    )}
-                  </Box>
-                  <ButtonLoading
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    loading={loading || updateUserLoading}
+                <Hidden smDown>
+                  <CardActions className={classes.cardActions}>
+                    <Box className={classes.nameBox}>
+                      {renderAvatarName(formProps)}
+                      {renderAnonymous(formProps)}
+                    </Box>
+                    {renderSubmitButton()}
+                  </CardActions>
+                </Hidden>
+                <Hidden mdUp>
+                  <CardActions
+                    disableSpacing
+                    className={classes.cardActionsMobile}
                   >
-                    <FormattedMessage id="Send" defaultMessage="Send" />
-                  </ButtonLoading>
-                </CardActions>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      width="100%"
+                    >
+                      <Box display="flex">{renderAvatarName(formProps)}</Box>
+                      {renderAnonymous(formProps)}
+                    </Box>
+                    <Box className={classes.mobileSubmit}>
+                      {renderSubmitButton(true)}
+                    </Box>
+                  </CardActions>
+                </Hidden>
               </Collapse>
             </Form>
           </Card>

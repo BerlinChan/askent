@@ -5,7 +5,8 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     buttonWrapper: {
-      position: "relative"
+      position: "relative",
+      "&.fullWidth": { width: "100%" }
     },
     buttonProgress: {
       position: "absolute",
@@ -19,18 +20,24 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   loading: boolean;
+  fullWidth?: boolean;
 }
 
 export const ButtonLoading: React.FC<Props & ButtonProps> = ({
   children,
   loading,
+  fullWidth = false,
   ...props
 }) => {
   const classes = useStyles();
 
   return (
-    <div className={classes.buttonWrapper}>
-      <Button disabled={loading || props.disabled} {...props}>
+    <div className={classes.buttonWrapper + (fullWidth ? " fullWidth" : "")}>
+      <Button
+        disabled={loading || props.disabled}
+        fullWidth={fullWidth}
+        {...props}
+      >
         {children}
       </Button>
       {loading && (

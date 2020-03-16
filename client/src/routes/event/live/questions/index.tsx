@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Box, Typography, Container, Paper } from "@material-ui/core";
+import { Box, Typography, Container, Paper, Hidden } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
@@ -140,17 +140,19 @@ const LiveQuestions: React.FC<Props> = ({
   return (
     <React.Fragment>
       <Container maxWidth="sm">
-        <Typography
-          variant="subtitle1"
-          color="textSecondary"
-          className={classes.title}
-        >
-          <FormattedMessage
-            id="Ask_the_speaker"
-            defaultMessage="Ask the speaker"
-          />
-        </Typography>
-        <QuestionForm userQueryResult={userQueryResult} />
+        <Hidden smDown>
+          <Typography
+            variant="subtitle1"
+            color="textSecondary"
+            className={classes.title}
+          >
+            <FormattedMessage
+              id="Ask_the_speaker"
+              defaultMessage="Ask the speaker"
+            />
+          </Typography>
+          <QuestionForm userQueryResult={userQueryResult} />
+        </Hidden>
         <Box className={classes.listActions}>
           <SubTabs value={orderTab} onChange={handleTabsChange}>
             <SubTab
