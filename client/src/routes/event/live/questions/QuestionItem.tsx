@@ -52,7 +52,8 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: theme.spacing(2),
       backgroundColor: theme.palette.background.paper,
       boxShadow: theme.shadows[1],
-      borderRadius: theme.shape.borderRadius
+      borderRadius: theme.shape.borderRadius,
+      "&:first-child": { marginTop: theme.spacing(2) }
     },
     topQuestion: {
       backgroundColor: fade(theme.palette.success.light, 0.5)

@@ -6,13 +6,11 @@
 
 ## TODO
 
-- [ ] audience question input for mobile
-- [ ] audience my questions dialog
-- [ ] audience question list use infinite scroll
-- [ ] reply question
-- [ ] event edit dialog
 - [ ] infinite list end / loading / more
 - [ ] admin event list - duplicate event
+- [ ] audience my questions dialog
+- [ ] reply question
+- [ ] event edit dialog
 - [ ] question support voteDown
 - [ ] Build server for production
 - [ ] [Benchmark](https://github.com/benawad/node-graphql-benchmarks)

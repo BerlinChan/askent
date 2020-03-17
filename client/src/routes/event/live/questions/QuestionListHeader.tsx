@@ -9,7 +9,6 @@ import { VirtuosoMethods } from "react-virtuoso";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    questionForm: { marginBottom: theme.spacing(2) },
     title: {
       marginTop: theme.spacing(1),
       marginDown: theme.spacing(1)
@@ -41,7 +40,6 @@ const QuestionListHeader: React.FC<Props> = ({
         />
       </Typography>
       <QuestionForm
-        className={classes.questionForm}
         userQueryResult={userQueryResult}
         onFocus={() => {
           virtuosoRef.current?.scrollToIndex({

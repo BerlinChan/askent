@@ -39,6 +39,7 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    "@global": { body: { overflow: "hidden" } }, // disable body scroll on iOS Safari
     appBar: {
       [theme.breakpoints.up("md")]: {
         zIndex: theme.zIndex.drawer + 1

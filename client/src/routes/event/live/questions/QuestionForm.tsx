@@ -253,6 +253,7 @@ const QuestionForm: React.FC<Props> = ({
     return (
       <ButtonLoading
         fullWidth={fullWidth}
+        size={fullWidth ? "large" : "medium"}
         variant="contained"
         color="primary"
         type="submit"
