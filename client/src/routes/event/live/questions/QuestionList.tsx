@@ -1,14 +1,6 @@
 import React from "react";
-import {
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Container,
-  useMediaQuery
-} from "@material-ui/core";
+import { Container, useMediaQuery } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
-import { FormattedMessage, useIntl } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
@@ -17,15 +9,11 @@ import {
   EventByIdQueryVariables,
   QuestionsByEventAudienceQuery,
   QuestionsByEventAudienceQueryVariables,
-  useDeleteQuestionMutation,
   QuestionAudienceFieldsFragment,
-  ReviewStatus,
   QuestionOrder
 } from "../../../../generated/graphqlHooks";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import Confirm from "../../../../components/Confirm";
-import EditIcon from "@material-ui/icons/Edit";
 import QuestionItem from "./QuestionItem";
+import QuestionListMenu from "./QuestionListMenu";
 import QuestionListHeader from "./QuestionListHeader";
 import { Virtuoso, VirtuosoMethods, TScrollContainer } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
@@ -73,50 +61,27 @@ const QuestionList: React.FC<Props> = ({
   questionsQueryResult,
   order = QuestionOrder.Popular
 }) => {
-  const { formatMessage } = useIntl();
   const theme = useTheme();
   const matcheMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const { data, fetchMore } = questionsQueryResult;
   const virtuosoRef = React.useRef<VirtuosoMethods>(null);
-  const [deleteQuestionMutation] = useDeleteQuestionMutation();
   const [isScrolling, setIsScrolling] = React.useState(false);
-  const [moreMenu, setMoreMenu] = React.useState<{
+  const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
     id: string;
   }>({ anchorEl: null, id: "" });
-  const [deleteConfirm, setDeleteConfirm] = React.useState({
-    open: false,
-    id: ""
-  });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
-  const questionMoreTarget = data?.questionsByEventAudience.list.find(
-    question => question.id === moreMenu.id
-  );
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
   ) => {
-    setMoreMenu({ anchorEl: event.currentTarget, id });
+    moreMenuState[1]({ anchorEl: event.currentTarget, id });
   };
   const handleMoreClose = () => {
-    setMoreMenu({ anchorEl: null, id: "" });
+    moreMenuState[1]({ anchorEl: null, id: "" });
   };
 
-  const handleOpenDelete = (id: string) => {
-    setDeleteConfirm({ open: true, id });
-    handleMoreClose();
-  };
-  const handleCloseDelete = () => {
-    setDeleteConfirm({ open: false, id: "" });
-    handleMoreClose();
-  };
-  const handleDelete = async () => {
-    await deleteQuestionMutation({
-      variables: { questionId: deleteConfirm.id }
-    });
-    handleCloseDelete();
-  };
   const [editContentIds, setEditContentIds] = React.useState<Array<string>>([]);
   const handleEditContentToggle = (id: string) => {
     const findId = editContentIds.find(item => item === id);
@@ -225,62 +190,11 @@ const QuestionList: React.FC<Props> = ({
         }}
       />
 
-      <Menu
-        MenuListProps={{ dense: true }}
-        anchorEl={moreMenu.anchorEl}
-        getContentAnchorEl={null}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right"
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right"
-        }}
-        open={Boolean(moreMenu.anchorEl)}
-        onClose={handleMoreClose}
-      >
-        <MenuItem
-          disabled={
-            questionMoreTarget?.top ||
-            (eventQueryResult.data?.eventById.moderation &&
-              questionMoreTarget?.reviewStatus === ReviewStatus.Publish)
-          }
-          onClick={() => handleEditContentToggle(moreMenu.id)}
-        >
-          <ListItemIcon>
-            <EditIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatMessage({ id: "Edit", defaultMessage: "Edit" })}
-          />
-        </MenuItem>
-        <MenuItem
-          disabled={questionMoreTarget?.top}
-          onClick={() => handleOpenDelete(moreMenu.id)}
-        >
-          <ListItemIcon>
-            <DeleteForeverIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatMessage({
-              id: "Withdraw",
-              defaultMessage: "Withdraw"
-            })}
-          />
-        </MenuItem>
-      </Menu>
-      <Confirm
-        open={deleteConfirm.open}
-        contentText={
-          <FormattedMessage
-            id="Withdraw_this_question?"
-            defaultMessage="Withdraw this question?"
-          />
-        }
-        okText={<FormattedMessage id="Withdraw" defaultMessage="Withdraw" />}
-        onCancel={handleCloseDelete}
-        onOk={handleDelete}
+      <QuestionListMenu
+        eventQueryResult={eventQueryResult}
+        questionsQueryResult={questionsQueryResult}
+        moreMenuState={moreMenuState}
+        editContentInputRef={editContentInputRef}
       />
     </React.Fragment>
   );

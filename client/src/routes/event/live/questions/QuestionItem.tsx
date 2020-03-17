@@ -49,11 +49,9 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: theme.breakpoints.values.sm - 48,
       marginLeft: "auto",
       marginRight: "auto",
-      marginBottom: theme.spacing(2),
+      borderBottom: `1px solid ${theme.palette.divider}`,
       backgroundColor: theme.palette.background.paper,
-      boxShadow: theme.shadows[1],
-      borderRadius: theme.shape.borderRadius,
-      "&:first-child": { marginTop: theme.spacing(2) }
+      boxShadow: theme.shadows[1]
     },
     topQuestion: {
       backgroundColor: fade(theme.palette.success.light, 0.5)
