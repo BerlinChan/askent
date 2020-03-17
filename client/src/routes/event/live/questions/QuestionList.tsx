@@ -18,6 +18,7 @@ import QuestionListHeader from "./QuestionListHeader";
 import { Virtuoso, VirtuosoMethods, TScrollContainer } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
 import { sortQuestionBy } from "../../../../utils";
+import ListFooter from "../../../../components/ListFooter";
 
 const ScrollContainer: TScrollContainer = ({
   className,
@@ -63,7 +64,7 @@ const QuestionList: React.FC<Props> = ({
 }) => {
   const theme = useTheme();
   const matcheMdUp = useMediaQuery(theme.breakpoints.up("md"));
-  const { data, fetchMore } = questionsQueryResult;
+  const { data, loading, fetchMore } = questionsQueryResult;
   const virtuosoRef = React.useRef<VirtuosoMethods>(null);
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
@@ -177,17 +178,12 @@ const QuestionList: React.FC<Props> = ({
         }}
         endReached={loadMore}
         item={renderListItem}
-        footer={() => {
-          return (
-            <Container maxWidth="sm">
-              {!data?.questionsByEventAudience.hasNextPage ? (
-                <div>-- end --</div>
-              ) : (
-                <div>Loading...</div>
-              )}
-            </Container>
-          );
-        }}
+        footer={() => (
+          <ListFooter
+            loading={loading}
+            hasNextPage={data?.questionsByEventAudience.hasNextPage}
+          />
+        )}
       />
 
       <QuestionListMenu

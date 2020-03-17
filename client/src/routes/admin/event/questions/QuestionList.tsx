@@ -16,6 +16,7 @@ import Confirm from "../../../../components/Confirm";
 import QuestionItem from "./QuestionItem";
 import EditIcon from "@material-ui/icons/Edit";
 import { Virtuoso } from "react-virtuoso";
+import ListFooter from "../../../../components/ListFooter";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
 import { sortQuestionBy } from "../../../../utils";
 
@@ -34,7 +35,7 @@ const QuestionList: React.FC<Props> = ({
   order = QuestionOrder.Popular
 }) => {
   const { formatMessage } = useIntl();
-  const { data, fetchMore } = questionsByEventQuery;
+  const { data, loading, fetchMore } = questionsByEventQuery;
   const [isScrolling, setIsScrolling] = React.useState(false);
   const [moreMenu, setMoreMenu] = React.useState<{
     anchorEl: null | HTMLElement;
@@ -143,13 +144,12 @@ const QuestionList: React.FC<Props> = ({
             />
           );
         }}
-        footer={() => {
-          return !data?.questionsByEvent.hasNextPage ? (
-            <div>-- end --</div>
-          ) : (
-            <div>Loading...</div>
-          );
-        }}
+        footer={() => (
+          <ListFooter
+            loading={loading}
+            hasNextPage={data?.questionsByEvent.hasNextPage}
+          />
+        )}
       />
 
       <Menu

@@ -11,6 +11,7 @@ import QuestionItem from "./QuestionItem";
 import { Virtuoso } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
 import { sortQuestionBy } from "../../../utils";
+import ListFooter from "../../../components/ListFooter";
 
 interface Props {
   questionsQueryResult: QueryResult<
@@ -24,7 +25,7 @@ const QuestionList: React.FC<Props> = ({
   questionsQueryResult,
   order = QuestionOrder.Popular
 }) => {
-  const { data, fetchMore } = questionsQueryResult;
+  const { data, loading, fetchMore } = questionsQueryResult;
   const [isScrolling, setIsScrolling] = React.useState(false);
 
   const orderedList = React.useMemo(() => {
@@ -73,15 +74,19 @@ const QuestionList: React.FC<Props> = ({
       endReached={loadMore}
       item={index => {
         if (!orderedList[index]) return <div />;
-        return <QuestionItem question={orderedList[index]} isScrolling={isScrolling}/>;
-      }}
-      footer={() => {
-        return !data?.questionsByEventWall.hasNextPage ? (
-          <div>-- end --</div>
-        ) : (
-          <div>Loading...</div>
+        return (
+          <QuestionItem
+            question={orderedList[index]}
+            isScrolling={isScrolling}
+          />
         );
       }}
+      footer={() => (
+        <ListFooter
+          loading={loading}
+          hasNextPage={data?.questionsByEventWall.hasNextPage}
+        />
+      )}
     />
   );
 };

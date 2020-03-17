@@ -6,7 +6,7 @@
 
 ## TODO
 
-- [ ] infinite list end / loading / more
+- [ ] question fetch timestamp, deduplicate items
 - [ ] admin event list - duplicate event
 - [ ] audience my questions dialog
 - [ ] reply question

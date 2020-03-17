@@ -1,12 +1,6 @@
-import React, { Fragment } from "react";
+import React from "react";
 import * as R from "ramda";
-import {
-  Paper,
-  ListSubheader,
-  CircularProgress,
-  Menu,
-  MenuItem
-} from "@material-ui/core";
+import { Paper, ListSubheader, Menu, MenuItem } from "@material-ui/core";
 import { GroupedVirtuoso } from "react-virtuoso";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
@@ -24,6 +18,7 @@ import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
 import { getEventDateFilterLabel } from "./index";
 import EventItem from "./EventItem";
 import EventSettingDialog from "../../../components/EventSettingDialog";
+import ListFooter from "../../../components/ListFooter";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
       overflow: "hidden"
     },
-    header: {
+    listGroup: {
       color: theme.palette.primary.contrastText,
       fontWeight: theme.typography.fontWeightBold,
       backgroundColor: theme.palette.primary.main
@@ -158,14 +153,14 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   ];
 
   return (
-    <Fragment>
+    <React.Fragment>
       <Paper className={classes.eventList}>
         <GroupedVirtuoso
           style={{ height: "100%", width: "100%" }}
           groupCounts={groupCounts}
           endReached={loadMore}
           GroupContainer={({ children, ...props }) => (
-            <ListSubheader {...props} className={classes.header}>
+            <ListSubheader {...props} className={classes.listGroup}>
               {children}
             </ListSubheader>
           )}
@@ -178,15 +173,12 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
 
             return <EventItem event={event} moreMenuState={moreMenuState} />;
           }}
-          footer={() => {
-            return !data?.eventsByMe.hasNextPage ? (
-              <div>-- end --</div>
-            ) : loading ? (
-              <CircularProgress />
-            ) : (
-              <div>-- more --</div>
-            );
-          }}
+          footer={() => (
+            <ListFooter
+              loading={loading}
+              hasNextPage={data?.eventsByMe.hasNextPage}
+            />
+          )}
         />
       </Paper>
 
@@ -228,7 +220,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
         onOk={handleDelete}
       />
       <EventSettingDialog eventIdState={eventSettingState} />
-    </Fragment>
+    </React.Fragment>
   );
 };
 
