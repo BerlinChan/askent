@@ -2,12 +2,6 @@ import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Container, Box } from "@material-ui/core";
 
-interface Props {
-  header: React.ReactElement;
-  body: React.ReactElement;
-  scrollBoxBody?: boolean;
-}
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     layoutBox: {
@@ -27,27 +21,32 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Layout: React.FC<Props> = ({ header, scrollBoxBody, body }) => {
+interface Props {
+  header: React.ReactElement;
+  body: React.ReactElement;
+  disableContainer?: boolean;
+}
+
+const Layout: React.FC<Props> = ({
+  header,
+  body,
+  disableContainer = false
+}) => {
   const classes = useStyles();
 
   return (
-    <React.Fragment>
-      {scrollBoxBody ? (
-        <Box className={classes.layoutBox}>
-          {header}
-          <Box className={classes.scrollBox}>
-            <Container maxWidth="lg" className={classes.bodyContainer}>
-              {body}
-            </Container>
-          </Box>
-        </Box>
-      ) : (
-        <React.Fragment>
-          {header}
-          {body}
-        </React.Fragment>
-      )}
-    </React.Fragment>
+    <Box className={classes.layoutBox}>
+      {header}
+      <Box className={classes.scrollBox}>
+        {disableContainer ? (
+          body
+        ) : (
+          <Container maxWidth="lg" className={classes.bodyContainer}>
+            {body}
+          </Container>
+        )}
+      </Box>
+    </Box>
   );
 };
 

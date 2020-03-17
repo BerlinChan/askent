@@ -1,10 +1,16 @@
 import React from "react";
 import { useRouteMatch } from "react-router-dom";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  useTheme
+} from "@material-ui/core/styles";
 import {
   Box,
   Grid,
   Typography,
+  AppBar,
   Toolbar,
   IconButton,
   Drawer,
@@ -13,7 +19,8 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Hidden
+  Hidden,
+  useMediaQuery
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -22,7 +29,6 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables
 } from "../../../generated/graphqlHooks";
-import AppBarElevationScroll from "../../../components/AppBarElevationScroll";
 import HeaderAction from "../../../components/HeaderAction";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
@@ -33,7 +39,11 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    appBar: { zIndex: theme.zIndex.drawer + 1 },
+    appBar: {
+      [theme.breakpoints.up("md")]: {
+        zIndex: theme.zIndex.drawer + 1
+      }
+    },
     toolbarRegular: {
       minHeight: 56
     },
@@ -78,6 +88,8 @@ interface Props {
 const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
   const classes = useStyles();
   let { url } = useRouteMatch();
+  const theme = useTheme();
+  const matcheMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const { data } = eventQueryResult;
   const [open, setOpen] = React.useState(false);
 
@@ -133,7 +145,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
 
   return (
     <React.Fragment>
-      <AppBarElevationScroll className={classes.appBar}>
+      <AppBar position="static" elevation={2} className={classes.appBar}>
         <React.Fragment>
           <Toolbar classes={{ regular: classes.toolbarRegular }}>
             <Grid container>
@@ -154,14 +166,15 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
           </Toolbar>
           <Hidden mdUp>{renderRouteTabs}</Hidden>
         </React.Fragment>
-      </AppBarElevationScroll>
+      </AppBar>
 
       <Drawer
         className={classes.drawer}
-        variant="persistent"
+        variant={matcheMdUp ? "persistent" : "temporary"}
         anchor="left"
-        open={open}
         classes={{ paper: classes.drawerPaper }}
+        open={open}
+        onClose={handleDrawerToggle}
       >
         <Box className={classes.drawerInfo}>
           <Typography>{data?.eventById.name}</Typography>

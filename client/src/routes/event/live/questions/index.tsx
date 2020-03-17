@@ -1,10 +1,9 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Box, Typography, Container, Paper, Hidden } from "@material-ui/core";
-import { FormattedMessage, useIntl } from "react-intl";
+import { Typography, Hidden } from "@material-ui/core";
+import { FormattedMessage } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
-import { SubTabs, SubTab } from "../../../../components/Tabs";
 import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
@@ -22,28 +21,17 @@ import {
   QuestionOrder
 } from "../../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
-import Logo from "../../../../components/Logo";
 import QuestionList from "./QuestionList";
-import AskDialog from "./AskDialog";
+import AskFabDialog from "./AskFabDialog";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
+import { VirtuosoMethods } from "react-virtuoso";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    questionForm: { marginBottom: theme.spacing(2) },
     title: {
       marginTop: theme.spacing(1),
       marginDown: theme.spacing(1)
-    },
-    listActions: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexWrap: "nowrap",
-      marginTop: theme.spacing(1)
-    },
-    panelPaper: {},
-    bottomLogoBox: {
-      textAlign: "center",
-      margin: theme.spacing(2)
     }
   })
 );
@@ -58,12 +46,11 @@ const LiveQuestions: React.FC<Props> = ({
   eventQueryResult
 }) => {
   const classes = useStyles();
-  const { formatMessage } = useIntl();
   let { id } = useParams();
-  const [orderTab, setOrderTab] = React.useState(0);
+  const virtuosoRef = React.useRef<VirtuosoMethods>(null);
   const questionsQueryVariables = {
     eventId: id as string,
-    order: orderTab === 0 ? QuestionOrder.Popular : QuestionOrder.Recent,
+    order: QuestionOrder.Popular,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
   };
   const questionsQueryResult = useQuestionsByEventAudienceQuery({
@@ -133,60 +120,45 @@ const LiveQuestions: React.FC<Props> = ({
     }
   });
 
-  const handleTabsChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setOrderTab(newValue);
-  };
+  const renderListHeader = (
+    <Hidden smDown>
+      <React.Fragment>
+        <Typography
+          variant="subtitle1"
+          color="textSecondary"
+          className={classes.title}
+        >
+          <FormattedMessage
+            id="Ask_the_speaker"
+            defaultMessage="Ask the speaker"
+          />
+        </Typography>
+        <QuestionForm
+          className={classes.questionForm}
+          userQueryResult={userQueryResult}
+          onFocus={() => {
+            virtuosoRef.current?.scrollToIndex({
+              index: 0,
+              align: "start"
+            });
+          }}
+        />
+      </React.Fragment>
+    </Hidden>
+  );
 
   return (
     <React.Fragment>
-      <Container maxWidth="sm">
-        <Hidden smDown>
-          <Typography
-            variant="subtitle1"
-            color="textSecondary"
-            className={classes.title}
-          >
-            <FormattedMessage
-              id="Ask_the_speaker"
-              defaultMessage="Ask the speaker"
-            />
-          </Typography>
-          <QuestionForm userQueryResult={userQueryResult} />
-        </Hidden>
-        <Box className={classes.listActions}>
-          <SubTabs value={orderTab} onChange={handleTabsChange}>
-            <SubTab
-              label={formatMessage({
-                id: "Popular",
-                defaultMessage: "Popular"
-              })}
-            />
-            <SubTab
-              label={formatMessage({
-                id: "Recent",
-                defaultMessage: "Recent"
-              })}
-            />
-          </SubTabs>
-          <Typography color="textSecondary">
-            {questionsQueryResult.data?.questionsByEventAudience.totalCount}{" "}
-            <FormattedMessage id="questions" defaultMessage="questions" />
-          </Typography>
-        </Box>
-        <Paper className={classes.panelPaper}>
-          <QuestionList
-            userQueryResult={userQueryResult}
-            eventQueryResult={eventQueryResult}
-            questionsQueryResult={questionsQueryResult}
-            order={questionsQueryVariables.order}
-          />
-        </Paper>
-        <Box className={classes.bottomLogoBox}>
-          <Logo />
-        </Box>
-      </Container>
+      <QuestionList
+        header={renderListHeader}
+        userQueryResult={userQueryResult}
+        eventQueryResult={eventQueryResult}
+        questionsQueryResult={questionsQueryResult}
+        order={questionsQueryVariables.order}
+        ref={virtuosoRef}
+      />
 
-      <AskDialog userQueryResult={userQueryResult} />
+      <AskFabDialog userQueryResult={userQueryResult} />
     </React.Fragment>
   );
 };

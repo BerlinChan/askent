@@ -32,6 +32,7 @@ const Live: React.FC = () => {
       <Redirect exact path={path} to={`${path}/questions`} />
 
       <Layout
+        disableContainer
         header={<LiveEventHeader eventQueryResult={eventByIdQueryResult} />}
         body={
           <Switch>

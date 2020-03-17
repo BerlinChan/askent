@@ -45,7 +45,14 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     listItem: {
       flexWrap: "wrap",
-      position: "relative"
+      position: "relative",
+      maxWidth: theme.breakpoints.values.sm - 48,
+      marginLeft: "auto",
+      marginRight: "auto",
+      marginBottom: theme.spacing(2),
+      backgroundColor: theme.palette.background.paper,
+      boxShadow: theme.shadows[1],
+      borderRadius: theme.shape.borderRadius
     },
     topQuestion: {
       backgroundColor: fade(theme.palette.success.light, 0.5)
@@ -88,6 +95,7 @@ interface Props {
   editContent: boolean;
   handleEditContentToggle: (id: string) => void;
   editContentInputRef: React.RefObject<HTMLInputElement>;
+  isScrolling?: boolean;
 }
 
 const QuestionItem: React.FC<Props> = ({
@@ -96,7 +104,8 @@ const QuestionItem: React.FC<Props> = ({
   handleMoreClick,
   editContent,
   handleEditContentToggle,
-  editContentInputRef
+  editContentInputRef,
+  isScrolling = false
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -120,12 +129,11 @@ const QuestionItem: React.FC<Props> = ({
         question.top ? classes.topQuestion : ""
       }`}
       alignItems="flex-start"
-      divider
     >
       <ListItemAvatar>
         <Avatar
           alt={question.author?.name as string}
-          src={question.author?.avatar}
+          src={isScrolling ? "" : question.author?.avatar}
         />
       </ListItemAvatar>
       <ListItemText

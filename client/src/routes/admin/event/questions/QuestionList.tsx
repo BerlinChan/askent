@@ -35,6 +35,7 @@ const QuestionList: React.FC<Props> = ({
 }) => {
   const { formatMessage } = useIntl();
   const { data, fetchMore } = questionsByEventQuery;
+  const [isScrolling, setIsScrolling] = React.useState(false);
   const [moreMenu, setMoreMenu] = React.useState<{
     anchorEl: null | HTMLElement;
     id: string;
@@ -120,6 +121,9 @@ const QuestionList: React.FC<Props> = ({
       <Virtuoso
         style={{ height: "100%", width: "100%" }}
         totalCount={orderedList.length}
+        scrollingStateChange={scrolling => {
+          setIsScrolling(scrolling);
+        }}
         topItems={topItems}
         endReached={loadMore}
         item={index => {
@@ -135,6 +139,7 @@ const QuestionList: React.FC<Props> = ({
               editContent={editContentIds.includes(question.id)}
               handleEditContentToggle={handleEditContentToggle}
               editContentInputRef={editContentInputRef}
+              isScrolling={isScrolling}
             />
           );
         }}

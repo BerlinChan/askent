@@ -36,7 +36,7 @@ import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    QuestionFormControl: {
+    contentFormControl: {
       width: "100%",
       display: "flex",
       flexWrap: "nowrap",
@@ -85,12 +85,16 @@ interface Props {
   autoFocus?: boolean;
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   onAfterSubmit?: () => void;
+  onFocus?: () => void;
+  className?:string;
 }
 
 const QuestionForm: React.FC<Props> = ({
   autoFocus = false,
   userQueryResult,
-  onAfterSubmit
+  onAfterSubmit,
+  onFocus,
+  className
 }) => {
   const classes = useStyles();
   let { id } = useParams();
@@ -152,6 +156,7 @@ const QuestionForm: React.FC<Props> = ({
       });
       setExpanded(true);
     }
+    onFocus && onFocus();
   };
   const handleClickAway = () => {
     !autoFocus && setExpanded(false);
@@ -271,16 +276,16 @@ const QuestionForm: React.FC<Props> = ({
     >
       {formProps => (
         <ClickAwayListener onClickAway={handleClickAway}>
-          <Card>
+          <Card className={className}>
             <Form>
               <CardContent>
-                <FormControl className={classes.QuestionFormControl}>
+                <FormControl className={classes.contentFormControl}>
                   <Box
                     className={
                       classes.adornmentBox + (expanded ? " collapse" : "")
                     }
                   >
-                    <QuestionAnswerIcon />
+                    <QuestionAnswerIcon color="secondary" />
                   </Box>
                   <Field
                     component={InputBase}

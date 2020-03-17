@@ -34,7 +34,6 @@ const Admin: React.FC = () => {
             setSearchString={setSearchString}
           />
         }
-        scrollBoxBody
         body={
           <Switch>
             <PrivateRoute path={`${path}/events`}>

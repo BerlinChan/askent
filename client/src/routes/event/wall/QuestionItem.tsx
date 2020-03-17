@@ -79,9 +79,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   question: QuestionWallFieldsFragment;
+  isScrolling?: boolean;
 }
 
-const QuestionListItem: React.FC<Props> = ({ question }) => {
+const QuestionListItem: React.FC<Props> = ({
+  question,
+  isScrolling = false
+}) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [
@@ -123,7 +127,7 @@ const QuestionListItem: React.FC<Props> = ({ question }) => {
               <Avatar
                 className={classes.avatar}
                 alt={question.author?.name as string}
-                src={question.author?.avatar}
+                src={isScrolling ? "" : question.author?.avatar}
               />
               <Typography component="span" variant="body1">
                 {question.author?.name ? (

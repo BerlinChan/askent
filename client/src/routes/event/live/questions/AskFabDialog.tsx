@@ -40,9 +40,9 @@ interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
 }
 
-const AskDialog: React.FC<Props> = ({ userQueryResult }) => {
+const AskFabDialog: React.FC<Props> = ({ userQueryResult }) => {
   const classes = useStyles();
-  const [openAskDialog, setOpenAskDialog] = React.useState(true);
+  const [openAskDialog, setOpenAskDialog] = React.useState(false);
 
   const handleAskOpen = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -115,4 +115,4 @@ const AskDialog: React.FC<Props> = ({ userQueryResult }) => {
   );
 };
 
-export default AskDialog;
+export default AskFabDialog;

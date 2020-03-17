@@ -25,6 +25,7 @@ const QuestionList: React.FC<Props> = ({
   order = QuestionOrder.Popular
 }) => {
   const { data, fetchMore } = questionsQueryResult;
+  const [isScrolling, setIsScrolling] = React.useState(false);
 
   const orderedList = React.useMemo(() => {
     const list = sortQuestionBy<QuestionWallFieldsFragment>(
@@ -66,10 +67,13 @@ const QuestionList: React.FC<Props> = ({
     <Virtuoso
       style={{ height: "100%", width: "100%" }}
       totalCount={orderedList.length}
+      scrollingStateChange={scrolling => {
+        setIsScrolling(scrolling);
+      }}
       endReached={loadMore}
       item={index => {
         if (!orderedList[index]) return <div />;
-        return <QuestionItem question={orderedList[index]} />;
+        return <QuestionItem question={orderedList[index]} isScrolling={isScrolling}/>;
       }}
       footer={() => {
         return !data?.questionsByEventWall.hasNextPage ? (

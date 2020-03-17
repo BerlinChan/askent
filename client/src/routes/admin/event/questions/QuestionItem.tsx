@@ -94,6 +94,7 @@ interface Props {
   editContent: boolean;
   handleEditContentToggle: (id: string) => void;
   editContentInputRef: React.RefObject<HTMLInputElement>;
+  isScrolling?: boolean;
 }
 
 const QuestionListItem: React.FC<Props> = ({
@@ -102,7 +103,8 @@ const QuestionListItem: React.FC<Props> = ({
   eventQuery,
   editContent,
   handleEditContentToggle,
-  editContentInputRef
+  editContentInputRef,
+  isScrolling = false
 }) => {
   const classes = useStyles();
   const { data } = eventQuery;
@@ -166,7 +168,7 @@ const QuestionListItem: React.FC<Props> = ({
         <ListItemAvatar>
           <Avatar
             alt={question.author?.name as string}
-            src={question.author?.avatar}
+            src={isScrolling ? "" : question.author?.avatar}
           />
         </ListItemAvatar>
         <ListItemText

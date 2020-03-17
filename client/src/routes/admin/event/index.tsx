@@ -31,7 +31,6 @@ const AdminEvent: React.FC = () => {
   return (
     <Layout
       header={<AdminEventHeader eventQuery={adminEventQuery} />}
-      scrollBoxBody
       body={
         <Switch>
           <Redirect exact path={`${path}`} to={`${path}/questions`} />
