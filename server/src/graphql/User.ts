@@ -211,7 +211,7 @@ export const userMutation = extendType({
         const roleNames: Array<RoleName> = [RoleName.Audience]
         if (!user) {
           const roles: Array<RoleModelStatic> = await ctx.db.Role.findAll({
-            where: { [Op.or]: roleNames },
+            where: { [Op.or]: roleNames.map(role => ({ name: role })) },
           })
           user = await ctx.db.User.create({
             fingerprint,
@@ -231,10 +231,7 @@ export const userMutation = extendType({
       resolve: async (root, { input }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
         const user = await ctx.db.User.findByPk(userId)
-        await user.update({
-          ...input,
-          anonymous: input.name === '' ? true : input.anonymous,
-        })
+        await user.update(input)
 
         return user
       },
@@ -244,8 +241,4 @@ export const userMutation = extendType({
 
 async function checkEmailExist(ctx: Context, email: string): Promise<boolean> {
   return Boolean(await ctx.db.User.count({ where: { email } }))
-}
-
-const ERROR_MESSAGE = {
-  emailExist: (email: string) => `Email "${email}" has already exist.`,
 }

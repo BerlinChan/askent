@@ -1,9 +1,5 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Typography, Hidden } from "@material-ui/core";
-import { FormattedMessage } from "react-intl";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import QuestionForm from "./QuestionForm";
 import { QueryResult } from "@apollo/react-common";
 import {
   MeQuery,
@@ -24,17 +20,6 @@ import { DataProxy } from "apollo-cache";
 import QuestionList from "./QuestionList";
 import AskFabDialog from "./AskFabDialog";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
-import { VirtuosoMethods } from "react-virtuoso";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    questionForm: { marginBottom: theme.spacing(2) },
-    title: {
-      marginTop: theme.spacing(1),
-      marginDown: theme.spacing(1)
-    }
-  })
-);
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
@@ -45,9 +30,7 @@ const LiveQuestions: React.FC<Props> = ({
   userQueryResult,
   eventQueryResult
 }) => {
-  const classes = useStyles();
   let { id } = useParams();
-  const virtuosoRef = React.useRef<VirtuosoMethods>(null);
   const questionsQueryVariables = {
     eventId: id as string,
     order: QuestionOrder.Popular,
@@ -120,42 +103,13 @@ const LiveQuestions: React.FC<Props> = ({
     }
   });
 
-  const renderListHeader = (
-    <Hidden smDown>
-      <React.Fragment>
-        <Typography
-          variant="subtitle1"
-          color="textSecondary"
-          className={classes.title}
-        >
-          <FormattedMessage
-            id="Ask_the_speaker"
-            defaultMessage="Ask the speaker"
-          />
-        </Typography>
-        <QuestionForm
-          className={classes.questionForm}
-          userQueryResult={userQueryResult}
-          onFocus={() => {
-            virtuosoRef.current?.scrollToIndex({
-              index: 0,
-              align: "start"
-            });
-          }}
-        />
-      </React.Fragment>
-    </Hidden>
-  );
-
   return (
     <React.Fragment>
       <QuestionList
-        header={renderListHeader}
         userQueryResult={userQueryResult}
         eventQueryResult={eventQueryResult}
         questionsQueryResult={questionsQueryResult}
         order={questionsQueryVariables.order}
-        ref={virtuosoRef}
       />
 
       <AskFabDialog userQueryResult={userQueryResult} />

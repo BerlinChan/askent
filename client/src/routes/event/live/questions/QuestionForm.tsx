@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     cardActionsMobile: { flexDirection: "column", alignItems: "flex-start" },
     nameBox: { display: "flex", alignItems: "center" },
-    nameInput: { width: 140, marginRight: theme.spacing(1) },
+    nameInput: { width: 150, marginRight: theme.spacing(1) },
     avatar: {
       width: theme.spacing(4),
       height: theme.spacing(4),
@@ -86,7 +86,7 @@ interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   onAfterSubmit?: () => void;
   onFocus?: () => void;
-  className?:string;
+  className?: string;
 }
 
 const QuestionForm: React.FC<Props> = ({
@@ -127,7 +127,7 @@ const QuestionForm: React.FC<Props> = ({
         variables: {
           input:
             values.anonymous !== userQueryResult.data?.me.anonymous &&
-            userQueryResult.data?.me.anonymous === true
+            values.anonymous === true
               ? { anonymous: true }
               : { name: values.name }
         }
@@ -138,7 +138,7 @@ const QuestionForm: React.FC<Props> = ({
         input: {
           eventId: id as string,
           content: values.content,
-          anonymous: values.anonymous
+          anonymous: Boolean(values.anonymous && values.name)
         }
       }
     });
