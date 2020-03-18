@@ -32,8 +32,7 @@ import PresentModeButton from "./PresentModeButton";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     toolbarLeft: {
-      display: "flex",
-      alignItems: "center"
+      display: "flex"
     },
     toolbarCenter: {
       display: "flex",
@@ -237,7 +236,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                   defaultMessage: "Open event settings"
                 })}
               >
-                <span>
+                <Box display="inline-block">
                   <IconButton
                     size="small"
                     disabled={loading && !data}
@@ -247,7 +246,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQuery }) => {
                   >
                     <SettingsIcon fontSize="inherit" color="inherit" />
                   </IconButton>
-                </span>
+                </Box>
               </Tooltip>
             </Box>
           </Container>

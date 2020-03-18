@@ -38,9 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     listActions: {
       display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexWrap: "nowrap"
+      justifyContent: "space-between"
     },
     gridItemPaper: {
       flex: 1,

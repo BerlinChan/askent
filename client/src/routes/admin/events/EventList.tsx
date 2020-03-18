@@ -102,7 +102,11 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
             eventsByMe: {
               ...fetchMoreResult.eventsByMe,
               list: [
-                ...prev.eventsByMe.list,
+                ...R.differenceWith<EventFieldsFragment>(
+                  (a, b) => a.id === b.id,
+                  prev.eventsByMe.list,
+                  fetchMoreResult.eventsByMe.list
+                ),
                 ...fetchMoreResult.eventsByMe.list
               ]
             }

@@ -1,4 +1,5 @@
 import React from "react";
+import * as R from "ramda";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { useIntl, FormattedMessage } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
@@ -83,13 +84,12 @@ const QuestionList: React.FC<Props> = ({
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
 
-  const { orderedList, topItems } = React.useMemo(() => {
+  const orderedList = React.useMemo(() => {
     const orderedList = sortQuestionBy<QuestionFieldsFragment>(order)(
       data?.questionsByEvent.list || []
     );
-    const topItems = orderedList.filter(item => item.top).length;
 
-    return { orderedList, topItems };
+    return orderedList;
   }, [data, order]);
   const loadMore = () => {
     if (data?.questionsByEvent.hasNextPage) {
@@ -107,7 +107,11 @@ const QuestionList: React.FC<Props> = ({
             questionsByEvent: {
               ...fetchMoreResult.questionsByEvent,
               list: [
-                ...prev.questionsByEvent.list,
+                ...R.differenceWith<QuestionFieldsFragment>(
+                  (a, b) => a.id === b.id,
+                  prev.questionsByEvent.list,
+                  fetchMoreResult.questionsByEvent.list
+                ),
                 ...fetchMoreResult.questionsByEvent.list
               ]
             }
@@ -125,7 +129,6 @@ const QuestionList: React.FC<Props> = ({
         scrollingStateChange={scrolling => {
           setIsScrolling(scrolling);
         }}
-        topItems={topItems}
         endReached={loadMore}
         item={index => {
           const question = orderedList[index] as

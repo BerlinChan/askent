@@ -1,4 +1,5 @@
 import React from "react";
+import * as R from "ramda";
 import { Container, useMediaQuery } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/react-common";
@@ -118,7 +119,11 @@ const QuestionList: React.FC<Props> = ({
             questionsByEvent: {
               ...fetchMoreResult.questionsByEventAudience,
               list: [
-                ...prev.questionsByEventAudience.list,
+                ...R.differenceWith<QuestionAudienceFieldsFragment>(
+                  (a, b) => a.id === b.id,
+                  prev.questionsByEventAudience.list,
+                  fetchMoreResult.questionsByEventAudience.list
+                ),
                 ...fetchMoreResult.questionsByEventAudience.list
               ]
             }

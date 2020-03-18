@@ -1,4 +1,5 @@
 import React from "react";
+import * as R from "ramda";
 import { QueryResult } from "@apollo/react-common";
 import {
   QuestionsByEventWallQuery,
@@ -54,7 +55,11 @@ const QuestionList: React.FC<Props> = ({
             questionsByEventWall: {
               ...fetchMoreResult.questionsByEventWall,
               list: [
-                ...prev.questionsByEventWall.list,
+                ...R.differenceWith<QuestionWallFieldsFragment>(
+                  (a, b) => a.id === b.id,
+                  prev.questionsByEventWall.list,
+                  fetchMoreResult.questionsByEventWall.list
+                ),
                 ...fetchMoreResult.questionsByEventWall.list
               ]
             }

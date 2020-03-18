@@ -36,7 +36,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       alignItems: "center",
       width: 320,
-      height: "100%",
       cursor: "pointer",
       overflowX: "hidden",
       borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
@@ -44,20 +43,10 @@ const useStyles = makeStyles((theme: Theme) =>
       boxShadow: theme.shadows[1]
     },
     chip: { marginLeft: theme.spacing(1) },
-    filterMenu: {
-      width: 320
-    },
-    searchAndSort: {
-      display: "flex",
-      alignItems: "center"
-    },
-    iconButton: {
-      width: 38,
-      height: 38
-    },
-    searchInputRoot: {
-      color: "inherit"
-    },
+    filterMenu: { width: 320 },
+    searchAndSort: { display: "flex", alignItems: "center" },
+    iconButton: { width: 38, height: 38, padding: 8 },
+    searchInputRoot: { color: "inherit" },
     searchInputInput: {
       transition: theme.transitions.create("width"),
       [theme.breakpoints.up("sm")]: {
