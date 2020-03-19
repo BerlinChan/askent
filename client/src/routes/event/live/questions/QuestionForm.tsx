@@ -126,9 +126,8 @@ const QuestionForm: React.FC<Props> = ({
       await updateAudienceUserMutation({
         variables: {
           input:
-            values.anonymous !== userQueryResult.data?.me.anonymous &&
-            values.anonymous === true
-              ? { anonymous: true }
+            values.anonymous !== userQueryResult.data?.me.anonymous 
+              ? { anonymous: values.anonymous }
               : { name: values.name }
         }
       });

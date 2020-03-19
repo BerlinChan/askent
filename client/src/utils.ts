@@ -20,7 +20,7 @@ export function sortQuestionBy<TQuestion extends QuestionFieldsFragment>(
           R.ascend<TQuestion>(R.prop("createdAt")),
           R.descend<TQuestion>(R.prop("voteUpCount"))
         ]
-      : order === QuestionOrder.Stared
+      : order === QuestionOrder.Starred
       ? [
           R.descend<TQuestion>(R.prop("top")),
           R.descend<TQuestion>(R.prop("star")),

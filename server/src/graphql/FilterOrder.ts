@@ -23,7 +23,7 @@ export enum QuestionOrderEnum {
   Popular = 'POPULAR',
   Recent = 'RECENT',
   Oldest = 'OLDEST',
-  Stared = 'STARED',
+  Starred = 'STARRED',
 }
 export const QuestionOrder = enumType({
   name: 'QuestionOrder',

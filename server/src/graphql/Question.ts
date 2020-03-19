@@ -15,7 +15,7 @@ import { ReviewStatus as ReviewStatusEnum } from '../models/Question'
 import { Op, Order } from 'sequelize'
 import { QuestionModelStatic } from '../models/Question'
 import { RoleName } from '../models/Role'
-import { QuestionOrderEnum } from './FilterOrder'
+import { QuestionOrderEnum, QuestionFilterEnum } from './FilterOrder'
 import { NexusGenEnums } from 'nexus-typegen'
 import { dataloaderContext } from '../context'
 const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
@@ -103,10 +103,9 @@ export const questionQuery = extendType({
       description: 'Query question by event for Role.Admin.',
       args: {
         eventId: idArg({ required: true }),
-        filters: arg({
+        questionFilter: arg({
           type: 'QuestionFilter',
-          list: true,
-          required: true,
+          default: ReviewStatusEnum.Publish,
         }),
         searchString: stringArg(),
         pagination: arg({ type: 'PaginationInput', required: true }),
@@ -117,7 +116,7 @@ export const questionQuery = extendType({
       },
       resolve: async (
         root,
-        { eventId, filters, searchString, pagination, order },
+        { eventId, questionFilter, searchString, pagination, order },
         ctx,
       ) => {
         const { offset, limit } = pagination
@@ -125,16 +124,13 @@ export const questionQuery = extendType({
           where: {
             eventId,
             [Op.and]: [
-              {
-                [Op.or]: filters
-                  // only ReviewStatus type
-                  .filter(filterItem =>
-                    (Object.values(ReviewStatusEnum) as string[]).includes(
-                      filterItem as string,
-                    ),
-                  )
-                  .map(item => ({ reviewStatus: item })),
-              },
+              (Object.values(ReviewStatusEnum) as string[]).includes(
+                questionFilter as string,
+              )
+                ? { reviewStatus: questionFilter }
+                : questionFilter === QuestionFilterEnum.Starred
+                ? { star: true }
+                : {},
               searchString
                 ? {
                     [Op.or]: [
@@ -756,7 +752,7 @@ function getQuestionOrderQueryObj(
         ['createdAt', 'ASC'],
         ['voteUpCount', 'DESC'],
       ]
-    case QuestionOrderEnum.Stared:
+    case QuestionOrderEnum.Starred:
       return [
         ['top', 'DESC'],
         ['star', 'DESC'],

@@ -3,19 +3,13 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useIntl, FormattedMessage } from "react-intl";
 import {
   Box,
-  Chip,
-  Grow,
-  Paper,
-  Popper,
-  MenuList,
+  Menu,
   MenuItem,
-  Checkbox,
-  ListItemText,
   IconButton,
   InputAdornment,
   TextField,
   Tooltip,
-  ClickAwayListener
+  Typography
 } from "@material-ui/core";
 import { QueryResult } from "@apollo/react-common";
 import {
@@ -29,21 +23,28 @@ import QuestionOrderMenu from "../../../../components/QuestionOrderMenu";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import SortIcon from "@material-ui/icons/Sort";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     filterBox: {
       display: "flex",
+      justifyContent: "space-between",
       alignItems: "center",
       width: 320,
       cursor: "pointer",
-      overflowX: "hidden",
+      padding: theme.spacing(0, 1),
       borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
       backgroundColor: theme.palette.background.paper,
       boxShadow: theme.shadows[1]
     },
-    chip: { marginLeft: theme.spacing(1) },
-    filterMenu: { width: 320 },
+    filterSelected: {
+      display: "flex",
+      alignItems: "center",
+      "& .arrowDown": { color: theme.palette.text.secondary }
+    },
+    totalCount: {},
+    filterMenuList: { width: 320 },
     searchAndSort: { display: "flex", alignItems: "center" },
     iconButton: { width: 38, height: 38, padding: 8 },
     searchInputRoot: { color: "inherit" },
@@ -70,7 +71,7 @@ const getQuestionFilterLabel = (value: ReviewStatus | QuestionFilter) => {
   }
 };
 export type QuestionQueryStateType = {
-  filterSelected: Array<QuestionFilter>;
+  filterSelected: QuestionFilter;
   searchString: string;
 };
 interface Props {
@@ -110,15 +111,9 @@ const ActionRight: React.FC<Props> = ({
     setFilterAnchorEl(null);
   };
   const handleFilterOptionClick = (value: QuestionFilter) => {
-    const filterSelected = queryState.filterSelected.includes(value)
-      ? queryState.filterSelected.filter(item => item !== value)
-      : queryState.filterSelected.concat([value]);
-    const orderedFilterSelected = Object.values(
-      QuestionFilter
-    ).filter(filterItem => filterSelected.includes(filterItem));
     setQueryState({
       ...queryState,
-      filterSelected: orderedFilterSelected
+      filterSelected: value
     });
   };
 
@@ -148,19 +143,23 @@ const ActionRight: React.FC<Props> = ({
         title={formatMessage({ id: "Filter", defaultMessage: "Filter" })}
       >
         <Box className={classes.filterBox} onClick={handleFilterOpen}>
-          {queryState.filterSelected.map((selectedItem, index) => (
-            <Chip
-              className={classes.chip}
-              key={index}
-              size="small"
-              label={getQuestionFilterLabel(selectedItem)}
-              onDelete={
-                queryState.filterSelected.length > 1
-                  ? () => handleFilterOptionClick(selectedItem)
-                  : undefined
-              }
-            />
-          ))}
+          <Box className={classes.filterSelected}>
+            <ArrowDropDownIcon className="arrowDown" />
+            <Typography variant="body1">
+              {getQuestionFilterLabel(queryState.filterSelected)}
+            </Typography>
+          </Box>
+          <Tooltip
+            title={formatMessage({ id: "Total", defaultMessage: "Total" })}
+          >
+            <Typography
+              className={classes.totalCount}
+              variant="body2"
+              color="textSecondary"
+            >
+              {questionsQueryResult.data?.questionsByEvent.totalCount}
+            </Typography>
+          </Tooltip>
         </Box>
       </Tooltip>
       <Box className={classes.searchAndSort}>
@@ -216,53 +215,34 @@ const ActionRight: React.FC<Props> = ({
         </Tooltip>
       </Box>
 
-      <Popper
-        open={Boolean(filterAnchorEl)}
+      <Menu
+        keepMounted
+        classes={{ list: classes.filterMenuList }}
         anchorEl={filterAnchorEl}
-        placement="bottom-start"
-        transition
+        getContentAnchorEl={null}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center"
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center"
+        }}
+        open={Boolean(filterAnchorEl)}
+        onClose={handleFilterClose}
       >
-        {({ TransitionProps }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin: "center top"
-            }}
-          >
-            <Paper>
-              <ClickAwayListener onClickAway={handleFilterClose}>
-                <MenuList
-                  className={classes.filterMenu}
-                  autoFocusItem={Boolean(filterAnchorEl)}
-                >
-                  {Object.values(QuestionFilter)
-                    .filter(item => item !== QuestionFilter.Review)
-                    .map((filterItem, index) => (
-                      <MenuItem
-                        key={index}
-                        disabled={
-                          queryState.filterSelected[0] === filterItem &&
-                          queryState.filterSelected.length <= 1
-                        }
-                        onClick={e => handleFilterOptionClick(filterItem)}
-                      >
-                        <Checkbox
-                          checked={queryState.filterSelected.includes(
-                            filterItem
-                          )}
-                        />
-                        <ListItemText
-                          primary={getQuestionFilterLabel(filterItem)}
-                        />
-                      </MenuItem>
-                    ))}
-                </MenuList>
-              </ClickAwayListener>
-            </Paper>
-          </Grow>
-        )}
-      </Popper>
-
+        {Object.values(QuestionFilter)
+          .filter(item => item !== QuestionFilter.Review)
+          .map((filterItem, index) => (
+            <MenuItem
+              key={index}
+              selected={filterItem === queryState.filterSelected}
+              onClick={e => handleFilterOptionClick(filterItem)}
+            >
+              {getQuestionFilterLabel(filterItem)}
+            </MenuItem>
+          ))}
+      </Menu>
       <QuestionOrderMenu
         anchorOrigin={{
           vertical: "bottom",

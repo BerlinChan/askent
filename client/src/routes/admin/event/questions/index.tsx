@@ -24,6 +24,7 @@ import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
 import ActionRight, { QuestionQueryStateType } from "./ActionRight";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
+import { sortQuestionBy } from "../../../../utils";
 import { DataProxy } from "apollo-cache";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -65,14 +66,14 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const { id } = useParams();
   const questionQueryState = React.useState<QuestionQueryStateType>({
-    filterSelected: [QuestionFilter.Publish],
+    filterSelected: QuestionFilter.Publish,
     searchString: ""
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQuery;
   const questionQueryVariables = {
     eventId: id as string,
-    filters: questionQueryState[0].filterSelected,
+    questionFilter: questionQueryState[0].filterSelected,
     searchString: questionQueryState[0].searchString
       ? questionQueryState[0].searchString
       : undefined,
@@ -85,8 +86,9 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
   });
   const questionReviewQueryVariables = {
     eventId: id as string,
-    filters: [QuestionFilter.Review],
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
+    questionFilter: QuestionFilter.Review,
+    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+    order: QuestionOrder.Oldest
   };
   const questionsByEventQueryReview = useQuestionsByEventQuery({
     variables: questionReviewQueryVariables
@@ -103,35 +105,37 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         return questionsByEventQuery.data;
     }
   };
-  const questionMatchCurrentFilter = (
-    questionId: string | null,
-    question?: QuestionFieldsFragment
+  const shouldQuestionAdd = (
+    questionAdded: QuestionFieldsFragment,
+    prevData: QuestionsByEventQuery | undefined,
+    order: QuestionOrder
   ): boolean => {
-    if (questionId) {
-      // question removed
-      return true;
-    } else {
-      // question added
-      return Boolean(
-        question &&
-          // 在左侧 Review 列表中
-          (question.reviewStatus === ReviewStatus.Review ||
-            // 或，在右侧列表中，匹配当前 filters
-            ((questionQueryVariables.filters as Array<string>).includes(
-              question.reviewStatus
-            ) &&
-              // 且，匹配当前 searchString
-              (!questionQueryVariables.searchString ||
-                // searchString 匹配 content
-                question.content.includes(
-                  questionQueryVariables.searchString
-                ) ||
-                // 或，searchString 匹配 user.name
-                question.author?.name?.includes(
-                  questionQueryVariables.searchString
-                ))))
-      );
+    // 待新增项与现有列表合并后排序，若末尾项为待新增项，则说明待新增项在当前查询分页之外，不予新增
+    const orderedList = sortQuestionBy<QuestionFieldsFragment>(order)([
+      ...(prevData?.questionsByEvent.list || []),
+      questionAdded
+    ]);
+    if (orderedList[orderedList.length - 1].id === questionAdded.id) {
+      return false;
     }
+
+    return Boolean(
+      // 在左侧 Review 列表中
+      questionAdded.reviewStatus === ReviewStatus.Review ||
+        // 或，在右侧列表中，匹配当前 questionFilter
+        ((questionQueryVariables.questionFilter as string) ===
+          questionAdded.reviewStatus &&
+          // 且，匹配当前 searchString
+          (!questionQueryVariables.searchString ||
+            // searchString 匹配 content
+            questionAdded.content.includes(
+              questionQueryVariables.searchString
+            ) ||
+            // 或，searchString 匹配 user.name
+            questionAdded.author?.name?.includes(
+              questionQueryVariables.searchString
+            )))
+    );
   };
   const updateCache = (
     cache: DataProxy,
@@ -157,11 +161,21 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
         const { questionAdded } = subscriptionData.data;
         const prevData = getPrevData(questionAdded.reviewStatus);
 
-        if (prevData && questionMatchCurrentFilter(null, questionAdded)) {
+        if (
+          prevData &&
+          shouldQuestionAdd(
+            questionAdded,
+            prevData,
+            (questionAdded.reviewStatus as string) === QuestionFilter.Review
+              ? questionReviewQueryVariables.order
+              : questionQueryVariables.order
+          )
+        ) {
           // add
           updateCache(client, questionAdded.reviewStatus, {
             questionsByEvent: {
               ...prevData.questionsByEvent,
+              // TODO: should always add
               totalCount: prevData.questionsByEvent.totalCount + 1,
               list: [questionAdded].concat(
                 prevData.questionsByEvent.list.filter(
@@ -189,7 +203,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           : "";
         const prevData = getPrevData(reviewStatus);
 
-        if (prevData && questionMatchCurrentFilter(questionRemoved)) {
+        if (prevData) {
           // remove
           updateCache(client, reviewStatus, {
             questionsByEvent: {
