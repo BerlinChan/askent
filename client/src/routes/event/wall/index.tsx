@@ -74,6 +74,7 @@ const EventWall: React.FC<Props> = () => {
     order: orderSelectedState[0]
   };
   const questionsWallQueryResult = useQuestionsByEventWallQuery({
+    fetchPolicy: "network-only",
     variables: questionsQueryVariables
   });
 

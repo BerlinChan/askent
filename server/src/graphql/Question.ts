@@ -756,6 +756,13 @@ function getQuestionOrderQueryObj(
         ['createdAt', 'ASC'],
         ['voteUpCount', 'DESC'],
       ]
+    case QuestionOrderEnum.Stared:
+      return [
+        ['top', 'DESC'],
+        ['star', 'DESC'],
+        ['voteUpCount', 'DESC'],
+        ['createdAt', 'DESC'],
+      ]
     default:
       // QuestionOrderEnum.Popular:
       return [

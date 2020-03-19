@@ -79,15 +79,15 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: questionOrderSelectedState[0]
   };
+  const questionsByEventQuery = useQuestionsByEventQuery({
+    fetchPolicy: "network-only",
+    variables: questionQueryVariables
+  });
   const questionReviewQueryVariables = {
     eventId: id as string,
     filters: [QuestionFilter.Review],
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
   };
-  const questionsByEventQuery = useQuestionsByEventQuery({
-    fetchPolicy: "network-only",
-    variables: questionQueryVariables
-  });
   const questionsByEventQueryReview = useQuestionsByEventQuery({
     variables: questionReviewQueryVariables
   });
@@ -127,7 +127,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
                   questionQueryVariables.searchString
                 ) ||
                 // 或，searchString 匹配 user.name
-                question.author.name?.includes(
+                question.author?.name?.includes(
                   questionQueryVariables.searchString
                 ))))
       );
@@ -247,6 +247,7 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
           <QuestionList
             eventQuery={eventQuery}
             questionsByEventQuery={questionsByEventQuery}
+            order={questionOrderSelectedState[0]}
           />
         </Paper>
       </Grid>

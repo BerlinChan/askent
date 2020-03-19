@@ -11,6 +11,8 @@ export const getQuestionOrderLabel = (value: QuestionOrder) => {
       return <FormattedMessage id="Recent" defaultMessage="Recent" />;
     case QuestionOrder.Oldest:
       return <FormattedMessage id="Oldest" defaultMessage="Oldest" />;
+    case QuestionOrder.Stared:
+      return <FormattedMessage id="Stared" defaultMessage="Stared" />;
   }
 };
 

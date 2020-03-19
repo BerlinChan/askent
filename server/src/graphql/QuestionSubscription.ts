@@ -10,8 +10,15 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
   {
     type: 'Question',
     args: {
-      eventId: idArg({ required: true }),
-      role: arg({ type: 'RoleName', required: true }),
+      eventId: idArg({
+        required: true,
+        description: 'Subscription which event?',
+      }),
+      role: arg({
+        type: 'RoleName',
+        required: true,
+        description: "Subscriber's role.",
+      }),
     },
     subscribe: withFilter(
       (root, args, ctx) => ctx.pubsub.asyncIterator(['QUESTION_ADDED']),
@@ -27,9 +34,9 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
         } = payload
 
         if (
-          eventId === args.eventId &&
-          toRoles.includes(role) &&
-          roles.includes(role)
+          eventId === args.eventId && // 订阅该活动
+          toRoles.includes(role) && // 发布角色 包含 订阅者角色
+          roles.includes(role) // 用户角色 包含 订阅者角色
         ) {
           switch (role) {
             case RoleName.Admin:

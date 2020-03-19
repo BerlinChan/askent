@@ -37,6 +37,7 @@ const LiveQuestions: React.FC<Props> = ({
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
   };
   const questionsQueryResult = useQuestionsByEventAudienceQuery({
+    fetchPolicy: "network-only",
     variables: questionsQueryVariables
   });
 

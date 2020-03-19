@@ -6,7 +6,8 @@
 
 ## TODO
 
-- [ ] question fetch timestamp, deduplicate items
+- [ ] question subscription spliter questionId
+- [ ] homepage - join event
 - [ ] admin event list - duplicate event
 - [ ] audience my questions dialog
 - [ ] reply question

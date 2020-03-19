@@ -5,6 +5,7 @@ fragment QuestionAudienceFields on Question {
   content
   reviewStatus
   top
+  star
   voted
   voteUpCount
   author {
