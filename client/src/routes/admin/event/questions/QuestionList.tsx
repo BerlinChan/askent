@@ -1,21 +1,16 @@
 import React from "react";
 import * as R from "ramda";
-import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
-import { useIntl, FormattedMessage } from "react-intl";
 import { QueryResult } from "@apollo/react-common";
 import {
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
   EventByIdQuery,
   EventByIdQueryVariables,
-  useDeleteQuestionMutation,
   QuestionFieldsFragment,
   QuestionOrder
 } from "../../../../generated/graphqlHooks";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import Confirm from "../../../../components/Confirm";
 import QuestionItem from "./QuestionItem";
-import EditIcon from "@material-ui/icons/Edit";
+import QuestionListMenu from "./QuestionListMenu";
 import { Virtuoso } from "react-virtuoso";
 import ListFooter from "../../../../components/ListFooter";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
@@ -35,50 +30,31 @@ const QuestionList: React.FC<Props> = ({
   questionsByEventQuery,
   order = QuestionOrder.Popular
 }) => {
-  const { formatMessage } = useIntl();
   const { data, loading, fetchMore } = questionsByEventQuery;
   const [isScrolling, setIsScrolling] = React.useState(false);
-  const [moreMenu, setMoreMenu] = React.useState<{
+  const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
     id: string;
   }>({ anchorEl: null, id: "" });
-  const [deleteConfirm, setDeleteConfirm] = React.useState({
-    open: false,
-    id: ""
-  });
-  const [deleteQuestionMutation] = useDeleteQuestionMutation();
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
+  const editContentIdsState = React.useState<Array<string>>([]);
 
   const handleMoreOpen = (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
   ) => {
-    setMoreMenu({ anchorEl: event.currentTarget, id });
+    moreMenuState[1]({ anchorEl: event.currentTarget, id });
   };
   const handleMoreClose = () => {
-    setMoreMenu({ anchorEl: null, id: "" });
+    moreMenuState[1]({ anchorEl: null, id: "" });
   };
 
-  const handleOpenDelete = (id: string) => {
-    setDeleteConfirm({ open: true, id });
-    handleMoreClose();
-  };
-  const handleCloseDelete = () => {
-    setDeleteConfirm({ open: false, id: "" });
-  };
-  const handleDelete = async () => {
-    await deleteQuestionMutation({
-      variables: { questionId: deleteConfirm.id }
-    });
-    handleCloseDelete();
-  };
-  const [editContentIds, setEditContentIds] = React.useState<Array<string>>([]);
   const handleEditContentToggle = (id: string) => {
-    const findId = editContentIds.find(item => item === id);
-    setEditContentIds(
+    const findId = editContentIdsState[0].find(item => item === id);
+    editContentIdsState[1](
       findId
-        ? editContentIds.filter(item => item !== id)
-        : editContentIds.concat([id])
+        ? editContentIdsState[0].filter(item => item !== id)
+        : editContentIdsState[0].concat([id])
     );
     handleMoreClose();
     setTimeout(() => editContentInputRef.current?.focus(), 100);
@@ -140,7 +116,7 @@ const QuestionList: React.FC<Props> = ({
               question={question}
               eventQuery={eventQuery}
               handleMoreClick={handleMoreOpen}
-              editContent={editContentIds.includes(question.id)}
+              editContent={editContentIdsState[0].includes(question.id)}
               handleEditContentToggle={handleEditContentToggle}
               editContentInputRef={editContentInputRef}
               isScrolling={isScrolling}
@@ -155,62 +131,11 @@ const QuestionList: React.FC<Props> = ({
         )}
       />
 
-      <Menu
-        MenuListProps={{ dense: true }}
-        anchorEl={moreMenu.anchorEl}
-        getContentAnchorEl={null}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right"
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right"
-        }}
-        open={Boolean(moreMenu.anchorEl)}
-        onClose={handleMoreClose}
-      >
-        <MenuItem onClick={() => handleEditContentToggle(moreMenu.id)}>
-          <ListItemIcon>
-            <EditIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatMessage({
-              id: "Edit",
-              defaultMessage: "Edit"
-            })}
-          />
-        </MenuItem>
-        <MenuItem
-          disabled={
-            (data?.questionsByEvent.list || []).find(
-              question => question.id === moreMenu.id
-            )?.top
-          }
-          onClick={() => handleOpenDelete(moreMenu.id)}
-        >
-          <ListItemIcon>
-            <DeleteForeverIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatMessage({
-              id: "Delete",
-              defaultMessage: "Delete"
-            })}
-          />
-        </MenuItem>
-      </Menu>
-      <Confirm
-        open={deleteConfirm.open}
-        contentText={
-          <FormattedMessage
-            id="Delete_this_question?"
-            defaultMessage="Delete this question?"
-          />
-        }
-        okText={<FormattedMessage id="Delete" defaultMessage="Delete" />}
-        onCancel={handleCloseDelete}
-        onOk={handleDelete}
+      <QuestionListMenu
+        questionsByEventQuery={questionsByEventQuery}
+        moreMenuState={moreMenuState}
+        editContentInputRef={editContentInputRef}
+        editContentIdsState={editContentIdsState}
       />
     </React.Fragment>
   );

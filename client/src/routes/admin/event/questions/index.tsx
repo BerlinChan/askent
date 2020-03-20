@@ -110,7 +110,8 @@ const Questions: React.FC<Props> = ({ eventQuery }) => {
     prevData: QuestionsByEventQuery | undefined,
     order: QuestionOrder
   ): boolean => {
-    // 待新增项与现有列表合并后排序，若末尾项为待新增项，则说明待新增项在当前查询分页之外，不予新增
+    // 待新增项与现有列表合并后排序，若末尾项为待新增项，则说明待新增项在当前查询分页边界之外，不予新增
+    // BUG: 订阅新增期间，边界有变化时，该方法有漏洞，应该比对 mysql row_number between 0 and limit
     const orderedList = sortQuestionBy<QuestionFieldsFragment>(order)([
       ...(prevData?.questionsByEvent.list || []),
       questionAdded
