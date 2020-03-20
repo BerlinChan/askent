@@ -1,5 +1,5 @@
 import { enumType } from 'nexus'
-import { ReviewStatus } from '../models/Question'
+import { ReviewStatusEnum } from '../models/Question'
 
 export const OrderByArg = enumType({
   name: 'OrderByArg',
@@ -14,7 +14,7 @@ export enum QuestionFilterEnum {
 export const QuestionFilter = enumType({
   name: 'QuestionFilter',
   members: [
-    ...Object.values(ReviewStatus),
+    ...Object.values(ReviewStatusEnum),
     ...Object.values(QuestionFilterEnum),
   ],
 })

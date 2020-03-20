@@ -10,11 +10,11 @@ import {
 } from 'nexus'
 import { getAuthedUser } from '../utils'
 import { Context } from '../context'
-import { AudienceRole } from './Role'
-import { ReviewStatus as ReviewStatusEnum } from '../models/Question'
+import { AudienceRoleEnum } from './Role'
+import { ReviewStatusEnum } from '../models/Question'
 import { Op, Order } from 'sequelize'
 import { QuestionModelStatic } from '../models/Question'
-import { RoleName } from '../models/Role'
+import { RoleNameEnum } from '../models/Role'
 import { QuestionOrderEnum, QuestionFilterEnum } from './FilterOrder'
 import { NexusGenEnums } from 'nexus-typegen'
 import { dataloaderContext } from '../context'
@@ -120,34 +120,11 @@ export const questionQuery = extendType({
         ctx,
       ) => {
         const { offset, limit } = pagination
-        const option = {
-          where: {
-            eventId,
-            [Op.and]: [
-              (Object.values(ReviewStatusEnum) as string[]).includes(
-                questionFilter as string,
-              )
-                ? { reviewStatus: questionFilter }
-                : questionFilter === QuestionFilterEnum.Starred
-                ? { star: true }
-                : {},
-              searchString
-                ? {
-                    [Op.or]: [
-                      { content: { [Op.substring]: searchString } },
-                      { '$author.name$': { [Op.substring]: searchString } },
-                    ],
-                  }
-                : {},
-            ],
-          },
-          include: searchString ? ['author'] : [],
-        }
         const {
           count: totalCount,
           rows: questions,
         } = await ctx.db.Question.findAndCountAll({
-          ...option,
+          ...getQuestionsQueryOption(eventId, questionFilter, searchString),
           ...pagination,
           order: getQuestionOrderQueryObj(
             order as NexusGenEnums['QuestionOrder'],
@@ -176,25 +153,11 @@ export const questionQuery = extendType({
       resolve: async (root, { eventId, pagination, order }, ctx) => {
         const { offset, limit } = pagination
         const userId = getAuthedUser(ctx)?.id as string
-        const option = {
-          where: {
-            eventId,
-            [Op.or]: [
-              { reviewStatus: ReviewStatusEnum.Publish },
-              {
-                [Op.and]: [
-                  { authorId: userId },
-                  { reviewStatus: ReviewStatusEnum.Review },
-                ],
-              },
-            ],
-          },
-        }
         const {
           count: totalCount,
           rows: questions,
         } = await ctx.db.Question.findAndCountAll({
-          ...option,
+          ...getQuestionsAudienceQueryOption(eventId, userId),
           ...pagination,
           order: getQuestionOrderQueryObj(
             order as NexusGenEnums['QuestionOrder'],
@@ -222,17 +185,11 @@ export const questionQuery = extendType({
       },
       resolve: async (root, { eventId, pagination, order }, ctx) => {
         const { offset, limit } = pagination
-        const option = {
-          where: {
-            eventId,
-            reviewStatus: ReviewStatusEnum.Publish,
-          },
-        }
         const {
           count: totalCount,
           rows: questions,
         } = await ctx.db.Question.findAndCountAll({
-          ...option,
+          ...getQuestionsWallQueryOption(eventId),
           ...pagination,
           order: getQuestionOrderQueryObj(
             order as NexusGenEnums['QuestionOrder'],
@@ -314,13 +271,17 @@ export const questionMutation = extendType({
           authorId,
           toRoles:
             newQuestion.reviewStatus === ReviewStatusEnum.Review
-              ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
+              ? [
+                  RoleNameEnum.Admin,
+                  RoleNameEnum.Audience,
+                  AudienceRoleEnum.OnlyAuthor,
+                ]
               : newQuestion.reviewStatus === ReviewStatusEnum.Publish
               ? [
-                  RoleName.Admin,
-                  RoleName.Audience,
-                  AudienceRole.All,
-                  RoleName.Wall,
+                  RoleNameEnum.Admin,
+                  RoleNameEnum.Audience,
+                  AudienceRoleEnum.All,
+                  RoleNameEnum.Wall,
                 ]
               : [],
           questionAdded: newQuestion,
@@ -360,9 +321,9 @@ export const questionMutation = extendType({
               eventId: question?.eventId,
               authorId: question?.authorId,
               toRoles: [
-                RoleName.Audience,
-                AudienceRole.ExcludeAuthor,
-                RoleName.Wall,
+                RoleNameEnum.Audience,
+                AudienceRoleEnum.ExcludeAuthor,
+                RoleNameEnum.Wall,
               ],
               questionRemoved: questionId,
             })
@@ -370,7 +331,7 @@ export const questionMutation = extendType({
             ctx.pubsub.publish('QUESTION_UPDATED', {
               eventId: question?.eventId,
               authorId: question?.authorId,
-              toRoles: [RoleName.Audience, AudienceRole.OnlyAuthor],
+              toRoles: [RoleNameEnum.Audience, AudienceRoleEnum.OnlyAuthor],
               questionUpdated: question,
             })
             break
@@ -379,7 +340,11 @@ export const questionMutation = extendType({
             ctx.pubsub.publish('QUESTION_REMOVED', {
               eventId: question?.eventId,
               authorId: question?.authorId,
-              toRoles: [RoleName.Audience, AudienceRole.All, RoleName.Wall],
+              toRoles: [
+                RoleNameEnum.Audience,
+                AudienceRoleEnum.All,
+                RoleNameEnum.Wall,
+              ],
               questionRemoved: questionId,
             })
             break
@@ -392,9 +357,9 @@ export const questionMutation = extendType({
                   questionEventOwnerId: question?.event?.ownerId,
                   authorId: question?.authorId,
                   toRoles: [
-                    RoleName.Audience,
-                    AudienceRole.ExcludeAuthor,
-                    RoleName.Wall,
+                    RoleNameEnum.Audience,
+                    AudienceRoleEnum.ExcludeAuthor,
+                    RoleNameEnum.Wall,
                   ],
                   questionAdded: question,
                 })
@@ -402,7 +367,7 @@ export const questionMutation = extendType({
                 ctx.pubsub.publish('QUESTION_UPDATED', {
                   eventId: question?.eventId,
                   authorId: question?.authorId,
-                  toRoles: [RoleName.Audience, AudienceRole.OnlyAuthor],
+                  toRoles: [RoleNameEnum.Audience, AudienceRoleEnum.OnlyAuthor],
                   questionUpdated: question,
                 })
                 break
@@ -412,7 +377,11 @@ export const questionMutation = extendType({
                   eventId: question?.eventId,
                   questionEventOwnerId: question?.event?.ownerId,
                   authorId: question?.authorId,
-                  toRoles: [RoleName.Audience, AudienceRole.All, RoleName.Wall],
+                  toRoles: [
+                    RoleNameEnum.Audience,
+                    AudienceRoleEnum.All,
+                    RoleNameEnum.Wall,
+                  ],
                   questionAdded: question,
                 })
                 break
@@ -423,14 +392,14 @@ export const questionMutation = extendType({
         ctx.pubsub.publish('QUESTION_REMOVED', {
           eventId: question?.eventId,
           authorId: question?.authorId,
-          toRoles: [RoleName.Admin],
+          toRoles: [RoleNameEnum.Admin],
           questionRemoved: questionId,
         })
         ctx.pubsub.publish('QUESTION_ADDED', {
           eventId: question?.eventId,
           questionEventOwnerId: question?.event?.ownerId,
           authorId: question?.authorId,
-          toRoles: [RoleName.Admin],
+          toRoles: [RoleNameEnum.Admin],
           questionAdded: question,
         })
 
@@ -453,16 +422,20 @@ export const questionMutation = extendType({
           authorId: question?.authorId,
           toRoles:
             question.reviewStatus === ReviewStatusEnum.Review
-              ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
+              ? [
+                  RoleNameEnum.Admin,
+                  RoleNameEnum.Audience,
+                  AudienceRoleEnum.OnlyAuthor,
+                ]
               : question.reviewStatus === ReviewStatusEnum.Publish
               ? [
-                  RoleName.Admin,
-                  RoleName.Audience,
-                  AudienceRole.All,
-                  RoleName.Wall,
+                  RoleNameEnum.Admin,
+                  RoleNameEnum.Audience,
+                  AudienceRoleEnum.All,
+                  RoleNameEnum.Wall,
                 ]
               : question.reviewStatus === ReviewStatusEnum.Archive
-              ? [RoleName.Admin]
+              ? [RoleNameEnum.Admin]
               : [],
           questionUpdated: question,
         })
@@ -486,16 +459,20 @@ export const questionMutation = extendType({
           authorId: question?.authorId,
           toRoles:
             question.reviewStatus === ReviewStatusEnum.Review
-              ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
+              ? [
+                  RoleNameEnum.Admin,
+                  RoleNameEnum.Audience,
+                  AudienceRoleEnum.OnlyAuthor,
+                ]
               : question.reviewStatus === ReviewStatusEnum.Publish
               ? [
-                  RoleName.Admin,
-                  RoleName.Audience,
-                  AudienceRole.All,
-                  RoleName.Wall,
+                  RoleNameEnum.Admin,
+                  RoleNameEnum.Audience,
+                  AudienceRoleEnum.All,
+                  RoleNameEnum.Wall,
                 ]
               : question.reviewStatus === ReviewStatusEnum.Archive
-              ? [RoleName.Admin]
+              ? [RoleNameEnum.Admin]
               : [],
           questionUpdated: question,
         })
@@ -535,10 +512,10 @@ export const questionMutation = extendType({
           ctx.pubsub.publish('QUESTION_UPDATED', {
             eventId: question?.eventId,
             toRoles: [
-              RoleName.Admin,
-              RoleName.Audience,
-              AudienceRole.All,
-              RoleName.Wall,
+              RoleNameEnum.Admin,
+              RoleNameEnum.Audience,
+              AudienceRoleEnum.All,
+              RoleNameEnum.Wall,
             ],
             questionUpdated: questionItem,
           })
@@ -562,16 +539,20 @@ export const questionMutation = extendType({
           authorId: question?.authorId,
           toRoles:
             question.reviewStatus === ReviewStatusEnum.Review
-              ? [RoleName.Admin, RoleName.Audience, AudienceRole.OnlyAuthor]
+              ? [
+                  RoleNameEnum.Admin,
+                  RoleNameEnum.Audience,
+                  AudienceRoleEnum.OnlyAuthor,
+                ]
               : question.reviewStatus === ReviewStatusEnum.Publish
               ? [
-                  RoleName.Admin,
-                  RoleName.Audience,
-                  AudienceRole.All,
-                  RoleName.Wall,
+                  RoleNameEnum.Admin,
+                  RoleNameEnum.Audience,
+                  AudienceRoleEnum.All,
+                  RoleNameEnum.Wall,
                 ]
               : question.reviewStatus === ReviewStatusEnum.Archive
-              ? [RoleName.Admin]
+              ? [RoleNameEnum.Admin]
               : [],
           questionRemoved: questionId,
         })
@@ -603,9 +584,9 @@ export const questionMutation = extendType({
               eventId,
               authorId: delQuestion?.authorId,
               toRoles: [
-                RoleName.Admin,
-                RoleName.Audience,
-                AudienceRole.OnlyAuthor,
+                RoleNameEnum.Admin,
+                RoleNameEnum.Audience,
+                AudienceRoleEnum.OnlyAuthor,
               ],
               questionRemoved: delQuestion.id,
             }),
@@ -654,30 +635,30 @@ export const questionMutation = extendType({
               questionEventOwnerId: event?.ownerId,
               authorId: questionItem?.authorId,
               toRoles: [
-                RoleName.Audience,
-                AudienceRole.ExcludeAuthor,
-                RoleName.Wall,
+                RoleNameEnum.Audience,
+                AudienceRoleEnum.ExcludeAuthor,
+                RoleNameEnum.Wall,
               ],
               questionAdded: questionItem,
             })
             ctx.pubsub.publish('QUESTION_UPDATED', {
               eventId,
               authorId: questionItem?.authorId,
-              toRoles: [RoleName.Audience, AudienceRole.OnlyAuthor],
+              toRoles: [RoleNameEnum.Audience, AudienceRoleEnum.OnlyAuthor],
               questionUpdated: questionItem,
             })
             // update for admin
             ctx.pubsub.publish('QUESTION_REMOVED', {
               eventId,
               authorId: questionItem?.authorId,
-              toRoles: [RoleName.Admin],
+              toRoles: [RoleNameEnum.Admin],
               questionRemoved: questionItem.id,
             })
             ctx.pubsub.publish('QUESTION_ADDED', {
               eventId,
               questionEventOwnerId: event?.ownerId,
               authorId: questionItem?.authorId,
-              toRoles: [RoleName.Admin],
+              toRoles: [RoleNameEnum.Admin],
               questionAdded: questionItem,
             })
           },
@@ -709,10 +690,10 @@ export const questionMutation = extendType({
         ctx.pubsub.publish('QUESTION_UPDATED', {
           eventId: question?.eventId,
           toRoles: [
-            RoleName.Admin,
-            RoleName.Audience,
-            AudienceRole.All,
-            RoleName.Wall,
+            RoleNameEnum.Admin,
+            RoleNameEnum.Audience,
+            AudienceRoleEnum.All,
+            RoleNameEnum.Wall,
           ],
           questionUpdated: question,
         })
@@ -736,7 +717,7 @@ async function getVoted(ctx: Context, questionId: string) {
   return question.hasVoteUpUser(user)
 }
 
-function getQuestionOrderQueryObj(
+export function getQuestionOrderQueryObj(
   questionOrder: NexusGenEnums['QuestionOrder'],
 ): Order {
   switch (questionOrder) {
@@ -766,5 +747,62 @@ function getQuestionOrderQueryObj(
         ['voteUpCount', 'DESC'],
         ['createdAt', 'DESC'],
       ]
+  }
+}
+
+export function getQuestionsQueryOption(
+  eventId: string,
+  questionFilter: NexusGenEnums['QuestionFilter'] | null | undefined,
+  searchString: string | null | undefined,
+) {
+  return {
+    where: {
+      eventId,
+      [Op.and]: [
+        (Object.values(ReviewStatusEnum) as string[]).includes(
+          questionFilter as string,
+        )
+          ? { reviewStatus: questionFilter }
+          : questionFilter === QuestionFilterEnum.Starred
+          ? { star: true }
+          : {},
+        searchString
+          ? {
+              [Op.or]: [
+                { content: { [Op.substring]: searchString } },
+                { '$author.name$': { [Op.substring]: searchString } },
+              ],
+            }
+          : {},
+      ],
+    },
+    include: searchString ? ['author'] : [],
+  }
+}
+export function getQuestionsAudienceQueryOption(
+  eventId: string,
+  userId: string,
+) {
+  return {
+    where: {
+      eventId,
+      [Op.or]: [
+        { reviewStatus: ReviewStatusEnum.Publish },
+        {
+          [Op.and]: [
+            { authorId: userId },
+            { reviewStatus: ReviewStatusEnum.Review },
+          ],
+        },
+      ],
+    },
+  }
+}
+export function getQuestionsWallQueryOption(eventId: string) {
+  return {
+    where: {
+      eventId,
+      reviewStatus: ReviewStatusEnum.Publish,
+    },
   }
 }

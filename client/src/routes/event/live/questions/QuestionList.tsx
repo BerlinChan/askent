@@ -98,7 +98,12 @@ const QuestionList: React.FC<Props> = ({
 
   // subscriptions
   useQuestionAddedAudienceSubscription({
-    variables: { eventId: queryVariables.eventId, role: RoleName.Audience },
+    variables: {
+      eventId: queryVariables.eventId,
+      asRole: RoleName.Audience,
+      order: queryVariables.order,
+      limit: data?.questionsByEventAudience.list.length
+    },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
         const { questionAdded } = subscriptionData.data;
@@ -123,10 +128,10 @@ const QuestionList: React.FC<Props> = ({
     }
   });
   useQuestionUpdatedAudienceSubscription({
-    variables: { eventId: queryVariables.eventId, role: RoleName.Audience }
+    variables: { eventId: queryVariables.eventId, asRole: RoleName.Audience }
   });
   useQuestionRemovedAudienceSubscription({
-    variables: { eventId: queryVariables.eventId, role: RoleName.Audience },
+    variables: { eventId: queryVariables.eventId, asRole: RoleName.Audience },
     onSubscriptionData: ({ client, subscriptionData }) => {
       const prev = questionsQueryResult.data;
 

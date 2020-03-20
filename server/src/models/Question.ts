@@ -5,7 +5,7 @@ import { EventModelStatic } from './Event'
 
 const { BOOLEAN, STRING, INTEGER, UUID, UUIDV4, ENUM } = DataTypes
 
-export enum ReviewStatus {
+export enum ReviewStatusEnum {
   Review = 'REVIEW',
   Publish = 'PUBLISH',
   Archive = 'ARCHIVE',
@@ -15,7 +15,7 @@ export class Question extends Model {
   public id!: string
   public content!: string
   public anonymous!: boolean
-  public reviewStatus!: ReviewStatus
+  public reviewStatus!: ReviewStatusEnum
   public star!: boolean
   public top!: boolean
   public voteUpCount!: number
@@ -46,8 +46,8 @@ Question.init(
       defaultValue: false,
     },
     reviewStatus: {
-      type: ENUM({ values: Object.values(ReviewStatus) }),
-      defaultValue: ReviewStatus.Publish,
+      type: ENUM({ values: Object.values(ReviewStatusEnum) }),
+      defaultValue: ReviewStatusEnum.Publish,
     },
     star: {
       type: BOOLEAN,

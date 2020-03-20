@@ -4,7 +4,7 @@ import { hash, compare } from 'bcryptjs'
 import { Context } from '../context'
 import { getAuthedUser, signToken } from '../utils'
 import { Op } from 'sequelize'
-import { RoleModelStatic, RoleName } from '../models/Role'
+import { RoleModelStatic, RoleNameEnum } from '../models/Role'
 import { dataloaderContext } from '../context'
 import MD5 from 'crypto-js/md5'
 const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
@@ -148,10 +148,10 @@ export const userMutation = extendType({
       },
       resolve: async (root, args, ctx, info) => {
         const hashedPassword = await hash(args.password, 10)
-        const userRoles: Array<RoleName> = [
-          RoleName.Admin,
-          RoleName.Audience,
-          RoleName.Wall,
+        const userRoles: Array<RoleNameEnum> = [
+          RoleNameEnum.Admin,
+          RoleNameEnum.Audience,
+          RoleNameEnum.Wall,
         ]
         const roles = await ctx.db.Role.findAll({
           where: { [Op.or]: userRoles.map(role => ({ name: role })) },
@@ -208,7 +208,7 @@ export const userMutation = extendType({
         let user = await ctx.db.User.findOne({
           where: { fingerprint },
         })
-        const roleNames: Array<RoleName> = [RoleName.Audience]
+        const roleNames: Array<RoleNameEnum> = [RoleNameEnum.Audience]
         if (!user) {
           const roles: Array<RoleModelStatic> = await ctx.db.Role.findAll({
             where: { [Op.or]: roleNames.map(role => ({ name: role })) },

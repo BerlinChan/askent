@@ -1,14 +1,14 @@
 import { objectType, extendType, enumType } from 'nexus'
-import { RoleName } from '../models/Role'
+import { RoleNameEnum } from '../models/Role'
 
-export enum AudienceRole {
+export enum AudienceRoleEnum {
   All = 'ALL',
   ExcludeAuthor = 'EXCLUDE_AUTHOR',
   OnlyAuthor = 'ONLY_AUTHOR',
 }
-export const RoleNameEnum = enumType({
+export const RoleName= enumType({
   name: 'RoleName',
-  members: Object.values(RoleName),
+  members: Object.values(RoleNameEnum),
 })
 export const Role = objectType({
   name: 'Role',

@@ -3,7 +3,7 @@ import sequelize from '../db'
 
 const { ENUM, UUID, UUIDV4 } = DataTypes
 
-export enum RoleName {
+export enum RoleNameEnum {
   Admin = 'ADMIN',
   Audience = 'AUDIENCE',
   Wall = 'WALL',
@@ -11,7 +11,7 @@ export enum RoleName {
 
 export class Role extends Model {
   public id!: string
-  public name!: RoleName
+  public name!: RoleNameEnum
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
   public readonly deletedAt?: Date
@@ -26,7 +26,7 @@ Role.init(
       primaryKey: true,
     },
     name: {
-      type: ENUM({ values: Object.values(RoleName) }),
+      type: ENUM({ values: Object.values(RoleNameEnum) }),
       unique: true,
       allowNull: false,
     },

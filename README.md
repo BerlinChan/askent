@@ -11,6 +11,7 @@
 - [ ] admin event list - duplicate event
 - [ ] audience my questions dialog
 - [ ] reply question
+- [ ] question list refetch after network error recovery
 - [ ] event edit dialog
 - [ ] question support voteDown
 - [ ] Build server for production

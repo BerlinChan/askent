@@ -48,7 +48,12 @@ const QuestionList: React.FC<Props> = ({ queryVariables }) => {
 
   // subscription
   useQuestionAddedWallSubscription({
-    variables: { eventId: queryVariables.eventId, role: RoleName.Wall },
+    variables: {
+      eventId: queryVariables.eventId,
+      asRole: RoleName.Wall,
+      order: queryVariables.order,
+      limit: data?.questionsByEventWall.list.length
+    },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
         const { questionAdded } = subscriptionData.data;
@@ -73,10 +78,10 @@ const QuestionList: React.FC<Props> = ({ queryVariables }) => {
     }
   });
   useQuestionUpdatedWallSubscription({
-    variables: { eventId: queryVariables.eventId, role: RoleName.Wall }
+    variables: { eventId: queryVariables.eventId, asRole: RoleName.Wall }
   });
   useQuestionRemovedWallSubscription({
-    variables: { eventId: queryVariables.eventId, role: RoleName.Wall },
+    variables: { eventId: queryVariables.eventId, asRole: RoleName.Wall },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRemoved) {
         const { questionRemoved } = subscriptionData.data;
