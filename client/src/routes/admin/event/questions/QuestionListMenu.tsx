@@ -12,7 +12,7 @@ import Confirm from "../../../../components/Confirm";
 import EditIcon from "@material-ui/icons/Edit";
 
 interface Props {
-  questionsByEventQuery: QueryResult<
+  questionsQueryResult: QueryResult<
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables
   >;
@@ -36,13 +36,13 @@ interface Props {
 }
 
 const QuestionListMenu: React.FC<Props> = ({
-  questionsByEventQuery,
+  questionsQueryResult,
   moreMenuState,
   editContentInputRef,
   editContentIdsState
 }) => {
   const { formatMessage } = useIntl();
-  const { data } = questionsByEventQuery;
+  const { data } = questionsQueryResult;
   const [moreMenu, setMoreMenu] = moreMenuState;
   const [deleteConfirm, setDeleteConfirm] = React.useState({
     open: false,

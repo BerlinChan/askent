@@ -11,13 +11,10 @@ import {
   Tooltip,
   Typography
 } from "@material-ui/core";
-import { QueryResult } from "@apollo/react-common";
 import {
   ReviewStatus,
   QuestionFilter,
   QuestionOrder,
-  QuestionsByEventQuery,
-  QuestionsByEventQueryVariables
 } from "../../../../generated/graphqlHooks";
 import QuestionOrderMenu from "../../../../components/QuestionOrderMenu";
 import SearchIcon from "@material-ui/icons/Search";
@@ -83,16 +80,11 @@ interface Props {
     QuestionOrder,
     React.Dispatch<React.SetStateAction<QuestionOrder>>
   ];
-  questionsQueryResult: QueryResult<
-    QuestionsByEventQuery,
-    QuestionsByEventQueryVariables
-  >;
 }
 
 const ActionRight: React.FC<Props> = ({
   questionQueryState,
-  orderSelectedState,
-  questionsQueryResult
+  orderSelectedState
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -157,7 +149,7 @@ const ActionRight: React.FC<Props> = ({
               variant="body2"
               color="textSecondary"
             >
-              {questionsQueryResult.data?.questionsByEvent.totalCount}
+              total
             </Typography>
           </Tooltip>
         </Box>

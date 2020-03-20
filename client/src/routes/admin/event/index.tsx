@@ -20,7 +20,7 @@ const PollsComponent = loadable(() => import("./polls"), {
 const AdminEvent: React.FC = () => {
   const { path } = useRouteMatch();
   const { id } = useParams();
-  const adminEventQuery = useEventByIdQuery({
+  const eventQueryResult = useEventByIdQuery({
     variables: { eventId: id as string }
   });
 
@@ -30,12 +30,12 @@ const AdminEvent: React.FC = () => {
 
   return (
     <Layout
-      header={<AdminEventHeader eventQuery={adminEventQuery} />}
+      header={<AdminEventHeader eventQueryResult={eventQueryResult} />}
       body={
         <Switch>
           <Redirect exact path={`${path}`} to={`${path}/questions`} />
           <PrivateRoute path={`${path}/questions`}>
-            <QuestionsComponent eventQuery={adminEventQuery} />
+            <QuestionsComponent eventQueryResult={eventQueryResult} />
           </PrivateRoute>
           <PrivateRoute path={`${path}/polls`}>
             <PollsComponent />

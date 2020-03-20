@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   question: QuestionFieldsFragment;
-  eventQuery: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
@@ -100,14 +100,14 @@ interface Props {
 const QuestionListItem: React.FC<Props> = ({
   question,
   handleMoreClick,
-  eventQuery,
+  eventQueryResult,
   editContent,
   handleEditContentToggle,
   editContentInputRef,
   isScrolling = false
 }) => {
   const classes = useStyles();
-  const { data } = eventQuery;
+  const { data } = eventQueryResult;
   const { formatMessage } = useIntl();
   const [
     updateQuestionReviewStatusMutation,

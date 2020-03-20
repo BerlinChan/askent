@@ -4,12 +4,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { FormattedMessage } from "react-intl";
-import { QueryResult } from "@apollo/react-common";
-import {
-  QuestionsByEventWallQuery,
-  QuestionsByEventWallQueryVariables,
-  QuestionOrder
-} from "../../../generated/graphqlHooks";
+import { QuestionOrder } from "../../../generated/graphqlHooks";
 import { useMouseMove } from "../../../hooks";
 import QuestionOrderMenu from "../../../components/QuestionOrderMenu";
 
@@ -43,18 +38,10 @@ interface Props {
     QuestionOrder,
     React.Dispatch<React.SetStateAction<QuestionOrder>>
   ];
-  questionsWallQueryResult: QueryResult<
-    QuestionsByEventWallQuery,
-    QuestionsByEventWallQueryVariables
-  >;
 }
 
-const OrderSelect: React.FC<Props> = ({
-  orderSelectedState,
-  questionsWallQueryResult
-}) => {
+const OrderSelect: React.FC<Props> = ({ orderSelectedState }) => {
   const classes = useStyles();
-  const { data } = questionsWallQueryResult;
   const menuElState = React.useState<null | HTMLElement>(null);
   const { mouseStop } = useMouseMove();
 
@@ -66,8 +53,8 @@ const OrderSelect: React.FC<Props> = ({
     <React.Fragment>
       <Typography className={classes.sortSelect} onClick={handleSortOpen}>
         <QuestionAnswerIcon className={classes.icon} />
-        <FormattedMessage id="Top_questions" defaultMessage="Top questions" />(
-        {data?.questionsByEventWall.totalCount})
+        <FormattedMessage id="Top_questions" defaultMessage="Top questions" />
+        totalCount
         <Fade in={!mouseStop}>
           <ArrowDropDownIcon className="arrowIcon" />
         </Fade>

@@ -8,17 +8,8 @@ import OrderSelect from "./OrderSelect";
 import {
   useEventByIdQuery,
   useEventUpdatedSubscription,
-  useQuestionsByEventWallQuery,
-  QuestionsByEventWallQuery,
-  QuestionsByEventWallQueryVariables,
-  QuestionsByEventWallDocument,
-  useQuestionAddedWallSubscription,
-  useQuestionUpdatedWallSubscription,
-  useQuestionRemovedWallSubscription,
-  RoleName,
   QuestionOrder
 } from "../../../generated/graphqlHooks";
-import { DataProxy } from "apollo-cache";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
 import QuestionList from "./QuestionList";
 
@@ -73,72 +64,8 @@ const EventWall: React.FC<Props> = () => {
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: orderSelectedState[0]
   };
-  const questionsWallQueryResult = useQuestionsByEventWallQuery({
-    fetchPolicy: "network-only",
-    variables: questionsQueryVariables
-  });
 
   // subscription
-  const updateCache = (cache: DataProxy, data: QuestionsByEventWallQuery) => {
-    cache.writeQuery<
-      QuestionsByEventWallQuery,
-      Omit<QuestionsByEventWallQueryVariables, "pagination">
-    >({
-      query: QuestionsByEventWallDocument,
-      variables: questionsQueryVariables,
-      data
-    });
-  };
-  useQuestionAddedWallSubscription({
-    variables: { eventId: id as string, role: RoleName.Wall },
-    onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data) {
-        const { questionAdded } = subscriptionData.data;
-        const prev = questionsWallQueryResult.data;
-
-        if (prev) {
-          // add
-          updateCache(client, {
-            questionsByEventWall: {
-              ...prev.questionsByEventWall,
-              totalCount: prev.questionsByEventWall.totalCount + 1,
-              list: [questionAdded].concat(
-                prev.questionsByEventWall.list.filter(
-                  question =>
-                    question.id !== subscriptionData.data?.questionAdded.id
-                )
-              )
-            }
-          });
-        }
-      }
-    }
-  });
-  useQuestionUpdatedWallSubscription({
-    variables: { eventId: id as string, role: RoleName.Wall }
-  });
-  useQuestionRemovedWallSubscription({
-    variables: { eventId: id as string, role: RoleName.Wall },
-    onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionRemoved) {
-        const { questionRemoved } = subscriptionData.data;
-        const prev = questionsWallQueryResult.data;
-
-        if (prev) {
-          // remove
-          updateCache(client, {
-            questionsByEventWall: {
-              ...prev.questionsByEventWall,
-              totalCount: prev.questionsByEventWall.totalCount - 1,
-              list: prev.questionsByEventWall.list.filter(
-                preQuestion => questionRemoved !== preQuestion.id
-              )
-            }
-          });
-        }
-      }
-    }
-  });
   useEventUpdatedSubscription({
     variables: { eventId: id as string }
   });
@@ -177,16 +104,10 @@ const EventWall: React.FC<Props> = () => {
       </Grid>
       <Grid item xs={9} className={classes.gridItem}>
         <Box className={classes.rightTitleBox}>
-          <OrderSelect
-            orderSelectedState={orderSelectedState}
-            questionsWallQueryResult={questionsWallQueryResult}
-          />
+          <OrderSelect orderSelectedState={orderSelectedState} />
         </Box>
         <Box className={classes.listBox}>
-          <QuestionList
-            questionsQueryResult={questionsWallQueryResult}
-            order={orderSelectedState[0]}
-          />
+          <QuestionList queryVariables={questionsQueryVariables} />
         </Box>
         {0 ? (
           <Typography variant="h6" color="inherit">

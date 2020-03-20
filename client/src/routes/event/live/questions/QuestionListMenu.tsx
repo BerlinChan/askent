@@ -33,13 +33,15 @@ interface Props {
     >
   ];
   editContentInputRef: React.RefObject<HTMLInputElement>;
+  editContentIdsState: [string[], React.Dispatch<React.SetStateAction<string[]>>]
 }
 
 const QuestionListMenu: React.FC<Props> = ({
   eventQueryResult,
   questionsQueryResult,
   moreMenuState,
-  editContentInputRef
+  editContentInputRef,
+  editContentIdsState
 }) => {
   const { formatMessage } = useIntl();
   const { data } = questionsQueryResult;
@@ -71,7 +73,7 @@ const QuestionListMenu: React.FC<Props> = ({
     });
     handleCloseDelete();
   };
-  const [editContentIds, setEditContentIds] = React.useState<Array<string>>([]);
+  const [editContentIds, setEditContentIds] = editContentIdsState;
   const handleEditContentToggle = (id: string) => {
     const findId = editContentIds.find(item => item === id);
     setEditContentIds(

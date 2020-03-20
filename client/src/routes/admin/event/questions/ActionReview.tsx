@@ -7,27 +7,19 @@ import {
   useDeleteAllReviewQuestionsMutation,
   usePublishAllReviewQuestionsMutation,
   EventByIdQuery,
-  EventByIdQueryVariables,
-  QuestionsByEventQuery,
-  ReviewStatus
+  EventByIdQueryVariables
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import Confirm from "../../../../components/Confirm";
-import { DataProxy } from "apollo-cache";
 
 interface Props {
-  eventQuery: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  updateCache: (
-    cache: DataProxy,
-    reviewStatus: ReviewStatus,
-    data: QuestionsByEventQuery
-  ) => void;
+  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
-const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
+const ActionReview: React.FC<Props> = ({ eventQueryResult }) => {
   const { formatMessage } = useIntl();
   const { id } = useParams();
-  const { data } = eventQuery;
+  const { data } = eventQueryResult;
   const [updateEventMutation] = useUpdateEventMutation();
   const [
     deleteAllReviewQuestionsMutation
@@ -56,9 +48,11 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
       variables: { eventId: id as string }
     });
     await updateEventMutation({
-      variables: {input:{
-        eventId: id as string,
-        moderation: false}
+      variables: {
+        input: {
+          eventId: id as string,
+          moderation: false
+        }
       }
     });
     setConfirmModeration(false);
@@ -68,9 +62,11 @@ const ActionReview: React.FC<Props> = ({ eventQuery, updateCache }) => {
       variables: { eventId: id as string }
     });
     await updateEventMutation({
-      variables: {input:{
-        eventId: id as string,
-        moderation: false}
+      variables: {
+        input: {
+          eventId: id as string,
+          moderation: false
+        }
       }
     });
     setConfirmModeration(false);

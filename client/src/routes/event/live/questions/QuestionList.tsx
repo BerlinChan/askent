@@ -8,11 +8,18 @@ import {
   MeQueryVariables,
   EventByIdQuery,
   EventByIdQueryVariables,
+  useQuestionsByEventAudienceQuery,
   QuestionsByEventAudienceQuery,
   QuestionsByEventAudienceQueryVariables,
   QuestionAudienceFieldsFragment,
-  QuestionOrder
+  QuestionOrder,
+  useQuestionAddedAudienceSubscription,
+  useQuestionUpdatedAudienceSubscription,
+  useQuestionRemovedAudienceSubscription,
+  QuestionsByEventAudienceDocument,
+  RoleName
 } from "../../../../generated/graphqlHooks";
+import { DataProxy } from "apollo-cache";
 import QuestionItem from "./QuestionItem";
 import QuestionListMenu from "./QuestionListMenu";
 import QuestionListHeader from "./QuestionListHeader";
@@ -47,25 +54,34 @@ const ScrollContainer: TScrollContainer = ({
   );
 };
 
+function updateCache(
+  cache: DataProxy,
+  queryVariables: QuestionsByEventAudienceQueryVariables,
+  data: QuestionsByEventAudienceQuery
+): void {
+  cache.writeQuery<
+    QuestionsByEventAudienceQuery,
+    Omit<QuestionsByEventAudienceQueryVariables, "pagination">
+  >({
+    query: QuestionsByEventAudienceDocument,
+    variables: queryVariables,
+    data
+  });
+}
+
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  questionsQueryResult: QueryResult<
-    QuestionsByEventAudienceQuery,
-    QuestionsByEventAudienceQueryVariables
-  >;
-  order?: QuestionOrder;
+  queryVariables: QuestionsByEventAudienceQueryVariables;
 }
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
   eventQueryResult,
-  questionsQueryResult,
-  order = QuestionOrder.Popular
+  queryVariables
 }) => {
   const theme = useTheme();
   const matcheMdUp = useMediaQuery(theme.breakpoints.up("md"));
-  const { data, loading, fetchMore } = questionsQueryResult;
   const virtuosoRef = React.useRef<VirtuosoMethods>(null);
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
@@ -73,6 +89,62 @@ const QuestionList: React.FC<Props> = ({
     id: string;
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
+  const editContentIdsState = React.useState<Array<string>>([]);
+  const questionsQueryResult = useQuestionsByEventAudienceQuery({
+    fetchPolicy: "network-only",
+    variables: queryVariables
+  });
+  const { data, loading, fetchMore } = questionsQueryResult;
+
+  // subscriptions
+  useQuestionAddedAudienceSubscription({
+    variables: { eventId: queryVariables.eventId, role: RoleName.Audience },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data) {
+        const { questionAdded } = subscriptionData.data;
+        const prev = questionsQueryResult.data;
+
+        if (prev) {
+          // add
+          updateCache(client, queryVariables, {
+            questionsByEventAudience: {
+              ...prev.questionsByEventAudience,
+              totalCount: prev.questionsByEventAudience.totalCount + 1,
+              list: [questionAdded].concat(
+                prev.questionsByEventAudience.list.filter(
+                  question =>
+                    question.id !== subscriptionData.data?.questionAdded.id
+                )
+              )
+            }
+          });
+        }
+      }
+    }
+  });
+  useQuestionUpdatedAudienceSubscription({
+    variables: { eventId: queryVariables.eventId, role: RoleName.Audience }
+  });
+  useQuestionRemovedAudienceSubscription({
+    variables: { eventId: queryVariables.eventId, role: RoleName.Audience },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const prev = questionsQueryResult.data;
+
+      if (prev) {
+        // remove
+        updateCache(client, queryVariables, {
+          questionsByEventAudience: {
+            ...prev.questionsByEventAudience,
+            totalCount: prev.questionsByEventAudience.totalCount - 1,
+            list: prev.questionsByEventAudience.list.filter(
+              preQuestion =>
+                subscriptionData.data?.questionRemoved !== preQuestion.id
+            )
+          }
+        });
+      }
+    }
+  });
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -84,25 +156,24 @@ const QuestionList: React.FC<Props> = ({
     moreMenuState[1]({ anchorEl: null, id: "" });
   };
 
-  const [editContentIds, setEditContentIds] = React.useState<Array<string>>([]);
   const handleEditContentToggle = (id: string) => {
-    const findId = editContentIds.find(item => item === id);
-    setEditContentIds(
+    const findId = editContentIdsState[0].find(item => item === id);
+    editContentIdsState[1](
       findId
-        ? editContentIds.filter(item => item !== id)
-        : editContentIds.concat([id])
+        ? editContentIdsState[0].filter(item => item !== id)
+        : editContentIdsState[0].concat([id])
     );
     handleMoreClose();
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
 
   const orderedList = React.useMemo(() => {
-    const list = sortQuestionBy<QuestionAudienceFieldsFragment>(order)(
-      data?.questionsByEventAudience.list || []
-    );
+    const list = sortQuestionBy<QuestionAudienceFieldsFragment>(
+      queryVariables.order || QuestionOrder.Popular
+    )(data?.questionsByEventAudience.list || []);
 
     return list;
-  }, [data, order]);
+  }, [data, queryVariables]);
   const loadMore = () => {
     if (data?.questionsByEventAudience.hasNextPage) {
       fetchMore({
@@ -163,7 +234,7 @@ const QuestionList: React.FC<Props> = ({
         question={question}
         userQueryResult={userQueryResult}
         handleMoreClick={handleMoreClick}
-        editContent={editContentIds.includes(question.id)}
+        editContent={editContentIdsState[0].includes(question.id)}
         handleEditContentToggle={handleEditContentToggle}
         editContentInputRef={editContentInputRef}
         isScrolling={isScrolling}
@@ -196,6 +267,7 @@ const QuestionList: React.FC<Props> = ({
         questionsQueryResult={questionsQueryResult}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
+        editContentIdsState={editContentIdsState}
       />
     </React.Fragment>
   );

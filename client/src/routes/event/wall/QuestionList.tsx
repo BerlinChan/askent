@@ -1,43 +1,110 @@
 import React from "react";
 import * as R from "ramda";
-import { QueryResult } from "@apollo/react-common";
 import {
   QuestionsByEventWallQuery,
   QuestionsByEventWallQueryVariables,
   QuestionWallFieldsFragment,
+  QuestionsByEventWallDocument,
+  useQuestionsByEventWallQuery,
+  useQuestionAddedWallSubscription,
+  useQuestionUpdatedWallSubscription,
+  useQuestionRemovedWallSubscription,
   QuestionOrder,
-  QuestionFilter
+  RoleName
 } from "../../../generated/graphqlHooks";
+import { DataProxy } from "apollo-cache";
 import QuestionItem from "./QuestionItem";
 import { Virtuoso } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
 import { sortQuestionBy } from "../../../utils";
 import ListFooter from "../../../components/ListFooter";
 
-interface Props {
-  questionsQueryResult: QueryResult<
+function updateCache(
+  cache: DataProxy,
+  queryVariables: QuestionsByEventWallQueryVariables,
+  data: QuestionsByEventWallQuery
+): void {
+  cache.writeQuery<
     QuestionsByEventWallQuery,
-    QuestionsByEventWallQueryVariables
-  >;
-  order?: QuestionOrder | QuestionFilter;
+    Omit<QuestionsByEventWallQueryVariables, "pagination">
+  >({
+    query: QuestionsByEventWallDocument,
+    variables: queryVariables,
+    data
+  });
 }
 
-const QuestionList: React.FC<Props> = ({
-  questionsQueryResult,
-  order = QuestionOrder.Popular
-}) => {
-  const { data, loading, fetchMore } = questionsQueryResult;
+interface Props {
+  queryVariables: QuestionsByEventWallQueryVariables;
+}
+
+const QuestionList: React.FC<Props> = ({ queryVariables }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
+  const questionsWallQueryResult = useQuestionsByEventWallQuery({
+    fetchPolicy: "network-only",
+    variables: queryVariables
+  });
+  const { data, loading, fetchMore } = questionsWallQueryResult;
+
+  // subscription
+  useQuestionAddedWallSubscription({
+    variables: { eventId: queryVariables.eventId, role: RoleName.Wall },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data) {
+        const { questionAdded } = subscriptionData.data;
+        const prev = questionsWallQueryResult.data;
+
+        if (prev) {
+          // add
+          updateCache(client, queryVariables, {
+            questionsByEventWall: {
+              ...prev.questionsByEventWall,
+              totalCount: prev.questionsByEventWall.totalCount + 1,
+              list: [questionAdded].concat(
+                prev.questionsByEventWall.list.filter(
+                  question =>
+                    question.id !== subscriptionData.data?.questionAdded.id
+                )
+              )
+            }
+          });
+        }
+      }
+    }
+  });
+  useQuestionUpdatedWallSubscription({
+    variables: { eventId: queryVariables.eventId, role: RoleName.Wall }
+  });
+  useQuestionRemovedWallSubscription({
+    variables: { eventId: queryVariables.eventId, role: RoleName.Wall },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.questionRemoved) {
+        const { questionRemoved } = subscriptionData.data;
+        const prev = questionsWallQueryResult.data;
+
+        if (prev) {
+          // remove
+          updateCache(client, queryVariables, {
+            questionsByEventWall: {
+              ...prev.questionsByEventWall,
+              totalCount: prev.questionsByEventWall.totalCount - 1,
+              list: prev.questionsByEventWall.list.filter(
+                preQuestion => questionRemoved !== preQuestion.id
+              )
+            }
+          });
+        }
+      }
+    }
+  });
 
   const orderedList = React.useMemo(() => {
     const list = sortQuestionBy<QuestionWallFieldsFragment>(
-      (order !== QuestionFilter.Starred
-        ? order
-        : QuestionOrder.Popular) as QuestionOrder
+      queryVariables.order || QuestionOrder.Popular
     )(data?.questionsByEventWall.list || []);
 
     return list;
-  }, [data, order]);
+  }, [data, queryVariables]);
   const loadMore = () => {
     if (data?.questionsByEventWall.hasNextPage) {
       fetchMore({
