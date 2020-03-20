@@ -14,7 +14,7 @@ import {
 import {
   ReviewStatus,
   QuestionFilter,
-  QuestionOrder,
+  QuestionOrder
 } from "../../../../generated/graphqlHooks";
 import QuestionOrderMenu from "../../../../components/QuestionOrderMenu";
 import SearchIcon from "@material-ui/icons/Search";
@@ -107,6 +107,7 @@ const ActionRight: React.FC<Props> = ({
       ...queryState,
       filterSelected: value
     });
+    handleFilterClose();
   };
 
   const handleSearchClick = (

@@ -1,7 +1,8 @@
-import { extendType } from 'nexus'
+import { extendType, idArg } from 'nexus'
 import { getAuthedUser } from '../utils'
 import { addDays } from 'date-fns'
 import { EventModelStatic } from '../models/Event'
+import { ReviewStatusEnum, QuestionModelStatic } from '../models/Question'
 
 export const seedMutation = extendType({
   type: 'Mutation',
@@ -25,6 +26,34 @@ export const seedMutation = extendType({
         )
 
         return events
+      },
+    })
+    t.field('seedQuestion', {
+      type: 'Int',
+      args: {
+        eventId: idArg({ required: true }),
+      },
+      resolve: async (root, { eventId }, ctx) => {
+        const userId = getAuthedUser(ctx)?.id as string
+        const event = await ctx.db.Event.findByPk(eventId)
+        const author = await ctx.db.User.findByPk(userId)
+        const questions = await ctx.db.Question.bulkCreate(
+          Array.from({ length: 2000 }, () => 'question').map((item, index) => ({
+            reviewStatus: ReviewStatusEnum.Publish,
+            content: `${Math.floor(Math.random() * 100000)}-${new Date()}`,
+            name: `name_n ${index}`,
+          })),
+        )
+        questions.forEach(
+          async (
+            item: QuestionModelStatic & { setEvent: any; setAuthor: any },
+          ) => {
+            await item.setEvent(event)
+            await item.setAuthor(author)
+          },
+        )
+
+        return questions.length
       },
     })
   },

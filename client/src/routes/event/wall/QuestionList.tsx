@@ -1,5 +1,4 @@
 import React from "react";
-import * as R from "ramda";
 import {
   QuestionsByEventWallQuery,
   QuestionsByEventWallQueryVariables,
@@ -127,11 +126,7 @@ const QuestionList: React.FC<Props> = ({ queryVariables }) => {
             questionsByEventWall: {
               ...fetchMoreResult.questionsByEventWall,
               list: [
-                ...R.differenceWith<QuestionWallFieldsFragment>(
-                  (a, b) => a.id === b.id,
-                  prev.questionsByEventWall.list,
-                  fetchMoreResult.questionsByEventWall.list
-                ),
+                ...prev.questionsByEventWall.list,
                 ...fetchMoreResult.questionsByEventWall.list
               ]
             }

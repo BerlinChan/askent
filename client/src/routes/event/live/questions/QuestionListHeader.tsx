@@ -5,7 +5,6 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
 import { QueryResult } from "@apollo/react-common";
 import { MeQuery, MeQueryVariables } from "../../../../generated/graphqlHooks";
-import { VirtuosoMethods } from "react-virtuoso";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,13 +18,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  virtuosoRef: React.RefObject<VirtuosoMethods>;
 }
 
-const QuestionListHeader: React.FC<Props> = ({
-  userQueryResult,
-  virtuosoRef
-}) => {
+const QuestionListHeader: React.FC<Props> = ({ userQueryResult }) => {
   const classes = useStyles();
 
   return (
@@ -44,10 +39,7 @@ const QuestionListHeader: React.FC<Props> = ({
         className={classes.questionForm}
         userQueryResult={userQueryResult}
         onFocus={() => {
-          virtuosoRef.current?.scrollToIndex({
-            index: 0,
-            align: "start"
-          });
+          document.querySelector(".scrollContainer")?.scrollTo(0, 0);
         }}
       />
     </React.Fragment>

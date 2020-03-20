@@ -1,5 +1,4 @@
 import React from "react";
-import * as R from "ramda";
 import { QueryResult } from "@apollo/react-common";
 import {
   useQuestionAddedSubscription,
@@ -158,11 +157,7 @@ const QuestionList: React.FC<Props> = ({
             questionsByEvent: {
               ...fetchMoreResult.questionsByEvent,
               list: [
-                ...R.differenceWith<QuestionFieldsFragment>(
-                  (a, b) => a.id === b.id,
-                  prev.questionsByEvent.list,
-                  fetchMoreResult.questionsByEvent.list
-                ),
+                ...prev.questionsByEvent.list,
                 ...fetchMoreResult.questionsByEvent.list
               ]
             }

@@ -1,5 +1,4 @@
 import React from "react";
-import * as R from "ramda";
 import { Container, useMediaQuery } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/react-common";
@@ -23,36 +22,10 @@ import { DataProxy } from "apollo-cache";
 import QuestionItem from "./QuestionItem";
 import QuestionListMenu from "./QuestionListMenu";
 import QuestionListHeader from "./QuestionListHeader";
-import { Virtuoso, VirtuosoMethods, TScrollContainer } from "react-virtuoso";
+import { Virtuoso } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
 import { sortQuestionBy } from "../../../../utils";
 import ListFooter from "../../../../components/ListFooter";
-
-const ScrollContainer: TScrollContainer = ({
-  className,
-  style,
-  reportScrollTop,
-  scrollTo,
-  children
-}) => {
-  const elRef = React.useRef<HTMLDivElement>(null);
-
-  // 自定 scrollTo，防止回到顶部失败 bug，Doc. https://virtuoso.dev/custom-scroll-container/
-  scrollTo(scrollTop => {
-    elRef.current?.scrollTo({ top: 0 });
-  });
-
-  return (
-    <div
-      ref={elRef}
-      onScroll={e => reportScrollTop(e.currentTarget.scrollTop)}
-      style={style}
-      className={className}
-    >
-      {children}
-    </div>
-  );
-};
 
 function updateCache(
   cache: DataProxy,
@@ -82,7 +55,6 @@ const QuestionList: React.FC<Props> = ({
 }) => {
   const theme = useTheme();
   const matcheMdUp = useMediaQuery(theme.breakpoints.up("md"));
-  const virtuosoRef = React.useRef<VirtuosoMethods>(null);
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -192,14 +164,10 @@ const QuestionList: React.FC<Props> = ({
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
           return Object.assign({}, fetchMoreResult, {
-            questionsByEvent: {
+            questionsByEventAudience: {
               ...fetchMoreResult.questionsByEventAudience,
               list: [
-                ...R.differenceWith<QuestionAudienceFieldsFragment>(
-                  (a, b) => a.id === b.id,
-                  prev.questionsByEventAudience.list,
-                  fetchMoreResult.questionsByEventAudience.list
-                ),
+                ...prev.questionsByEventAudience.list,
                 ...fetchMoreResult.questionsByEventAudience.list
               ]
             }
@@ -215,10 +183,7 @@ const QuestionList: React.FC<Props> = ({
       if (index === 0) {
         return (
           <Container maxWidth="sm">
-            <QuestionListHeader
-              userQueryResult={userQueryResult}
-              virtuosoRef={virtuosoRef}
-            />
+            <QuestionListHeader userQueryResult={userQueryResult} />
           </Container>
         );
       } else if (!orderedList[index - 1]) {
@@ -250,8 +215,7 @@ const QuestionList: React.FC<Props> = ({
   return (
     <React.Fragment>
       <Virtuoso
-        ref={virtuosoRef}
-        ScrollContainer={ScrollContainer}
+        className="scrollContainer"
         style={{ height: "100%", width: "100%" }}
         totalCount={orderedList.length + (matcheMdUp ? 1 : 0)}
         scrollingStateChange={scrolling => {
