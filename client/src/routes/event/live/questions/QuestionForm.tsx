@@ -120,15 +120,19 @@ const QuestionForm: React.FC<Props> = ({
       values.name !== userQueryResult.data?.me.name ||
       values.anonymous !== userQueryResult.data?.me.anonymous
     ) {
-      if (values.name !== userQueryResult.data?.me.name) {
-        // TODO: confirm. Change your name? You are about to change your name. All your previous questions or poll votes will use your new name. However, you will not be able to change it again for the next 1 hour.
+      if (values.name !== userQueryResult.data?.me.name && !values.anonymous) {
+        // TODO: confirm.
+        console.log(
+          "Change your name? You are about to change your name. All your previous questions or poll votes will use your new name. However, you will not be able to change it again for the next 1 hour."
+        );
       }
       await updateAudienceUserMutation({
         variables: {
           input:
-            values.anonymous !== userQueryResult.data?.me.anonymous 
-              ? { anonymous: values.anonymous }
-              : { name: values.name }
+            values.anonymous !== userQueryResult.data?.me.anonymous &&
+            values.anonymous
+              ? { anonymous: true }
+              : { name: values.name, anonymous: values.anonymous }
         }
       });
     }

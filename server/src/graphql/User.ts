@@ -231,7 +231,10 @@ export const userMutation = extendType({
       resolve: async (root, { input }, ctx) => {
         const userId = getAuthedUser(ctx)?.id as string
         const user = await ctx.db.User.findByPk(userId)
-        await user.update(input)
+        await user.update(input, {
+          fields:
+            input.name === '' && input.anonymous ? ['anonymouse'] : undefined,
+        })
 
         return user
       },
