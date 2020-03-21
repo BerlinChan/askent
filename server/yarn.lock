@@ -767,7 +767,7 @@ d@1, d@^1.0.1:
     es5-ext "^0.10.50"
     type "^1.0.1"
 
-dataloader-sequelize@2.1.2:
+dataloader-sequelize@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/dataloader-sequelize/-/dataloader-sequelize-2.1.2.tgz#bceb5d14cdfd6bd271be84bd6d23929a092ea5ea"
   integrity sha512-ZEQx/I7NbBPMqL2WTnnQmJXfbhEB3PcW+urDnMHL/qPfGgQZNvRyO4NAF9y6jJuJ0qMjAhh4IRNjBW/d1NNlGg==
@@ -1719,10 +1719,10 @@ next-tick@~1.0.0:
   resolved "https://registry.npm.taobao.org/next-tick/download/next-tick-1.0.0.tgz?cache=0&sync_timestamp=1581393811508&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnext-tick%2Fdownload%2Fnext-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
 
-nexus@0.12.0-rc.13:
-  version "0.12.0-rc.13"
-  resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.12.0-rc.13.tgz#f6696b4d903e7c2a12b56875b122c8003be1ba31"
-  integrity sha512-RugEHXQyQXYg1i0PX0y9T/ZXliJidOnlmJxl4OeDqxedWM5QEl2qSA6Y0cOyd7p+xFh4y37zlDVh/nXw8LMnHg==
+nexus@0.12.0-rc.14:
+  version "0.12.0-rc.14"
+  resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.12.0-rc.14.tgz#f5b24ac6d1e26798b3432f512f526fe084461d55"
+  integrity sha512-cXJh+ZS0xq2ra+EidpUrKxRd1oc1Wipv3n8HlIUJF8nbN3ojzmyDylJ4VxjizhGjH+Wu0AGsCUuNukUNGkPr3Q==
   dependencies:
     iterall "^1.2.2"
     tslib "^1.9.3"
