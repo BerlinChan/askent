@@ -767,7 +767,7 @@ d@1, d@^1.0.1:
     es5-ext "^0.10.50"
     type "^1.0.1"
 
-dataloader-sequelize@2.1.2:
+dataloader-sequelize@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/dataloader-sequelize/-/dataloader-sequelize-2.1.2.tgz#bceb5d14cdfd6bd271be84bd6d23929a092ea5ea"
   integrity sha512-ZEQx/I7NbBPMqL2WTnnQmJXfbhEB3PcW+urDnMHL/qPfGgQZNvRyO4NAF9y6jJuJ0qMjAhh4IRNjBW/d1NNlGg==
@@ -2396,10 +2396,21 @@ ts-node-dev@1.0.0-pre.44:
     ts-node "*"
     tsconfig "^7.0.0"
 
-ts-node@*, ts-node@8.6.2:
+ts-node@*:
   version "8.6.2"
   resolved "https://registry.npm.taobao.org/ts-node/download/ts-node-8.6.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fts-node%2Fdownload%2Fts-node-8.6.2.tgz#7419a01391a818fbafa6f826a33c1a13e9464e35"
   integrity sha1-dBmgE5GoGPuvpvgmozwaE+lGTjU=
+  dependencies:
+    arg "^4.1.0"
+    diff "^4.0.1"
+    make-error "^1.1.1"
+    source-map-support "^0.5.6"
+    yn "3.1.1"
+
+ts-node@8.8.1:
+  version "8.8.1"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.8.1.tgz#7c4d3e9ed33aa703b64b28d7f9d194768be5064d"
+  integrity sha512-10DE9ONho06QORKAaCBpPiFCdW+tZJuY/84tyypGtl6r+/C7Asq0dhqbRZURuUlLQtZxxDvT8eoj8cGW0ha6Bg==
   dependencies:
     arg "^4.1.0"
     diff "^4.0.1"
