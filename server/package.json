@@ -36,7 +36,7 @@
     "@types/crypto-js": "3.1.43",
     "@types/graphql-iso-date": "3.3.3",
     "@types/jsonwebtoken": "8.3.8",
-    "@types/node": "13.9.2",
+    "@types/node": "13.9.4",
     "@types/pg": "^7.14.3",
     "@types/ramda": "types/npm-ramda#dist",
     "create-nexus-type": "1.1.7",
