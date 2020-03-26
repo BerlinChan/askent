@@ -56,16 +56,15 @@ const QuestionList: React.FC<Props> = ({ queryVariables }) => {
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
         const { questionAdded } = subscriptionData.data;
-        const prev = questionsWallQueryResult.data;
 
-        if (prev) {
+        if (data) {
           // add
           updateCache(client, queryVariables, {
             questionsByEventWall: {
-              ...prev.questionsByEventWall,
-              totalCount: prev.questionsByEventWall.totalCount + 1,
+              ...data.questionsByEventWall,
+              totalCount: data.questionsByEventWall.totalCount + 1,
               list: [questionAdded].concat(
-                prev.questionsByEventWall.list.filter(
+                data.questionsByEventWall.list.filter(
                   question =>
                     question.id !== subscriptionData.data?.questionAdded.id
                 )
@@ -84,15 +83,14 @@ const QuestionList: React.FC<Props> = ({ queryVariables }) => {
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRemoved) {
         const { questionRemoved } = subscriptionData.data;
-        const prev = questionsWallQueryResult.data;
 
-        if (prev) {
+        if (data) {
           // remove
           updateCache(client, queryVariables, {
             questionsByEventWall: {
-              ...prev.questionsByEventWall,
-              totalCount: prev.questionsByEventWall.totalCount - 1,
-              list: prev.questionsByEventWall.list.filter(
+              ...data.questionsByEventWall,
+              totalCount: data.questionsByEventWall.totalCount - 1,
+              list: data.questionsByEventWall.list.filter(
                 preQuestion => questionRemoved !== preQuestion.id
               )
             }

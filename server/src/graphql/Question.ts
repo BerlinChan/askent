@@ -12,7 +12,8 @@ import { getAuthedUser } from '../utils'
 import { Context } from '../context'
 import { AudienceRoleEnum } from './Role'
 import { ReviewStatusEnum } from '../models/Question'
-import { Op, Order } from 'sequelize'
+import { Op, Order, QueryTypes } from 'sequelize'
+import sequelize from '../db'
 import { QuestionModelStatic } from '../models/Question'
 import { RoleNameEnum } from '../models/Role'
 import { QuestionOrderEnum, QuestionFilterEnum } from './FilterOrder'
@@ -264,6 +265,12 @@ export const questionMutation = extendType({
         })
         await newQuestion.setEvent(event)
         await newQuestion.setAuthor(author)
+
+        // TODO: test pg notify
+        await sequelize.query(`NOTIFY "questions", 'CREATE'`, {
+          raw: true,
+          type: QueryTypes.RAW,
+        })
 
         ctx.pubsub.publish('QUESTION_ADDED', {
           eventId,

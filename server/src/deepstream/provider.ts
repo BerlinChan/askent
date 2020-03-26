@@ -1,0 +1,255 @@
+import { MD5, enc } from 'crypto-js'
+import { RecordData } from '@deepstream/client/dist/constants'
+import { RPCResponse } from '@deepstream/client/dist/rpc/rpc-response'
+import { ListenResponse } from '@deepstream/client/dist/util/listener'
+import { PostgresConnection } from './postgres/connection'
+import deepstreamClient from './index'
+
+export interface RealtimeSearch {
+  whenReady: () => Promise<void>
+  stop: () => Promise<void>
+}
+
+export interface RealtimeSearchCallbacks {
+  onResultsChanged: (entries: string[]) => void
+}
+
+export interface DatabaseClient {
+  getSearch(query: Query, callbacks: RealtimeSearchCallbacks): RealtimeSearch
+  start: () => Promise<void>
+  stop: () => Promise<void>
+}
+
+export interface Query {
+  eventId: string
+}
+
+export interface RealtimeSearchConfig {
+  listNamePrefix: string
+  metaRecordPrefix: string
+  primaryKey: string
+  heartbeatInterval: number
+  rpcName: string
+}
+
+const defaultConfig: RealtimeSearchConfig = {
+  rpcName: 'realtime_search',
+  listNamePrefix: 'realtime_search/list_',
+  metaRecordPrefix: 'realtime_search/meta_',
+  primaryKey: 'id',
+  heartbeatInterval: 30000,
+}
+
+export class Provider {
+  private searches = new Map<string, RealtimeSearch>()
+  private databaseClient!: DatabaseClient
+  private config: RealtimeSearchConfig
+  private hashReplaceRegex: RegExp
+
+  constructor(config: Partial<RealtimeSearchConfig>) {
+    this.config = { ...defaultConfig, ...config }
+    this.hashReplaceRegex = new RegExp(`^${this.config.listNamePrefix}(.*)`)
+    this.databaseClient = new PostgresConnection(this.config)
+  }
+
+  /**
+   * Starts the provider. The provider will emit a
+   * 'ready' event once started
+   */
+  public async start() {
+    await this.databaseClient.start()
+
+    this.setupRPC()
+
+    const pattern = `${this.config.listNamePrefix}.*`
+    console.log(`listening for ${pattern}`)
+    deepstreamClient.record.listen(pattern, this.onSubscription.bind(this))
+
+    console.log('realtime search provider ready')
+  }
+
+  /**
+   * Stops the provider. Closes the deepstream
+   * connection and disconnects from db
+   */
+  public async stop() {
+    try {
+      deepstreamClient.close()
+      await this.databaseClient.stop()
+    } catch (e) {
+      console.log('Error shutting down realtime search', e)
+    }
+  }
+
+  private setupRPC() {
+    deepstreamClient.rpc.provide(
+      this.config.rpcName,
+      async (query: Query, response: RPCResponse) => {
+        try {
+          if (typeof query === 'string') {
+            if (query === '__heartbeat__') {
+              return response.send('success')
+            }
+            return response.error(
+              'Invalid query parameters, structure should be an object with at least the table',
+            )
+          }
+
+          const hash = this.hashQueryString(query)
+          console.log(`Created hash ${hash} for realtime-search using RPC`)
+
+          const exists = await deepstreamClient.record.has(
+            `${this.config.metaRecordPrefix}${hash}`,
+          )
+          if (exists === true) {
+            // Query already exists, so use that
+            response.send(hash)
+            return
+          }
+
+          try {
+            await deepstreamClient.record.setDataWithAck(
+              `${this.config.metaRecordPrefix}${hash}`,
+              ({
+                query,
+                hash,
+              } as never) as RecordData,
+            )
+            response.send(hash)
+          } catch (e) {
+            console.error(
+              `Error saving hash in ${
+                this.config.rpcName
+              } rpc method for ${JSON.stringify(query)}: `,
+              e,
+            )
+            response.error('Error saving search hash. Check the server logs')
+            return
+          }
+        } catch (e) {
+          console.error(
+            `Error in ${this.config.rpcName} rpc method for ${JSON.stringify(
+              query,
+            )}: `,
+            e,
+          )
+          response.error(
+            `Error in ${this.config.rpcName} rpc method. Check the server logs`,
+          )
+        }
+      },
+    )
+
+    // This heartbeat is for debugging resilience to ensure that the RPC is actually provided.
+    // It also means if the connection to deepstream is lost or the provider is offline for any
+    // reason it will restart to ensure a clean state.
+    setInterval(async () => {
+      try {
+        await deepstreamClient.rpc.make(this.config.rpcName, '__heartbeat__')
+        console.log('heartbeat succeeded')
+      } catch (e) {
+        console.log('heartbeat check failed, restarting rpc provider')
+      }
+    }, this.config.heartbeatInterval || 3000)
+
+    console.log(`Providing rpc method "${this.config.rpcName}"`)
+  }
+
+  /**
+   * Callback for the 'listen' method. Gets called everytime a new
+   * subscription to the specified pattern is made. Parses the
+   * name and - if its the first subscription made to this pattern -
+   * creates a new instance of Search
+   */
+  private async onSubscription(name: string, response: ListenResponse) {
+    console.log(`received subscription for ${name}`)
+    const result = await this.onSubscriptionAdded(name)
+    if (result === true) {
+      response.accept()
+      response.onStop(() => {
+        this.onSubscriptionRemoved(name)
+      })
+    } else {
+      response.reject()
+    }
+  }
+
+  /**
+   * When a search has been started
+   */
+  private async onSubscriptionAdded(name: string): Promise<boolean> {
+    const hash = name.replace(this.hashReplaceRegex, '$1')
+    const recordName = `${this.config.metaRecordPrefix}${hash}`
+
+    let query: Query
+
+    try {
+      ;({ query } = ((await deepstreamClient.record.snapshot(
+        recordName,
+      )) as never) as { query: Query })
+    } catch (e) {
+      console.error(`Error retrieving snapshot of ${recordName}`, e)
+      return false
+    }
+
+    if (query === undefined) {
+      console.error(`Query is missing for ${recordName}`)
+      return false
+    }
+
+    console.log(`new search instance being made for search ${hash}`)
+
+    const search = this.databaseClient.getSearch(query, {
+      onResultsChanged: this.onResultsChanged.bind(
+        this,
+        `${this.config.listNamePrefix}${hash}`,
+      ),
+    })
+    await search.whenReady()
+    this.searches.set(hash, search)
+    return true
+  }
+
+  /**
+   * When a search has been removed
+   */
+  private async onSubscriptionRemoved(name: string) {
+    const hash = name.replace(this.hashReplaceRegex, '$1')
+
+    console.log(`old search instance being removed for search ${hash}`)
+
+    const search = this.searches.get(hash)
+
+    if (search) {
+      search.stop()
+      this.searches.delete(hash)
+    } else {
+      console.error(`Error finding search with hash ${hash}`)
+    }
+
+    const record = deepstreamClient.record.getRecord(
+      `${this.config.metaRecordPrefix}${hash}`,
+    )
+    await record.whenReady()
+    await record.delete()
+
+    const list = deepstreamClient.record.getRecord(
+      `${this.config.listNamePrefix}${hash}`,
+    )
+    await list.whenReady()
+    await list.delete()
+  }
+
+  private hashQueryString(query: Query) {
+    return MD5(JSON.stringify(query)).toString(enc.Hex)
+  }
+
+  private async onResultsChanged(listName: string, entries: string[]) {
+    try {
+      await deepstreamClient.record.setDataWithAck(listName, entries)
+      console.log(`Updated ${listName} with ${entries.length} entries`)
+    } catch (e) {
+      console.error(`Error setting entries for list ${listName}`, e)
+    }
+  }
+}

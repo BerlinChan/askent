@@ -122,12 +122,12 @@ export const eventQuery = extendType({
                 { ownerId: userId },
                 dateStatusFilter === EventDateStatusEnum.Active
                   ? sequelize.literal(
-                      'NOW() BETWEEN `event`.`startAt` AND `event`.`endAt`',
+                      'NOW() BETWEEN "event"."startAt" AND "event"."endAt"',
                     )
                   : dateStatusFilter === EventDateStatusEnum.Upcoming
-                  ? sequelize.literal('NOW() <= `event`.`startAt`')
+                  ? sequelize.literal('NOW() <= "event"."startAt"')
                   : dateStatusFilter === EventDateStatusEnum.Past
-                  ? sequelize.literal('NOW() >= `event`.`endAt`')
+                  ? sequelize.literal('NOW() >= "event"."endAt"')
                   : undefined,
               ],
             },
@@ -150,12 +150,12 @@ export const eventQuery = extendType({
           order: [
             [
               sequelize.literal(
-                'NOW() BETWEEN `event`.`startAt` AND `event`.`endAt`',
+                'NOW() BETWEEN "event"."startAt" AND "event"."endAt"',
               ),
               'DESC',
             ],
-            [sequelize.literal('NOW() <= `event`.`startAt`'), 'DESC'],
-            [sequelize.literal('NOW() >= `event`.`endAt`'), 'DESC'],
+            [sequelize.literal('NOW() <= "event"."startAt"'), 'DESC'],
+            [sequelize.literal('NOW() >= "event"."endAt"'), 'DESC'],
             ['startAt', 'DESC'],
             ['endAt', 'ASC'],
           ],

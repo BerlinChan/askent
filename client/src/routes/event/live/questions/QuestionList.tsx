@@ -79,16 +79,15 @@ const QuestionList: React.FC<Props> = ({
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data) {
         const { questionAdded } = subscriptionData.data;
-        const prev = questionsQueryResult.data;
 
-        if (prev) {
+        if (data) {
           // add
           updateCache(client, queryVariables, {
             questionsByEventAudience: {
-              ...prev.questionsByEventAudience,
-              totalCount: prev.questionsByEventAudience.totalCount + 1,
+              ...data.questionsByEventAudience,
+              totalCount: data.questionsByEventAudience.totalCount + 1,
               list: [questionAdded].concat(
-                prev.questionsByEventAudience.list.filter(
+                data.questionsByEventAudience.list.filter(
                   question =>
                     question.id !== subscriptionData.data?.questionAdded.id
                 )
@@ -105,15 +104,14 @@ const QuestionList: React.FC<Props> = ({
   useQuestionRemovedAudienceSubscription({
     variables: { eventId: queryVariables.eventId, asRole: RoleName.Audience },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      const prev = questionsQueryResult.data;
 
-      if (prev) {
+      if (data) {
         // remove
         updateCache(client, queryVariables, {
           questionsByEventAudience: {
-            ...prev.questionsByEventAudience,
-            totalCount: prev.questionsByEventAudience.totalCount - 1,
-            list: prev.questionsByEventAudience.list.filter(
+            ...data.questionsByEventAudience,
+            totalCount: data.questionsByEventAudience.totalCount - 1,
+            list: data.questionsByEventAudience.list.filter(
               preQuestion =>
                 subscriptionData.data?.questionRemoved !== preQuestion.id
             )

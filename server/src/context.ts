@@ -2,6 +2,8 @@ import { PubSub } from 'apollo-server-express'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 import db, { ModelType } from './models'
 import sequelize from './db'
+import { DeepstreamClient } from '@deepstream/client'
+import deepstreamClient from './deepstream'
 const {
   createContext: createDataloaderContext,
 } = require('dataloader-sequelize')
@@ -15,6 +17,7 @@ const pubsub = new PubSub()
 export interface Context extends ExpressContext {
   db: ModelType
   pubsub: PubSub
+  deepstreamClient: DeepstreamClient
 }
 
 export function createContext({
@@ -22,5 +25,5 @@ export function createContext({
   res,
   connection,
 }: ExpressContext): Context {
-  return { db, pubsub, req, res, connection }
+  return { db, pubsub, deepstreamClient, req, res, connection }
 }

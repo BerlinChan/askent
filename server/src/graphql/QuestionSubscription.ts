@@ -1,5 +1,4 @@
 import { idArg, arg, stringArg, subscriptionField, intArg } from 'nexus'
-import { Op } from 'sequelize'
 import { TokenPayload } from '../utils'
 import { withFilter } from 'apollo-server-express'
 import {
