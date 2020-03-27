@@ -6,12 +6,14 @@
 
 ## TODO
 
-- [ ] question subscription spliter questionId
+- [ ] user micro service
+- [ ] question subscription use deepstream
 - [ ] homepage - join event
 - [ ] admin event list - duplicate event
 - [ ] audience my questions dialog
 - [ ] reply question
 - [ ] question list refetch after network error recovery
+- [ ] update nexus-future
 - [ ] event edit dialog
 - [ ] question support voteDown
 - [ ] Build server for production
