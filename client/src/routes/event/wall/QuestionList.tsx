@@ -5,9 +5,9 @@ import {
   QuestionWallFieldsFragment,
   QuestionsByEventWallDocument,
   useQuestionsByEventWallQuery,
-  useQuestionAddedWallSubscription,
-  useQuestionUpdatedWallSubscription,
-  useQuestionRemovedWallSubscription,
+  // useQuestionAddedWallSubscription,
+  // useQuestionUpdatedWallSubscription,
+  // useQuestionRemovedWallSubscription,
   QuestionOrder,
   RoleName
 } from "../../../generated/graphqlHooks";
@@ -46,59 +46,59 @@ const QuestionList: React.FC<Props> = ({ queryVariables }) => {
   const { data, loading, fetchMore } = questionsWallQueryResult;
 
   // subscription
-  useQuestionAddedWallSubscription({
-    variables: {
-      eventId: queryVariables.eventId,
-      asRole: RoleName.Wall,
-      order: queryVariables.order,
-      limit: data?.questionsByEventWall.list.length
-    },
-    onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data) {
-        const { questionAdded } = subscriptionData.data;
+  // useQuestionAddedWallSubscription({
+  //   variables: {
+  //     eventId: queryVariables.eventId,
+  //     asRole: RoleName.Wall,
+  //     order: queryVariables.order,
+  //     limit: data?.questionsByEventWall.list.length
+  //   },
+  //   onSubscriptionData: ({ client, subscriptionData }) => {
+  //     if (subscriptionData.data) {
+  //       const { questionAdded } = subscriptionData.data;
 
-        if (data) {
-          // add
-          updateCache(client, queryVariables, {
-            questionsByEventWall: {
-              ...data.questionsByEventWall,
-              totalCount: data.questionsByEventWall.totalCount + 1,
-              list: [questionAdded].concat(
-                data.questionsByEventWall.list.filter(
-                  question =>
-                    question.id !== subscriptionData.data?.questionAdded.id
-                )
-              )
-            }
-          });
-        }
-      }
-    }
-  });
-  useQuestionUpdatedWallSubscription({
-    variables: { eventId: queryVariables.eventId, asRole: RoleName.Wall }
-  });
-  useQuestionRemovedWallSubscription({
-    variables: { eventId: queryVariables.eventId, asRole: RoleName.Wall },
-    onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionRemoved) {
-        const { questionRemoved } = subscriptionData.data;
+  //       if (data) {
+  //         // add
+  //         updateCache(client, queryVariables, {
+  //           questionsByEventWall: {
+  //             ...data.questionsByEventWall,
+  //             totalCount: data.questionsByEventWall.totalCount + 1,
+  //             list: [questionAdded].concat(
+  //               data.questionsByEventWall.list.filter(
+  //                 question =>
+  //                   question.id !== subscriptionData.data?.questionAdded.id
+  //               )
+  //             )
+  //           }
+  //         });
+  //       }
+  //     }
+  //   }
+  // });
+  // useQuestionUpdatedWallSubscription({
+  //   variables: { eventId: queryVariables.eventId, asRole: RoleName.Wall }
+  // });
+  // useQuestionRemovedWallSubscription({
+  //   variables: { eventId: queryVariables.eventId, asRole: RoleName.Wall },
+  //   onSubscriptionData: ({ client, subscriptionData }) => {
+  //     if (subscriptionData.data?.questionRemoved) {
+  //       const { questionRemoved } = subscriptionData.data;
 
-        if (data) {
-          // remove
-          updateCache(client, queryVariables, {
-            questionsByEventWall: {
-              ...data.questionsByEventWall,
-              totalCount: data.questionsByEventWall.totalCount - 1,
-              list: data.questionsByEventWall.list.filter(
-                preQuestion => questionRemoved !== preQuestion.id
-              )
-            }
-          });
-        }
-      }
-    }
-  });
+  //       if (data) {
+  //         // remove
+  //         updateCache(client, queryVariables, {
+  //           questionsByEventWall: {
+  //             ...data.questionsByEventWall,
+  //             totalCount: data.questionsByEventWall.totalCount - 1,
+  //             list: data.questionsByEventWall.list.filter(
+  //               preQuestion => questionRemoved !== preQuestion.id
+  //             )
+  //           }
+  //         });
+  //       }
+  //     }
+  //   }
+  // });
 
   const orderedList = React.useMemo(() => {
     const list = sortQuestionBy<QuestionWallFieldsFragment>(

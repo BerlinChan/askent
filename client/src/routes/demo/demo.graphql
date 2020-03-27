@@ -1,5 +1,5 @@
 query PGP {
-  PGP {
+  pgp {
     pubKey
   }
 }

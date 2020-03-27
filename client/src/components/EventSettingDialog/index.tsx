@@ -87,7 +87,7 @@ export type EventSettingValues = {
   startAt: Date;
   endAt: Date;
   eventLink: string;
-  moderation: boolean | undefined;
+  moderation: boolean | undefined | null;
 };
 interface Props {
   defaultFocus?: keyof EventSettingValues;

@@ -84,32 +84,32 @@ mutation UpdateQuestionContent($questionId: ID!, $content: String!) {
   }
 }
 
-subscription QuestionAdded(
-  $eventId: ID!
-  $asRole: RoleName!
-  $questionFilter: QuestionFilter
-  $searchString: String
-  $order: QuestionOrder
-  $limit: Int
-) {
-  questionAdded(
-    eventId: $eventId
-    asRole: $asRole
-    questionFilter: $questionFilter
-    searchString: $searchString
-    order: $order
-    limit: $limit
-  ) {
-    ...QuestionFields
-  }
-}
+# subscription QuestionAdded(
+#   $eventId: ID!
+#   $asRole: RoleName!
+#   $questionFilter: QuestionFilter
+#   $searchString: String
+#   $order: QuestionOrder
+#   $limit: Int
+# ) {
+#   questionAdded(
+#     eventId: $eventId
+#     asRole: $asRole
+#     questionFilter: $questionFilter
+#     searchString: $searchString
+#     order: $order
+#     limit: $limit
+#   ) {
+#     ...QuestionFields
+#   }
+# }
 
-subscription QuestionUpdated($eventId: ID!, $asRole: RoleName!) {
-  questionUpdated(eventId: $eventId, asRole: $asRole) {
-    ...QuestionFields
-  }
-}
+# subscription QuestionUpdated($eventId: ID!, $asRole: RoleName!) {
+#   questionUpdated(eventId: $eventId, asRole: $asRole) {
+#     ...QuestionFields
+#   }
+# }
 
-subscription QuestionRemoved($eventId: ID!, $asRole: RoleName!) {
-  questionRemoved(eventId: $eventId, asRole: $asRole)
-}
+# subscription QuestionRemoved($eventId: ID!, $asRole: RoleName!) {
+#   questionRemoved(eventId: $eventId, asRole: $asRole)
+# }

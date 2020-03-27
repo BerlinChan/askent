@@ -1,31 +1,28 @@
-import { enumType } from 'nexus'
-import { ReviewStatusEnum } from '../models/Question'
+import { ReviewStatus } from '../model/Question'
+import { registerEnumType } from 'type-graphql'
 
-export const OrderByArg = enumType({
-  name: 'OrderByArg',
-  members: { Asc: 'ASC', Desc: 'DESC' },
-})
-
-export enum QuestionFilterEnum {
-  Starred = 'STARRED',
-  // Anwsered = 'ANWSERED',
-  // Dismissed = 'DISMISSED',
+export enum OrderByArg {
+  Asc = 'Asc',
+  Desc = 'Desc',
 }
-export const QuestionFilter = enumType({
-  name: 'QuestionFilter',
-  members: [
-    ...Object.values(ReviewStatusEnum),
-    ...Object.values(QuestionFilterEnum),
-  ],
-})
+registerEnumType(OrderByArg, { name: 'OrderByArg' })
 
-export enum QuestionOrderEnum {
-  Popular = 'POPULAR',
-  Recent = 'RECENT',
-  Oldest = 'OLDEST',
-  Starred = 'STARRED',
+enum QuestionFilterExtend {
+  Starred = 'Starred',
+  // Anwsered = 'Anwsered',
+  // Dismissed = 'Dismissed',
 }
-export const QuestionOrder = enumType({
-  name: 'QuestionOrder',
-  members: Object.values(QuestionOrderEnum),
-})
+export const QuestionFilter = {
+  ...ReviewStatus,
+  ...QuestionFilterExtend,
+}
+export type QuestionFilter = ReviewStatus | QuestionFilterExtend
+registerEnumType(QuestionFilter, { name: 'QuestionFilter' })
+
+export enum QuestionOrder {
+  Popular = 'Popular',
+  Recent = 'Recent',
+  Oldest = 'Oldest',
+  Starred = 'Starred',
+}
+registerEnumType(QuestionOrder, { name: 'QuestionOrder' })

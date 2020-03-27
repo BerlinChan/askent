@@ -1,815 +1,463 @@
 import {
-  objectType,
-  extendType,
-  enumType,
-  stringArg,
-  idArg,
-  arg,
-  booleanArg,
-  inputObjectType,
-} from 'nexus'
+  registerEnumType,
+  ObjectType,
+  Field,
+  ID,
+  InputType,
+  Root,
+  Resolver,
+  Query,
+  Arg,
+  Ctx,
+  Mutation,
+  Int,
+} from 'type-graphql'
 import { getAuthedUser } from '../utils'
 import { Context } from '../context'
-import { AudienceRoleEnum } from './Role'
-import { ReviewStatusEnum } from '../models/Question'
-import { Op, Order, QueryTypes } from 'sequelize'
-import sequelize from '../db'
-import { QuestionModelStatic } from '../models/Question'
-import { RoleNameEnum } from '../models/Role'
-import { QuestionOrderEnum, QuestionFilterEnum } from './FilterOrder'
-import { NexusGenEnums } from 'nexus-typegen'
-import { dataloaderContext } from '../context'
-const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
+import { User as UserEntity } from '../entity/User'
+import { QuestionOrder, QuestionFilter } from './FilterOrder'
+import { IPagedType, PaginationInput } from './Pagination'
+import { ReviewStatus } from '../model/Question'
+import {
+  EventModel,
+  EventSchema,
+  QuestionModel,
+  QuestionSchema,
+} from '../model'
+import { Event } from './Event'
+import { User } from './User'
+import { plainToClass } from 'class-transformer'
+import { getRepository, Repository } from 'typeorm'
+import { toPairs } from 'ramda'
 
-export const ReviewStatus = enumType({
-  name: 'ReviewStatus',
-  members: Object.values(ReviewStatusEnum),
-})
-export const Question = objectType({
-  name: 'Question',
-  definition(t) {
-    t.id('id')
-    t.string('content')
-    t.boolean('anonymous')
-    t.field('reviewStatus', { type: 'ReviewStatus' })
-    t.boolean('star')
-    t.boolean('top')
-    t.int('voteUpCount')
+registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
 
-    t.field('event', {
-      type: 'Event',
-      async resolve({ id }, args, ctx) {
-        const question = await ctx.db.Question.findByPk(id, {
-          include: ['event'],
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-        return question.event
-      },
-    })
-    t.field('author', {
-      type: 'User',
+@ObjectType()
+export class Question {
+  @Field(returns => ID)
+  public id!: string
+
+  @Field()
+  public content!: string
+
+  @Field()
+  public anonymous!: boolean
+
+  @Field(returns => ReviewStatus)
+  public reviewStatus!: ReviewStatus
+
+  @Field()
+  public star!: boolean
+
+  @Field()
+  public top!: boolean
+
+  @Field(returns => Int)
+  public voteUpCount!: number
+
+  @Field(returns => Event)
+  async event(@Root() root: Question): Promise<EventSchema> {
+    const question = await QuestionModel.findById(root.id).populate('event')
+    if (!question?.event) {
+      throw new Error()
+    }
+
+    return question.event as EventSchema
+  }
+
+  @Field(returns => User, { nullable: true })
+  async author(@Root() root: Question): Promise<User | undefined> {
+    if (!root.anonymous) {
+      const question = await QuestionModel.findById(root.id)
+      const user = await getRepository(UserEntity).findOne(question?.authorId)
+
+      return plainToClass(User, user)
+    }
+  }
+
+  @Field(returns => Boolean)
+  voted(@Root() root: Question, @Ctx() ctx: Context): Promise<boolean> {
+    return getVoted(ctx, root.id)
+  }
+
+  @Field()
+  public createdAt!: Date
+
+  @Field()
+  public updatedAt!: Date
+}
+
+@ObjectType({ implements: IPagedType })
+export class QuestionPaged implements IPagedType {
+  offset!: number
+  limit!: number
+  totalCount!: number
+  hasNextPage!: boolean
+
+  @Field(returns => [Question])
+  public list!: QuestionSchema[]
+}
+
+@InputType()
+export class CreateQuestionInput implements Partial<Question> {
+  @Field(returns => ID)
+  public eventId!: string
+
+  @Field()
+  public content!: string
+
+  @Field({ nullable: true, defaultValue: false })
+  public anonymous?: boolean
+}
+
+@Resolver(of => Question)
+export class QuestionResolver {
+  private userRepository: Repository<UserEntity>
+
+  constructor() {
+    this.userRepository = getRepository(UserEntity)
+  }
+
+  @Query(returns => QuestionPaged, {
+    description: 'Query question by event for Role.Admin.',
+  })
+  async questionsByEvent(
+    @Arg('eventId', returns => ID) eventId: string,
+    @Arg('questionFilter', returns => QuestionFilter, {
       nullable: true,
-      async resolve({ id, anonymous }, args, ctx) {
-        if (!anonymous) {
-          const question = await ctx.db.Question.findByPk(id, {
-            include: ['author'],
-            [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-          })
+      defaultValue: QuestionFilter.Publish,
+    })
+    questionFilter: QuestionFilter,
+    @Arg('searchString', { nullable: true }) searchString: string,
+    @Arg('pagination', returns => PaginationInput) pagination: PaginationInput,
+    @Arg('order', returns => QuestionOrder, {
+      nullable: true,
+      defaultValue: QuestionOrder.Popular,
+    })
+    order: QuestionOrder,
+    @Ctx() ctx: Context,
+  ): Promise<QuestionPaged> {
+    const { offset, limit } = pagination
+    if (questionFilter === QuestionFilter.Publish) {
+    }
+    const filter = Object.assign(
+      { event: eventId },
+      ReviewStatus[questionFilter]
+        ? { reviewStatus: questionFilter }
+        : questionFilter === QuestionFilter.Starred
+        ? { star: true }
+        : {},
+      { content: { $regex: new RegExp(searchString) } },
+    )
+    const totalCount = await QuestionModel.countDocuments(filter)
+    const questions = await QuestionModel.find(filter)
+      .sort(getQuestionSortArg(order, true))
+      .skip(offset)
+      .limit(limit)
 
-          return question.author
-        }
-      },
+    return {
+      list: questions,
+      hasNextPage: offset + limit < totalCount,
+      totalCount,
+      ...pagination,
+    }
+  }
+
+  @Query(returns => QuestionPaged, {
+    description: 'Query question by event for Role.Audience.',
+  })
+  async questionsByEventAudience(
+    @Arg('eventId', returns => ID) eventId: string,
+    @Arg('pagination', returns => PaginationInput) pagination: PaginationInput,
+    @Arg('order', returns => QuestionOrder, {
+      nullable: true,
+      defaultValue: QuestionOrder.Popular,
+    })
+    order: QuestionOrder,
+    @Ctx() ctx: Context,
+  ): Promise<QuestionPaged> {
+    const { offset, limit } = pagination
+    const userId = getAuthedUser(ctx)?.id as string
+    const filter = {
+      event: eventId,
+      $or: [
+        { reviewStatus: ReviewStatus.Publish },
+        { $and: [{ authorId: userId }, { reviewStatus: ReviewStatus.Review }] },
+      ],
+    }
+    const totalCount = await QuestionModel.countDocuments(filter)
+    const questions = await QuestionModel.find(filter)
+      .sort(getQuestionSortArg(order, true))
+      .skip(offset)
+      .limit(limit)
+
+    return {
+      list: questions,
+      hasNextPage: offset + limit < totalCount,
+      totalCount,
+      ...pagination,
+    }
+  }
+
+  @Query(returns => QuestionPaged, {
+    description: 'Query question by event for Role.Wall.',
+  })
+  async questionsByEventWall(
+    @Arg('eventId', returns => ID) eventId: string,
+    @Arg('pagination', returns => PaginationInput) pagination: PaginationInput,
+    @Arg('order', returns => QuestionOrder, {
+      nullable: true,
+      defaultValue: QuestionOrder.Popular,
+    })
+    order: QuestionOrder,
+    @Ctx() ctx: Context,
+  ): Promise<QuestionPaged> {
+    const { offset, limit } = pagination
+    const filter = { event: eventId, reviewStatus: ReviewStatus.Publish }
+    const totalCount = await QuestionModel.countDocuments(filter)
+    const questions = await QuestionModel.find(filter)
+      .sort(getQuestionSortArg(order, true))
+      .skip(offset)
+      .limit(limit)
+
+    return {
+      list: questions,
+      hasNextPage: offset + limit < totalCount,
+      totalCount,
+      ...pagination,
+    }
+  }
+
+  @Query(returns => QuestionPaged, {
+    description: 'Query question by event for Role.Wall.',
+  })
+  async questionsByMe(
+    @Arg('pagination', returns => PaginationInput) pagination: PaginationInput,
+    @Arg('order', returns => QuestionOrder, {
+      nullable: true,
+      defaultValue: QuestionOrder.Popular,
+    })
+    order: QuestionOrder,
+    @Ctx() ctx: Context,
+  ): Promise<QuestionPaged> {
+    const { offset, limit } = pagination
+    const authorId = getAuthedUser(ctx)?.id as string
+    const filter = {
+      authorId,
+      reviewStatus: { $in: [ReviewStatus.Publish, ReviewStatus.Review] },
+    }
+    const totalCount = await QuestionModel.countDocuments(filter)
+    const questions = await QuestionModel.find(filter)
+      .sort(getQuestionSortArg(order))
+      .skip(offset)
+      .limit(limit)
+
+    return {
+      list: questions,
+      hasNextPage: offset + limit < totalCount,
+      totalCount,
+      ...pagination,
+    }
+  }
+
+  @Mutation(returns => Question, { description: 'Create question' })
+  async createQuestion(
+    @Arg('input', returns => CreateQuestionInput) input: CreateQuestionInput,
+    @Ctx() ctx: Context,
+  ): Promise<QuestionSchema> {
+    const { eventId, content, anonymous } = input
+    const authorId = getAuthedUser(ctx)?.id as string
+    const event = await EventModel.findById(eventId)
+    const question = await QuestionModel.create({
+      reviewStatus: event?.moderation
+        ? ReviewStatus.Review
+        : ReviewStatus.Publish,
+      content,
+      anonymous,
+      authorId,
+      event: eventId,
     })
 
-    t.boolean('voted', {
-      resolve(root, args, ctx) {
-        return getVoted(ctx, root.id)
-      },
+    return question
+  }
+
+  @Mutation(returns => Question, {
+    description: 'Update a question review status.',
+  })
+  async updateQuestionReviewStatus(
+    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('reviewStatus', returns => ReviewStatus) reviewStatus: ReviewStatus,
+  ): Promise<QuestionSchema> {
+    const question = await QuestionModel.findByIdAndUpdate(
+      questionId,
+      Object.assign(
+        { reviewStatus },
+        reviewStatus === ReviewStatus.Archive
+          ? { top: false }
+          : reviewStatus === ReviewStatus.Review
+          ? { top: false, star: false }
+          : {},
+      ),
+      { new: true },
+    )
+    if (!question) {
+      throw new Error()
+    }
+
+    return question
+  }
+
+  @Mutation(returns => Question, { description: 'Update a question content.' })
+  async updateQuestionContent(
+    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('content') content: string,
+  ): Promise<QuestionSchema> {
+    const question = await QuestionModel.findByIdAndUpdate(
+      questionId,
+      { content },
+      { new: true },
+    )
+    if (!question) {
+      throw new Error()
+    }
+
+    return question
+  }
+
+  @Mutation(returns => Question, { description: 'Update a question star.' })
+  async updateQuestionStar(
+    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('star') star: boolean,
+  ): Promise<QuestionSchema> {
+    const question = await QuestionModel.findByIdAndUpdate(
+      questionId,
+      { star },
+      { new: true },
+    )
+    if (!question) {
+      throw new Error()
+    }
+
+    return question
+  }
+
+  @Mutation(returns => Question, {
+    description: 'Top a question. Can only top one question at a time.',
+  })
+  async updateQuestionTop(
+    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('top') top: boolean,
+  ): Promise<QuestionSchema> {
+    const question = await QuestionModel.findById(questionId)
+    if (!question) {
+      throw new Error()
+    }
+    if (top) {
+      // cancel preview top questions
+      await QuestionModel.updateMany(
+        { eventId: question?.event, top: true },
+        { top: false },
+      )
+    }
+
+    question.top = top
+    await question.save()
+
+    return question
+  }
+
+  @Mutation(returns => ID, {
+    description: 'Delete a question by id.',
+  })
+  async deleteQuestion(
+    @Arg('questionId', returns => ID) questionId: string,
+  ): Promise<string> {
+    await QuestionModel.deleteOne({ _id: questionId })
+
+    return questionId
+  }
+
+  @Mutation(returns => Int, {
+    description: 'Delete all Review questions by event.',
+  })
+  async deleteAllReviewQuestions(
+    @Arg('eventId', returns => ID) eventId: string,
+  ): Promise<number> {
+    const { deletedCount } = await QuestionModel.deleteMany({
+      event: eventId,
+      reviewStatus: ReviewStatus.Review,
     })
 
-    t.field('createdAt', { type: 'DateTime' })
-    t.field('updatedAt', { type: 'DateTime' })
-    t.field('deletedAt', { type: 'DateTime', nullable: true })
+    return deletedCount as number
+  }
 
-    // t.list.field('voteUpUsers', {
-    //   type: 'User',
-    //   resolve: async (root, args, ctx) => {
-    //     const question = await ctx.db.Question.findByPk(root.id)
-    //     return question.getVoteUpUsers()
-    //   },
-    // })
-  },
-})
-export const QuestionPaged = objectType({
-  name: 'QuestionPaged',
-  definition(t) {
-    t.implements('IPagedType')
-    t.list.field('list', { type: 'Question' })
-  },
-})
-export const CreateQuestionInput = inputObjectType({
-  name: 'CreateQuestionInput',
-  definition(t) {
-    t.id('eventId', { required: true })
-    t.string('content', { required: true })
-    t.boolean('anonymous', { default: false })
-  },
-})
-
-export const questionQuery = extendType({
-  type: 'Query',
-  definition(t) {
-    t.field('questionsByEvent', {
-      type: 'QuestionPaged',
-      description: 'Query question by event for Role.Admin.',
-      args: {
-        eventId: idArg({ required: true }),
-        questionFilter: arg({
-          type: 'QuestionFilter',
-          default: ReviewStatusEnum.Publish,
-        }),
-        searchString: stringArg(),
-        pagination: arg({ type: 'PaginationInput', required: true }),
-        order: arg({
-          type: 'QuestionOrder',
-          default: QuestionOrderEnum.Popular,
-        }),
+  @Mutation(returns => Int, {
+    description: 'Publish all Review questions by event.',
+  })
+  async publishAllReviewQuestions(
+    @Arg('eventId', returns => ID) eventId: string,
+  ): Promise<number> {
+    const { nModified } = await QuestionModel.updateMany(
+      {
+        event: eventId,
+        reviewStatus: ReviewStatus.Review,
       },
-      resolve: async (
-        root,
-        { eventId, questionFilter, searchString, pagination, order },
-        ctx,
-      ) => {
-        const { offset, limit } = pagination
-        const {
-          count: totalCount,
-          rows: questions,
-        } = await ctx.db.Question.findAndCountAll({
-          ...getQuestionsQueryOption(eventId, questionFilter, searchString),
-          ...pagination,
-          order: getQuestionOrderQueryObj(
-            order as NexusGenEnums['QuestionOrder'],
-          ),
-        })
+      { reviewStatus: ReviewStatus.Publish },
+    )
 
-        return {
-          list: questions,
-          hasNextPage: offset + limit < totalCount,
-          totalCount,
-          ...pagination,
-        }
-      },
-    })
-    t.field('questionsByEventAudience', {
-      type: 'QuestionPaged',
-      description: 'Query question by event for Role.Audience.',
-      args: {
-        eventId: idArg({ required: true }),
-        pagination: arg({ type: 'PaginationInput', required: true }),
-        order: arg({
-          type: 'QuestionOrder',
-          default: QuestionOrderEnum.Popular,
-        }),
-      },
-      resolve: async (root, { eventId, pagination, order }, ctx) => {
-        const { offset, limit } = pagination
-        const userId = getAuthedUser(ctx)?.id as string
-        const {
-          count: totalCount,
-          rows: questions,
-        } = await ctx.db.Question.findAndCountAll({
-          ...getQuestionsAudienceQueryOption(eventId, userId),
-          ...pagination,
-          order: getQuestionOrderQueryObj(
-            order as NexusGenEnums['QuestionOrder'],
-          ),
-        })
+    return nModified as number
+  }
 
-        return {
-          list: questions,
-          hasNextPage: offset + limit < totalCount,
-          totalCount,
-          ...pagination,
-        }
-      },
-    })
-    t.field('questionsByEventWall', {
-      type: 'QuestionPaged',
-      description: 'Query question by event for Role.Wall.',
-      args: {
-        eventId: idArg({ required: true }),
-        pagination: arg({ type: 'PaginationInput', required: true }),
-        order: arg({
-          type: 'QuestionOrder',
-          default: QuestionOrderEnum.Popular,
-        }),
-      },
-      resolve: async (root, { eventId, pagination, order }, ctx) => {
-        const { offset, limit } = pagination
-        const {
-          count: totalCount,
-          rows: questions,
-        } = await ctx.db.Question.findAndCountAll({
-          ...getQuestionsWallQueryOption(eventId),
-          ...pagination,
-          order: getQuestionOrderQueryObj(
-            order as NexusGenEnums['QuestionOrder'],
-          ),
-        })
+  @Mutation(returns => Question, { description: 'Vote a question.' })
+  async voteUpQuestion(
+    @Arg('questionId', returns => ID) questionId: string,
+    @Ctx() ctx: Context,
+  ): Promise<QuestionSchema> {
+    const userId = getAuthedUser(ctx)?.id as string
+    const question = await QuestionModel.findByIdAndUpdate(
+      questionId,
+      (await getVoted(ctx, questionId))
+        ? { $push: { voteUpUsers: userId } }
+        : { $pull: { voteUpUsers: userId } },
+      { new: true },
+    )
+    if (!question) {
+      throw new Error()
+    }
 
-        return {
-          list: questions,
-          hasNextPage: offset + limit < totalCount,
-          totalCount,
-          ...pagination,
-        }
-      },
-    })
-    t.field('questionsByMe', {
-      type: 'QuestionPaged',
-      args: {
-        pagination: arg({ type: 'PaginationInput', required: true }),
-        // TODO: orderBy: arg({ type: 'QuestionOrderByInput' }),
-      },
-      resolve: async (root, { pagination }, ctx) => {
-        const { offset, limit } = pagination
-        const userId = getAuthedUser(ctx)?.id as string
-        const option = {
-          where: {
-            authorId: userId,
-            [Op.or]: [
-              { reviewStatus: ReviewStatusEnum.Publish },
-              { reviewStatus: ReviewStatusEnum.Review },
-            ],
-          },
-        }
-        const {
-          count: totalCount,
-          rows: questions,
-        } = await ctx.db.Question.findAndCountAll({
-          ...option,
-          ...pagination,
-        })
-
-        return {
-          list: questions,
-          hasNextPage: offset + limit < totalCount,
-          totalCount,
-          ...pagination,
-        }
-      },
-    })
-  },
-})
-
-export const questionMutation = extendType({
-  type: 'Mutation',
-  definition(t) {
-    t.field('createQuestion', {
-      type: 'Question',
-      description: 'Create question',
-      args: {
-        input: arg({ type: 'CreateQuestionInput', required: true }),
-      },
-      resolve: async (root, { input }, ctx) => {
-        const { eventId, content, anonymous } = input
-        const authorId = getAuthedUser(ctx)?.id as string
-        const event = await ctx.db.Event.findByPk(eventId)
-        const author = await ctx.db.User.findByPk(authorId)
-        const newQuestion = await ctx.db.Question.create({
-          reviewStatus: event?.moderation
-            ? ReviewStatusEnum.Review
-            : ReviewStatusEnum.Publish,
-          content,
-          anonymous,
-        })
-        await newQuestion.setEvent(event)
-        await newQuestion.setAuthor(author)
-
-        // TODO: test pg notify
-        await sequelize.query(`NOTIFY "questions", 'CREATE'`, {
-          raw: true,
-          type: QueryTypes.RAW,
-        })
-
-        ctx.pubsub.publish('QUESTION_ADDED', {
-          eventId,
-          questionEventOwnerId: event?.ownerId,
-          authorId,
-          toRoles:
-            newQuestion.reviewStatus === ReviewStatusEnum.Review
-              ? [
-                  RoleNameEnum.Admin,
-                  RoleNameEnum.Audience,
-                  AudienceRoleEnum.OnlyAuthor,
-                ]
-              : newQuestion.reviewStatus === ReviewStatusEnum.Publish
-              ? [
-                  RoleNameEnum.Admin,
-                  RoleNameEnum.Audience,
-                  AudienceRoleEnum.All,
-                  RoleNameEnum.Wall,
-                ]
-              : [],
-          questionAdded: newQuestion,
-        })
-
-        return newQuestion
-      },
-    })
-    t.field('updateQuestionReviewStatus', {
-      type: 'Question',
-      description: 'Update a question review status.',
-      args: {
-        questionId: idArg({ required: true }),
-        reviewStatus: arg({ type: 'ReviewStatus', required: true }),
-      },
-      resolve: async (root, { questionId, reviewStatus }, ctx) => {
-        const question = await ctx.db.Question.findByPk(questionId, {
-          include: [{ association: 'event', attributes: ['ownerId'] }],
-        })
-        const prevReviewStatus = question.reviewStatus
-
-        await question.update(
-          Object.assign(
-            { reviewStatus },
-            reviewStatus === ReviewStatusEnum.Archive
-              ? { top: false }
-              : reviewStatus === ReviewStatusEnum.Review
-              ? { top: false, star: false }
-              : {},
-          ),
-        )
-
-        switch (reviewStatus) {
-          case ReviewStatusEnum.Review:
-            // remove for ExcludeAuthor
-            ctx.pubsub.publish('QUESTION_REMOVED', {
-              eventId: question?.eventId,
-              authorId: question?.authorId,
-              toRoles: [
-                RoleNameEnum.Audience,
-                AudienceRoleEnum.ExcludeAuthor,
-                RoleNameEnum.Wall,
-              ],
-              questionRemoved: questionId,
-            })
-            // update for OnlyAuthor
-            ctx.pubsub.publish('QUESTION_UPDATED', {
-              eventId: question?.eventId,
-              authorId: question?.authorId,
-              toRoles: [RoleNameEnum.Audience, AudienceRoleEnum.OnlyAuthor],
-              questionUpdated: question,
-            })
-            break
-          case ReviewStatusEnum.Archive:
-            // remove for all Audience & Wall
-            ctx.pubsub.publish('QUESTION_REMOVED', {
-              eventId: question?.eventId,
-              authorId: question?.authorId,
-              toRoles: [
-                RoleNameEnum.Audience,
-                AudienceRoleEnum.All,
-                RoleNameEnum.Wall,
-              ],
-              questionRemoved: questionId,
-            })
-            break
-          case ReviewStatusEnum.Publish:
-            switch (prevReviewStatus) {
-              case ReviewStatusEnum.Review:
-                // add for ExcludeAuthor
-                ctx.pubsub.publish('QUESTION_ADDED', {
-                  eventId: question?.eventId,
-                  questionEventOwnerId: question?.event?.ownerId,
-                  authorId: question?.authorId,
-                  toRoles: [
-                    RoleNameEnum.Audience,
-                    AudienceRoleEnum.ExcludeAuthor,
-                    RoleNameEnum.Wall,
-                  ],
-                  questionAdded: question,
-                })
-                // update for OnlyAuthor
-                ctx.pubsub.publish('QUESTION_UPDATED', {
-                  eventId: question?.eventId,
-                  authorId: question?.authorId,
-                  toRoles: [RoleNameEnum.Audience, AudienceRoleEnum.OnlyAuthor],
-                  questionUpdated: question,
-                })
-                break
-              case ReviewStatusEnum.Archive:
-                // add for all Audience & Wall
-                ctx.pubsub.publish('QUESTION_ADDED', {
-                  eventId: question?.eventId,
-                  questionEventOwnerId: question?.event?.ownerId,
-                  authorId: question?.authorId,
-                  toRoles: [
-                    RoleNameEnum.Audience,
-                    AudienceRoleEnum.All,
-                    RoleNameEnum.Wall,
-                  ],
-                  questionAdded: question,
-                })
-                break
-            }
-            break
-        }
-        // update for admin
-        ctx.pubsub.publish('QUESTION_REMOVED', {
-          eventId: question?.eventId,
-          authorId: question?.authorId,
-          toRoles: [RoleNameEnum.Admin],
-          questionRemoved: questionId,
-        })
-        ctx.pubsub.publish('QUESTION_ADDED', {
-          eventId: question?.eventId,
-          questionEventOwnerId: question?.event?.ownerId,
-          authorId: question?.authorId,
-          toRoles: [RoleNameEnum.Admin],
-          questionAdded: question,
-        })
-
-        return question
-      },
-    })
-    t.field('updateQuestionContent', {
-      type: 'Question',
-      description: 'Update a question content.',
-      args: {
-        questionId: idArg({ required: true }),
-        content: stringArg({ required: true }),
-      },
-      resolve: async (root, { content, questionId }, ctx) => {
-        const question = await ctx.db.Question.findByPk(questionId)
-        await question.update({ content })
-
-        ctx.pubsub.publish('QUESTION_UPDATED', {
-          eventId: question?.eventId,
-          authorId: question?.authorId,
-          toRoles:
-            question.reviewStatus === ReviewStatusEnum.Review
-              ? [
-                  RoleNameEnum.Admin,
-                  RoleNameEnum.Audience,
-                  AudienceRoleEnum.OnlyAuthor,
-                ]
-              : question.reviewStatus === ReviewStatusEnum.Publish
-              ? [
-                  RoleNameEnum.Admin,
-                  RoleNameEnum.Audience,
-                  AudienceRoleEnum.All,
-                  RoleNameEnum.Wall,
-                ]
-              : question.reviewStatus === ReviewStatusEnum.Archive
-              ? [RoleNameEnum.Admin]
-              : [],
-          questionUpdated: question,
-        })
-
-        return question
-      },
-    })
-    t.field('updateQuestionStar', {
-      type: 'Question',
-      description: 'Update a question star.',
-      args: {
-        questionId: idArg({ required: true }),
-        star: booleanArg({ required: true }),
-      },
-      resolve: async (root, { questionId, star }, ctx) => {
-        const question = await ctx.db.Question.findByPk(questionId)
-        await question.update({ star })
-
-        ctx.pubsub.publish('QUESTION_UPDATED', {
-          eventId: question?.eventId,
-          authorId: question?.authorId,
-          toRoles:
-            question.reviewStatus === ReviewStatusEnum.Review
-              ? [
-                  RoleNameEnum.Admin,
-                  RoleNameEnum.Audience,
-                  AudienceRoleEnum.OnlyAuthor,
-                ]
-              : question.reviewStatus === ReviewStatusEnum.Publish
-              ? [
-                  RoleNameEnum.Admin,
-                  RoleNameEnum.Audience,
-                  AudienceRoleEnum.All,
-                  RoleNameEnum.Wall,
-                ]
-              : question.reviewStatus === ReviewStatusEnum.Archive
-              ? [RoleNameEnum.Admin]
-              : [],
-          questionUpdated: question,
-        })
-
-        return question
-      },
-    })
-    t.field('updateQuestionTop', {
-      type: 'Question',
-      description: 'Top a question. Can only top one question at a time.',
-      args: {
-        questionId: idArg({ required: true }),
-        top: booleanArg({ required: true }),
-      },
-      resolve: async (root, { questionId, top }, ctx) => {
-        const question = await ctx.db.Question.findByPk(questionId)
-
-        let prevTopQuestions: Array<QuestionModelStatic & { top: boolean }> = []
-        if (top) {
-          // cancel preview top questions
-          prevTopQuestions = await ctx.db.Question.findAll({
-            where: { top: true, eventId: question.eventId },
-          })
-          prevTopQuestions.forEach(questionItem => {
-            questionItem.top = false
-          })
-          await ctx.db.Question.update(
-            { top: false },
-            { where: { top: true, eventId: question.eventId } },
-          )
-        }
-
-        await question.update({ top })
-
-        const shouldPub = prevTopQuestions.concat([question])
-        shouldPub.forEach((questionItem: QuestionModelStatic) => {
-          ctx.pubsub.publish('QUESTION_UPDATED', {
-            eventId: question?.eventId,
-            toRoles: [
-              RoleNameEnum.Admin,
-              RoleNameEnum.Audience,
-              AudienceRoleEnum.All,
-              RoleNameEnum.Wall,
-            ],
-            questionUpdated: questionItem,
-          })
-        })
-
-        return question
-      },
-    })
-    t.field('deleteQuestion', {
-      type: 'ID',
-      description: 'Delete a question by id.',
-      args: {
-        questionId: idArg({ required: true }),
-      },
-      resolve: async (root, { questionId }, ctx) => {
-        const question = await ctx.db.Question.findByPk(questionId)
-        await question.destroy()
-
-        ctx.pubsub.publish('QUESTION_REMOVED', {
-          eventId: question?.eventId,
-          authorId: question?.authorId,
-          toRoles:
-            question.reviewStatus === ReviewStatusEnum.Review
-              ? [
-                  RoleNameEnum.Admin,
-                  RoleNameEnum.Audience,
-                  AudienceRoleEnum.OnlyAuthor,
-                ]
-              : question.reviewStatus === ReviewStatusEnum.Publish
-              ? [
-                  RoleNameEnum.Admin,
-                  RoleNameEnum.Audience,
-                  AudienceRoleEnum.All,
-                  RoleNameEnum.Wall,
-                ]
-              : question.reviewStatus === ReviewStatusEnum.Archive
-              ? [RoleNameEnum.Admin]
-              : [],
-          questionRemoved: questionId,
-        })
-
-        return questionId
-      },
-    })
-    t.field('deleteAllReviewQuestions', {
-      type: 'Int',
-      description: 'Delete all Review questions by event.',
-      args: {
-        eventId: idArg({ required: true }),
-      },
-      resolve: async (root, { eventId }, ctx) => {
-        const shouldDelete = await ctx.db.Question.findAll({
-          where: { eventId, reviewStatus: ReviewStatusEnum.Review },
-          attributes: ['id', 'authorId'],
-        })
-        const count = await ctx.db.Question.destroy({
-          where: { eventId, reviewStatus: ReviewStatusEnum.Review },
-        })
-
-        // TODO: replace by deleteAllReviewQuestions pubsub event
-        shouldDelete.forEach(
-          (
-            delQuestion: QuestionModelStatic & { id: string; authorId: string },
-          ) =>
-            ctx.pubsub.publish('QUESTION_REMOVED', {
-              eventId,
-              authorId: delQuestion?.authorId,
-              toRoles: [
-                RoleNameEnum.Admin,
-                RoleNameEnum.Audience,
-                AudienceRoleEnum.OnlyAuthor,
-              ],
-              questionRemoved: delQuestion.id,
-            }),
-        )
-
-        return count
-      },
-    })
-    t.field('publishAllReviewQuestions', {
-      type: 'Int',
-      description: 'Delete all Review questions by event.',
-      args: {
-        eventId: idArg({ required: true }),
-      },
-      resolve: async (root, { eventId }, ctx) => {
-        const event = await ctx.db.Event.findByPk(eventId, {
-          attributes: ['id', 'ownerId'],
-          include: [
-            {
-              association: 'questions',
-              where: { reviewStatus: ReviewStatusEnum.Review },
-            },
-          ],
-        })
-        const [count] = await ctx.db.Question.update(
-          { reviewStatus: ReviewStatusEnum.Publish },
-          {
-            where: {
-              eventId,
-              reviewStatus: ReviewStatusEnum.Review,
-            },
-          },
-        )
-
-        event?.questions.forEach(
-          (
-            questionItem: QuestionModelStatic & {
-              id: string
-              authorId: string
-              reviewStatus: ReviewStatusEnum
-            },
-          ) => {
-            questionItem.reviewStatus = ReviewStatusEnum.Publish
-            ctx.pubsub.publish('QUESTION_ADDED', {
-              eventId,
-              questionEventOwnerId: event?.ownerId,
-              authorId: questionItem?.authorId,
-              toRoles: [
-                RoleNameEnum.Audience,
-                AudienceRoleEnum.ExcludeAuthor,
-                RoleNameEnum.Wall,
-              ],
-              questionAdded: questionItem,
-            })
-            ctx.pubsub.publish('QUESTION_UPDATED', {
-              eventId,
-              authorId: questionItem?.authorId,
-              toRoles: [RoleNameEnum.Audience, AudienceRoleEnum.OnlyAuthor],
-              questionUpdated: questionItem,
-            })
-            // update for admin
-            ctx.pubsub.publish('QUESTION_REMOVED', {
-              eventId,
-              authorId: questionItem?.authorId,
-              toRoles: [RoleNameEnum.Admin],
-              questionRemoved: questionItem.id,
-            })
-            ctx.pubsub.publish('QUESTION_ADDED', {
-              eventId,
-              questionEventOwnerId: event?.ownerId,
-              authorId: questionItem?.authorId,
-              toRoles: [RoleNameEnum.Admin],
-              questionAdded: questionItem,
-            })
-          },
-        )
-
-        return count
-      },
-    })
-    t.field('voteUpQuestion', {
-      type: 'Question',
-      description: 'Vote a question.',
-      args: {
-        questionId: idArg({ required: true }),
-      },
-      resolve: async (root, { questionId }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id as string
-        const user = await ctx.db.User.findByPk(userId)
-        const question = await ctx.db.Question.findByPk(questionId)
-
-        if (await getVoted(ctx, questionId)) {
-          await question.removeVoteUpUser(user)
-        } else {
-          await question.addVoteUpUser(user)
-        }
-        await question.update({
-          voteUpCount: await question.countVoteUpUsers(),
-        })
-
-        ctx.pubsub.publish('QUESTION_UPDATED', {
-          eventId: question?.eventId,
-          toRoles: [
-            RoleNameEnum.Admin,
-            RoleNameEnum.Audience,
-            AudienceRoleEnum.All,
-            RoleNameEnum.Wall,
-          ],
-          questionUpdated: question,
-        })
-
-        return question
-      },
-    })
-  },
-})
+    return question
+  }
+}
 
 async function getVoted(ctx: Context, questionId: string) {
   const userId = getAuthedUser(ctx)?.id as string
   if (!userId) return false
-  const user = await ctx.db.User.findByPk(userId, {
-    [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-  })
-  const question = await ctx.db.Question.findByPk(questionId, {
-    [EXPECTED_OPTIONS_KEY]: dataloaderContext,
+  const question = QuestionModel.findById(questionId, {
+    voteUpUsers: { $all: [userId] },
   })
 
-  return question.hasVoteUpUser(user)
+  return Boolean(question)
 }
 
-export function getQuestionOrderQueryObj(
-  questionOrder: NexusGenEnums['QuestionOrder'],
-): Order {
+export function getQuestionSortArg(
+  questionOrder: QuestionOrder,
+  top?: boolean,
+): { [key: string]: 1 | -1 } {
+  let arg
   switch (questionOrder) {
-    case QuestionOrderEnum.Recent:
-      return [
-        ['top', 'DESC'],
-        ['createdAt', 'DESC'],
-        ['voteUpCount', 'DESC'],
-      ]
-    case QuestionOrderEnum.Oldest:
-      return [
-        ['top', 'DESC'],
-        ['createdAt', 'ASC'],
-        ['voteUpCount', 'DESC'],
-      ]
-    case QuestionOrderEnum.Starred:
-      return [
-        ['top', 'DESC'],
-        ['star', 'DESC'],
-        ['voteUpCount', 'DESC'],
-        ['createdAt', 'DESC'],
-      ]
+    case QuestionOrder.Recent:
+      arg = { createdAt: -1, voteUpCount: -1 }
+      break
+    case QuestionOrder.Oldest:
+      arg = { createdAt: 1, voteUpCount: -1 }
+      break
+    case QuestionOrder.Starred:
+      arg = { star: -1, createdAt: -1 }
+      break
     default:
-      // QuestionOrderEnum.Popular:
-      return [
-        ['top', 'DESC'],
-        ['voteUpCount', 'DESC'],
-        ['createdAt', 'DESC'],
-      ]
+      // QuestionOrder.Popular:
+      arg = { voteUpCount: -1, createdAt: -1 }
   }
-}
 
-export function getQuestionsQueryOption(
-  eventId: string,
-  questionFilter: NexusGenEnums['QuestionFilter'] | null | undefined,
-  searchString: string | null | undefined,
-) {
-  return {
-    where: {
-      eventId,
-      [Op.and]: [
-        (Object.values(ReviewStatusEnum) as string[]).includes(
-          questionFilter as string,
-        )
-          ? { reviewStatus: questionFilter }
-          : questionFilter === QuestionFilterEnum.Starred
-          ? { star: true }
-          : {},
-        searchString
-          ? {
-              [Op.or]: [
-                { content: { [Op.substring]: searchString } },
-                { '$author.name$': { [Op.substring]: searchString } },
-              ],
-            }
-          : {},
-      ],
-    },
-    include: searchString ? ['author'] : [],
-  }
-}
-export function getQuestionsAudienceQueryOption(
-  eventId: string,
-  userId: string,
-) {
-  return {
-    where: {
-      eventId,
-      [Op.or]: [
-        { reviewStatus: ReviewStatusEnum.Publish },
-        {
-          [Op.and]: [
-            { authorId: userId },
-            { reviewStatus: ReviewStatusEnum.Review },
-          ],
-        },
-      ],
-    },
-  }
-}
-export function getQuestionsWallQueryOption(eventId: string) {
-  return {
-    where: {
-      eventId,
-      reviewStatus: ReviewStatusEnum.Publish,
-    },
-  }
+  return Object.assign(top ? { top: -1 } : {}, arg)
 }

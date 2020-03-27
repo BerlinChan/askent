@@ -1,11 +1,13 @@
-export * from './User'
-export * from './Event'
-export * from './Question'
-export * from './QuestionSubscription'
-export * from './Role'
-export * from './Game'
-export * from './Player'
-export * from './Pagination'
-export * from './DateTime'
-export * from './FilterOrder'
-export * from './Seed'
+import { UserResolver } from './User'
+import { RoleResolver } from './Role'
+import { EventResolver } from './Event'
+import { QuestionResolver } from './Question'
+import { SeedResolver } from './Seed'
+
+export default [
+  UserResolver,
+  RoleResolver,
+  EventResolver,
+  QuestionResolver,
+  SeedResolver,
+]

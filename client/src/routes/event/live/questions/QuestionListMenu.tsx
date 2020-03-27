@@ -33,7 +33,10 @@ interface Props {
     >
   ];
   editContentInputRef: React.RefObject<HTMLInputElement>;
-  editContentIdsState: [string[], React.Dispatch<React.SetStateAction<string[]>>]
+  editContentIdsState: [
+    string[],
+    React.Dispatch<React.SetStateAction<string[]>>
+  ];
 }
 
 const QuestionListMenu: React.FC<Props> = ({
@@ -103,11 +106,11 @@ const QuestionListMenu: React.FC<Props> = ({
         onClose={handleMoreClose}
       >
         <MenuItem
-          disabled={
+          disabled={Boolean(
             questionMoreTarget?.top ||
-            (eventQueryResult.data?.eventById.moderation &&
-              questionMoreTarget?.reviewStatus === ReviewStatus.Publish)
-          }
+              (eventQueryResult.data?.eventById.moderation &&
+                questionMoreTarget?.reviewStatus === ReviewStatus.Publish)
+          )}
           onClick={() => handleEditContentToggle(moreMenu.id)}
         >
           <ListItemIcon>

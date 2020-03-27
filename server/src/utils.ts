@@ -1,10 +1,10 @@
 import { sign, verify } from 'jsonwebtoken'
 import { Context } from './context'
-import { RoleNameEnum } from './models/Role'
+import { RoleName } from './entity/Role'
 
 export interface TokenPayload {
   id: string
-  roles: Array<RoleNameEnum>
+  roles: Array<RoleName>
   iat?: number
 }
 

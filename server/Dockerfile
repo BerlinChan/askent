@@ -1,0 +1,16 @@
+# Askent Server
+
+FROM node:12.16.1-alpine
+
+WORKDIR "/service"
+
+COPY ./dist/ ./dist/
+COPY ./.env .
+COPY ./package.json .
+COPY ./yarn.lock .
+
+RUN yarn install --production
+
+EXPOSE 4000
+
+ENTRYPOINT [ "node", "./dist/index.js" ]

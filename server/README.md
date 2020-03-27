@@ -6,6 +6,5 @@
 
 ```sh
 yarn install
-yarn generate
 yarn dev
 ```

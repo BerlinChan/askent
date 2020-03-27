@@ -1,247 +1,245 @@
-import { objectType, extendType, stringArg, inputObjectType, arg } from 'nexus'
-import { NexusGenFieldTypes } from 'nexus-typegen'
+import {
+  Field,
+  ObjectType,
+  Root,
+  InputType,
+  Resolver,
+  Mutation,
+  Query,
+  Arg,
+  Ctx,
+  ID,
+} from 'type-graphql'
+import { plainToClass } from 'class-transformer'
+import { getRepository, In, Repository } from 'typeorm'
 import { hash, compare } from 'bcryptjs'
+import MD5 from 'crypto-js/md5'
 import { Context } from '../context'
 import { getAuthedUser, signToken } from '../utils'
-import { Op } from 'sequelize'
-import { RoleModelStatic, RoleNameEnum } from '../models/Role'
-import { dataloaderContext } from '../context'
-import MD5 from 'crypto-js/md5'
-const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
+import { RoleName, Role as RoleEntity } from '../entity/Role'
+import { User as UserEntity } from '../entity/User'
+import { Role } from './Role'
 
-export const User = objectType({
-  name: 'User',
-  definition(t) {
-    t.id('id')
-    t.string('email', { nullable: true })
-    t.string('name', { nullable: true })
-    t.boolean('anonymous')
+@ObjectType()
+export class User {
+  @Field(returns => ID)
+  public id!: string
 
-    t.string('avatar', {
-      async resolve({ email }, args, ctx) {
-        if (email) {
-          // https://en.gravatar.com/site/implement/images/
-          const emailMD5Hash = MD5(email.trim().toLowerCase()).toString()
-          return (
-            'https://www.gravatar.com/avatar/' +
-            `${emailMD5Hash}?s=${40}&d=retro`
-          )
-        } else {
-          return ''
-        }
-      },
-    })
-    t.list.field('roles', {
-      type: 'Role',
-      async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findByPk(id, {
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-        return user.getRoles({
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-      },
-    })
-    t.list.field('events', {
-      type: 'Event',
-      async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findByPk(id, {
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-        return user.getEvents({
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-      },
-    })
-    t.list.field('questions', {
-      type: 'Question',
-      async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findByPk(id, {
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-        return user.getQuestions({
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-      },
-    })
-    t.list.field('voteUpQuestions', {
-      type: 'Question',
-      async resolve({ id }, args, ctx) {
-        const user = await ctx.db.User.findByPk(id, {
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-        return user.getVoteUpQuestions({
-          [EXPECTED_OPTIONS_KEY]: dataloaderContext,
-        })
-      },
+  @Field({ nullable: true, defaultValue: '' })
+  public email?: string
+
+  @Field({ nullable: true, defaultValue: '' })
+  public name?: string
+
+  @Field({ nullable: true, defaultValue: false })
+  public anonymous?: boolean
+
+  @Field({
+    description: 'gravatar img, https://en.gravatar.com/site/implement/images/',
+  })
+  get avatar(): string {
+    if (this.email) {
+      const emailMD5Hash = MD5(this.email.trim().toLowerCase()).toString()
+      return (
+        'https://www.gravatar.com/avatar/' + `${emailMD5Hash}?s=${40}&d=retro`
+      )
+    } else {
+      return ''
+    }
+  }
+
+  @Field(returns => [Role])
+  async roles(@Root() root: User): Promise<Role[]> {
+    const user = await getRepository(UserEntity).findOne(root.id, {
+      relations: ['roles'],
     })
 
-    t.field('createdAt', { type: 'DateTime' })
-    t.field('updatedAt', { type: 'DateTime' })
-    t.field('deletedAt', { type: 'DateTime', nullable: true })
+    if (!user?.roles) {
+      throw new Error()
+    }
 
-    // t.string('fingerprint', { nullable: true })
-    // t.string('password', { nullable: true })
-  },
-})
-export const AuthPayload = objectType({
-  name: 'AuthPayload',
-  definition(t) {
-    t.string('token')
-    t.field('user', { type: 'User' })
-  },
-})
-export const PGP = objectType({
-  name: 'PGP',
-  definition(t) {
-    t.string('pubKey')
-  },
-})
+    return plainToClass(Role, user.roles)
+  }
 
-export const UpdateUserInput = inputObjectType({
-  name: 'UpdateUserInput',
-  definition(t) {
-    t.string('name')
-    t.string('email')
-    t.boolean('anonymous')
-  },
-})
+  @Field()
+  public createdAt!: Date
 
-export const userQuery = extendType({
-  type: 'Query',
-  definition(t) {
-    t.field('me', {
-      type: 'User',
-      description: 'Query my user info.',
-      resolve: (root, args, ctx) => {
-        return ctx.db.User.findByPk(getAuthedUser(ctx)?.id as string)
-      },
+  @Field()
+  public updatedAt!: Date
+
+  @Field({ nullable: true })
+  public deletedAt?: Date
+}
+
+@ObjectType()
+export class AuthPayload {
+  @Field()
+  public token!: string
+
+  @Field(returns => User)
+  public user!: User
+}
+
+@ObjectType()
+export class PGP {
+  @Field()
+  public pubKey!: string
+}
+
+@InputType()
+export class UpdateUserInput implements Partial<User> {
+  @Field({ nullable: true })
+  public name?: string
+
+  @Field({ nullable: true })
+  public email?: string
+
+  @Field({ nullable: true })
+  public anonymous?: boolean
+}
+
+@Resolver(of => User)
+export class UserResolver {
+  private userRepository: Repository<UserEntity>
+
+  constructor() {
+    this.userRepository = getRepository(UserEntity)
+  }
+
+  @Query(returns => User)
+  async me(@Ctx() ctx: Context): Promise<User> {
+    const user = await this.userRepository.findOneOrFail(
+      getAuthedUser(ctx)?.id as string,
+    )
+    if (!user) {
+      throw new Error()
+    }
+
+    return plainToClass(User, user)
+  }
+
+  @Query(returns => Boolean, {
+    description: 'Check if a email has already exist.',
+  })
+  checkEmailExist(
+    @Arg('email') email: string,
+    @Ctx() ctx: Context,
+  ): Promise<boolean> {
+    return checkEmailExist(ctx, email)
+  }
+
+  @Query(returns => PGP, { description: 'For demo use' })
+  pgp(): PGP {
+    return { pubKey: process.env.JWT_PUB_KEY as string }
+  }
+
+  @Mutation(returns => AuthPayload, { description: 'Signup a new user.' })
+  async signup(
+    @Arg('name', { description: 'User name' }) name: string,
+    @Arg('email', { description: 'User Email' }) email: string,
+    @Arg('password') password: string,
+  ): Promise<AuthPayload> {
+    const hashedPassword = await hash(password, 10)
+    const roleNames: Array<RoleName> = [
+      RoleName.Admin,
+      RoleName.Audience,
+      RoleName.Wall,
+    ]
+    const roles = await getRepository(RoleEntity).find({
+      where: { name: In(roleNames) },
     })
-    t.field('checkEmailExist', {
-      type: 'Boolean',
-      description: 'Check if a email has already exist.',
-      args: {
-        email: stringArg({ required: true }),
-      },
-      resolve: async (root, { email }, ctx) => {
-        return await checkEmailExist(ctx, email)
-      },
+    const user = this.userRepository.create({
+      name,
+      email,
+      password: hashedPassword,
+      roles,
     })
-    t.field('PGP', {
-      type: 'PGP',
-      resolve: (root, args, ctx) => {
-        return { pubKey: process.env.JWT_PUB_KEY } as NexusGenFieldTypes['PGP']
-      },
-    })
-  },
-})
-export const userMutation = extendType({
-  type: 'Mutation',
-  definition(t) {
-    t.field('signup', {
-      type: 'AuthPayload',
-      description: 'Signup a new user.',
-      args: {
-        name: stringArg({ required: true, description: 'User name' }),
-        email: stringArg({ required: true, description: 'User Email' }),
-        password: stringArg({ required: true }),
-      },
-      resolve: async (root, args, ctx, info) => {
-        const hashedPassword = await hash(args.password, 10)
-        const userRoles: Array<RoleNameEnum> = [
-          RoleNameEnum.Admin,
-          RoleNameEnum.Audience,
-          RoleNameEnum.Wall,
-        ]
-        const roles = await ctx.db.Role.findAll({
-          where: { [Op.or]: userRoles.map(role => ({ name: role })) },
-        })
-        const user = await ctx.db.User.create({
-          ...args,
-          password: hashedPassword,
-        })
-        await user.setRoles(roles)
+    await this.userRepository.save(user)
 
-        return {
-          token: signToken({ id: user.id, roles: userRoles }),
-          user,
-        }
-      },
-    })
-    t.field('login', {
-      type: 'AuthPayload',
-      args: {
-        email: stringArg({ required: true, description: 'User Email' }),
-        password: stringArg({ required: true }),
-      },
-      resolve: async (parent, { email, password }, ctx, info) => {
-        const user = await ctx.db.User.findOne({
-          where: { email },
-          include: ['roles'],
-        })
-        // const roles = await user.getRoles()
+    return {
+      token: signToken({ id: user.id as string, roles: roleNames }),
+      user: plainToClass(User, user),
+    }
+  }
 
-        if (!user) {
-          throw new Error(`No user found for email: ${email}`)
-        }
-        const passwordValid = await compare(password, user.password)
-        if (!passwordValid) {
-          throw new Error('Invalid password')
-        }
-
-        return {
-          token: signToken({
-            id: user.id,
-            roles: user.roles.map((role: RoleModelStatic) => role.name),
-          }),
-          user,
-        }
-      },
+  @Mutation(returns => AuthPayload)
+  async login(
+    @Arg('email', { description: 'User Email' }) email: string,
+    @Arg('password') password: string,
+  ): Promise<AuthPayload> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['roles'],
     })
-    t.field('loginAudience', {
-      type: 'AuthPayload',
-      description: `Audience 登陆。
-      若 fingerprint 的 User 已存在则返回 token，
-      若 fingerprint 的 User 不存在则 create 并返回 token`,
-      args: { fingerprint: stringArg({ required: true }) },
-      resolve: async (root, { fingerprint }, ctx) => {
-        let user = await ctx.db.User.findOne({
-          where: { fingerprint },
-        })
-        const roleNames: Array<RoleNameEnum> = [RoleNameEnum.Audience]
-        if (!user) {
-          const roles: Array<RoleModelStatic> = await ctx.db.Role.findAll({
-            where: { [Op.or]: roleNames.map(role => ({ name: role })) },
-          })
-          user = await ctx.db.User.create({
-            fingerprint,
-          })
-          user.setRoles(roles)
-        }
 
-        return {
-          token: signToken({ id: user.id, roles: roleNames }),
-          user,
-        }
-      },
-    })
-    t.field('updateUser', {
-      type: 'User',
-      args: { input: arg({ type: 'UpdateUserInput', required: true }) },
-      resolve: async (root, { input }, ctx) => {
-        const userId = getAuthedUser(ctx)?.id as string
-        const user = await ctx.db.User.findByPk(userId)
-        await user.update(input, {
-          fields:
-            input.name === '' && input.anonymous ? ['anonymouse'] : undefined,
-        })
+    if (!user) {
+      throw new Error(`No user found for email: ${email}`)
+    }
+    const passwordValid = await compare(password, user.password as string)
+    if (!passwordValid) {
+      throw new Error('Invalid password')
+    }
 
-        return user
-      },
+    return {
+      token: signToken({
+        id: user.id as string,
+        roles: user.roles.map(role => role.name),
+      }),
+      user: plainToClass(User, user),
+    }
+  }
+
+  @Mutation(returns => AuthPayload, {
+    description: `Audience 登陆。
+  若 fingerprint 的 User 已存在则返回 token，
+  若 fingerprint 的 User 不存在则 create 并返回 token`,
+  })
+  async loginAudience(
+    @Arg('fingerprint') fingerprint: string,
+  ): Promise<AuthPayload> {
+    let user = await this.userRepository.findOne({
+      where: { fingerprint },
     })
-  },
-})
+    const roleNames: Array<RoleName> = [RoleName.Audience]
+    if (!user) {
+      const roles = await getRepository(RoleEntity).find({
+        where: { name: In(roleNames) },
+      })
+      user = this.userRepository.create({ fingerprint, roles })
+      await this.userRepository.save(user)
+    }
+
+    return {
+      token: signToken({ id: user.id as string, roles: roleNames }),
+      user: plainToClass(User, user),
+    }
+  }
+
+  @Mutation(returns => User)
+  async updateUser(
+    @Arg('input') input: UpdateUserInput,
+    @Ctx() ctx: Context,
+  ): Promise<User> {
+    const userId = getAuthedUser(ctx)?.id as string
+    let user = await this.userRepository.findOneOrFail(userId)
+    if (input.name === '' && input.anonymous) {
+      user.anonymous = input.anonymous
+    } else {
+      user = Object.assign(
+        user,
+        typeof input.name === 'string' ? { name: input.name } : {},
+        typeof input.email === 'string' ? { email: input.email } : {},
+        typeof input.anonymous === 'boolean'
+          ? { anonymous: input.anonymous }
+          : {},
+      )
+    }
+    await this.userRepository.save(user)
+
+    return plainToClass(User, user)
+  }
+}
 
 async function checkEmailExist(ctx: Context, email: string): Promise<boolean> {
-  return Boolean(await ctx.db.User.count({ where: { email } }))
+  return Boolean(await getRepository(UserEntity).count({ where: { email } }))
 }

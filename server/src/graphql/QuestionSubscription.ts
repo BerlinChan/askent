@@ -7,10 +7,10 @@ import {
   getQuestionsAudienceQueryOption,
   getQuestionsWallQueryOption,
 } from './Question'
-import { ReviewStatusEnum } from '../models/Question'
-import { RoleNameEnum } from '../models/Role'
+import { ReviewStatus } from '../model/Question'
+import { RoleNameEnum } from '../model/Role'
 import { AudienceRoleEnum } from './Role'
-import { QuestionOrderEnum, QuestionFilterEnum } from './FilterOrder'
+import { QuestionOrder, QuestionFilter } from './FilterOrder'
 import { NexusGenEnums } from 'nexus-typegen'
 import { Context } from 'vm'
 
@@ -32,12 +32,12 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
       }),
       questionFilter: arg({
         type: 'QuestionFilter',
-        default: ReviewStatusEnum.Publish,
+        default: ReviewStatus.Publish,
       }),
       searchString: stringArg(),
       order: arg({
         type: 'QuestionOrder',
-        default: QuestionOrderEnum.Popular,
+        default: QuestionOrder.Popular,
       }),
       limit: intArg({
         default: 0,
@@ -115,7 +115,7 @@ export const questionAddedSubscription = subscriptionField<'questionAdded'>(
             case RoleNameEnum.Wall:
               if (toRoles.includes(RoleNameEnum.Wall)) {
                 return (
-                  questionAdded.reviewStatus === ReviewStatusEnum.Publish &&
+                  questionAdded.reviewStatus === ReviewStatus.Publish &&
                   (await isInWallFilteredPagedResult(
                     ctx,
                     args.eventId,
@@ -239,7 +239,7 @@ async function isInFilteredPagedResult(
   ctx: Context,
   eventId: string,
   questionAddedId: string,
-  order: QuestionOrderEnum,
+  order: QuestionOrder,
   questionFilter: NexusGenEnums['QuestionFilter'] | null | undefined,
   searchString: string | null | undefined,
   limit: number,
@@ -261,7 +261,7 @@ async function isInAudienceFilteredPagedResult(
   eventId: string,
   userId: string,
   questionAddedId: string,
-  order: QuestionOrderEnum,
+  order: QuestionOrder,
   limit: number,
 ) {
   const orderedList = await ctx.db.Question.findAll({
@@ -280,7 +280,7 @@ async function isInWallFilteredPagedResult(
   ctx: Context,
   eventId: string,
   questionAddedId: string,
-  order: QuestionOrderEnum,
+  order: QuestionOrder,
   limit: number,
 ) {
   const orderedList = await ctx.db.Question.findAll({
