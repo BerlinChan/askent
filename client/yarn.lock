@@ -2672,10 +2672,10 @@
     ts-node "^8"
     tslib "^1"
 
-"@formatjs/cli@1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.3.1.tgz#5bab6e2ad4a2a16aa584fb09a918b1a460e20cad"
-  integrity sha512-avBJYe4lErzWmcX8yHfSacVEzar3KSlKuxPZ9Ol5GsAaAd8LgJN3vFMNO+Wm9DvtaMV87Er5XHHM0M+CQ0KZHQ==
+"@formatjs/cli@1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.3.2.tgz#416f578d2e9d76077a3e3136af19b30b43231b9c"
+  integrity sha512-UGV++EZR4fKowezLZ0dBm79ykGgHr7linvUonYVysHnszpadbR5pS439H8ibhIXZyGHJHP9F7FmtnQKhKJJmmw==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.5.5"
     "@babel/plugin-proposal-optional-chaining" "7"
@@ -2685,7 +2685,7 @@
     "@types/loader-utils" "^1.1.3"
     "@types/lodash" "^4.14.138"
     babel-plugin-const-enum "^0.0.2"
-    babel-plugin-react-intl "^7.0.0"
+    babel-plugin-react-intl "^7.1.0"
     commander "4.0.0-1"
     fs-extra "^8.1.0"
     glob "^7.1.6"
@@ -4860,10 +4860,10 @@ babel-plugin-named-asset-import@^0.3.6:
   resolved "https://registry.yarnpkg.com/babel-plugin-named-asset-import/-/babel-plugin-named-asset-import-0.3.6.tgz#c9750a1b38d85112c9e166bf3ef7c5dbc605f4be"
   integrity sha512-1aGDUfL1qOOIoqk9QKGIo2lANk+C7ko/fqH0uIyC71x3PEGz0uVP8ISgfEsFuG+FKmjHTvFK/nNM8dowpmUxLA==
 
-babel-plugin-react-intl@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.0.0.tgz#f71bf67df65eed44ef1a5b62bb599bbe397c0b2a"
-  integrity sha512-VqcXsD5pFLjMxijtAt+Wk9UTTk2iZxHBkcuVlJ2uMGTsV5q/j48UHFt+5a1LRw66tsQkO6dLsP7VXmod/4Abww==
+babel-plugin-react-intl@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.1.0.tgz#a5d51f3402470175c2d0627f6c6e0f55aa881864"
+  integrity sha512-5y/TOt/c5EU49eIQHbQnlGJHKrt1n116vynhpQ0gbhZPUSEF4nQ7mK02UKI7PbtKCxn1LUcuEW6mcH/0uA/U0A==
   dependencies:
     "@babel/core" "^7.7.2"
     "@babel/helper-plugin-utils" "^7.0.0"
