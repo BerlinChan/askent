@@ -6,7 +6,7 @@ import {
   modelOptions,
 } from '@typegoose/typegoose'
 import { Event } from './Event'
-import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
+import { TimeStamps, Base } from '@typegoose/typegoose/lib/defaultClasses'
 
 export enum ReviewStatus {
   Review = 'Review',

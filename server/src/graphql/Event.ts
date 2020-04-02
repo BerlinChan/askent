@@ -13,7 +13,7 @@ import {
   Mutation,
   Subscription,
 } from 'type-graphql'
-import { getRepository, Repository } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { plainToClass } from 'class-transformer'
 import { getAuthedUser } from '../utils'
 import { Context } from '../context'
@@ -38,7 +38,12 @@ registerEnumType(EventDateStatus, { name: 'EventDateStatus' })
 @ObjectType()
 export class Event {
   @Field(returns => ID)
-  public id!: string
+  public _id!: string
+
+  @Field(returns => ID)
+  get id(): string {
+    return this._id
+  }
 
   @Field(returns => String)
   public code!: string
@@ -101,7 +106,7 @@ export class Event {
 
   @Field(returns => [Question])
   async questions(@Root() root: Event): Promise<QuestionSchema[]> {
-    const questions = await QuestionModel.find({ eventId: root.id })
+    const questions = await QuestionModel.find({ eventId: root.id }).lean(true)
 
     return questions
   }
@@ -147,17 +152,11 @@ export class UpdateEventInput implements Partial<Event> {
 
 @Resolver(of => Event)
 export class EventResolver {
-  private userRepository: Repository<UserEntity>
-
-  constructor() {
-    this.userRepository = getRepository(UserEntity)
-  }
-
   @Query(returns => Event)
   async eventById(
     @Arg('eventId', returns => ID) eventId: string,
   ): Promise<EventSchema> {
-    const event = await EventModel.findById(eventId)
+    const event = await EventModel.findById(eventId).lean(true)
     if (!event) {
       throw new Error()
     }
@@ -208,7 +207,6 @@ export class EventResolver {
       {
         // add dateWeight field
         $addFields: {
-          id: '$_id',
           dateWeight: {
             $cond: {
               if: {
@@ -246,7 +244,7 @@ export class EventResolver {
   ): Promise<EventSchema[]> {
     const events = await EventModel.find({
       code: { $regex: new RegExp(code) },
-    })
+    }).lean(true)
 
     return events
   }
@@ -304,7 +302,7 @@ export class EventResolver {
     const event = await EventModel.findByIdAndUpdate(eventId, update, {
       new: true,
       omitUndefined: true,
-    })
+    }).lean(true)
     if (!event) {
       throw new Error()
     }
@@ -330,7 +328,7 @@ export class EventResolver {
       eventId,
       { $push: { audienceIds: audienceId } },
       { new: true },
-    )
+    ).lean(true)
     if (!event) {
       throw new Error()
     }
@@ -342,7 +340,9 @@ export class EventResolver {
     topics: ['EVENT_UPDATED'],
     filter: ({ payload, args }) => payload.eventId === args.eventId,
   })
-  eventUpdatedSubscription(@Root() payload): Event {
+  eventUpdatedSubscription(
+    @Root() payload: { eventId: string; eventUpdated: Event },
+  ): Event {
     return payload.eventUpdated
   }
 }

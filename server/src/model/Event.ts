@@ -4,7 +4,7 @@ import {
   arrayProp,
   modelOptions,
 } from '@typegoose/typegoose'
-import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
+import { TimeStamps, Base } from '@typegoose/typegoose/lib/defaultClasses'
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Event extends TimeStamps {

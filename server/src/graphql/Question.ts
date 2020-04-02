@@ -27,14 +27,19 @@ import {
 import { Event } from './Event'
 import { User } from './User'
 import { plainToClass } from 'class-transformer'
-import { getRepository, Repository } from 'typeorm'
+import { getRepository } from 'typeorm'
 
 registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
 
 @ObjectType()
 export class Question {
   @Field(returns => ID)
-  public id!: string
+  public _id!: string
+
+  @Field(returns => ID)
+  get id(): string {
+    return this._id
+  }
 
   @Field()
   public content!: string
@@ -56,7 +61,9 @@ export class Question {
 
   @Field(returns => Event)
   async event(@Root() root: Question): Promise<EventSchema> {
-    const question = await QuestionModel.findById(root.id).populate('event')
+    const question = await QuestionModel.findById(root.id)
+      .populate('event')
+      .lean(true)
     if (!question?.event) {
       throw new Error()
     }
@@ -67,7 +74,7 @@ export class Question {
   @Field(returns => User, { nullable: true })
   async author(@Root() root: Question): Promise<User | undefined> {
     if (!root.anonymous) {
-      const question = await QuestionModel.findById(root.id)
+      const question = await QuestionModel.findById(root.id).lean(true)
       const user = await getRepository(UserEntity).findOne(question?.authorId)
 
       return plainToClass(User, user)
@@ -194,6 +201,7 @@ export class QuestionResolver {
       .sort(getQuestionSortArg(order, true))
       .skip(offset)
       .limit(limit)
+      .lean(true)
 
     return {
       list: questions,
@@ -255,6 +263,7 @@ export class QuestionResolver {
       .sort(getQuestionSortArg(order))
       .skip(offset)
       .limit(limit)
+      .lean(true)
 
     return {
       list: questions,
@@ -271,7 +280,7 @@ export class QuestionResolver {
   ): Promise<QuestionSchema> {
     const { eventId, content, anonymous } = input
     const authorId = getAuthedUser(ctx)?.id as string
-    const event = await EventModel.findById(eventId)
+    const event = await EventModel.findById(eventId).lean(true)
     const question = await QuestionModel.create({
       reviewStatus: event?.moderation
         ? ReviewStatus.Review
@@ -303,7 +312,7 @@ export class QuestionResolver {
           : {},
       ),
       { new: true },
-    )
+    ).lean(true)
     if (!question) {
       throw new Error()
     }
@@ -320,7 +329,7 @@ export class QuestionResolver {
       questionId,
       { content },
       { new: true },
-    )
+    ).lean(true)
     if (!question) {
       throw new Error()
     }
@@ -337,7 +346,7 @@ export class QuestionResolver {
       questionId,
       { star },
       { new: true },
-    )
+    ).lean(true)
     if (!question) {
       throw new Error()
     }
@@ -352,7 +361,7 @@ export class QuestionResolver {
     @Arg('questionId', returns => ID) questionId: string,
     @Arg('top') top: boolean,
   ): Promise<QuestionSchema> {
-    const question = await QuestionModel.findById(questionId)
+    let question = await QuestionModel.findById(questionId)
     if (!question) {
       throw new Error()
     }
@@ -421,10 +430,10 @@ export class QuestionResolver {
     const question = await QuestionModel.findByIdAndUpdate(
       questionId,
       (await getVoted(ctx, questionId))
-        ? { $push: { voteUpUsers: userId } }
-        : { $pull: { voteUpUsers: userId } },
+        ? { $pull: { voteUpUsers: userId }, $inc: { voteUpCount: -1 } }
+        : { $push: { voteUpUsers: userId }, $inc: { voteUpCount: 1 } },
       { new: true },
-    )
+    ).lean(true)
     if (!question) {
       throw new Error()
     }
@@ -436,9 +445,9 @@ export class QuestionResolver {
 async function getVoted(ctx: Context, questionId: string) {
   const userId = getAuthedUser(ctx)?.id as string
   if (!userId) return false
-  const question = QuestionModel.findById(questionId, {
-    voteUpUsers: { $all: [userId] },
-  })
+  const question = await QuestionModel.findOne({
+    $and: [{ _id: questionId }, { voteUpUsers: { $all: [userId] } }],
+  }).lean(true)
 
   return Boolean(question)
 }
