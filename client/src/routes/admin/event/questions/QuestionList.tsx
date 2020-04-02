@@ -12,6 +12,7 @@ import {
   QuestionsByEventDocument,
   QuestionFieldsFragment,
   QuestionOrder,
+  QuestionSearchInput,
   RoleName
 } from "../../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
@@ -36,12 +37,12 @@ function updateCache(
 
 interface Props {
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  queryVariables: QuestionsByEventQueryVariables;
+  questionSearchInput: QuestionSearchInput;
 }
 
 const QuestionList: React.FC<Props> = ({
   eventQueryResult,
-  queryVariables
+  questionSearchInput
 }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
@@ -52,7 +53,7 @@ const QuestionList: React.FC<Props> = ({
   const editContentIdsState = React.useState<Array<string>>([]);
   const questionsQueryResult = useQuestionsByEventQuery({
     fetchPolicy: "network-only",
-    variables: queryVariables
+    variables: { input: questionSearchInput }
   });
   const { data, loading, fetchMore } = questionsQueryResult;
 
@@ -136,17 +137,17 @@ const QuestionList: React.FC<Props> = ({
 
   const orderedList = React.useMemo(() => {
     const orderedList = sortQuestionBy<QuestionFieldsFragment>(
-      queryVariables.input.order || QuestionOrder.Popular
+      questionSearchInput.order || QuestionOrder.Popular
     )(data?.questionsByEvent.list || []);
 
     return orderedList;
-  }, [data, queryVariables]);
+  }, [data, questionSearchInput]);
   const loadMore = () => {
     if (data?.questionsByEvent.hasNextPage) {
       fetchMore({
         variables: {
           input: {
-            ...queryVariables.input,
+            ...questionSearchInput,
             pagination: {
               offset: data?.questionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
               limit: data?.questionsByEvent.limit || DEFAULT_PAGE_LIMIT

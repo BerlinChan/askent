@@ -1,6 +1,11 @@
 import { Query, RealtimeSearch, RealtimeSearchCallbacks } from '.'
 import { ChangeStream } from 'mongodb'
 import { QuestionModel } from '../../../model'
+import {
+  getQuestionSearchFilter,
+  getQuestionSortArg,
+} from '../../../graphql/Question'
+import { RoleName } from '../../../entity/Role'
 
 export class MongoDBSearch implements RealtimeSearch {
   private changeStream: ChangeStream
@@ -35,9 +40,14 @@ export class MongoDBSearch implements RealtimeSearch {
 
   private async runQuery() {
     try {
-      const result = await QuestionModel.find({
-        event: this.query.eventId,
-      }).lean(true)
+      const { pagination, order } = this.query
+      const { offset, limit } = pagination
+      const filter = getQuestionSearchFilter(this.query, RoleName.Admin)
+      const result = await QuestionModel.find(filter)
+        .sort(getQuestionSortArg(order, true))
+        .skip(offset)
+        .limit(limit)
+        .lean(true)
       const entries = result.map(
         r => `${QuestionModel.collection.collectionName}/${r._id}`,
       )

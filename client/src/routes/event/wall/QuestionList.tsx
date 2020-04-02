@@ -9,7 +9,8 @@ import {
   // useQuestionUpdatedWallSubscription,
   // useQuestionRemovedWallSubscription,
   QuestionOrder,
-  RoleName
+  RoleName,
+  QuestionSearchInput
 } from "../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
 import QuestionItem from "./QuestionItem";
@@ -34,14 +35,14 @@ function updateCache(
 }
 
 interface Props {
-  queryVariables: QuestionsByEventWallQueryVariables;
+  questionSearchInput: QuestionSearchInput;
 }
 
-const QuestionList: React.FC<Props> = ({ queryVariables }) => {
+const QuestionList: React.FC<Props> = ({ questionSearchInput }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const questionsWallQueryResult = useQuestionsByEventWallQuery({
     fetchPolicy: "network-only",
-    variables: queryVariables
+    variables: { input: questionSearchInput }
   });
   const { data, loading, fetchMore } = questionsWallQueryResult;
 
@@ -102,19 +103,22 @@ const QuestionList: React.FC<Props> = ({ queryVariables }) => {
 
   const orderedList = React.useMemo(() => {
     const list = sortQuestionBy<QuestionWallFieldsFragment>(
-      queryVariables.order || QuestionOrder.Popular
+      questionSearchInput.order || QuestionOrder.Popular
     )(data?.questionsByEventWall.list || []);
 
     return list;
-  }, [data, queryVariables]);
+  }, [data, questionSearchInput]);
   const loadMore = () => {
     if (data?.questionsByEventWall.hasNextPage) {
       fetchMore({
         variables: {
-          pagination: {
-            offset:
-              data?.questionsByEventWall.list.length || DEFAULT_PAGE_OFFSET,
-            limit: data?.questionsByEventWall.limit || DEFAULT_PAGE_LIMIT
+          input: {
+            ...questionSearchInput,
+            pagination: {
+              offset:
+                data?.questionsByEventWall.list.length || DEFAULT_PAGE_OFFSET,
+              limit: data?.questionsByEventWall.limit || DEFAULT_PAGE_LIMIT
+            }
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {

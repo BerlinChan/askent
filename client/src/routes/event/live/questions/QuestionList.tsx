@@ -16,7 +16,8 @@ import {
   // useQuestionUpdatedAudienceSubscription,
   // useQuestionRemovedAudienceSubscription,
   QuestionsByEventAudienceDocument,
-  RoleName
+  RoleName,
+  QuestionSearchInput
 } from "../../../../generated/graphqlHooks";
 import { DataProxy } from "apollo-cache";
 import QuestionItem from "./QuestionItem";
@@ -45,13 +46,13 @@ function updateCache(
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  queryVariables: QuestionsByEventAudienceQueryVariables;
+  questionSearchInput: QuestionSearchInput;
 }
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
   eventQueryResult,
-  queryVariables
+  questionSearchInput
 }) => {
   const theme = useTheme();
   const matcheMdUp = useMediaQuery(theme.breakpoints.up("md"));
@@ -64,7 +65,7 @@ const QuestionList: React.FC<Props> = ({
   const editContentIdsState = React.useState<Array<string>>([]);
   const questionsQueryResult = useQuestionsByEventAudienceQuery({
     fetchPolicy: "network-only",
-    variables: queryVariables
+    variables: { input: questionSearchInput }
   });
   const { data, loading, fetchMore } = questionsQueryResult;
 
@@ -144,19 +145,23 @@ const QuestionList: React.FC<Props> = ({
 
   const orderedList = React.useMemo(() => {
     const list = sortQuestionBy<QuestionAudienceFieldsFragment>(
-      queryVariables.order || QuestionOrder.Popular
+      questionSearchInput.order || QuestionOrder.Popular
     )(data?.questionsByEventAudience.list || []);
 
     return list;
-  }, [data, queryVariables]);
+  }, [data, questionSearchInput]);
   const loadMore = () => {
     if (data?.questionsByEventAudience.hasNextPage) {
       fetchMore({
         variables: {
-          pagination: {
-            offset:
-              data?.questionsByEventAudience.list.length || DEFAULT_PAGE_OFFSET,
-            limit: data?.questionsByEventAudience.limit || DEFAULT_PAGE_LIMIT
+          input: {
+            ...questionSearchInput,
+            pagination: {
+              offset:
+                data?.questionsByEventAudience.list.length ||
+                DEFAULT_PAGE_OFFSET,
+              limit: data?.questionsByEventAudience.limit || DEFAULT_PAGE_LIMIT
+            }
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {

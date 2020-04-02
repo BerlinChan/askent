@@ -59,7 +59,7 @@ const EventWall: React.FC<Props> = () => {
   const orderSelectedState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
-  const questionsQueryVariables = {
+  const questionSearchInput = {
     eventId: id as string,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: orderSelectedState[0]
@@ -107,7 +107,7 @@ const EventWall: React.FC<Props> = () => {
           <OrderSelect orderSelectedState={orderSelectedState} />
         </Box>
         <Box className={classes.listBox}>
-          <QuestionList queryVariables={questionsQueryVariables} />
+          <QuestionList questionSearchInput={questionSearchInput} />
         </Box>
         {0 ? (
           <Typography variant="h6" color="inherit">

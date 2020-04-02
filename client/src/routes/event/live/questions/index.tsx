@@ -22,7 +22,7 @@ const LiveQuestions: React.FC<Props> = ({
   eventQueryResult
 }) => {
   let { id } = useParams();
-  const questionsQueryVariables = {
+  const questionSearchInput = {
     eventId: id as string,
     order: QuestionOrder.Popular,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
@@ -33,7 +33,7 @@ const LiveQuestions: React.FC<Props> = ({
       <QuestionList
         userQueryResult={userQueryResult}
         eventQueryResult={eventQueryResult}
-        queryVariables={questionsQueryVariables}
+        questionSearchInput={questionSearchInput}
       />
 
       <AskFabDialog userQueryResult={userQueryResult} />

@@ -14,16 +14,8 @@ fragment QuestionWallFields on Question {
   }
 }
 
-query QuestionsByEventWall(
-  $eventId: ID!
-  $pagination: PaginationInput!
-  $order: QuestionOrder
-) {
-  questionsByEventWall(
-    eventId: $eventId
-    pagination: $pagination
-    order: $order
-  ) @connection(key: "questionsByEventWall", filter: ["eventId", "order"]) {
+query QuestionsByEventWall($input: QuestionSearchInput!) {
+  questionsByEventWall(input: $input) {
     ...QuestionPagedFields
     list {
       ...QuestionWallFields

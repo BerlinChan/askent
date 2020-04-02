@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Grid, Paper, Box, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
+import deepstreamClient from "../../../../deepstream";
 import {
   EventByIdQuery,
   EventByIdQueryVariables,
@@ -59,25 +60,34 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQueryResult;
-  const questionQueryVariables = {
-    input: {
-      eventId: id as string,
-      questionFilter: questionQueryState[0].filterSelected,
-      searchString: questionQueryState[0].searchString
-        ? questionQueryState[0].searchString
-        : undefined,
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-      order: questionOrderSelectedState[0]
-    }
+  const questionSearchInput = {
+    eventId: id as string,
+    questionFilter: questionQueryState[0].filterSelected,
+    searchString: questionQueryState[0].searchString
+      ? questionQueryState[0].searchString
+      : undefined,
+    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+    order: questionOrderSelectedState[0]
   };
-  const questionReviewQueryVariables = {
-    input: {
-      eventId: id as string,
-      questionFilter: QuestionFilter.Review,
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-      order: QuestionOrder.Oldest
-    }
+  const questionSearchInputReview = {
+    eventId: id as string,
+    questionFilter: QuestionFilter.Review,
+    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+    order: QuestionOrder.Oldest
   };
+
+  React.useEffect(() => {
+    deepstreamClient.rpc
+      .make("question_realtime_search", questionSearchInput)
+      .then(hash => {
+        const resultList = deepstreamClient.record.getList(
+          `question_realtime_search/list_${hash}`
+        );
+        resultList.subscribe(results => {
+          console.log(">", results);
+        });
+      });
+  });
 
   return (
     <Grid container spacing={3} className={classes.questionsGrid}>
@@ -89,7 +99,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
           {eventData?.eventById.moderation ? (
             <QuestionList
               eventQueryResult={eventQueryResult}
-              queryVariables={questionReviewQueryVariables}
+              questionSearchInput={questionSearchInputReview}
             />
           ) : (
             <Box className={classes.moderationOffTips}>
@@ -119,7 +129,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
         <Paper className={classes.gridItemPaper + " " + classes.rightPaper}>
           <QuestionList
             eventQueryResult={eventQueryResult}
-            queryVariables={questionQueryVariables}
+            questionSearchInput={questionSearchInput}
           />
         </Paper>
       </Grid>

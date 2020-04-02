@@ -32,7 +32,7 @@ const defaultConfig: RealtimeSearchConfig = {
   rpcName: 'question_realtime_search',
   listNamePrefix: 'question_realtime_search/list_',
   metaRecordPrefix: 'question_realtime_search/meta_',
-  heartbeatInterval: 30000,
+  heartbeatInterval: 60 * 1000,
 }
 
 export class Provider {
@@ -138,19 +138,20 @@ export class Provider {
     // This heartbeat is for debugging resilience to ensure that the RPC is actually provided.
     // It also means if the connection to deepstream is lost or the provider is offline for any
     // reason it will restart to ensure a clean state.
-    setInterval(async () => {
-      try {
-        await this.deepstreamClient.rpc.make(
-          this.config.rpcName,
-          '__heartbeat__',
-        )
-        console.debug(`${this.config.rpcName} heartbeat succeeded`)
-      } catch (e) {
-        console.error(
-          `${this.config.rpcName} heartbeat check failed, restarting rpc provider`,
-        )
-      }
-    }, this.config.heartbeatInterval || 3000)
+    this.config.heartbeatInterval &&
+      setInterval(async () => {
+        try {
+          await this.deepstreamClient.rpc.make(
+            this.config.rpcName,
+            '__heartbeat__',
+          )
+          console.debug(`${this.config.rpcName} heartbeat succeeded`)
+        } catch (e) {
+          console.error(
+            `${this.config.rpcName} heartbeat check failed, restarting rpc provider`,
+          )
+        }
+      }, this.config.heartbeatInterval || 30000)
 
     console.log(`Providing rpc method "${this.config.rpcName}"`)
   }

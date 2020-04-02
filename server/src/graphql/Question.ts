@@ -28,6 +28,8 @@ import { Event } from './Event'
 import { User } from './User'
 import { plainToClass } from 'class-transformer'
 import { getRepository } from 'typeorm'
+import { RoleName } from '../entity/Role'
+import { FilterQuery } from 'mongoose'
 
 registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
 
@@ -149,22 +151,15 @@ export class QuestionResolver {
     @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
-    const { eventId, questionFilter, searchString, pagination, order } = input
+    const { pagination, order } = input
     const { offset, limit } = pagination
-    if (questionFilter === QuestionFilter.Publish) {
-    }
-    const filter = Object.assign(
-      { event: eventId },
-      questionFilter === QuestionFilter.Starred
-        ? { star: true }
-        : { reviewStatus: questionFilter },
-      { content: { $regex: new RegExp(searchString) } },
-    )
+    const filter = getQuestionSearchFilter(input, RoleName.Admin, ctx)
     const totalCount = await QuestionModel.countDocuments(filter)
     const questions = await QuestionModel.find(filter)
       .sort(getQuestionSortArg(order, true))
       .skip(offset)
       .limit(limit)
+      .lean(true)
 
     return {
       list: questions,
@@ -178,24 +173,12 @@ export class QuestionResolver {
     description: 'Query question by event for Role.Audience.',
   })
   async questionsByEventAudience(
-    @Arg('eventId', returns => ID) eventId: string,
-    @Arg('pagination', returns => PaginationInput) pagination: PaginationInput,
-    @Arg('order', returns => QuestionOrder, {
-      nullable: true,
-      defaultValue: QuestionOrder.Popular,
-    })
-    order: QuestionOrder,
+    @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
+    const { pagination, order } = input
     const { offset, limit } = pagination
-    const userId = getAuthedUser(ctx)?.id as string
-    const filter = {
-      event: eventId,
-      $or: [
-        { reviewStatus: ReviewStatus.Publish },
-        { $and: [{ authorId: userId }, { reviewStatus: ReviewStatus.Review }] },
-      ],
-    }
+    const filter = getQuestionSearchFilter(input, RoleName.Audience, ctx)
     const totalCount = await QuestionModel.countDocuments(filter)
     const questions = await QuestionModel.find(filter)
       .sort(getQuestionSortArg(order, true))
@@ -215,22 +198,18 @@ export class QuestionResolver {
     description: 'Query question by event for Role.Wall.',
   })
   async questionsByEventWall(
-    @Arg('eventId', returns => ID) eventId: string,
-    @Arg('pagination', returns => PaginationInput) pagination: PaginationInput,
-    @Arg('order', returns => QuestionOrder, {
-      nullable: true,
-      defaultValue: QuestionOrder.Popular,
-    })
-    order: QuestionOrder,
+    @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
+    const { pagination, order } = input
     const { offset, limit } = pagination
-    const filter = { event: eventId, reviewStatus: ReviewStatus.Publish }
+    const filter = getQuestionSearchFilter(input, RoleName.Wall, ctx)
     const totalCount = await QuestionModel.countDocuments(filter)
     const questions = await QuestionModel.find(filter)
       .sort(getQuestionSortArg(order, true))
       .skip(offset)
       .limit(limit)
+      .lean(true)
 
     return {
       list: questions,
@@ -446,7 +425,8 @@ async function getVoted(ctx: Context, questionId: string) {
   const userId = getAuthedUser(ctx)?.id as string
   if (!userId) return false
   const question = await QuestionModel.findOne({
-    $and: [{ _id: questionId }, { voteUpUsers: { $all: [userId] } }],
+    _id: questionId,
+    voteUpUsers: { $all: [userId] },
   }).lean(true)
 
   return Boolean(question)
@@ -473,4 +453,37 @@ export function getQuestionSortArg(
   }
 
   return Object.assign(top ? { top: -1 } : {}, arg)
+}
+
+export function getQuestionSearchFilter(
+  input: QuestionSearchInput,
+  asRole: RoleName,
+  ctx?: Context,
+): FilterQuery<QuestionSchema> {
+  const { eventId, questionFilter, searchString } = input
+  const userId = ctx ? (getAuthedUser(ctx)?.id as string) : ''
+
+  switch (asRole) {
+    case RoleName.Admin:
+      return Object.assign(
+        { event: eventId },
+        questionFilter === QuestionFilter.Starred
+          ? { star: true }
+          : { reviewStatus: questionFilter },
+        { content: { $regex: new RegExp(searchString) } },
+      )
+    case RoleName.Audience:
+      return {
+        event: eventId,
+        $or: [
+          { reviewStatus: ReviewStatus.Publish },
+          {
+            $and: [{ authorId: userId }, { reviewStatus: ReviewStatus.Review }],
+          },
+        ],
+      }
+    default:
+      // case RoleName.Wall:
+      return { event: eventId, reviewStatus: ReviewStatus.Publish }
+  }
 }

@@ -15,16 +15,8 @@ fragment QuestionAudienceFields on Question {
   }
 }
 
-query QuestionsByEventAudience(
-  $eventId: ID!
-  $pagination: PaginationInput!
-  $order: QuestionOrder
-) {
-  questionsByEventAudience(
-    eventId: $eventId
-    pagination: $pagination
-    order: $order
-  ) @connection(key: "questionsByEventAudience", filter: ["eventId", "order"]) {
+query QuestionsByEventAudience($input: QuestionSearchInput!) {
+  questionsByEventAudience(input: $input) {
     ...QuestionPagedFields
     list {
       ...QuestionAudienceFields
