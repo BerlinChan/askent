@@ -15,7 +15,7 @@
     "apollo-server": "^2.11.0",
     "bcryptjs": "2.4.3",
     "crypto-js": "4.0.0",
-    "date-fns": "2.11.0",
+    "date-fns": "2.11.1",
     "dotenv": "8.2.0",
     "graphql": "14.6.0",
     "jsonwebtoken": "8.5.1",
