@@ -2,7 +2,7 @@ import { DeepstreamClient } from '@deepstream/client'
 import { EVENT } from '@deepstream/client/dist/constants'
 import dotenv from 'dotenv'
 import path from 'path'
-import { Provider } from './provider'
+import { QuestionSearch } from './provider'
 
 const dotenvResult = dotenv.config({ path: path.join(__dirname, '../../.env') })
 if (dotenvResult.error) {
@@ -19,14 +19,15 @@ const deepstreamClient = new DeepstreamClient(
 )
 deepstreamClient.on('error', (error: Error, event: EVENT) => {
   if (error) {
-    console.error(`Client error: ${error.message}`, event as any)
+    console.error(`Client error: ${error.message}`, event)
   } else {
-    console.error('Missing Client error!', event as any)
+    console.error('Missing Client error!', event)
   }
 })
 deepstreamClient.login({}, success => {
   if (success) {
-    new Provider({}).start()
+    console.log('deepstream login successed')
+    new QuestionSearch(deepstreamClient).start()
 
     // TODO: test realtime search https://deepstream.io/blog/20191104-realtime-search/
     setTimeout(async () => {
@@ -36,12 +37,13 @@ deepstreamClient.login({}, success => {
       const resultList = deepstreamClient.record.getList(
         `question_realtime_search/list_${hash}`,
       )
+      console.log(1, 'resultList', resultList)
       resultList.subscribe(results => {
         console.log(2, results)
       })
     }, 2000)
   } else {
-    console.error('ds login failed')
+    console.error('deepstream login failed')
   }
 })
 

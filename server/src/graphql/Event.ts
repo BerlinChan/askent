@@ -52,7 +52,7 @@ export class Event {
   @Field(returns => Date)
   public endAt!: Date
 
-  @Field(returns => Boolean, { defaultValue: false })
+  @Field(returns => Boolean)
   public moderation!: boolean
 
   @Field(returns => EventDateStatus)

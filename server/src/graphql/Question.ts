@@ -96,6 +96,7 @@ export class QuestionPaged implements IPagedType {
   @Field(returns => [Question])
   public list!: QuestionSchema[]
 }
+
 @InputType()
 export class QuestionSearchInput {
   @Field(returns => ID)
@@ -105,10 +106,10 @@ export class QuestionSearchInput {
     nullable: true,
     defaultValue: QuestionFilter.Publish,
   })
-  public questionFilter?: QuestionFilter
+  public questionFilter: QuestionFilter = QuestionFilter.Publish
 
   @Field({ nullable: true, defaultValue: '' })
-  public searchString!: string
+  public searchString: string = ''
 
   @Field(returns => PaginationInput)
   public pagination!: PaginationInput
@@ -117,7 +118,7 @@ export class QuestionSearchInput {
     nullable: true,
     defaultValue: QuestionOrder.Popular,
   })
-  public order!: QuestionOrder
+  public order: QuestionOrder = QuestionOrder.Popular
 }
 
 @InputType()
@@ -129,7 +130,7 @@ export class CreateQuestionInput implements Partial<Question> {
   public content!: string
 
   @Field({ nullable: true, defaultValue: false })
-  public anonymous?: boolean
+  public anonymous: boolean = false
 }
 
 @Resolver(of => Question)

@@ -1,17 +1,16 @@
-import { Query, RealtimeSearch, RealtimeSearchCallbacks } from '../provider'
-import { ChangeStream, FilterQuery } from 'mongodb'
-import { QuestionModel } from '../../model'
+import { Query, RealtimeSearch, RealtimeSearchCallbacks } from '.'
+import { ChangeStream } from 'mongodb'
+import { QuestionModel } from '../../../model'
 
 export class MongoDBSearch implements RealtimeSearch {
   private changeStream: ChangeStream
-  private mongoQuery: FilterQuery<any> = this.query
   private isReady: boolean = false
 
   constructor(
     private query: Query,
     private callbacks: RealtimeSearchCallbacks,
   ) {
-    this.changeStream = QuestionModel.watch([], {})
+    this.changeStream = QuestionModel.watch()
     this.changeStream.on('change', this.runQuery.bind(this))
   }
 
@@ -36,7 +35,9 @@ export class MongoDBSearch implements RealtimeSearch {
 
   private async runQuery() {
     try {
-      const result = await QuestionModel.find(this.mongoQuery).lean(true)
+      const result = await QuestionModel.find({
+        event: this.query.eventId,
+      }).lean(true)
       const entries = result.map(
         r => `${QuestionModel.collection.collectionName}/${r._id}`,
       )

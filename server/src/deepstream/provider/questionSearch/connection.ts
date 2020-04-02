@@ -1,7 +1,7 @@
-import { DatabaseClient, RealtimeSearchCallbacks } from '../provider'
+import { DatabaseClient, RealtimeSearchCallbacks } from '.'
 import { MongoDBSearch } from './search'
-import { Query } from '../provider'
-import { RealtimeSearch } from '../provider'
+import { Query } from '.'
+import { RealtimeSearch } from '.'
 
 export class MongoDBConnection implements DatabaseClient {
   public getSearch(

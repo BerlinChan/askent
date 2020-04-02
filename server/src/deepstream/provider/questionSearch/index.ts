@@ -1,10 +1,10 @@
-import { MD5, enc } from 'crypto-js'
+import { DeepstreamClient } from '@deepstream/client'
 import { RecordData } from '@deepstream/client/dist/constants'
 import { RPCResponse } from '@deepstream/client/dist/rpc/rpc-response'
 import { ListenResponse } from '@deepstream/client/dist/util/listener'
-import { MongoDBConnection } from './mongodb/connection'
-import deepstreamClient from './index'
-import { QuestionSearchInput } from '../graphql/Question'
+import { MD5, enc } from 'crypto-js'
+import { MongoDBConnection } from './connection'
+import { QuestionSearchInput } from '../../../graphql/Question'
 
 export interface RealtimeSearch {
   whenReady: () => Promise<void>
@@ -41,7 +41,10 @@ export class Provider {
   private config: RealtimeSearchConfig
   private hashReplaceRegex: RegExp
 
-  constructor(config: Partial<RealtimeSearchConfig>) {
+  constructor(
+    private deepstreamClient: DeepstreamClient,
+    config?: Partial<RealtimeSearchConfig>,
+  ) {
     this.config = { ...defaultConfig, ...config }
     this.hashReplaceRegex = new RegExp(`^${this.config.listNamePrefix}(.*)`)
     this.databaseClient = new MongoDBConnection()
@@ -56,7 +59,7 @@ export class Provider {
 
     const pattern = `${this.config.listNamePrefix}.*`
     console.log(`listening for ${pattern}`)
-    deepstreamClient.record.listen(pattern, this.onSubscription.bind(this))
+    this.deepstreamClient.record.listen(pattern, this.onSubscription.bind(this))
 
     console.log('realtime search provider ready')
   }
@@ -67,14 +70,14 @@ export class Provider {
    */
   public async stop() {
     try {
-      deepstreamClient.close()
+      this.deepstreamClient.close()
     } catch (e) {
       console.error('Error shutting down realtime search', e)
     }
   }
 
   private setupRPC() {
-    deepstreamClient.rpc.provide(
+    this.deepstreamClient.rpc.provide(
       this.config.rpcName,
       async (query: Query, response: RPCResponse) => {
         try {
@@ -90,7 +93,7 @@ export class Provider {
           const hash = this.hashQueryString(query)
           console.log(`Created hash ${hash} for realtime-search using RPC`)
 
-          const exists = await deepstreamClient.record.has(
+          const exists = await this.deepstreamClient.record.has(
             `${this.config.metaRecordPrefix}${hash}`,
           )
           if (exists === true) {
@@ -100,12 +103,12 @@ export class Provider {
           }
 
           try {
-            await deepstreamClient.record.setDataWithAck(
+            await this.deepstreamClient.record.setDataWithAck(
               `${this.config.metaRecordPrefix}${hash}`,
               ({
                 query,
                 hash,
-              } as never) as RecordData,
+              } as unknown) as RecordData,
             )
             response.send(hash)
           } catch (e) {
@@ -137,7 +140,10 @@ export class Provider {
     // reason it will restart to ensure a clean state.
     setInterval(async () => {
       try {
-        await deepstreamClient.rpc.make(this.config.rpcName, '__heartbeat__')
+        await this.deepstreamClient.rpc.make(
+          this.config.rpcName,
+          '__heartbeat__',
+        )
         console.debug('heartbeat succeeded')
       } catch (e) {
         console.error('heartbeat check failed, restarting rpc provider')
@@ -176,9 +182,9 @@ export class Provider {
     let query: Query
 
     try {
-      ;({ query } = ((await deepstreamClient.record.snapshot(
+      ;({ query } = ((await this.deepstreamClient.record.snapshot(
         recordName,
-      )) as never) as { query: Query })
+      )) as unknown) as { query: Query })
     } catch (e) {
       console.error(`Error retrieving snapshot of ${recordName}`, e)
       return false
@@ -219,13 +225,13 @@ export class Provider {
       console.error(`Error finding search with hash ${hash}`)
     }
 
-    const record = deepstreamClient.record.getRecord(
+    const record = this.deepstreamClient.record.getRecord(
       `${this.config.metaRecordPrefix}${hash}`,
     )
     await record.whenReady()
     await record.delete()
 
-    const list = deepstreamClient.record.getRecord(
+    const list = this.deepstreamClient.record.getRecord(
       `${this.config.listNamePrefix}${hash}`,
     )
     await list.whenReady()
@@ -238,7 +244,7 @@ export class Provider {
 
   private async onResultsChanged(listName: string, entries: string[]) {
     try {
-      await deepstreamClient.record.setDataWithAck(listName, entries)
+      await this.deepstreamClient.record.setDataWithAck(listName, entries)
       console.debug(`Updated ${listName} with ${entries.length} entries`)
     } catch (e) {
       console.error(`Error setting entries for list ${listName}`, e)
