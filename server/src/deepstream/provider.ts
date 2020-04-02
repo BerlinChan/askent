@@ -2,8 +2,9 @@ import { MD5, enc } from 'crypto-js'
 import { RecordData } from '@deepstream/client/dist/constants'
 import { RPCResponse } from '@deepstream/client/dist/rpc/rpc-response'
 import { ListenResponse } from '@deepstream/client/dist/util/listener'
-import { PostgresConnection } from './postgres/connection'
+import { MongoDBConnection } from './mongodb/connection'
 import deepstreamClient from './index'
+import { QuestionSearchInput } from '../graphql/Question'
 
 export interface RealtimeSearch {
   whenReady: () => Promise<void>
@@ -16,27 +17,21 @@ export interface RealtimeSearchCallbacks {
 
 export interface DatabaseClient {
   getSearch(query: Query, callbacks: RealtimeSearchCallbacks): RealtimeSearch
-  start: () => Promise<void>
-  stop: () => Promise<void>
 }
 
-export interface Query {
-  eventId: string
-}
+export interface Query extends QuestionSearchInput {}
 
 export interface RealtimeSearchConfig {
+  rpcName: string
   listNamePrefix: string
   metaRecordPrefix: string
-  primaryKey: string
   heartbeatInterval: number
-  rpcName: string
 }
 
 const defaultConfig: RealtimeSearchConfig = {
-  rpcName: 'realtime_search',
-  listNamePrefix: 'realtime_search/list_',
-  metaRecordPrefix: 'realtime_search/meta_',
-  primaryKey: 'id',
+  rpcName: 'question_realtime_search',
+  listNamePrefix: 'question_realtime_search/list_',
+  metaRecordPrefix: 'question_realtime_search/meta_',
   heartbeatInterval: 30000,
 }
 
@@ -49,7 +44,7 @@ export class Provider {
   constructor(config: Partial<RealtimeSearchConfig>) {
     this.config = { ...defaultConfig, ...config }
     this.hashReplaceRegex = new RegExp(`^${this.config.listNamePrefix}(.*)`)
-    this.databaseClient = new PostgresConnection(this.config)
+    this.databaseClient = new MongoDBConnection()
   }
 
   /**
@@ -57,8 +52,6 @@ export class Provider {
    * 'ready' event once started
    */
   public async start() {
-    await this.databaseClient.start()
-
     this.setupRPC()
 
     const pattern = `${this.config.listNamePrefix}.*`
@@ -75,9 +68,8 @@ export class Provider {
   public async stop() {
     try {
       deepstreamClient.close()
-      await this.databaseClient.stop()
     } catch (e) {
-      console.log('Error shutting down realtime search', e)
+      console.error('Error shutting down realtime search', e)
     }
   }
 
@@ -146,9 +138,9 @@ export class Provider {
     setInterval(async () => {
       try {
         await deepstreamClient.rpc.make(this.config.rpcName, '__heartbeat__')
-        console.log('heartbeat succeeded')
+        console.debug('heartbeat succeeded')
       } catch (e) {
-        console.log('heartbeat check failed, restarting rpc provider')
+        console.error('heartbeat check failed, restarting rpc provider')
       }
     }, this.config.heartbeatInterval || 3000)
 
@@ -247,7 +239,7 @@ export class Provider {
   private async onResultsChanged(listName: string, entries: string[]) {
     try {
       await deepstreamClient.record.setDataWithAck(listName, entries)
-      console.log(`Updated ${listName} with ${entries.length} entries`)
+      console.debug(`Updated ${listName} with ${entries.length} entries`)
     } catch (e) {
       console.error(`Error setting entries for list ${listName}`, e)
     }

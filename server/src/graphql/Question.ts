@@ -28,7 +28,6 @@ import { Event } from './Event'
 import { User } from './User'
 import { plainToClass } from 'class-transformer'
 import { getRepository, Repository } from 'typeorm'
-import { toPairs } from 'ramda'
 
 registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
 
@@ -97,6 +96,29 @@ export class QuestionPaged implements IPagedType {
   @Field(returns => [Question])
   public list!: QuestionSchema[]
 }
+@InputType()
+export class QuestionSearchInput {
+  @Field(returns => ID)
+  public eventId!: string
+
+  @Field(returns => QuestionFilter, {
+    nullable: true,
+    defaultValue: QuestionFilter.Publish,
+  })
+  public questionFilter?: QuestionFilter
+
+  @Field({ nullable: true, defaultValue: '' })
+  public searchString!: string
+
+  @Field(returns => PaginationInput)
+  public pagination!: PaginationInput
+
+  @Field(returns => QuestionOrder, {
+    nullable: true,
+    defaultValue: QuestionOrder.Popular,
+  })
+  public order!: QuestionOrder
+}
 
 @InputType()
 export class CreateQuestionInput implements Partial<Question> {
@@ -122,31 +144,18 @@ export class QuestionResolver {
     description: 'Query question by event for Role.Admin.',
   })
   async questionsByEvent(
-    @Arg('eventId', returns => ID) eventId: string,
-    @Arg('questionFilter', returns => QuestionFilter, {
-      nullable: true,
-      defaultValue: QuestionFilter.Publish,
-    })
-    questionFilter: QuestionFilter,
-    @Arg('searchString', { nullable: true }) searchString: string,
-    @Arg('pagination', returns => PaginationInput) pagination: PaginationInput,
-    @Arg('order', returns => QuestionOrder, {
-      nullable: true,
-      defaultValue: QuestionOrder.Popular,
-    })
-    order: QuestionOrder,
+    @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
+    const { eventId, questionFilter, searchString, pagination, order } = input
     const { offset, limit } = pagination
     if (questionFilter === QuestionFilter.Publish) {
     }
     const filter = Object.assign(
       { event: eventId },
-      ReviewStatus[questionFilter]
-        ? { reviewStatus: questionFilter }
-        : questionFilter === QuestionFilter.Starred
+      questionFilter === QuestionFilter.Starred
         ? { star: true }
-        : {},
+        : { reviewStatus: questionFilter },
       { content: { $regex: new RegExp(searchString) } },
     )
     const totalCount = await QuestionModel.countDocuments(filter)
@@ -442,7 +451,7 @@ async function getVoted(ctx: Context, questionId: string) {
 export function getQuestionSortArg(
   questionOrder: QuestionOrder,
   top?: boolean,
-): { [key: string]: 1 | -1 } {
+): { [key: string]: 1 | -1 } | {} {
   let arg
   switch (questionOrder) {
     case QuestionOrder.Recent:

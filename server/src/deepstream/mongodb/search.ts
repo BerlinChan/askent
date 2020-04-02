@@ -1,18 +1,18 @@
 import { Query, RealtimeSearch, RealtimeSearchCallbacks } from '../provider'
-import { Client } from 'pg'
-import models from '../../model'
+import { ChangeStream, FilterQuery } from 'mongodb'
+import { QuestionModel } from '../../model'
 
-export class PostgresSearch implements RealtimeSearch {
+export class MongoDBSearch implements RealtimeSearch {
+  private changeStream: ChangeStream
+  private mongoQuery: FilterQuery<any> = this.query
   private isReady: boolean = false
 
   constructor(
     private query: Query,
     private callbacks: RealtimeSearchCallbacks,
-    private pgClient: Client,
-    private primaryKey: string,
   ) {
-    this.pgClient.query(`LISTEN "questions"`)
-    this.pgClient.on('notification', this.runQuery.bind(this))
+    this.changeStream = QuestionModel.watch([], {})
+    this.changeStream.on('change', this.runQuery.bind(this))
   }
 
   /**
@@ -31,18 +31,14 @@ export class PostgresSearch implements RealtimeSearch {
    * as a result of the list being deleted.
    */
   public async stop(): Promise<void> {
-    this.pgClient.query(`UNLISTEN "questions"`)
+    this.changeStream.close()
   }
 
   private async runQuery() {
     try {
-      const result = await models.Question.findAll({
-        where: { eventId: this.query.eventId },
-        attributes: ['id'],
-      })
+      const result = await QuestionModel.find(this.mongoQuery).lean(true)
       const entries = result.map(
-        (item: { [key: string]: string }) =>
-          `questions/${item[this.primaryKey]}`,
+        r => `${QuestionModel.collection.collectionName}/${r._id}`,
       )
       this.callbacks.onResultsChanged(entries)
     } catch (error) {

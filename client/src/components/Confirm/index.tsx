@@ -22,7 +22,7 @@ interface Props {
   onOk: MouseEventHandler;
 }
 
-const Confirm: React.FC<Props & DialogProps> = ({
+const Confirm: React.FC<Props & Omit<DialogProps, "children">> = ({
   open,
   title,
   contentText,

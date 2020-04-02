@@ -6,7 +6,6 @@
 
 ## TODO
 
-- [ ] user micro service
 - [ ] question subscription use deepstream
 - [ ] homepage - join event
 - [ ] admin event list - duplicate event
