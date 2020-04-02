@@ -136,7 +136,7 @@ const QuestionList: React.FC<Props> = ({
 
   const orderedList = React.useMemo(() => {
     const orderedList = sortQuestionBy<QuestionFieldsFragment>(
-      queryVariables.order || QuestionOrder.Popular
+      queryVariables.input.order || QuestionOrder.Popular
     )(data?.questionsByEvent.list || []);
 
     return orderedList;
@@ -145,9 +145,12 @@ const QuestionList: React.FC<Props> = ({
     if (data?.questionsByEvent.hasNextPage) {
       fetchMore({
         variables: {
-          pagination: {
-            offset: data?.questionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
-            limit: data?.questionsByEvent.limit || DEFAULT_PAGE_LIMIT
+          input: {
+            ...queryVariables.input,
+            pagination: {
+              offset: data?.questionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
+              limit: data?.questionsByEvent.limit || DEFAULT_PAGE_LIMIT
+            }
           }
         },
         updateQuery: (prev, { fetchMoreResult }) => {

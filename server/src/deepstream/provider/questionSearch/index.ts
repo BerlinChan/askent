@@ -144,9 +144,11 @@ export class Provider {
           this.config.rpcName,
           '__heartbeat__',
         )
-        console.debug('heartbeat succeeded')
+        console.debug(`${this.config.rpcName} heartbeat succeeded`)
       } catch (e) {
-        console.error('heartbeat check failed, restarting rpc provider')
+        console.error(
+          `${this.config.rpcName} heartbeat check failed, restarting rpc provider`,
+        )
       }
     }, this.config.heartbeatInterval || 3000)
 

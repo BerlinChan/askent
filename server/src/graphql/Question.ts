@@ -135,12 +135,6 @@ export class CreateQuestionInput implements Partial<Question> {
 
 @Resolver(of => Question)
 export class QuestionResolver {
-  private userRepository: Repository<UserEntity>
-
-  constructor() {
-    this.userRepository = getRepository(UserEntity)
-  }
-
   @Query(returns => QuestionPaged, {
     description: 'Query question by event for Role.Admin.',
   })

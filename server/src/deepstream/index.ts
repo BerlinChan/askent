@@ -32,12 +32,11 @@ deepstreamClient.login({}, success => {
     // TODO: test realtime search https://deepstream.io/blog/20191104-realtime-search/
     setTimeout(async () => {
       const hash = await deepstreamClient.rpc.make('question_realtime_search', {
-        eventId: 'e830794a-7f03-46bc-97a6-22cb8cca5dbd',
+        eventId: '5e859a953b390a28fe7d85c7',
       })
       const resultList = deepstreamClient.record.getList(
         `question_realtime_search/list_${hash}`,
       )
-      console.log(1, 'resultList', resultList)
       resultList.subscribe(results => {
         console.log(2, results)
       })

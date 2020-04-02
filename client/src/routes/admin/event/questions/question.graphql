@@ -20,24 +20,8 @@ fragment QuestionFields on Question {
   }
 }
 
-query QuestionsByEvent(
-  $eventId: ID!
-  $questionFilter: QuestionFilter
-  $searchString: String
-  $pagination: PaginationInput!
-  $order: QuestionOrder
-) {
-  questionsByEvent(
-    eventId: $eventId
-    questionFilter: $questionFilter
-    searchString: $searchString
-    pagination: $pagination
-    order: $order
-  )
-    @connection(
-      key: "questionsByEvent"
-      filter: ["eventId", "questionFilter", "searchString", "order"]
-    ) {
+query QuestionsByEvent($input: QuestionSearchInput!) {
+  questionsByEvent(input: $input) {
     ...QuestionPagedFields
     list {
       ...QuestionFields
