@@ -7,7 +7,7 @@ import { FormattedMessage } from "react-intl";
 import OrderSelect from "./OrderSelect";
 import {
   useEventByIdQuery,
-  useEventUpdatedSubscription,
+  // useEventUpdatedSubscription,
   QuestionOrder
 } from "../../../generated/graphqlHooks";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
@@ -66,9 +66,9 @@ const EventWall: React.FC<Props> = () => {
   };
 
   // subscription
-  useEventUpdatedSubscription({
-    variables: { eventId: id as string }
-  });
+  // useEventUpdatedSubscription({
+  //   variables: { eventId: id as string }
+  // });
 
   const onResize = () => {
     setQrcodeCardWidth(Number(qrcodeCardRef?.current?.clientWidth));

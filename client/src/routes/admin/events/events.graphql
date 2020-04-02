@@ -67,8 +67,8 @@ mutation DeleteEvent($eventId: ID!) {
   deleteEvent(eventId: $eventId)
 }
 
-subscription EventUpdated($eventId: ID!) {
-  eventUpdated(eventId: $eventId) {
-    ...EventDetailFields
-  }
-}
+# subscription EventUpdated($eventId: ID!) {
+#   eventUpdated(eventId: $eventId) {
+#     ...EventDetailFields
+#   }
+# }

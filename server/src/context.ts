@@ -1,23 +1,14 @@
-import { PubSub } from 'apollo-server-express'
+import { PubSub } from 'apollo-server'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
-import db, { ModelType } from './models'
-import sequelize from './db'
 import { DeepstreamClient } from '@deepstream/client'
-import deepstreamClient from './deepstream'
-const {
-  createContext: createDataloaderContext,
-} = require('dataloader-sequelize')
-
-// TODO: n+1 query problem: https://github.com/mickhansen/graphql-sequelize/tree/master/examples/graphql-yoga
-export const dataloaderContext = createDataloaderContext(sequelize)
+// import deepstreamClient from './deepstream'
 
 // TODO: support multiple subscription manager instances, https://github.com/davidyaha/graphql-redis-subscriptions
 const pubsub = new PubSub()
 
 export interface Context extends ExpressContext {
-  db: ModelType
   pubsub: PubSub
-  deepstreamClient: DeepstreamClient
+  // deepstreamClient: DeepstreamClient
 }
 
 export function createContext({
@@ -25,5 +16,5 @@ export function createContext({
   res,
   connection,
 }: ExpressContext): Context {
-  return { db, pubsub, deepstreamClient, req, res, connection }
+  return { pubsub, req, res, connection }
 }

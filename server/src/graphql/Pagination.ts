@@ -1,29 +1,32 @@
-import { inputObjectType, interfaceType } from 'nexus'
+import { InterfaceType, InputType, Field, Int } from 'type-graphql'
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from '../constant'
 
-export const PaginationInput = inputObjectType({
-  name: 'PaginationInput',
-  description: 'Pagination input type.',
-  definition(t) {
-    t.int('offset', {
-      default: DEFAULT_PAGE_OFFSET,
-      required: true,
-      description: 'Default offset 0.',
-    })
-    t.int('limit', {
-      default: DEFAULT_PAGE_LIMIT,
-      required: true,
-      description: `Default limit ${DEFAULT_PAGE_LIMIT}`,
-    })
-  },
-})
-export const IPagedType = interfaceType({
-  name: 'IPagedType',
-  definition(t) {
-    t.int('offset')
-    t.int('limit')
-    t.int('totalCount')
-    t.boolean('hasNextPage')
-    t.resolveType(() => null)
-  },
-})
+@InputType()
+export class PaginationInput {
+  @Field(returns => Int, {
+    defaultValue: DEFAULT_PAGE_OFFSET,
+    description: 'Default offset 0.',
+  })
+  public offset!: number
+
+  @Field(returns => Int, {
+    defaultValue: DEFAULT_PAGE_LIMIT,
+    description: `Default limit ${DEFAULT_PAGE_LIMIT}`,
+  })
+  public limit!: number
+}
+
+@InterfaceType({ resolveType: () => null })
+export abstract class IPagedType {
+  @Field(type => Int)
+  public offset!: number
+
+  @Field(type => Int)
+  public limit!: number
+
+  @Field(type => Int)
+  public totalCount!: number
+
+  @Field()
+  public hasNextPage!: boolean
+}

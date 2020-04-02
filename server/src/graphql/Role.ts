@@ -1,29 +1,48 @@
-import { objectType, extendType, enumType } from 'nexus'
-import { RoleNameEnum } from '../models/Role'
+import {
+  Field,
+  ObjectType,
+  registerEnumType,
+  Resolver,
+  Mutation,
+  Query,
+  Arg,
+  ID,
+} from 'type-graphql'
+import { RoleName } from '../entity/Role'
+import { getRepository, Repository } from 'typeorm'
+import { Role as RoleEneity } from '../entity/Role'
+import { plainToClass } from 'class-transformer'
 
-export enum AudienceRoleEnum {
-  All = 'ALL',
-  ExcludeAuthor = 'EXCLUDE_AUTHOR',
-  OnlyAuthor = 'ONLY_AUTHOR',
-}
-export const RoleName= enumType({
+registerEnumType(RoleName, {
   name: 'RoleName',
-  members: Object.values(RoleNameEnum),
-})
-export const Role = objectType({
-  name: 'Role',
-  definition(t) {
-    t.id('id')
-    t.string('name')
-  },
 })
 
-export const roleQuery = extendType({
-  type: 'Query',
-  definition(t) {},
-})
+@ObjectType()
+export class Role {
+  @Field(returns => ID)
+  public id!: string
 
-export const roleMutation = extendType({
-  type: 'Mutation',
-  definition(t) {},
-})
+  @Field()
+  public name!: string
+}
+
+@Resolver(of => Role)
+export class RoleResolver {
+  private roleRepository: Repository<RoleEneity>
+
+  constructor() {
+    this.roleRepository = getRepository(RoleEneity)
+  }
+  
+  @Query(returns => [Role])
+  async roles(): Promise<Role[]> {
+    const roles = await this.roleRepository.find()
+    return plainToClass(Role, roles)
+  }
+
+  @Mutation(returns => Role)
+  createRole(@Arg('name', type => RoleName) name: RoleName): Promise<Role> {
+    const role = this.roleRepository.create({ name })
+    return this.roleRepository.save(role)
+  }
+}

@@ -1,6 +1,6 @@
 import { Query, RealtimeSearch, RealtimeSearchCallbacks } from '../provider'
 import { Client } from 'pg'
-import models from '../../models'
+import models from '../../model'
 
 export class PostgresSearch implements RealtimeSearch {
   private isReady: boolean = false

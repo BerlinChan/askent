@@ -1,12 +1,10 @@
-import http from 'http'
+import 'reflect-metadata'
 import dotenv from 'dotenv'
 import path from 'path'
-import express from 'express'
-import { ApolloServer } from 'apollo-server-express'
-import { schema } from './schema'
+import { ApolloServer } from 'apollo-server'
+import { buildSchema } from './schema'
 import { createContext } from './context'
-import { applyMiddleware } from 'graphql-middleware'
-import { permissions } from './permissions'
+import { connectPostgres, connectMongo } from './db'
 import { getAuthedUser } from './utils'
 
 const dotenvResult = dotenv.config({ path: path.join(__dirname, '../.env') })
@@ -15,42 +13,36 @@ if (dotenvResult.error) {
 }
 const { PORT = 4000 } = process.env
 
-const app = express()
+async function bootstrap() {
+  await connectPostgres()
+  await connectMongo()
 
-//
-// Register Node.js middleware
-// -----------------------------------------------------------------------------
+  type ConnectionParamsType = {
+    Authorization?: string
+  }
 
-//
-// Register API middleware
-// -----------------------------------------------------------------------------
-// https://github.com/graphql/express-graphql#options
-type ConnectionParamsType = {
-  Authorization?: string
-}
-const server = new ApolloServer({
-  schema: schema,
-  // TODO: schema: applyMiddleware(schema, permissions),
-  context: createContext,
-  subscriptions: {
-    onConnect: (connectionParams: ConnectionParamsType, websocket, context) => {
-      if (connectionParams?.Authorization) {
-        return getAuthedUser(connectionParams.Authorization)
-      }
+  const server = new ApolloServer({
+    schema: await buildSchema(),
+    context: createContext,
+    subscriptions: {
+      onConnect: (
+        connectionParams: ConnectionParamsType,
+        websocket,
+        context,
+      ) => {
+        if (connectionParams?.Authorization) {
+          return getAuthedUser(connectionParams.Authorization)
+        }
+      },
     },
-  },
-})
-server.applyMiddleware({ app })
+    debug: process.env.NODE_ENV !== 'production',
+    playground: process.env.NODE_ENV !== 'production',
+  })
 
-const httpServer = http.createServer(app)
-server.installSubscriptionHandlers(httpServer)
+  // Start the server
+  const { url, subscriptionsUrl } = await server.listen({ port: PORT })
+  console.log(`Server is running, GraphQL Playground available at ${url}`)
+  console.log(`🚀 Subscriptions ready at ${subscriptionsUrl}`)
+}
 
-// ⚠️ Pay attention to the fact that we are calling `listen` on the http server variable, and not on `app`.
-httpServer.listen(PORT, () => {
-  console.log(
-    `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`,
-  )
-  console.log(
-    `🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`,
-  )
-})
+bootstrap()

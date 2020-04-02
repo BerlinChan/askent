@@ -31,32 +31,32 @@ query QuestionsByEventWall(
   }
 }
 
-subscription QuestionAddedWall(
-  $eventId: ID!
-  $asRole: RoleName!
-  $questionFilter: QuestionFilter
-  $searchString: String
-  $order: QuestionOrder
-  $limit: Int
-) {
-  questionAdded(
-    eventId: $eventId
-    asRole: $asRole
-    questionFilter: $questionFilter
-    searchString: $searchString
-    order: $order
-    limit: $limit
-  ) {
-    ...QuestionWallFields
-  }
-}
+# subscription QuestionAddedWall(
+#   $eventId: ID!
+#   $asRole: RoleName!
+#   $questionFilter: QuestionFilter
+#   $searchString: String
+#   $order: QuestionOrder
+#   $limit: Int
+# ) {
+#   questionAdded(
+#     eventId: $eventId
+#     asRole: $asRole
+#     questionFilter: $questionFilter
+#     searchString: $searchString
+#     order: $order
+#     limit: $limit
+#   ) {
+#     ...QuestionWallFields
+#   }
+# }
 
-subscription QuestionUpdatedWall($eventId: ID!, $asRole: RoleName!) {
-  questionUpdated(eventId: $eventId, asRole: $asRole) {
-    ...QuestionWallFields
-  }
-}
+# subscription QuestionUpdatedWall($eventId: ID!, $asRole: RoleName!) {
+#   questionUpdated(eventId: $eventId, asRole: $asRole) {
+#     ...QuestionWallFields
+#   }
+# }
 
-subscription QuestionRemovedWall($eventId: ID!, $asRole: RoleName!) {
-  questionRemoved(eventId: $eventId, asRole: $asRole)
-}
+# subscription QuestionRemovedWall($eventId: ID!, $asRole: RoleName!) {
+#   questionRemoved(eventId: $eventId, asRole: $asRole)
+# }

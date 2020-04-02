@@ -8,7 +8,7 @@ import LiveEventHeader from "./LiveEventHeader";
 import {
   useEventByIdQuery,
   useMeQuery,
-  useEventUpdatedSubscription
+  // useEventUpdatedSubscription
 } from "../../../generated/graphqlHooks";
 
 const LiveQuestionsComponent = loadable(() => import("./questions"), {
@@ -23,9 +23,9 @@ const Live: React.FC = () => {
     variables: { eventId: id as string }
   });
 
-  useEventUpdatedSubscription({
-    variables: { eventId: id as string }
-  });
+  // useEventUpdatedSubscription({
+  //   variables: { eventId: id as string }
+  // });
 
   return (
     <Switch>

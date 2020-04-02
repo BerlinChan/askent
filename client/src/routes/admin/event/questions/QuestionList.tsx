@@ -1,9 +1,9 @@
 import React from "react";
 import { QueryResult } from "@apollo/react-common";
 import {
-  useQuestionAddedSubscription,
-  useQuestionUpdatedSubscription,
-  useQuestionRemovedSubscription,
+  // useQuestionAddedSubscription,
+  // useQuestionUpdatedSubscription,
+  // useQuestionRemovedSubscription,
   useQuestionsByEventQuery,
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
@@ -57,61 +57,61 @@ const QuestionList: React.FC<Props> = ({
   const { data, loading, fetchMore } = questionsQueryResult;
 
   // subscriptions
-  useQuestionAddedSubscription({
-    variables: {
-      eventId: queryVariables.eventId,
-      asRole: RoleName.Admin,
-      questionFilter: queryVariables.questionFilter,
-      searchString: queryVariables.searchString,
-      order: queryVariables.order,
-      limit: data?.questionsByEvent.list.length
-    },
-    onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data) {
-        const { questionAdded } = subscriptionData.data;
+  // useQuestionAddedSubscription({
+  //   variables: {
+  //     eventId: queryVariables.eventId,
+  //     asRole: RoleName.Admin,
+  //     questionFilter: queryVariables.questionFilter,
+  //     searchString: queryVariables.searchString,
+  //     order: queryVariables.order,
+  //     limit: data?.questionsByEvent.list.length
+  //   },
+  //   onSubscriptionData: ({ client, subscriptionData }) => {
+  //     if (subscriptionData.data) {
+  //       const { questionAdded } = subscriptionData.data;
 
-        if (data) {
-          // add
-          updateCache(client, queryVariables, {
-            questionsByEvent: {
-              ...data.questionsByEvent,
-              // TODO: should always add
-              totalCount: data.questionsByEvent.totalCount + 1,
-              list: [questionAdded].concat(
-                data.questionsByEvent.list.filter(
-                  question => question.id !== questionAdded.id
-                )
-              )
-            }
-          });
-        }
-      }
-    }
-  });
-  useQuestionUpdatedSubscription({
-    variables: { eventId: queryVariables.eventId, asRole: RoleName.Admin }
-  });
-  useQuestionRemovedSubscription({
-    variables: { eventId: queryVariables.eventId, asRole: RoleName.Admin },
-    onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionRemoved) {
-        const { questionRemoved } = subscriptionData.data;
+  //       if (data) {
+  //         // add
+  //         updateCache(client, queryVariables, {
+  //           questionsByEvent: {
+  //             ...data.questionsByEvent,
+  //             // TODO: should always add
+  //             totalCount: data.questionsByEvent.totalCount + 1,
+  //             list: [questionAdded].concat(
+  //               data.questionsByEvent.list.filter(
+  //                 question => question.id !== questionAdded.id
+  //               )
+  //             )
+  //           }
+  //         });
+  //       }
+  //     }
+  //   }
+  // });
+  // useQuestionUpdatedSubscription({
+  //   variables: { eventId: queryVariables.eventId, asRole: RoleName.Admin }
+  // });
+  // useQuestionRemovedSubscription({
+  //   variables: { eventId: queryVariables.eventId, asRole: RoleName.Admin },
+  //   onSubscriptionData: ({ client, subscriptionData }) => {
+  //     if (subscriptionData.data?.questionRemoved) {
+  //       const { questionRemoved } = subscriptionData.data;
 
-        if (data) {
-          // remove
-          updateCache(client, queryVariables, {
-            questionsByEvent: {
-              ...data.questionsByEvent,
-              totalCount: data.questionsByEvent.totalCount - 1,
-              list: data.questionsByEvent.list.filter(
-                preQuestion => questionRemoved !== preQuestion.id
-              )
-            }
-          });
-        }
-      }
-    }
-  });
+  //       if (data) {
+  //         // remove
+  //         updateCache(client, queryVariables, {
+  //           questionsByEvent: {
+  //             ...data.questionsByEvent,
+  //             totalCount: data.questionsByEvent.totalCount - 1,
+  //             list: data.questionsByEvent.list.filter(
+  //               preQuestion => questionRemoved !== preQuestion.id
+  //             )
+  //           }
+  //         });
+  //       }
+  //     }
+  //   }
+  // });
 
   const handleMoreOpen = (
     event: React.MouseEvent<HTMLButtonElement>,
