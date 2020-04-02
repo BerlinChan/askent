@@ -33,10 +33,10 @@
   resolved "https://registry.npm.taobao.org/@apollographql/graphql-playground-html/download/@apollographql/graphql-playground-html-1.6.24.tgz#3ce939cb127fb8aaa3ffc1e90dff9b8af9f2e3dc"
   integrity sha1-POk5yxJ/uKqj/8HpDf+bivny49w=
 
-"@deepstream/client@^5.0.7":
+"@deepstream/client@5.0.7":
   version "5.0.7"
-  resolved "https://registry.npm.taobao.org/@deepstream/client/download/@deepstream/client-5.0.7.tgz#7e0720fd066d94bad7b86e27116a71970d9a76a5"
-  integrity sha1-fgcg/QZtlLrXuG4nEWpxlw2adqU=
+  resolved "https://registry.yarnpkg.com/@deepstream/client/-/client-5.0.7.tgz#7e0720fd066d94bad7b86e27116a71970d9a76a5"
+  integrity sha512-obnGTxGHZW1fiEVhooKpRLXVswg2jBdvLD8RGJrLBjcuSRrbcDmYz+b1mkRp85zVG27qwCmwSWG+0IZX7sReZQ==
   dependencies:
     "@deepstream/protobuf" "^1.0.1"
     protobufjs "^6.8.8"
@@ -102,10 +102,10 @@
   resolved "https://registry.npm.taobao.org/@protobufjs/utf8/download/@protobufjs/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@typegoose/typegoose@^6.4.0":
+"@typegoose/typegoose@6.4.0":
   version "6.4.0"
-  resolved "https://registry.npm.taobao.org/@typegoose/typegoose/download/@typegoose/typegoose-6.4.0.tgz#8596a17f5d42db02bea873c12499d482419e0a53"
-  integrity sha1-hZahf11C2wK+qHPBJJnUgkGeClM=
+  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-6.4.0.tgz#8596a17f5d42db02bea873c12499d482419e0a53"
+  integrity sha512-3aJ2MxOIcTQ0gpGuQ3d4UGAUSATfI03Jberr4K6Xp7LnIehhVjBcVzaJETH2BR/H3sDOJXLUnHH+nJP218JFHQ==
   dependencies:
     lodash "^4.17.15"
     loglevel "^1.6.7"
@@ -289,10 +289,10 @@
     "@types/bson" "*"
     "@types/node" "*"
 
-"@types/mongoose@^5.7.8":
+"@types/mongoose@5.7.8":
   version "5.7.8"
-  resolved "https://registry.npm.taobao.org/@types/mongoose/download/@types/mongoose-5.7.8.tgz#684e168d605d61be28fe1f1932f0b8b0e17115eb"
-  integrity sha1-aE4WjWBdYb4o/h8ZMvC4sOFxFes=
+  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.7.8.tgz#684e168d605d61be28fe1f1932f0b8b0e17115eb"
+  integrity sha512-nLyVONnGou1DfNwyP70FUVG+teusG8Whlwbke5BZrZ03iG6Iyu5gowzfuKpN7pu8BW/SOcF+Gcpny08FJdGuWw==
   dependencies:
     "@types/mongodb" "*"
     "@types/node" "*"
@@ -573,10 +573,10 @@ apollo-server-types@^0.3.0:
     apollo-server-caching "^0.5.1"
     apollo-server-env "^2.4.3"
 
-apollo-server@^2.11.0:
+apollo-server@2.11.0:
   version "2.11.0"
-  resolved "https://registry.npm.taobao.org/apollo-server/download/apollo-server-2.11.0.tgz#f901f820716716e8693be8b0e234849f5819a4ae"
-  integrity sha1-+QH4IHFnFuhpO+iw4jSEn1gZpK4=
+  resolved "https://registry.yarnpkg.com/apollo-server/-/apollo-server-2.11.0.tgz#f901f820716716e8693be8b0e234849f5819a4ae"
+  integrity sha512-UhW6RHPBMWZy1v7KhzssUnxPBxpu9fGFajtqP68vtvvP3+xa2Y2GUg0594bHcUcLK+BjdMBQQSW27i0yQ/Fz9g==
   dependencies:
     apollo-server-core "^2.11.0"
     apollo-server-express "^2.11.0"
@@ -784,10 +784,10 @@ chalk@^3.0.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-class-transformer@^0.2.3:
+class-transformer@0.2.3:
   version "0.2.3"
-  resolved "https://registry.npm.taobao.org/class-transformer/download/class-transformer-0.2.3.tgz#598c92ca71dcca73f91ccb875d74a3847ccfa32d"
-  integrity sha1-WYySynHcynP5HMuHXXSjhHzPoy0=
+  resolved "https://registry.yarnpkg.com/class-transformer/-/class-transformer-0.2.3.tgz#598c92ca71dcca73f91ccb875d74a3847ccfa32d"
+  integrity sha512-qsP+0xoavpOlJHuYsQJsN58HXSl8Jvveo+T37rEvCEeRfMWoytAyR0Ua/YsFgpM6AZYZ/og2PJwArwzJl1aXtQ==
 
 class-validator@>=0.9.1:
   version "0.11.1"
@@ -1727,10 +1727,10 @@ mongoose-legacy-pluralize@1.0.2:
   resolved "https://registry.npm.taobao.org/mongoose-legacy-pluralize/download/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
   integrity sha1-O6n5H6UHtRhtOZ+0CFS/8Y+1Y+Q=
 
-mongoose@^5.9.7:
+mongoose@5.9.7:
   version "5.9.7"
-  resolved "https://registry.npm.taobao.org/mongoose/download/mongoose-5.9.7.tgz#03c581860d0e2f60f6008f9457ab0c2905609875"
-  integrity sha1-A8WBhg0OL2D2AI+UV6sMKQVgmHU=
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.9.7.tgz#03c581860d0e2f60f6008f9457ab0c2905609875"
+  integrity sha512-WJOBh9WMvivqBK8my9HFtSzSySKdUxJPNGAwswEakAasWUcPXJl3yHMtZ4ngGnKbwTT9KnAr75xamlt/PouR9w==
   dependencies:
     bson "~1.1.1"
     kareem "2.3.1"
@@ -2004,10 +2004,10 @@ pg-types@^2.1.0:
     postgres-date "~1.0.4"
     postgres-interval "^1.1.0"
 
-pg@^7.18.2:
+pg@7.18.2:
   version "7.18.2"
-  resolved "https://registry.npm.taobao.org/pg/download/pg-7.18.2.tgz#4e219f05a00aff4db6aab1ba02f28ffa4513b0bb"
-  integrity sha1-TiGfBaAK/022qrG6AvKP+kUTsLs=
+  resolved "https://registry.yarnpkg.com/pg/-/pg-7.18.2.tgz#4e219f05a00aff4db6aab1ba02f28ffa4513b0bb"
+  integrity sha512-Mvt0dGYMwvEADNKy5PMQGlzPudKcKKzJds/VbOeZJpb6f/pI3mmoXX0JksPgI3l3JPP/2Apq7F36O63J7mgveA==
   dependencies:
     buffer-writer "2.0.0"
     packet-reader "1.0.0"
@@ -2159,7 +2159,7 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-reflect-metadata@^0.1.13:
+reflect-metadata@0.1.13, reflect-metadata@^0.1.13:
   version "0.1.13"
   resolved "https://registry.npm.taobao.org/reflect-metadata/download/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
   integrity sha1-Z648pXyXKiqhZCsQ/jY/4y1J3Ag=
@@ -2622,10 +2622,10 @@ tslib@^1.11.0, tslib@^1.9.0:
   resolved "https://registry.npm.taobao.org/tslib/download/tslib-1.11.1.tgz#eb15d128827fbee2841549e171f45ed338ac7e35"
   integrity sha1-6xXRKIJ/vuKEFUnhcfRe0zisfjU=
 
-type-graphql@^0.17.6:
+type-graphql@0.17.6:
   version "0.17.6"
-  resolved "https://registry.npm.taobao.org/type-graphql/download/type-graphql-0.17.6.tgz#2a939df607f7ca2924986fd0c0b8c753835d7d01"
-  integrity sha1-KpOd9gf3yikkmG/QwLjHU4NdfQE=
+  resolved "https://registry.yarnpkg.com/type-graphql/-/type-graphql-0.17.6.tgz#2a939df607f7ca2924986fd0c0b8c753835d7d01"
+  integrity sha512-UFZaMMnpae3zeu9qCdWN82hm8wQeYu/+sQFbG5v3vlTtctZ9Xle9bvNi/rzSbQaG94K9Y5O5AGxjVKKMpEAMYA==
   dependencies:
     "@types/glob" "^7.1.1"
     "@types/node" "^12.6.2"
@@ -2645,10 +2645,10 @@ type-is@^1.6.16, type-is@~1.6.17, type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typeorm@^0.2.24:
+typeorm@0.2.24:
   version "0.2.24"
-  resolved "https://registry.npm.taobao.org/typeorm/download/typeorm-0.2.24.tgz#cd0fbd907326873a96c98e290fca49c589f0ffa8"
-  integrity sha1-zQ+9kHMmhzqWyY4pD8pJxYnw/6g=
+  resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.2.24.tgz#cd0fbd907326873a96c98e290fca49c589f0ffa8"
+  integrity sha512-L9tQv6nNLRyh+gex/qc8/CyLs8u0kXKqk1OjYGF13k/KOg6N2oibwkuGgv0FuoTGYx2ta2NmqvuMUAMrHIY5ew==
   dependencies:
     app-root-path "^3.0.0"
     buffer "^5.1.0"
