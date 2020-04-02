@@ -8514,10 +8514,10 @@ intl-messageformat-parser@^4.1.1:
   dependencies:
     "@formatjs/intl-unified-numberformat" "^3.3.0"
 
-intl-messageformat@^8.2.3:
-  version "8.2.3"
-  resolved "https://registry.yarnpkg.com/intl-messageformat/-/intl-messageformat-8.2.3.tgz#090e93f2e5f7e3b97c7ce9a94dfa992f3d0e8c4f"
-  integrity sha512-hY+T2KH7sEkhMFMZQ8bi7bMlJLEkHBPzFroHixOMQB8YyDhpRp4QK37FrttWfs5ExeIcOMIhzHwRjCvPC82uiQ==
+intl-messageformat@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/intl-messageformat/-/intl-messageformat-8.3.2.tgz#ad6b06982d749d39b6610ad26e88637d64688972"
+  integrity sha512-CMcGPciQjt1nesTME7vekUgx+Igy2sa14g/BZE2ZrYwqkdnVDO5f0bt3X0ZjQJohgZth9RvlIMvVoRUjrDRubA==
   dependencies:
     intl-format-cache "^4.2.22"
     intl-messageformat-parser "^4.1.1"
@@ -12340,10 +12340,10 @@ react-fast-compare@^2.0.1:
   resolved "https://registry.npm.taobao.org/react-fast-compare/download/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha1-6EtNRVsP7BE+BALDKTUnFRlvgfk=
 
-react-intl@4.2.2:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-4.2.2.tgz#54b4065c74d777c46d9d44590124aa926dfd9c21"
-  integrity sha512-mwKAkH9G+4GFlIDUNhPsDE8vYHlfsR4uOWRxgJ//Huv3J0M0kY+gbVhq+O8YGhhXbF3DQbdNI8kcbsE0FsbXtw==
+react-intl@4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-4.3.1.tgz#a56ae90aa76bf8cac992606002dc8cbf1276ed7d"
+  integrity sha512-WaF6h1H9b4//csBTZ9JGfrKrceOCIKBjJZMBB0P/E+mjjkR1BJjytH2SEBbPV2bnDDnN6vQQaFz5MhgPfUDMYw==
   dependencies:
     "@formatjs/intl-displaynames" "^1.2.2"
     "@formatjs/intl-listformat" "^1.4.2"
@@ -12354,7 +12354,7 @@ react-intl@4.2.2:
     "@types/invariant" "^2.2.31"
     hoist-non-react-statics "^3.3.2"
     intl-format-cache "^4.2.22"
-    intl-messageformat "^8.2.3"
+    intl-messageformat "^8.3.2"
     intl-messageformat-parser "^4.1.1"
     shallow-equal "^1.2.1"
 
