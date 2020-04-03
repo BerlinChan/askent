@@ -15,7 +15,7 @@ import { getRepository, In, Repository } from 'typeorm'
 import { hash, compare } from 'bcryptjs'
 import MD5 from 'crypto-js/md5'
 import { Context } from '../context'
-import { getAuthedUser, signToken } from '../utils'
+import { signToken } from '../utils'
 import { RoleName, Role as RoleEntity } from '../entity/Role'
 import { User as UserEntity } from '../entity/User'
 import { Role } from './Role'
@@ -35,7 +35,7 @@ export class User {
   public anonymous?: boolean
 
   @Field({
-    description: 'gravatar img, https://en.gravatar.com/site/implement/images/',
+    description: 'gravatar img, see https://en.gravatar.com/site/implement/images/',
   })
   get avatar(): string {
     if (this.email) {
@@ -108,9 +108,7 @@ export class UserResolver {
 
   @Query(returns => User)
   async me(@Ctx() ctx: Context): Promise<User> {
-    const user = await this.userRepository.findOneOrFail(
-      getAuthedUser(ctx)?.id as string,
-    )
+    const user = await this.userRepository.findOneOrFail(ctx.user?.id as string)
     if (!user) {
       throw new Error()
     }
@@ -220,7 +218,7 @@ export class UserResolver {
     @Arg('input') input: UpdateUserInput,
     @Ctx() ctx: Context,
   ): Promise<User> {
-    const userId = getAuthedUser(ctx)?.id as string
+    const userId = ctx.user?.id as string
     let user = await this.userRepository.findOneOrFail(userId)
     if (input.name === '' && input.anonymous) {
       user.anonymous = input.anonymous

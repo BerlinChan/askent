@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { Grid, Paper, Box, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
-import deepstreamClient from "../../../../deepstream";
 import {
   EventByIdQuery,
   EventByIdQueryVariables,
@@ -75,19 +74,6 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: QuestionOrder.Oldest
   };
-
-  React.useEffect(() => {
-    deepstreamClient.rpc
-      .make("question_realtime_search", questionSearchInput)
-      .then(hash => {
-        const resultList = deepstreamClient.record.getList(
-          `question_realtime_search/list_${hash}`
-        );
-        resultList.subscribe(results => {
-          console.log(">", results);
-        });
-      });
-  });
 
   return (
     <Grid container spacing={3} className={classes.questionsGrid}>

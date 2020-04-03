@@ -8,18 +8,10 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
   useQuestionsByEventAudienceQuery,
-  QuestionsByEventAudienceQuery,
-  QuestionsByEventAudienceQueryVariables,
   QuestionAudienceFieldsFragment,
   QuestionOrder,
-  // useQuestionAddedAudienceSubscription,
-  // useQuestionUpdatedAudienceSubscription,
-  // useQuestionRemovedAudienceSubscription,
-  QuestionsByEventAudienceDocument,
-  RoleName,
   QuestionSearchInput
 } from "../../../../generated/graphqlHooks";
-import { DataProxy } from "apollo-cache";
 import QuestionItem from "./QuestionItem";
 import QuestionListMenu from "./QuestionListMenu";
 import QuestionListHeader from "./QuestionListHeader";
@@ -27,21 +19,6 @@ import { Virtuoso } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
 import { sortQuestionBy } from "../../../../utils";
 import ListFooter from "../../../../components/ListFooter";
-
-function updateCache(
-  cache: DataProxy,
-  queryVariables: QuestionsByEventAudienceQueryVariables,
-  data: QuestionsByEventAudienceQuery
-): void {
-  cache.writeQuery<
-    QuestionsByEventAudienceQuery,
-    Omit<QuestionsByEventAudienceQueryVariables, "pagination">
-  >({
-    query: QuestionsByEventAudienceDocument,
-    variables: queryVariables,
-    data
-  });
-}
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
@@ -68,59 +45,6 @@ const QuestionList: React.FC<Props> = ({
     variables: { input: questionSearchInput }
   });
   const { data, loading, fetchMore } = questionsQueryResult;
-
-  // subscriptions
-  // useQuestionAddedAudienceSubscription({
-  //   variables: {
-  //     eventId: queryVariables.eventId,
-  //     asRole: RoleName.Audience,
-  //     order: queryVariables.order,
-  //     limit: data?.questionsByEventAudience.list.length
-  //   },
-  //   onSubscriptionData: ({ client, subscriptionData }) => {
-  //     if (subscriptionData.data) {
-  //       const { questionAdded } = subscriptionData.data;
-
-  //       if (data) {
-  //         // add
-  //         updateCache(client, queryVariables, {
-  //           questionsByEventAudience: {
-  //             ...data.questionsByEventAudience,
-  //             totalCount: data.questionsByEventAudience.totalCount + 1,
-  //             list: [questionAdded].concat(
-  //               data.questionsByEventAudience.list.filter(
-  //                 question =>
-  //                   question.id !== subscriptionData.data?.questionAdded.id
-  //               )
-  //             )
-  //           }
-  //         });
-  //       }
-  //     }
-  //   }
-  // });
-  // useQuestionUpdatedAudienceSubscription({
-  //   variables: { eventId: queryVariables.eventId, asRole: RoleName.Audience }
-  // });
-  // useQuestionRemovedAudienceSubscription({
-  //   variables: { eventId: queryVariables.eventId, asRole: RoleName.Audience },
-  //   onSubscriptionData: ({ client, subscriptionData }) => {
-
-  //     if (data) {
-  //       // remove
-  //       updateCache(client, queryVariables, {
-  //         questionsByEventAudience: {
-  //           ...data.questionsByEventAudience,
-  //           totalCount: data.questionsByEventAudience.totalCount - 1,
-  //           list: data.questionsByEventAudience.list.filter(
-  //             preQuestion =>
-  //               subscriptionData.data?.questionRemoved !== preQuestion.id
-  //           )
-  //         }
-  //       });
-  //     }
-  //   }
-  // });
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,

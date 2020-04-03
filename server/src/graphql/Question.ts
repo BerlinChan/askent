@@ -12,7 +12,8 @@ import {
   Mutation,
   Int,
 } from 'type-graphql'
-import { getAuthedUser } from '../utils'
+import { MD5, enc } from 'crypto-js'
+import { RecordData } from '@deepstream/client/dist/constants'
 import { Context } from '../context'
 import { User as UserEntity } from '../entity/User'
 import { QuestionOrder, QuestionFilter } from './FilterOrder'
@@ -106,6 +107,15 @@ export class QuestionPaged implements IPagedType {
   public list!: QuestionSchema[]
 }
 
+@ObjectType()
+export class QuestionSearchStart {
+  @Field()
+  public hash!: string
+
+  @Field()
+  public listNamePrefix!: string
+}
+
 @InputType()
 export class QuestionSearchInput {
   @Field(returns => ID)
@@ -144,6 +154,33 @@ export class CreateQuestionInput implements Partial<Question> {
 
 @Resolver(of => Question)
 export class QuestionResolver {
+  @Query(returns => QuestionSearchStart)
+  async questionRealtimeSearch(
+    @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
+    @Ctx() ctx: Context,
+  ): Promise<QuestionSearchStart> {
+    const listNamePrefix = 'question_realtime_search/list_'
+    const metaRecordPrefix = 'question_realtime_search/meta_'
+
+    const hash = MD5(JSON.stringify(input)).toString(enc.Hex)
+    const exists = await ctx.deepstreamClient.record.has(
+      `${metaRecordPrefix}${hash}`,
+    )
+    if (exists === true) {
+      // Query already exists, so use that
+      return { hash, listNamePrefix }
+    }
+
+    await ctx.deepstreamClient.record.setDataWithAck(
+      `${metaRecordPrefix}${hash}`,
+      ({
+        query: input,
+        hash,
+      } as unknown) as RecordData,
+    )
+    return { hash, listNamePrefix }
+  }
+
   @Query(returns => QuestionPaged, {
     description: 'Query question by event for Role.Admin.',
   })
@@ -232,7 +269,7 @@ export class QuestionResolver {
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
     const { offset, limit } = pagination
-    const authorId = getAuthedUser(ctx)?.id as string
+    const authorId = ctx.user?.id as string
     const filter = {
       authorId,
       reviewStatus: { $in: [ReviewStatus.Publish, ReviewStatus.Review] },
@@ -258,7 +295,7 @@ export class QuestionResolver {
     @Ctx() ctx: Context,
   ): Promise<QuestionSchema> {
     const { eventId, content, anonymous } = input
-    const authorId = getAuthedUser(ctx)?.id as string
+    const authorId = ctx.user?.id as string
     const event = await EventModel.findById(eventId).lean(true)
     const question = await QuestionModel.create({
       reviewStatus: event?.moderation
@@ -405,7 +442,7 @@ export class QuestionResolver {
     @Arg('questionId', returns => ID) questionId: string,
     @Ctx() ctx: Context,
   ): Promise<QuestionSchema> {
-    const userId = getAuthedUser(ctx)?.id as string
+    const userId = ctx.user?.id as string
     const question = await QuestionModel.findByIdAndUpdate(
       questionId,
       (await getVoted(ctx, questionId))
@@ -422,7 +459,7 @@ export class QuestionResolver {
 }
 
 async function getVoted(ctx: Context, questionId: string) {
-  const userId = getAuthedUser(ctx)?.id as string
+  const userId = ctx.user?.id as string
   if (!userId) return false
   const question = await QuestionModel.findOne({
     _id: questionId,
@@ -461,7 +498,7 @@ export function getQuestionSearchFilter(
   ctx?: Context,
 ): FilterQuery<QuestionSchema> {
   const { eventId, questionFilter, searchString } = input
-  const userId = ctx ? (getAuthedUser(ctx)?.id as string) : ''
+  const userId = ctx ? (ctx.user?.id as string) : ''
 
   switch (asRole) {
     case RoleName.Admin:

@@ -15,7 +15,6 @@ import {
 } from 'type-graphql'
 import { getRepository } from 'typeorm'
 import { plainToClass } from 'class-transformer'
-import { getAuthedUser } from '../utils'
 import { Context } from '../context'
 import { User as UserEntity } from '../entity/User'
 import { User } from './User'
@@ -172,7 +171,7 @@ export class EventResolver {
     dateStatusFilter: EventDateStatus,
     @Ctx() ctx: Context,
   ): Promise<EventPaged> {
-    const userId = getAuthedUser(ctx)?.id as string
+    const userId = ctx.user?.id as string
     const { limit, offset } = pagination
     const NOW = new Date()
     const aggregations = [
@@ -264,7 +263,7 @@ export class EventResolver {
     @Arg('eventId', returns => ID) eventId: string,
     @Ctx() ctx: Context,
   ): Promise<boolean> {
-    const audienceId = getAuthedUser(ctx)?.id as string
+    const audienceId = ctx.user?.id as string
     const event = await EventModel.findOne({
       _id: eventId,
       audienceIds: { $all: [audienceId] },
@@ -281,7 +280,7 @@ export class EventResolver {
     @Arg('endAt') endAt: Date,
     @Ctx() ctx: Context,
   ): Promise<EventSchema> {
-    const userId = getAuthedUser(ctx)?.id as string
+    const userId = ctx.user?.id as string
     const event = await EventModel.create({
       code,
       name,
@@ -323,7 +322,7 @@ export class EventResolver {
     @Arg('eventId', returns => ID) eventId: string,
     @Ctx() ctx: Context,
   ): Promise<EventSchema> {
-    const audienceId = getAuthedUser(ctx)?.id as string
+    const audienceId = ctx.user?.id as string
     const event = await EventModel.findByIdAndUpdate(
       eventId,
       { $push: { audienceIds: audienceId } },

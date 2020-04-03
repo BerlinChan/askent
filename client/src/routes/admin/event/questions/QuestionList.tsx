@@ -1,39 +1,22 @@
 import React from "react";
 import { QueryResult } from "@apollo/react-common";
 import {
-  // useQuestionAddedSubscription,
-  // useQuestionUpdatedSubscription,
-  // useQuestionRemovedSubscription,
   useQuestionsByEventQuery,
-  QuestionsByEventQuery,
-  QuestionsByEventQueryVariables,
   EventByIdQuery,
   EventByIdQueryVariables,
-  QuestionsByEventDocument,
   QuestionFieldsFragment,
   QuestionOrder,
   QuestionSearchInput,
-  RoleName
+  useQuestionRealtimeSearchQuery
 } from "../../../../generated/graphqlHooks";
-import { DataProxy } from "apollo-cache";
 import QuestionItem from "./QuestionItem";
 import QuestionListMenu from "./QuestionListMenu";
 import { Virtuoso } from "react-virtuoso";
 import ListFooter from "../../../../components/ListFooter";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
 import { sortQuestionBy } from "../../../../utils";
-
-function updateCache(
-  cache: DataProxy,
-  queryVariables: QuestionsByEventQueryVariables,
-  data: QuestionsByEventQuery
-): void {
-  cache.writeQuery({
-    query: QuestionsByEventDocument,
-    variables: queryVariables,
-    data
-  });
-}
+import deepstreamClient from "../../../../deepstream";
+import { List } from "@deepstream/client/dist/record/list";
 
 interface Props {
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
@@ -55,64 +38,33 @@ const QuestionList: React.FC<Props> = ({
     fetchPolicy: "network-only",
     variables: { input: questionSearchInput }
   });
+
+  const [questionList, setQuestionList] = React.useState<string[]>([]);
+  const { data: questionSearchData } = useQuestionRealtimeSearchQuery({
+    fetchPolicy: "network-only",
+    variables: { input: questionSearchInput }
+  });
   const { data, loading, fetchMore } = questionsQueryResult;
 
-  // subscriptions
-  // useQuestionAddedSubscription({
-  //   variables: {
-  //     eventId: queryVariables.eventId,
-  //     asRole: RoleName.Admin,
-  //     questionFilter: queryVariables.questionFilter,
-  //     searchString: queryVariables.searchString,
-  //     order: queryVariables.order,
-  //     limit: data?.questionsByEvent.list.length
-  //   },
-  //   onSubscriptionData: ({ client, subscriptionData }) => {
-  //     if (subscriptionData.data) {
-  //       const { questionAdded } = subscriptionData.data;
+  React.useEffect(() => {
+    let list: List;
+    if (questionSearchData?.questionRealtimeSearch) {
+      const {
+        listNamePrefix,
+        hash
+      } = questionSearchData.questionRealtimeSearch;
+      list = deepstreamClient.record.getList(listNamePrefix + hash);
+      list.subscribe(results => {
+        setQuestionList(results);
+      });
+    }
 
-  //       if (data) {
-  //         // add
-  //         updateCache(client, queryVariables, {
-  //           questionsByEvent: {
-  //             ...data.questionsByEvent,
-  //             // TODO: should always add
-  //             totalCount: data.questionsByEvent.totalCount + 1,
-  //             list: [questionAdded].concat(
-  //               data.questionsByEvent.list.filter(
-  //                 question => question.id !== questionAdded.id
-  //               )
-  //             )
-  //           }
-  //         });
-  //       }
-  //     }
-  //   }
-  // });
-  // useQuestionUpdatedSubscription({
-  //   variables: { eventId: queryVariables.eventId, asRole: RoleName.Admin }
-  // });
-  // useQuestionRemovedSubscription({
-  //   variables: { eventId: queryVariables.eventId, asRole: RoleName.Admin },
-  //   onSubscriptionData: ({ client, subscriptionData }) => {
-  //     if (subscriptionData.data?.questionRemoved) {
-  //       const { questionRemoved } = subscriptionData.data;
-
-  //       if (data) {
-  //         // remove
-  //         updateCache(client, queryVariables, {
-  //           questionsByEvent: {
-  //             ...data.questionsByEvent,
-  //             totalCount: data.questionsByEvent.totalCount - 1,
-  //             list: data.questionsByEvent.list.filter(
-  //               preQuestion => questionRemoved !== preQuestion.id
-  //             )
-  //           }
-  //         });
-  //       }
-  //     }
-  //   }
-  // });
+    return function() {
+      if (list) {
+        list.discard();
+      }
+    };
+  });
 
   const handleMoreOpen = (
     event: React.MouseEvent<HTMLButtonElement>,

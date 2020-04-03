@@ -55,7 +55,7 @@ export class Provider {
    * 'ready' event once started
    */
   public async start() {
-    this.setupRPC()
+    // this.setupRPC()
 
     const pattern = `${this.config.listNamePrefix}.*`
     console.log(`listening for ${pattern}`)
