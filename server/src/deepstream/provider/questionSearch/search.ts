@@ -42,14 +42,18 @@ export class MongoDBSearch implements RealtimeSearch {
     try {
       const { pagination, order } = this.query
       const { offset, limit } = pagination
-      const filter = getQuestionSearchFilter(this.query, RoleName.Admin)
-      const result = await QuestionModel.find(filter)
+      const filter = getQuestionSearchFilter(this.query, RoleName.Admin, {
+        //TODO user
+        id: '',
+        roles: [],
+      })
+      const result = await QuestionModel.find(filter, 'ds_key')
         .sort(getQuestionSortArg(order, true))
         .skip(offset)
         .limit(limit)
         .lean(true)
       const entries = result.map(
-        r => `${QuestionModel.collection.collectionName}/${r._id}`,
+        r => `${QuestionModel.collection.collectionName}/${r.ds_key}`,
       )
       this.callbacks.onResultsChanged(entries)
     } catch (error) {

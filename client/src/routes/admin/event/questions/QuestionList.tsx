@@ -6,8 +6,7 @@ import {
   EventByIdQueryVariables,
   QuestionFieldsFragment,
   QuestionOrder,
-  QuestionSearchInput,
-  useQuestionRealtimeSearchQuery
+  QuestionSearchInput
 } from "../../../../generated/graphqlHooks";
 import QuestionItem from "./QuestionItem";
 import QuestionListMenu from "./QuestionListMenu";
@@ -15,8 +14,6 @@ import { Virtuoso } from "react-virtuoso";
 import ListFooter from "../../../../components/ListFooter";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
 import { sortQuestionBy } from "../../../../utils";
-import deepstreamClient from "../../../../deepstream";
-import { List } from "@deepstream/client/dist/record/list";
 
 interface Props {
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
@@ -38,33 +35,7 @@ const QuestionList: React.FC<Props> = ({
     fetchPolicy: "network-only",
     variables: { input: questionSearchInput }
   });
-
-  const [questionList, setQuestionList] = React.useState<string[]>([]);
-  const { data: questionSearchData } = useQuestionRealtimeSearchQuery({
-    fetchPolicy: "network-only",
-    variables: { input: questionSearchInput }
-  });
   const { data, loading, fetchMore } = questionsQueryResult;
-
-  React.useEffect(() => {
-    let list: List;
-    if (questionSearchData?.questionRealtimeSearch) {
-      const {
-        listNamePrefix,
-        hash
-      } = questionSearchData.questionRealtimeSearch;
-      list = deepstreamClient.record.getList(listNamePrefix + hash);
-      list.subscribe(results => {
-        setQuestionList(results);
-      });
-    }
-
-    return function() {
-      if (list) {
-        list.discard();
-      }
-    };
-  });
 
   const handleMoreOpen = (
     event: React.MouseEvent<HTMLButtonElement>,

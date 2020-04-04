@@ -4,6 +4,7 @@ import { Context } from '../context'
 import { EventModel, QuestionModel } from '../model'
 import { Event } from './Event'
 import { ReviewStatus } from '../model/Question'
+import { Types } from 'mongoose'
 
 @Resolver(of => Event)
 export class SeedResolver {
@@ -35,14 +36,14 @@ export class SeedResolver {
     const userId = ctx.user?.id as string
 
     const { insertedCount } = await QuestionModel.bulkWrite(
-      Array.from({ length: 2000 }, () => 'question').map((item, index) => ({
+      Array.from({ length: 100 }, () => 'question').map((item, index) => ({
         insertOne: {
           document: {
             reviewStatus: ReviewStatus.Publish,
             content: `${Math.floor(Math.random() * 100000)}-${new Date()}`,
-            name: `name_n ${index}`,
             event: eventId,
             authorId: userId,
+            ds_key: Types.ObjectId().toHexString(),
           },
         },
       })),

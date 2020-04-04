@@ -30,7 +30,8 @@ import { User } from './User'
 import { plainToClass } from 'class-transformer'
 import { getRepository } from 'typeorm'
 import { RoleName } from '../entity/Role'
-import { FilterQuery } from 'mongoose'
+import { FilterQuery,  } from 'mongoose'
+import { TokenPayload } from '../utils'
 
 registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
 
@@ -110,10 +111,10 @@ export class QuestionPaged implements IPagedType {
 @ObjectType()
 export class QuestionSearchStart {
   @Field()
-  public hash!: string
+  public recordName!: string
 
-  @Field()
-  public listNamePrefix!: string
+  @Field(returns => Int)
+  public totalCount!: number
 }
 
 @InputType()
@@ -166,19 +167,22 @@ export class QuestionResolver {
     const exists = await ctx.deepstreamClient.record.has(
       `${metaRecordPrefix}${hash}`,
     )
+    const filter = getQuestionSearchFilter(input, RoleName.Admin, ctx.user)
+    const totalCount = await QuestionModel.countDocuments(filter)
+
     if (exists === true) {
       // Query already exists, so use that
-      return { hash, listNamePrefix }
+    } else {
+      await ctx.deepstreamClient.record.setDataWithAck(
+        `${metaRecordPrefix}${hash}`,
+        ({
+          query: input,
+          hash,
+        } as unknown) as RecordData,
+      )
     }
 
-    await ctx.deepstreamClient.record.setDataWithAck(
-      `${metaRecordPrefix}${hash}`,
-      ({
-        query: input,
-        hash,
-      } as unknown) as RecordData,
-    )
-    return { hash, listNamePrefix }
+    return { recordName: listNamePrefix + hash, totalCount }
   }
 
   @Query(returns => QuestionPaged, {
@@ -188,15 +192,13 @@ export class QuestionResolver {
     @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
-    const { pagination, order } = input
+    const { pagination } = input
     const { offset, limit } = pagination
-    const filter = getQuestionSearchFilter(input, RoleName.Admin, ctx)
-    const totalCount = await QuestionModel.countDocuments(filter)
-    const questions = await QuestionModel.find(filter)
-      .sort(getQuestionSortArg(order, true))
-      .skip(offset)
-      .limit(limit)
-      .lean(true)
+    const { totalCount, questions } = await findQuestionAndCountAll(
+      input,
+      RoleName.Admin,
+      ctx.user,
+    )
 
     return {
       list: questions,
@@ -213,15 +215,13 @@ export class QuestionResolver {
     @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
-    const { pagination, order } = input
+    const { pagination } = input
     const { offset, limit } = pagination
-    const filter = getQuestionSearchFilter(input, RoleName.Audience, ctx)
-    const totalCount = await QuestionModel.countDocuments(filter)
-    const questions = await QuestionModel.find(filter)
-      .sort(getQuestionSortArg(order, true))
-      .skip(offset)
-      .limit(limit)
-      .lean(true)
+    const { totalCount, questions } = await findQuestionAndCountAll(
+      input,
+      RoleName.Audience,
+      ctx.user,
+    )
 
     return {
       list: questions,
@@ -238,15 +238,13 @@ export class QuestionResolver {
     @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
-    const { pagination, order } = input
+    const { pagination } = input
     const { offset, limit } = pagination
-    const filter = getQuestionSearchFilter(input, RoleName.Wall, ctx)
-    const totalCount = await QuestionModel.countDocuments(filter)
-    const questions = await QuestionModel.find(filter)
-      .sort(getQuestionSortArg(order, true))
-      .skip(offset)
-      .limit(limit)
-      .lean(true)
+    const { totalCount, questions } = await findQuestionAndCountAll(
+      input,
+      RoleName.Wall,
+      ctx.user,
+    )
 
     return {
       list: questions,
@@ -447,7 +445,7 @@ export class QuestionResolver {
       questionId,
       (await getVoted(ctx, questionId))
         ? { $pull: { voteUpUsers: userId }, $inc: { voteUpCount: -1 } }
-        : { $push: { voteUpUsers: userId }, $inc: { voteUpCount: 1 } },
+        : { $addToSet: { voteUpUsers: userId }, $inc: { voteUpCount: 1 } },
       { new: true },
     ).lean(true)
     if (!question) {
@@ -469,36 +467,32 @@ async function getVoted(ctx: Context, questionId: string) {
   return Boolean(question)
 }
 
-export function getQuestionSortArg(
-  questionOrder: QuestionOrder,
-  top?: boolean,
-): { [key: string]: 1 | -1 } | {} {
-  let arg
-  switch (questionOrder) {
-    case QuestionOrder.Recent:
-      arg = { createdAt: -1, voteUpCount: -1 }
-      break
-    case QuestionOrder.Oldest:
-      arg = { createdAt: 1, voteUpCount: -1 }
-      break
-    case QuestionOrder.Starred:
-      arg = { star: -1, createdAt: -1 }
-      break
-    default:
-      // QuestionOrder.Popular:
-      arg = { voteUpCount: -1, createdAt: -1 }
-  }
+export async function findQuestionAndCountAll(
+  input: QuestionSearchInput,
+  asRole: RoleName,
+  user: TokenPayload | undefined,
+): Promise<{ questions: QuestionSchema[]; totalCount: number }> {
+  const { pagination, order } = input
+  const { offset, limit } = pagination
+  const filter = getQuestionSearchFilter(input, asRole, user)
+  const totalCount = await QuestionModel.countDocuments(filter)
+  const questions = await QuestionModel.find(filter)
+    .sort(getQuestionSortArg(order, true))
+    .skip(offset)
+    .limit(limit)
+    .lean(true)
+  console.log('questions', questions)
 
-  return Object.assign(top ? { top: -1 } : {}, arg)
+  return { totalCount, questions }
 }
 
 export function getQuestionSearchFilter(
   input: QuestionSearchInput,
   asRole: RoleName,
-  ctx?: Context,
+  user: TokenPayload | undefined,
 ): FilterQuery<QuestionSchema> {
   const { eventId, questionFilter, searchString } = input
-  const userId = ctx ? (ctx.user?.id as string) : ''
+  const userId = user?.id as string
 
   switch (asRole) {
     case RoleName.Admin:
@@ -523,4 +517,27 @@ export function getQuestionSearchFilter(
       // case RoleName.Wall:
       return { event: eventId, reviewStatus: ReviewStatus.Publish }
   }
+}
+
+export function getQuestionSortArg(
+  questionOrder: QuestionOrder,
+  top?: boolean,
+): { [key: string]: 1 | -1 } | {} {
+  let arg
+  switch (questionOrder) {
+    case QuestionOrder.Recent:
+      arg = { createdAt: -1, voteUpCount: -1 }
+      break
+    case QuestionOrder.Oldest:
+      arg = { createdAt: 1, voteUpCount: -1 }
+      break
+    case QuestionOrder.Starred:
+      arg = { star: -1, createdAt: -1 }
+      break
+    default:
+      // QuestionOrder.Popular:
+      arg = { voteUpCount: -1, createdAt: -1 }
+  }
+
+  return Object.assign(top ? { top: -1 } : {}, arg)
 }
