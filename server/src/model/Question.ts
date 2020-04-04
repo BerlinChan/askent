@@ -7,6 +7,7 @@ import {
 } from '@typegoose/typegoose'
 import { Event } from './Event'
 import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
+import { Types } from 'mongoose'
 
 export enum ReviewStatus {
   Review = 'Review',
@@ -16,6 +17,13 @@ export enum ReviewStatus {
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Question extends TimeStamps {
+  @prop({
+    index: true,
+    unique: true,
+    default: () => new Types.ObjectId(),
+  })
+  public ds_key?: string
+
   @prop({ required: true })
   public content!: string
 

@@ -117,8 +117,8 @@ const QuestionItem: React.FC<Props> = ({
     { loading: updateQuestionContentLoading }
   ] = useUpdateQuestionContentMutation();
 
-  const handleThumbUpClick = (questionId: string) => {
-    voteUpQuestionMutation({ variables: { questionId } });
+  const handleThumbUpClick = (ds_key: string) => {
+    voteUpQuestionMutation({ variables: { ds_key } });
   };
 
   return (
@@ -164,11 +164,11 @@ const QuestionItem: React.FC<Props> = ({
           onSubmit={async values => {
             await updateQuestionContentMutation({
               variables: {
-                questionId: question.id,
+                ds_key: question.ds_key,
                 content: values.content
               }
             });
-            handleEditContentToggle(question.id);
+            handleEditContentToggle(question.ds_key);
           }}
         >
           {formProps => (
@@ -200,7 +200,7 @@ const QuestionItem: React.FC<Props> = ({
                 <Box className={classes.editContentFormButtons}>
                   <Button
                     size="small"
-                    onClick={() => handleEditContentToggle(question.id)}
+                    onClick={() => handleEditContentToggle(question.ds_key)}
                   >
                     <FormattedMessage id="Cancel" defaultMessage="Cancel" />
                   </Button>
@@ -226,7 +226,7 @@ const QuestionItem: React.FC<Props> = ({
               <IconButton
                 className={classes.moreButton}
                 size="small"
-                onClick={e => handleMoreClick(e, question.id)}
+                onClick={e => handleMoreClick(e, question.ds_key)}
               >
                 <MoreHorizIcon fontSize="inherit" />
               </IconButton>
@@ -255,7 +255,7 @@ const QuestionItem: React.FC<Props> = ({
               color={question.voted ? "primary" : "default"}
               classes={{ root: classes.thumbUpButton }}
               disabled={voteLoading}
-              onClick={() => handleThumbUpClick(question.id)}
+              onClick={() => handleThumbUpClick(question.ds_key)}
             >
               <Typography color="inherit" className={classes.voteCount}>
                 {question.voteUpCount}

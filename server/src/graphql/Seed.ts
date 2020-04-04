@@ -43,7 +43,7 @@ export class SeedResolver {
             content: `${Math.floor(Math.random() * 100000)}-${new Date()}`,
             event: eventId,
             authorId: userId,
-            ds_key: Types.ObjectId().toHexString(),
+            ds_key:new Types.ObjectId(),
           },
         },
       })),

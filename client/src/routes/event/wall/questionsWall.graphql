@@ -1,5 +1,5 @@
 fragment QuestionWallFields on Question {
-  id
+  ds_key
   createdAt
   updatedAt
   content

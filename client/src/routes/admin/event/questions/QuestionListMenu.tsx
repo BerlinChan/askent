@@ -63,7 +63,7 @@ const QuestionListMenu: React.FC<Props> = ({
   };
   const handleDelete = async () => {
     await deleteQuestionMutation({
-      variables: { questionId: deleteConfirm.id }
+      variables: { ds_key: deleteConfirm.id }
     });
     handleCloseDelete();
   };
@@ -110,7 +110,7 @@ const QuestionListMenu: React.FC<Props> = ({
         <MenuItem
           disabled={
             (data?.questionsByEvent.list || []).find(
-              question => question.id === moreMenu.id
+              question => question.ds_key === moreMenu.id
             )?.top
           }
           onClick={() => handleOpenDelete(moreMenu.id)}

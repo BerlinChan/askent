@@ -1,5 +1,5 @@
 fragment QuestionAudienceFields on Question {
-  id
+  ds_key
   createdAt
   updatedAt
   content
@@ -41,8 +41,8 @@ mutation CreateQuestion($input: CreateQuestionInput!) {
   }
 }
 
-mutation VoteUpQuestion($questionId: ID!) {
-  voteUpQuestion(questionId: $questionId) {
+mutation VoteUpQuestion($ds_key: ID!) {
+  voteUpQuestion(ds_key: $ds_key) {
     ...QuestionAudienceFields
   }
 }

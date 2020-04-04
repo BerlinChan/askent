@@ -5,7 +5,7 @@ fragment QuestionPagedFields on QuestionPaged {
   hasNextPage
 }
 fragment QuestionFields on Question {
-  id
+  ds_key
   createdAt
   updatedAt
   voteUpCount
@@ -36,8 +36,8 @@ query QuestionRealtimeSearch($input: QuestionSearchInput!) {
   }
 }
 
-mutation DeleteQuestion($questionId: ID!) {
-  deleteQuestion(questionId: $questionId)
+mutation DeleteQuestion($ds_key: ID!) {
+  deleteQuestion(ds_key: $ds_key)
 }
 
 mutation DeleteAllReviewQuestions($eventId: ID!) {
@@ -49,28 +49,28 @@ mutation PublishAllReviewQuestions($eventId: ID!) {
 }
 
 mutation UpdateQuestionReviewStatus(
-  $questionId: ID!
+  $ds_key: ID!
   $reviewStatus: ReviewStatus!
 ) {
   updateQuestionReviewStatus(
-    questionId: $questionId
+    ds_key: $ds_key
     reviewStatus: $reviewStatus
   ) {
     ...QuestionFields
   }
 }
-mutation UpdateQuestionStar($questionId: ID!, $star: Boolean!) {
-  updateQuestionStar(questionId: $questionId, star: $star) {
+mutation UpdateQuestionStar($ds_key: ID!, $star: Boolean!) {
+  updateQuestionStar(ds_key: $ds_key, star: $star) {
     ...QuestionFields
   }
 }
-mutation UpdateQuestionTop($questionId: ID!, $top: Boolean!) {
-  updateQuestionTop(questionId: $questionId, top: $top) {
+mutation UpdateQuestionTop($ds_key: ID!, $top: Boolean!) {
+  updateQuestionTop(ds_key: $ds_key, top: $top) {
     ...QuestionFields
   }
 }
-mutation UpdateQuestionContent($questionId: ID!, $content: String!) {
-  updateQuestionContent(questionId: $questionId, content: $content) {
+mutation UpdateQuestionContent($ds_key: ID!, $content: String!) {
+  updateQuestionContent(ds_key: $ds_key, content: $content) {
     ...QuestionFields
   }
 }

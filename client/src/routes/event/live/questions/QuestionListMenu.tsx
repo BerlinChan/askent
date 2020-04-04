@@ -55,7 +55,7 @@ const QuestionListMenu: React.FC<Props> = ({
     id: ""
   });
   const questionMoreTarget = data?.questionsByEventAudience.list.find(
-    question => question.id === moreMenu.id
+    question => question.ds_key === moreMenu.id
   );
 
   const handleMoreClose = () => {
@@ -72,7 +72,7 @@ const QuestionListMenu: React.FC<Props> = ({
   };
   const handleDelete = async () => {
     await deleteQuestionMutation({
-      variables: { questionId: deleteConfirm.id }
+      variables: { ds_key: deleteConfirm.id }
     });
     handleCloseDelete();
   };

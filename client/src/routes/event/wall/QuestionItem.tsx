@@ -97,19 +97,19 @@ const QuestionListItem: React.FC<Props> = ({
     { loading: updateQuestionTopLoading }
   ] = useUpdateQuestionTopMutation();
 
-  const handleArchiveClick: handleToggleType = async (e, id, currentStatus) => {
+  const handleArchiveClick: handleToggleType = async (e, ds_key, currentStatus) => {
     await updateQuestionReviewStatusMutation({
       variables: {
-        questionId: id,
+        ds_key,
         reviewStatus: currentStatus
           ? ReviewStatus.Publish
           : ReviewStatus.Archive
       }
     });
   };
-  const handleTopClick: handleToggleType = async (e, id, top) => {
+  const handleTopClick: handleToggleType = async (e, ds_key, top) => {
     await updateQuestionTopMutation({
-      variables: { questionId: id, top: !top }
+      variables: { ds_key, top: !top }
     });
   };
 
@@ -148,7 +148,7 @@ const QuestionListItem: React.FC<Props> = ({
         <Box className={classes.questionActionBox}>
           <QuestionToggleButton
             className="questionHover"
-            id={question.id}
+            id={question.ds_key}
             status={question.top}
             disabled={updateQuestionTopLoading}
             onTitle={formatMessage({
@@ -162,7 +162,7 @@ const QuestionListItem: React.FC<Props> = ({
           />
           <QuestionToggleButton
             className="questionHover"
-            id={question.id}
+            id={question.ds_key}
             status={question.reviewStatus === ReviewStatus.Archive}
             disabled={updateQuestionReviewStatusLoading}
             onTitle={formatMessage({

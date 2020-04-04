@@ -30,7 +30,7 @@ import { User } from './User'
 import { plainToClass } from 'class-transformer'
 import { getRepository } from 'typeorm'
 import { RoleName } from '../entity/Role'
-import { FilterQuery,  } from 'mongoose'
+import { FilterQuery } from 'mongoose'
 import { TokenPayload } from '../utils'
 
 registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
@@ -38,12 +38,7 @@ registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
 @ObjectType()
 export class Question {
   @Field(returns => ID)
-  public _id!: string
-
-  @Field(returns => ID)
-  get id(): string {
-    return this._id
-  }
+  public ds_key!: string
 
   @Field()
   public content!: string
@@ -65,7 +60,7 @@ export class Question {
 
   @Field(returns => Event)
   async event(@Root() root: Question): Promise<EventSchema> {
-    const question = await QuestionModel.findById(root.id)
+    const question = await QuestionModel.findById(root.ds_key)
       .populate('event')
       .lean(true)
     if (!question?.event) {
@@ -78,7 +73,7 @@ export class Question {
   @Field(returns => User, { nullable: true })
   async author(@Root() root: Question): Promise<User | undefined> {
     if (!root.anonymous) {
-      const question = await QuestionModel.findById(root.id).lean(true)
+      const question = await QuestionModel.findById(root.ds_key).lean(true)
       const user = await getRepository(UserEntity).findOne(question?.authorId)
 
       return plainToClass(User, user)
@@ -87,7 +82,7 @@ export class Question {
 
   @Field(returns => Boolean)
   voted(@Root() root: Question, @Ctx() ctx: Context): Promise<boolean> {
-    return getVoted(ctx, root.id)
+    return getVoted(ctx, root.ds_key)
   }
 
   @Field()
@@ -194,14 +189,14 @@ export class QuestionResolver {
   ): Promise<QuestionPaged> {
     const { pagination } = input
     const { offset, limit } = pagination
-    const { totalCount, questions } = await findQuestionAndCountAll(
+    const { totalCount, list } = await findQuestionAndCountAll(
       input,
       RoleName.Admin,
       ctx.user,
     )
 
     return {
-      list: questions,
+      list,
       hasNextPage: offset + limit < totalCount,
       totalCount,
       ...pagination,
@@ -217,14 +212,14 @@ export class QuestionResolver {
   ): Promise<QuestionPaged> {
     const { pagination } = input
     const { offset, limit } = pagination
-    const { totalCount, questions } = await findQuestionAndCountAll(
+    const { totalCount, list } = await findQuestionAndCountAll(
       input,
       RoleName.Audience,
       ctx.user,
     )
 
     return {
-      list: questions,
+      list,
       hasNextPage: offset + limit < totalCount,
       totalCount,
       ...pagination,
@@ -240,14 +235,14 @@ export class QuestionResolver {
   ): Promise<QuestionPaged> {
     const { pagination } = input
     const { offset, limit } = pagination
-    const { totalCount, questions } = await findQuestionAndCountAll(
+    const { totalCount, list } = await findQuestionAndCountAll(
       input,
       RoleName.Wall,
       ctx.user,
     )
 
     return {
-      list: questions,
+      list,
       hasNextPage: offset + limit < totalCount,
       totalCount,
       ...pagination,
@@ -312,11 +307,11 @@ export class QuestionResolver {
     description: 'Update a question review status.',
   })
   async updateQuestionReviewStatus(
-    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('ds_key', returns => ID) ds_key: string,
     @Arg('reviewStatus', returns => ReviewStatus) reviewStatus: ReviewStatus,
   ): Promise<QuestionSchema> {
-    const question = await QuestionModel.findByIdAndUpdate(
-      questionId,
+    const question = await QuestionModel.findOneAndUpdate(
+      { ds_key },
       Object.assign(
         { reviewStatus },
         reviewStatus === ReviewStatus.Archive
@@ -336,11 +331,11 @@ export class QuestionResolver {
 
   @Mutation(returns => Question, { description: 'Update a question content.' })
   async updateQuestionContent(
-    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('ds_key', returns => ID) ds_key: string,
     @Arg('content') content: string,
   ): Promise<QuestionSchema> {
-    const question = await QuestionModel.findByIdAndUpdate(
-      questionId,
+    const question = await QuestionModel.findOneAndUpdate(
+      { ds_key },
       { content },
       { new: true },
     ).lean(true)
@@ -353,11 +348,11 @@ export class QuestionResolver {
 
   @Mutation(returns => Question, { description: 'Update a question star.' })
   async updateQuestionStar(
-    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('ds_key', returns => ID) ds_key: string,
     @Arg('star') star: boolean,
   ): Promise<QuestionSchema> {
-    const question = await QuestionModel.findByIdAndUpdate(
-      questionId,
+    const question = await QuestionModel.findOneAndUpdate(
+      { ds_key },
       { star },
       { new: true },
     ).lean(true)
@@ -372,10 +367,10 @@ export class QuestionResolver {
     description: 'Top a question. Can only top one question at a time.',
   })
   async updateQuestionTop(
-    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('ds_key', returns => ID) ds_key: string,
     @Arg('top') top: boolean,
   ): Promise<QuestionSchema> {
-    let question = await QuestionModel.findById(questionId)
+    let question = await QuestionModel.findOne({ ds_key })
     if (!question) {
       throw new Error()
     }
@@ -394,14 +389,14 @@ export class QuestionResolver {
   }
 
   @Mutation(returns => ID, {
-    description: 'Delete a question by id.',
+    description: 'Delete a question by ds_key.',
   })
   async deleteQuestion(
-    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('ds_key', returns => ID) ds_key: string,
   ): Promise<string> {
-    await QuestionModel.deleteOne({ _id: questionId })
+    await QuestionModel.deleteOne({ ds_key })
 
-    return questionId
+    return ds_key
   }
 
   @Mutation(returns => Int, {
@@ -437,13 +432,13 @@ export class QuestionResolver {
 
   @Mutation(returns => Question, { description: 'Vote a question.' })
   async voteUpQuestion(
-    @Arg('questionId', returns => ID) questionId: string,
+    @Arg('ds_key', returns => ID) ds_key: string,
     @Ctx() ctx: Context,
   ): Promise<QuestionSchema> {
     const userId = ctx.user?.id as string
-    const question = await QuestionModel.findByIdAndUpdate(
-      questionId,
-      (await getVoted(ctx, questionId))
+    const question = await QuestionModel.findOneAndUpdate(
+      { ds_key },
+      (await getVoted(ctx, ds_key))
         ? { $pull: { voteUpUsers: userId }, $inc: { voteUpCount: -1 } }
         : { $addToSet: { voteUpUsers: userId }, $inc: { voteUpCount: 1 } },
       { new: true },
@@ -456,11 +451,11 @@ export class QuestionResolver {
   }
 }
 
-async function getVoted(ctx: Context, questionId: string) {
+async function getVoted(ctx: Context, ds_key: string) {
   const userId = ctx.user?.id as string
   if (!userId) return false
   const question = await QuestionModel.findOne({
-    _id: questionId,
+    ds_key,
     voteUpUsers: { $all: [userId] },
   }).lean(true)
 
@@ -471,19 +466,18 @@ export async function findQuestionAndCountAll(
   input: QuestionSearchInput,
   asRole: RoleName,
   user: TokenPayload | undefined,
-): Promise<{ questions: QuestionSchema[]; totalCount: number }> {
+): Promise<{ list: QuestionSchema[]; totalCount: number }> {
   const { pagination, order } = input
   const { offset, limit } = pagination
   const filter = getQuestionSearchFilter(input, asRole, user)
   const totalCount = await QuestionModel.countDocuments(filter)
-  const questions = await QuestionModel.find(filter)
+  const list = await QuestionModel.find(filter)
     .sort(getQuestionSortArg(order, true))
     .skip(offset)
     .limit(limit)
     .lean(true)
-  console.log('questions', questions)
 
-  return { totalCount, questions }
+  return { totalCount, list }
 }
 
 export function getQuestionSearchFilter(
