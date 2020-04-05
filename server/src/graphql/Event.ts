@@ -223,7 +223,7 @@ export class EventResolver {
           },
         },
       },
-      { $sort: { dateWeight: -1 } }, // order by dateWeight
+      { $sort: { dateWeight: -1, startAt: -1, endAt: 1 } }, // order by dateWeight
       { $skip: offset },
       { $limit: limit },
     ])
