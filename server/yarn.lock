@@ -1289,7 +1289,12 @@ graphql-upload@^8.0.2:
     http-errors "^1.7.3"
     object-path "^0.11.4"
 
-graphql@14.6.0, graphql@^14.5.3:
+graphql@15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.0.0.tgz#042a5eb5e2506a2e2111ce41eb446a8e570b8be9"
+  integrity sha512-ZyVO1xIF9F+4cxfkdhOJINM+51B06Friuv4M66W7HzUOeFd+vNzUn4vtswYINPi6sysjf1M2Ri/rwZALqgwbaQ==
+
+graphql@^14.5.3:
   version "14.6.0"
   resolved "https://registry.npm.taobao.org/graphql/download/graphql-14.6.0.tgz?cache=0&sync_timestamp=1580057011533&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fgraphql%2Fdownload%2Fgraphql-14.6.0.tgz#57822297111e874ea12f5cd4419616930cd83e49"
   integrity sha1-V4IilxEeh06hL1zUQZYWkwzYPkk=
