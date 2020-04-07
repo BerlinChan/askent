@@ -1,54 +1,59 @@
 import { Resolver, Ctx, Mutation, Int, Arg } from 'type-graphql'
 import { addDays } from 'date-fns'
 import { Context } from '../context'
-import { EventModel, QuestionModel } from '../model'
+import { Event as EventEntity } from '../entity/Event'
+import { Question as QuestionEntity, ReviewStatus } from '../entity/Question'
 import { Event } from './Event'
-import { ReviewStatus } from '../model/Question'
-import { Types } from 'mongoose'
+import { Repository, getRepository } from 'typeorm'
+import { User as UserEntity } from '../entity/User'
 
-@Resolver(of => Event)
+@Resolver((of) => Event)
 export class SeedResolver {
-  @Mutation(returns => Int)
+  private userRepository: Repository<UserEntity>
+  private eventRepository: Repository<EventEntity>
+  private questionRepository: Repository<QuestionEntity>
+
+  constructor() {
+    this.userRepository = getRepository(UserEntity)
+    this.eventRepository = getRepository(EventEntity)
+    this.questionRepository = getRepository(QuestionEntity)
+  }
+
+  @Mutation((returns) => Int)
   async seedEvent(@Ctx() ctx: Context): Promise<number> {
     const userId = ctx.user?.id as string
-    const { insertedCount } = await EventModel.bulkWrite(
+    const owner = await this.userRepository.findOneOrFail(userId)
+    const { identifiers } = await this.eventRepository.insert(
       Array.from({ length: 200 }, () => 'event').map((item, index) => ({
-        insertOne: {
-          document: {
-            code: `code_${index}`,
-            name: `name_${index}`,
-            startAt: addDays(new Date('2020-01-02T01:01:01Z'), index),
-            endAt: addDays(new Date('2020-01-02T01:01:01Z'), index + 4),
-            ownerId: userId,
-          },
-        },
+        code: `code_${index}`,
+        name: `name_${index}`,
+        startAt: addDays(new Date('2020-01-02T01:01:01'), index),
+        endAt: addDays(new Date('2020-01-02T01:01:01'), index + 4),
+        owner,
       })),
     )
 
-    return insertedCount as number
+    return identifiers.length
   }
 
-  @Mutation(returns => Int)
+  @Mutation((returns) => Int)
   async seedQuestion(
     @Arg('eventId') eventId: string,
     @Ctx() ctx: Context,
   ): Promise<number> {
     const userId = ctx.user?.id as string
+    const author = await this.userRepository.findOneOrFail(userId)
+    const event = await this.eventRepository.findOneOrFail(eventId)
 
-    const { insertedCount } = await QuestionModel.bulkWrite(
+    const { identifiers } = await this.questionRepository.insert(
       Array.from({ length: 100 }, () => 'question').map((item, index) => ({
-        insertOne: {
-          document: {
-            reviewStatus: ReviewStatus.Publish,
-            content: `${Math.floor(Math.random() * 100000)}-${new Date()}`,
-            event: eventId,
-            authorId: userId,
-            ds_key:new Types.ObjectId(),
-          },
-        },
+        reviewStatus: ReviewStatus.Publish,
+        content: `${Math.floor(Math.random() * 100000)}-${new Date()}`,
+        event,
+        author,
       })),
     )
 
-    return insertedCount as number
+    return identifiers.length
   }
 }

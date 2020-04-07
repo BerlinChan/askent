@@ -1,5 +1,5 @@
 fragment QuestionWallFields on Question {
-  ds_key
+  id
   createdAt
   updatedAt
   content
@@ -14,11 +14,24 @@ fragment QuestionWallFields on Question {
   }
 }
 
-query QuestionsByEventWall($input: QuestionSearchInput!) {
+query QuestionsByEventWall($input: QuestionQueryInput!) {
   questionsByEventWall(input: $input) {
     ...QuestionPagedFields
     list {
       ...QuestionWallFields
     }
+  }
+}
+
+subscription QuestionRealtimeSearchWall($eventId: String!, $hash: String!) {
+  questionRealtimeSearch(eventId: $eventId, hash: $hash, asRole: Wall) {
+    totalCount
+    insertList {
+      ...QuestionWallFields
+    }
+    updateList {
+      ...QuestionWallFields
+    }
+    deleteList
   }
 }

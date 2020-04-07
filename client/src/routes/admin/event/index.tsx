@@ -7,7 +7,7 @@ import AdminEventHeader from "./AdminEventHeader";
 import Layout from "../../../components/Layout";
 import {
   useEventByIdQuery,
-  // useEventUpdatedSubscription
+  useEventUpdatedSubscription
 } from "../../../generated/graphqlHooks";
 
 const QuestionsComponent = loadable(() => import("./questions"), {
@@ -24,9 +24,9 @@ const AdminEvent: React.FC = () => {
     variables: { eventId: id as string }
   });
 
-  // useEventUpdatedSubscription({
-  //   variables: { eventId: id as string }
-  // });
+  useEventUpdatedSubscription({
+    variables: { eventId: id as string }
+  });
 
   return (
     <Layout

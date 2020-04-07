@@ -1,5 +1,5 @@
 fragment QuestionAudienceFields on Question {
-  ds_key
+  id
   createdAt
   updatedAt
   content
@@ -15,9 +15,10 @@ fragment QuestionAudienceFields on Question {
   }
 }
 
-query QuestionsByEventAudience($input: QuestionSearchInput!) {
+query QuestionsByEventAudience($input: QuestionQueryInput!) {
   questionsByEventAudience(input: $input) {
     ...QuestionPagedFields
+    hash
     list {
       ...QuestionAudienceFields
     }
@@ -41,8 +42,21 @@ mutation CreateQuestion($input: CreateQuestionInput!) {
   }
 }
 
-mutation VoteUpQuestion($ds_key: ID!) {
-  voteUpQuestion(ds_key: $ds_key) {
+mutation VoteUpQuestion($questionId: ID!) {
+  voteUpQuestion(questionId: $questionId) {
     ...QuestionAudienceFields
+  }
+}
+
+subscription QuestionRealtimeSearchAudience($eventId: String!, $hash: String!) {
+  questionRealtimeSearch(eventId: $eventId, hash: $hash, asRole: Audience) {
+    totalCount
+    insertList {
+      ...QuestionAudienceFields
+    }
+    updateList {
+      ...QuestionAudienceFields
+    }
+    deleteList
   }
 }

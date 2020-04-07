@@ -1,4 +1,4 @@
-import { ReviewStatus } from '../model/Question'
+import { ReviewStatus } from '../entity/Question'
 import { registerEnumType } from 'type-graphql'
 
 export enum OrderByArg {

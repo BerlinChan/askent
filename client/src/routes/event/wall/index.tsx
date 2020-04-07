@@ -8,7 +8,7 @@ import OrderSelect from "./OrderSelect";
 import {
   useEventByIdQuery,
   // useEventUpdatedSubscription,
-  QuestionOrder
+  QuestionOrder,
 } from "../../../generated/graphqlHooks";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
 import QuestionList from "./QuestionList";
@@ -20,29 +20,29 @@ const useStyles = makeStyles((theme: Theme) =>
       height: "100vh",
       padding: theme.typography.pxToRem(24),
       color: theme.palette.text.primary,
-      background: "radial-gradient(#3b5379 0%, #0e1935 100%)"
+      background: "radial-gradient(#3b5379 0%, #0e1935 100%)",
     },
     gridItem: {
       display: "flex",
       flexDirection: "column",
       height: "100%",
       padding: theme.typography.pxToRem(24),
-      position: "relative"
+      position: "relative",
     },
     infoBox: {
       textAlign: "center",
       flex: 1,
       display: "flex",
       flexDirection: "column",
-      justifyContent: "center"
+      justifyContent: "center",
     },
     rightTitleBox: {
       position: "absolute",
       top: `-${theme.typography.pxToRem(6)}`,
       left: theme.typography.pxToRem(40),
-      color: theme.palette.text.secondary
+      color: theme.palette.text.secondary,
     },
-    listBox: { flex: 1 }
+    listBox: { flex: 1 },
   })
 );
 
@@ -54,15 +54,15 @@ const EventWall: React.FC<Props> = () => {
   const qrcodeCardRef = React.useRef<HTMLElement>(null);
   const [qrcodeCardWidth, setQrcodeCardWidth] = React.useState(0);
   const eventByIdQueryResult = useEventByIdQuery({
-    variables: { eventId: id as string }
+    variables: { eventId: id as string },
   });
   const orderSelectedState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
-  const questionSearchInput = {
+  const questionQueryInput = {
     eventId: id as string,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: orderSelectedState[0]
+    order: orderSelectedState[0],
   };
 
   // subscription
@@ -107,7 +107,7 @@ const EventWall: React.FC<Props> = () => {
           <OrderSelect orderSelectedState={orderSelectedState} />
         </Box>
         <Box className={classes.listBox}>
-          <QuestionList questionSearchInput={questionSearchInput} />
+          <QuestionList questionQueryInput={questionQueryInput} />
         </Box>
         {0 ? (
           <Typography variant="h6" color="inherit">

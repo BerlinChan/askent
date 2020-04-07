@@ -12,9 +12,5 @@ query IsEventAudience($eventId: ID!) {
 }
 
 mutation JoinEvent($eventId: ID!) {
-  joinEvent(eventId: $eventId) {
-    id
-    name
-    code
-  }
+  joinEvent(eventId: $eventId)
 }

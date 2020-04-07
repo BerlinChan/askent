@@ -8,9 +8,11 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
   useQuestionsByEventAudienceQuery,
+  QuestionsByEventAudienceDocument,
   QuestionAudienceFieldsFragment,
   QuestionOrder,
-  QuestionSearchInput
+  QuestionQueryInput,
+  useQuestionRealtimeSearchAudienceSubscription,
 } from "../../../../generated/graphqlHooks";
 import QuestionItem from "./QuestionItem";
 import QuestionListMenu from "./QuestionListMenu";
@@ -23,13 +25,13 @@ import ListFooter from "../../../../components/ListFooter";
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  questionSearchInput: QuestionSearchInput;
+  questionQueryInput: QuestionQueryInput;
 }
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
   eventQueryResult,
-  questionSearchInput
+  questionQueryInput,
 }) => {
   const theme = useTheme();
   const matcheMdUp = useMediaQuery(theme.breakpoints.up("md"));
@@ -42,9 +44,49 @@ const QuestionList: React.FC<Props> = ({
   const editContentIdsState = React.useState<Array<string>>([]);
   const questionsQueryResult = useQuestionsByEventAudienceQuery({
     fetchPolicy: "network-only",
-    variables: { input: questionSearchInput }
+    variables: { input: questionQueryInput },
   });
   const { data, loading, fetchMore } = questionsQueryResult;
+
+  useQuestionRealtimeSearchAudienceSubscription({
+    variables: {
+      eventId: eventQueryResult.data?.eventById.id as string,
+      hash: questionsQueryResult.data?.questionsByEventAudience.hash as string,
+    },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.questionRealtimeSearch) {
+        const questionRealtimeSearch =
+          subscriptionData.data.questionRealtimeSearch;
+
+        if (data) {
+          client.writeQuery({
+            query: QuestionsByEventAudienceDocument,
+            variables: { input: questionQueryInput },
+            data: {
+              questionsByEventAudience: {
+                ...data.questionsByEventAudience,
+                totalCount: questionRealtimeSearch.totalCount,
+                list: data.questionsByEventAudience.list
+                  // remove
+                  .filter(
+                    (preQuestion) =>
+                      !questionRealtimeSearch.deleteList.includes(
+                        preQuestion.id
+                      ) &&
+                      !questionRealtimeSearch.updateList
+                        .map((item) => item.id)
+                        .includes(preQuestion.id)
+                  )
+                  // add
+                  .concat(questionRealtimeSearch.insertList)
+                  .concat(questionRealtimeSearch.updateList),
+              },
+            },
+          });
+        }
+      }
+    },
+  });
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -57,10 +99,10 @@ const QuestionList: React.FC<Props> = ({
   };
 
   const handleEditContentToggle = (id: string) => {
-    const findId = editContentIdsState[0].find(item => item === id);
+    const findId = editContentIdsState[0].find((item) => item === id);
     editContentIdsState[1](
       findId
-        ? editContentIdsState[0].filter(item => item !== id)
+        ? editContentIdsState[0].filter((item) => item !== id)
         : editContentIdsState[0].concat([id])
     );
     handleMoreClose();
@@ -69,24 +111,24 @@ const QuestionList: React.FC<Props> = ({
 
   const orderedList = React.useMemo(() => {
     const list = sortQuestionBy<QuestionAudienceFieldsFragment>(
-      questionSearchInput.order || QuestionOrder.Popular
+      questionQueryInput.order || QuestionOrder.Popular
     )(data?.questionsByEventAudience.list || []);
 
     return list;
-  }, [data, questionSearchInput]);
+  }, [data, questionQueryInput]);
   const loadMore = () => {
     if (data?.questionsByEventAudience.hasNextPage) {
       fetchMore({
         variables: {
           input: {
-            ...questionSearchInput,
+            ...questionQueryInput,
             pagination: {
               offset:
                 data?.questionsByEventAudience.list.length ||
                 DEFAULT_PAGE_OFFSET,
-              limit: data?.questionsByEventAudience.limit || DEFAULT_PAGE_LIMIT
-            }
-          }
+              limit: data?.questionsByEventAudience.limit || DEFAULT_PAGE_LIMIT,
+            },
+          },
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
@@ -95,11 +137,11 @@ const QuestionList: React.FC<Props> = ({
               ...fetchMoreResult.questionsByEventAudience,
               list: [
                 ...prev.questionsByEventAudience.list,
-                ...fetchMoreResult.questionsByEventAudience.list
-              ]
-            }
+                ...fetchMoreResult.questionsByEventAudience.list,
+              ],
+            },
           });
-        }
+        },
       });
     }
   };
@@ -131,7 +173,7 @@ const QuestionList: React.FC<Props> = ({
         question={question}
         userQueryResult={userQueryResult}
         handleMoreClick={handleMoreClick}
-        editContent={editContentIdsState[0].includes(question.ds_key)}
+        editContent={editContentIdsState[0].includes(question.id)}
         handleEditContentToggle={handleEditContentToggle}
         editContentInputRef={editContentInputRef}
         isScrolling={isScrolling}
@@ -145,7 +187,7 @@ const QuestionList: React.FC<Props> = ({
         className="scrollContainer"
         style={{ height: "100%", width: "100%" }}
         totalCount={orderedList.length + (matcheMdUp ? 1 : 0)}
-        scrollingStateChange={scrolling => {
+        scrollingStateChange={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}

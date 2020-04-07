@@ -4,7 +4,7 @@ import path from 'path'
 import { ApolloServer } from 'apollo-server'
 import { buildSchema } from './schema'
 import { createContext } from './context'
-import { connectPostgres, connectMongo } from './db'
+import { connectPostgres } from './db'
 import { getAuthedUser } from './utils'
 
 const dotenvResult = dotenv.config({ path: path.join(__dirname, '../.env') })
@@ -15,7 +15,6 @@ const { PORT = 4000 } = process.env
 
 async function bootstrap() {
   await connectPostgres()
-  await connectMongo()
 
   type ConnectionParamsType = {
     Authorization?: string
@@ -25,6 +24,7 @@ async function bootstrap() {
     schema: await buildSchema(),
     context: createContext,
     subscriptions: {
+      // path: '/subscriptions',
       onConnect: (
         connectionParams: ConnectionParamsType,
         websocket,
