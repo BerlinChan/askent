@@ -11,7 +11,6 @@ import {
 import { RoleName } from '../entity/Role'
 import { getRepository, Repository } from 'typeorm'
 import { Role as RoleEneity } from '../entity/Role'
-import { plainToClass } from 'class-transformer'
 
 registerEnumType(RoleName, {
   name: 'RoleName',
@@ -35,9 +34,9 @@ export class RoleResolver {
   }
 
   @Query((returns) => [Role])
-  async roles(): Promise<Role[]> {
+  async roles(): Promise<RoleEneity[]> {
     const roles = await this.roleRepository.find()
-    return plainToClass(Role, roles)
+    return roles
   }
 
   @Mutation((returns) => Role)

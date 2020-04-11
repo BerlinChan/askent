@@ -10,7 +10,6 @@ import {
   Ctx,
   ID,
 } from 'type-graphql'
-import { plainToClass } from 'class-transformer'
 import { getRepository, In, Repository } from 'typeorm'
 import { hash, compare } from 'bcryptjs'
 import MD5 from 'crypto-js/md5'
@@ -82,7 +81,7 @@ export class AuthPayload {
   public token!: string
 
   @Field((returns) => User)
-  public user!: User
+  public user!: UserEntity
 }
 
 @ObjectType()
@@ -112,13 +111,13 @@ export class UserResolver {
   }
 
   @Query((returns) => User)
-  async me(@Ctx() ctx: Context): Promise<User> {
+  async me(@Ctx() ctx: Context): Promise<UserEntity> {
     const user = await this.userRepository.findOneOrFail(ctx.user?.id as string)
     if (!user) {
       throw new Error()
     }
 
-    return plainToClass(User, user)
+    return user
   }
 
   @Query((returns) => Boolean, {
@@ -161,7 +160,7 @@ export class UserResolver {
 
     return {
       token: signToken({ id: user.id as string, roles: roleNames }),
-      user: plainToClass(User, user),
+      user: user,
     }
   }
 
@@ -188,7 +187,7 @@ export class UserResolver {
         id: user.id as string,
         roles: user.roles.map((role) => role.name),
       }),
-      user: plainToClass(User, user),
+      user: user,
     }
   }
 
@@ -212,7 +211,7 @@ export class UserResolver {
 
     return {
       token: signToken({ id: user.id as string, roles: roleNames }),
-      user: plainToClass(User, user),
+      user: user,
     }
   }
 
@@ -220,7 +219,7 @@ export class UserResolver {
   async updateUser(
     @Arg('input') input: UpdateUserInput,
     @Ctx() ctx: Context,
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     const userId = ctx.user?.id as string
     let user = await this.userRepository.findOneOrFail(userId)
     if (input.name === '' && input.anonymous) {
@@ -237,7 +236,7 @@ export class UserResolver {
     }
     await this.userRepository.save(user)
 
-    return plainToClass(User, user)
+    return user
   }
 }
 

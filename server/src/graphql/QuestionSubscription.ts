@@ -14,7 +14,6 @@ import {
 import { Context } from '../context'
 import { Question, findQuestionAndCountAll } from './Question'
 import { Question as QuestionEntity } from '../entity/Question'
-import { RoleName } from '../entity/Role'
 import { QuestionQueryMeta } from '../entity/QuestionQueryMeta'
 import { getRepository, Repository } from 'typeorm'
 import * as R from 'ramda'

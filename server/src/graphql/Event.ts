@@ -190,9 +190,7 @@ export class EventResolver {
         : dateStatusFilter === EventDateStatus.Past
         ? 'NOW() >= "event"."endAt"'
         : '',
-      searchString
-        ? `"event"."name" LIKE '%${searchString}%' OR "event"."code" LIKE '%${searchString}%'`
-        : '',
+      `"event"."name" LIKE '%${searchString}%' OR "event"."code" LIKE '%${searchString}%'`,
     ]
 
     const totalCount = await this.eventRepository
@@ -214,7 +212,7 @@ export class EventResolver {
           WHEN NOW() >= "event"."endAt" THEN 1
           ELSE 0
         END`,
-        'weight',
+        'weight', // order weight
       )
       .innerJoin('event.owner', 'owner', 'owner.id = :ownerId', { ownerId })
       .where(options[0])
