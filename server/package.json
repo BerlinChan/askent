@@ -12,7 +12,7 @@
   "dependencies": {
     "@deepstream/client": "5.0.7",
     "@typegoose/typegoose": "6.4.0",
-    "apollo-server": "2.11.0",
+    "apollo-server": "2.12.0",
     "bcryptjs": "2.4.3",
     "crypto-js": "4.0.0",
     "date-fns": "2.12.0",
