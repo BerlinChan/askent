@@ -29,7 +29,7 @@
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
     "@types/crypto-js": "3.1.44",
-    "@types/jsonwebtoken": "8.3.8",
+    "@types/jsonwebtoken": "8.3.9",
     "@types/mongoose": "5.7.8",
     "@types/node": "13.11.0",
     "@types/ramda": "types/npm-ramda#dist",
