@@ -50,7 +50,7 @@ const QuestionList: React.FC<Props> = ({
 
   useQuestionRealtimeSearchAudienceSubscription({
     variables: {
-      eventId: eventQueryResult.data?.eventById.id as string,
+      eventId: questionQueryInput.eventId,
       hash: questionsQueryResult.data?.questionsByEventAudience.hash as string,
     },
     onSubscriptionData: ({ client, subscriptionData }) => {

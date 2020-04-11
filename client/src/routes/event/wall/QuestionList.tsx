@@ -1,5 +1,4 @@
 import React from "react";
-import { useParams } from "react-router-dom";
 import {
   QuestionWallFieldsFragment,
   useQuestionsByEventWallQuery,
@@ -20,7 +19,6 @@ interface Props {
 
 const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
-  const { id } = useParams();
   const questionsQueryResult = useQuestionsByEventWallQuery({
     fetchPolicy: "network-only",
     variables: { input: questionQueryInput },
@@ -29,7 +27,7 @@ const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
 
   useQuestionRealtimeSearchWallSubscription({
     variables: {
-      eventId: id as string,
+      eventId: questionQueryInput.eventId,
       hash: questionsQueryResult.data?.questionsByEventWall.hash as string,
     },
     onSubscriptionData: ({ client, subscriptionData }) => {

@@ -41,7 +41,7 @@ const QuestionList: React.FC<Props> = ({
 
   useQuestionRealtimeSearchSubscription({
     variables: {
-      eventId: eventQueryResult.data?.eventById.id as string,
+      eventId: questionQueryInput.eventId,
       hash: questionsQueryResult.data?.questionsByEvent.hash as string,
     },
     onSubscriptionData: ({ client, subscriptionData }) => {
