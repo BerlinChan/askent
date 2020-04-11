@@ -8,11 +8,11 @@ import LiveEventHeader from "./LiveEventHeader";
 import {
   useEventByIdQuery,
   useMeQuery,
-  // useEventUpdatedSubscription
+  useEventUpdatedSubscription,
 } from "../../../generated/graphqlHooks";
 
 const LiveQuestionsComponent = loadable(() => import("./questions"), {
-  fallback: <Loading />
+  fallback: <Loading />,
 });
 
 const Live: React.FC = () => {
@@ -20,12 +20,12 @@ const Live: React.FC = () => {
   let { id } = useParams();
   const meQueryResult = useMeQuery();
   const eventByIdQueryResult = useEventByIdQuery({
-    variables: { eventId: id as string }
+    variables: { eventId: id as string },
   });
 
-  // useEventUpdatedSubscription({
-  //   variables: { eventId: id as string }
-  // });
+  useEventUpdatedSubscription({
+    variables: { eventId: id as string },
+  });
 
   return (
     <Switch>

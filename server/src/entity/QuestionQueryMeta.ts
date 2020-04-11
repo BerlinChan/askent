@@ -6,16 +6,15 @@ import {
   PrimaryColumn,
 } from 'typeorm'
 import { QuestionQueryInput } from '../graphql/Question'
+import { RoleName } from './Role'
 
 @Entity()
 export class QuestionQueryMeta {
-  @PrimaryColumn({
-    comment: "Id value is query's hash",
-  })
+  @PrimaryColumn({ comment: "Id value is query's hash" })
   public id!: string
 
   @Column({ type: 'simple-json', unique: true })
-  public query!: QuestionQueryInput
+  public query!: QuestionQueryInput & { userId: string; asRole: RoleName }
 
   @Column()
   public list!: string

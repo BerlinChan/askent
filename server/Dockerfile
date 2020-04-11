@@ -2,7 +2,7 @@
 
 FROM node:12.16.2-alpine
 
-WORKDIR "/service"
+WORKDIR "/askent"
 
 COPY ./dist/ ./dist/
 COPY ./.env .

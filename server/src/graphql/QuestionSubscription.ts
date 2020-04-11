@@ -32,9 +32,6 @@ export class QuestionRealtimeSearchArgs {
 
   @Field({ description: 'Hash id returned from questionsByEvent' })
   public hash!: string
-
-  @Field((returns) => RoleName, { description: 'Subscribe as role' })
-  public asRole!: RoleName
 }
 
 @ObjectType()
@@ -76,7 +73,7 @@ export class QuestionSubscription {
   })
   async questionRealtimeSearch(
     @Root() payload: QuestionRealtimeSearchPayload,
-    @Args() { asRole, eventId, hash }: QuestionRealtimeSearchArgs,
+    @Args() { eventId, hash }: QuestionRealtimeSearchArgs,
     @Ctx() ctx: Context,
   ): Promise<QuestionRealtimeSearchResult> {
     const questionMeta = await this.questionQueryMetaRepo.findOneOrFail(hash)
@@ -88,7 +85,7 @@ export class QuestionSubscription {
     )
     const { totalCount, list: newList } = await findQuestionAndCountAll(
       questionMeta.query,
-      asRole,
+      questionMeta.query.asRole,
       ctx.connection?.context.id as string,
     )
     await getRepository(QuestionQueryMeta).update(hash, {

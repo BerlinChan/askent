@@ -72,7 +72,7 @@ mutation UpdateQuestionContent($questionId: ID!, $content: String!) {
 }
 
 subscription QuestionRealtimeSearch($eventId: String!, $hash: String!) {
-  questionRealtimeSearch(eventId: $eventId, hash: $hash, asRole: Admin) {
+  questionRealtimeSearch(eventId: $eventId, hash: $hash) {
     totalCount
     insertList {
       ...QuestionFields

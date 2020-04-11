@@ -197,7 +197,7 @@ export class EventResolver {
 
     const totalCount = await this.eventRepository
       .createQueryBuilder('event')
-      .leftJoin('event.owner', 'owner', 'owner.id = :ownerId', { ownerId })
+      .innerJoin('event.owner', 'owner', 'owner.id = :ownerId', { ownerId })
       .where(options[0])
       .andWhere(
         new Brackets((qb) => {
@@ -216,7 +216,7 @@ export class EventResolver {
         END`,
         'weight',
       )
-      .leftJoin('event.owner', 'owner', 'owner.id = :ownerId', { ownerId })
+      .innerJoin('event.owner', 'owner', 'owner.id = :ownerId', { ownerId })
       .where(options[0])
       .andWhere(
         new Brackets((qb) => {

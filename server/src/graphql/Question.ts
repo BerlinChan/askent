@@ -165,14 +165,18 @@ export class QuestionResolver {
     @Arg('input', (returns) => QuestionQueryInput) input: QuestionQueryInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
+    const userId = ctx.user?.id as string
     const { pagination } = input
     const { offset, limit } = pagination
     const { totalCount, list } = await findQuestionAndCountAll(
       input,
       RoleName.Admin,
-      ctx.user?.id as string,
+      userId,
     )
-    const hash = await getQuestionQueryHash(input, list)
+    const hash = await getQuestionQueryHash(
+      { ...input, userId, asRole: RoleName.Admin },
+      list,
+    )
 
     return {
       list,
@@ -190,14 +194,18 @@ export class QuestionResolver {
     @Arg('input', (returns) => QuestionQueryInput) input: QuestionQueryInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
+    const userId = ctx.user?.id as string
     const { pagination } = input
     const { offset, limit } = pagination
     const { totalCount, list } = await findQuestionAndCountAll(
       input,
       RoleName.Audience,
-      ctx.user?.id as string,
+      userId,
     )
-    const hash = await getQuestionQueryHash(input, list)
+    const hash = await getQuestionQueryHash(
+      { ...input, userId, asRole: RoleName.Audience },
+      list,
+    )
 
     return {
       list,
@@ -215,14 +223,18 @@ export class QuestionResolver {
     @Arg('input', (returns) => QuestionQueryInput) input: QuestionQueryInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
+    const userId = ctx.user?.id as string
     const { pagination } = input
     const { offset, limit } = pagination
     const { totalCount, list } = await findQuestionAndCountAll(
       input,
       RoleName.Wall,
-      ctx.user?.id as string,
+      userId,
     )
-    const hash = await getQuestionQueryHash(input, list)
+    const hash = await getQuestionQueryHash(
+      { ...input, userId, asRole: RoleName.Wall },
+      list,
+    )
 
     return {
       list,
@@ -548,8 +560,9 @@ export async function findQuestionAndCountAll(
     order,
   } = queryInput
   const { offset, limit } = pagination
-  const options = {
-    [RoleName.Admin]: [
+
+  if (asRole === RoleName.Admin) {
+    const options = [
       { top: true },
       Object.assign(
         questionFilter === QuestionFilter.Starred
@@ -557,41 +570,93 @@ export async function findQuestionAndCountAll(
           : { reviewStatus: questionFilter },
         { content: Like(`%${searchString}%`) },
       ),
-    ],
-    [RoleName.Audience]: [
+    ]
+    const totalCount = await questionRepository
+      .createQueryBuilder('question')
+      .innerJoin(
+        'question.event',
+        'event',
+        'event.id = :eventId AND event.owner.id = :ownerId',
+        {
+          eventId,
+          ownerId: userId,
+        },
+      )
+      .where(options)
+      .getCount()
+    const list = await questionRepository
+      .createQueryBuilder('question')
+      .innerJoin(
+        'question.event',
+        'event',
+        'event.id = :eventId AND event.owner.id = :ownerId',
+        {
+          eventId,
+          ownerId: userId,
+        },
+      )
+      .where(options)
+      .skip(offset)
+      .take(limit)
+      .orderBy(getQuestionOrderByCondition(order))
+      .getMany()
+
+    return { totalCount, list }
+  } else if (asRole === RoleName.Audience) {
+    const options = [
       { top: true },
       { reviewStatus: ReviewStatus.Publish },
-      { reviewStatus: ReviewStatus.Review, authorId: userId },
-    ],
-    [RoleName.Wall]: [{ top: true }, { reviewStatus: ReviewStatus.Publish }],
+      { reviewStatus: ReviewStatus.Review, author: { id: userId } },
+    ]
+    const totalCount = await questionRepository
+      .createQueryBuilder('question')
+      .innerJoin('question.event', 'event', 'event.id = :eventId', {
+        eventId,
+      })
+      .where(options)
+      .getCount()
+    const list = await questionRepository
+      .createQueryBuilder('question')
+      .innerJoin('question.event', 'event', 'event.id = :eventId', {
+        eventId,
+      })
+      .where(options)
+      .skip(offset)
+      .take(limit)
+      .orderBy(getQuestionOrderByCondition(order))
+      .getMany()
+
+    return { totalCount, list }
+  } else {
+    // asRole===RoleName.Wall
+    const options = [{ top: true }, { reviewStatus: ReviewStatus.Publish }]
+    const totalCount = await questionRepository
+      .createQueryBuilder('question')
+      .innerJoin('question.event', 'event', 'event.id = :eventId', { eventId })
+      .where(options)
+      .getCount()
+    const list = await questionRepository
+      .createQueryBuilder('question')
+      .innerJoin('question.event', 'event', 'event.id = :eventId', { eventId })
+      .where(options)
+      .skip(offset)
+      .take(limit)
+      .orderBy(getQuestionOrderByCondition(order))
+      .getMany()
+
+    return { totalCount, list }
   }
-
-  const totalCount = await questionRepository
-    .createQueryBuilder('question')
-    .innerJoin('question.event', 'event', 'event.id = :eventId', { eventId })
-    .where(options[asRole])
-    .getCount()
-  const list = await questionRepository
-    .createQueryBuilder('question')
-    .innerJoin('question.event', 'event', 'event.id = :eventId', { eventId })
-    .where(options[asRole])
-    .skip(offset)
-    .take(limit)
-    .orderBy(getQuestionOrderByCondition(order))
-    .getMany()
-
-  return { totalCount, list }
 }
 
 async function getQuestionQueryHash(
-  queryInput: QuestionQueryInput,
+  query: QuestionQueryInput & { userId: string; asRole: RoleName },
   questionList: QuestionEntity[],
 ) {
   const questionQueryMetaRepo = getRepository(QuestionQueryMeta)
-  const hash = MD5(JSON.stringify(queryInput)).toString(enc.Hex)
+  const hash = MD5(JSON.stringify(query)).toString(enc.Hex)
   const queryMeta = questionQueryMetaRepo.create({
     id: hash,
-    query: queryInput,
+    query,
     list: JSON.stringify(
       questionList.map((item) => ({ id: item.id, updatedAt: item.updatedAt })),
     ),

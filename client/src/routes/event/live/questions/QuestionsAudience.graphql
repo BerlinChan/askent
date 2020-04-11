@@ -49,7 +49,7 @@ mutation VoteUpQuestion($questionId: ID!) {
 }
 
 subscription QuestionRealtimeSearchAudience($eventId: String!, $hash: String!) {
-  questionRealtimeSearch(eventId: $eventId, hash: $hash, asRole: Audience) {
+  questionRealtimeSearch(eventId: $eventId, hash: $hash) {
     totalCount
     insertList {
       ...QuestionAudienceFields
