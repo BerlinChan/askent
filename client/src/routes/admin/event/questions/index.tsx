@@ -7,7 +7,7 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
   QuestionFilter,
-  QuestionOrder
+  QuestionOrder,
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import QuestionList from "./QuestionList";
@@ -18,31 +18,31 @@ import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     questionsGrid: {
-      height: "100%"
+      height: "100%",
     },
     gridItem: {
       display: "flex",
       flexDirection: "column",
-      height: "100%"
+      height: "100%",
     },
     listActions: {
       display: "flex",
-      justifyContent: "space-between"
+      justifyContent: "space-between",
     },
     gridItemPaper: {
       flex: 1,
       overflowX: "hidden",
-      overflowY: "auto"
+      overflowY: "auto",
     },
     rightPaper: {
-      borderRadius: `0 ${theme.shape.borderRadius}px ${theme.shape.borderRadius}px`
+      borderRadius: `0 ${theme.shape.borderRadius}px ${theme.shape.borderRadius}px`,
     },
     moderationOffTips: {
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
-      height: "100%"
-    }
+      height: "100%",
+    },
   })
 );
 
@@ -55,24 +55,24 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
   const { id } = useParams();
   const questionQueryState = React.useState<QuestionQueryStateType>({
     filterSelected: QuestionFilter.Publish,
-    searchString: ""
+    searchString: "",
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQueryResult;
-  const questionSearchInput = {
+  const questionQueryInput = {
     eventId: id as string,
     questionFilter: questionQueryState[0].filterSelected,
     searchString: questionQueryState[0].searchString
       ? questionQueryState[0].searchString
       : undefined,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: questionOrderSelectedState[0]
+    order: questionOrderSelectedState[0],
   };
-  const questionSearchInputReview = {
+  const questionQueryInputReview = {
     eventId: id as string,
     questionFilter: QuestionFilter.Review,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: QuestionOrder.Oldest
+    order: QuestionOrder.Oldest,
   };
 
   return (
@@ -85,7 +85,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
           {eventData?.eventById.moderation ? (
             <QuestionList
               eventQueryResult={eventQueryResult}
-              questionSearchInput={questionSearchInputReview}
+              questionQueryInput={questionQueryInputReview}
             />
           ) : (
             <Box className={classes.moderationOffTips}>
@@ -115,7 +115,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
         <Paper className={classes.gridItemPaper + " " + classes.rightPaper}>
           <QuestionList
             eventQueryResult={eventQueryResult}
-            questionSearchInput={questionSearchInput}
+            questionQueryInput={questionQueryInput}
           />
         </Paper>
       </Grid>

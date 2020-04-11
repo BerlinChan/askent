@@ -6,9 +6,11 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToMany,
-  JoinTable,
+  OneToMany,
 } from 'typeorm'
 import { Role } from './Role'
+import { Event } from './Event'
+import { Question } from './Question'
 
 @Entity()
 export class User {
@@ -30,12 +32,20 @@ export class User {
   @Column({ default: false })
   public anonymous!: boolean
 
-  @ManyToMany(
-    type => Role,
-    role => role.users,
-  )
-  @JoinTable({ name: 'userRoles' })
-  roles!: Role[]
+  @ManyToMany((type) => Role, (role) => role.users)
+  public roles!: Role[]
+
+  @OneToMany((type) => Event, (event) => event.owner)
+  public events!: Event[]
+
+  @ManyToMany((type) => Event, (event) => event.audiences)
+  public attendedEvents!: Event[]
+
+  @OneToMany((type) => Question, (question) => question.author)
+  public questions!: Question[]
+
+  @ManyToMany((type) => Question, (question) => question.voteUpUsers)
+  public voteUpQuestions!: Question[]
 
   @CreateDateColumn()
   public readonly createdAt!: Date

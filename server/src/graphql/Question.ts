@@ -11,34 +11,36 @@ import {
   Ctx,
   Mutation,
   Int,
+  Publisher,
+  PubSub,
 } from 'type-graphql'
-import { MD5, enc } from 'crypto-js'
-import { RecordData } from '@deepstream/client/dist/constants'
 import { Context } from '../context'
 import { User as UserEntity } from '../entity/User'
 import { QuestionOrder, QuestionFilter } from './FilterOrder'
 import { IPagedType, PaginationInput } from './Pagination'
-import { ReviewStatus } from '../model/Question'
-import {
-  EventModel,
-  EventSchema,
-  QuestionModel,
-  QuestionSchema,
-} from '../model'
+import { ReviewStatus } from '../entity/Question'
+import { Event as EventEntity } from '../entity/Event'
+import { Question as QuestionEntity } from '../entity/Question'
 import { Event } from './Event'
 import { User } from './User'
-import { plainToClass } from 'class-transformer'
-import { getRepository } from 'typeorm'
+import { getRepository, Repository, Like, OrderByCondition } from 'typeorm'
 import { RoleName } from '../entity/Role'
-import { FilterQuery } from 'mongoose'
-import { TokenPayload } from '../utils'
+import { QuestionQueryMeta } from '../entity/QuestionQueryMeta'
+import { MD5, enc } from 'crypto-js'
+import { QuestionRealtimeSearchPayload } from './QuestionSubscription'
 
 registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
 
 @ObjectType()
 export class Question {
-  @Field(returns => ID)
-  public ds_key!: string
+  private questionRepository: Repository<QuestionEntity>
+
+  constructor() {
+    this.questionRepository = getRepository(QuestionEntity)
+  }
+
+  @Field((returns) => ID)
+  public id!: string
 
   @Field()
   public content!: string
@@ -46,7 +48,7 @@ export class Question {
   @Field()
   public anonymous!: boolean
 
-  @Field(returns => ReviewStatus)
+  @Field((returns) => ReviewStatus)
   public reviewStatus!: ReviewStatus
 
   @Field()
@@ -55,34 +57,36 @@ export class Question {
   @Field()
   public top!: boolean
 
-  @Field(returns => Int)
+  @Field((returns) => Int)
   public voteUpCount!: number
 
-  @Field(returns => Event)
-  async event(@Root() root: Question): Promise<EventSchema> {
-    const question = await QuestionModel.findById(root.ds_key)
-      .populate('event')
-      .lean(true)
-    if (!question?.event) {
-      throw new Error()
-    }
+  @Field((returns) => Event)
+  async event(@Root() root: Question): Promise<EventEntity> {
+    const event = await this.questionRepository
+      .createQueryBuilder()
+      .relation(QuestionEntity, 'event')
+      .of(root.id)
+      .loadOne()
 
-    return question.event as EventSchema
+    return event
   }
 
-  @Field(returns => User, { nullable: true })
-  async author(@Root() root: Question): Promise<User | undefined> {
+  @Field((returns) => User, { nullable: true })
+  async author(@Root() root: Question): Promise<UserEntity | undefined> {
     if (!root.anonymous) {
-      const question = await QuestionModel.findById(root.ds_key).lean(true)
-      const user = await getRepository(UserEntity).findOne(question?.authorId)
+      const user = await this.questionRepository
+        .createQueryBuilder()
+        .relation(QuestionEntity, 'author')
+        .of(root.id)
+        .loadOne()
 
-      return plainToClass(User, user)
+      return user
     }
   }
 
-  @Field(returns => Boolean)
+  @Field((returns) => Boolean)
   voted(@Root() root: Question, @Ctx() ctx: Context): Promise<boolean> {
-    return getVoted(ctx, root.ds_key)
+    return getVoted(ctx, root.id)
   }
 
   @Field()
@@ -99,25 +103,19 @@ export class QuestionPaged implements IPagedType {
   totalCount!: number
   hasNextPage!: boolean
 
-  @Field(returns => [Question])
-  public list!: QuestionSchema[]
-}
-
-@ObjectType()
-export class QuestionSearchStart {
   @Field()
-  public recordName!: string
+  public hash!: string
 
-  @Field(returns => Int)
-  public totalCount!: number
+  @Field((returns) => [Question])
+  public list!: QuestionEntity[]
 }
 
 @InputType()
-export class QuestionSearchInput {
-  @Field(returns => ID)
+export class QuestionQueryInput {
+  @Field((returns) => ID)
   public eventId!: string
 
-  @Field(returns => QuestionFilter, {
+  @Field((returns) => QuestionFilter, {
     nullable: true,
     defaultValue: QuestionFilter.Publish,
   })
@@ -126,10 +124,10 @@ export class QuestionSearchInput {
   @Field({ nullable: true, defaultValue: '' })
   public searchString: string = ''
 
-  @Field(returns => PaginationInput)
+  @Field((returns) => PaginationInput)
   public pagination!: PaginationInput
 
-  @Field(returns => QuestionOrder, {
+  @Field((returns) => QuestionOrder, {
     nullable: true,
     defaultValue: QuestionOrder.Popular,
   })
@@ -138,7 +136,7 @@ export class QuestionSearchInput {
 
 @InputType()
 export class CreateQuestionInput implements Partial<Question> {
-  @Field(returns => ID)
+  @Field((returns) => ID)
   public eventId!: string
 
   @Field()
@@ -148,43 +146,23 @@ export class CreateQuestionInput implements Partial<Question> {
   public anonymous: boolean = false
 }
 
-@Resolver(of => Question)
+@Resolver((of) => Question)
 export class QuestionResolver {
-  @Query(returns => QuestionSearchStart)
-  async questionRealtimeSearch(
-    @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
-    @Ctx() ctx: Context,
-  ): Promise<QuestionSearchStart> {
-    const listNamePrefix = 'question_realtime_search/list_'
-    const metaRecordPrefix = 'question_realtime_search/meta_'
+  private userRepository: Repository<UserEntity>
+  private eventRepository: Repository<EventEntity>
+  private questionRepository: Repository<QuestionEntity>
 
-    const hash = MD5(JSON.stringify(input)).toString(enc.Hex)
-    const exists = await ctx.deepstreamClient.record.has(
-      `${metaRecordPrefix}${hash}`,
-    )
-    const filter = getQuestionSearchFilter(input, RoleName.Admin, ctx.user)
-    const totalCount = await QuestionModel.countDocuments(filter)
-
-    if (exists === true) {
-      // Query already exists, so use that
-    } else {
-      await ctx.deepstreamClient.record.setDataWithAck(
-        `${metaRecordPrefix}${hash}`,
-        ({
-          query: input,
-          hash,
-        } as unknown) as RecordData,
-      )
-    }
-
-    return { recordName: listNamePrefix + hash, totalCount }
+  constructor() {
+    this.userRepository = getRepository(UserEntity)
+    this.eventRepository = getRepository(EventEntity)
+    this.questionRepository = getRepository(QuestionEntity)
   }
 
-  @Query(returns => QuestionPaged, {
+  @Query((returns) => QuestionPaged, {
     description: 'Query question by event for Role.Admin.',
   })
   async questionsByEvent(
-    @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
+    @Arg('input', (returns) => QuestionQueryInput) input: QuestionQueryInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
     const { pagination } = input
@@ -192,22 +170,24 @@ export class QuestionResolver {
     const { totalCount, list } = await findQuestionAndCountAll(
       input,
       RoleName.Admin,
-      ctx.user,
+      ctx.user?.id as string,
     )
+    const hash = await getQuestionQueryHash(input, list)
 
     return {
       list,
+      hash,
       hasNextPage: offset + limit < totalCount,
       totalCount,
       ...pagination,
     }
   }
 
-  @Query(returns => QuestionPaged, {
+  @Query((returns) => QuestionPaged, {
     description: 'Query question by event for Role.Audience.',
   })
   async questionsByEventAudience(
-    @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
+    @Arg('input', (returns) => QuestionQueryInput) input: QuestionQueryInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
     const { pagination } = input
@@ -215,22 +195,24 @@ export class QuestionResolver {
     const { totalCount, list } = await findQuestionAndCountAll(
       input,
       RoleName.Audience,
-      ctx.user,
+      ctx.user?.id as string,
     )
+    const hash = await getQuestionQueryHash(input, list)
 
     return {
       list,
+      hash,
       hasNextPage: offset + limit < totalCount,
       totalCount,
       ...pagination,
     }
   }
 
-  @Query(returns => QuestionPaged, {
+  @Query((returns) => QuestionPaged, {
     description: 'Query question by event for Role.Wall.',
   })
   async questionsByEventWall(
-    @Arg('input', returns => QuestionSearchInput) input: QuestionSearchInput,
+    @Arg('input', (returns) => QuestionQueryInput) input: QuestionQueryInput,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
     const { pagination } = input
@@ -238,23 +220,26 @@ export class QuestionResolver {
     const { totalCount, list } = await findQuestionAndCountAll(
       input,
       RoleName.Wall,
-      ctx.user,
+      ctx.user?.id as string,
     )
+    const hash = await getQuestionQueryHash(input, list)
 
     return {
       list,
+      hash,
       hasNextPage: offset + limit < totalCount,
       totalCount,
       ...pagination,
     }
   }
 
-  @Query(returns => QuestionPaged, {
+  @Query((returns) => QuestionPaged, {
     description: 'Query question by event for Role.Wall.',
   })
   async questionsByMe(
-    @Arg('pagination', returns => PaginationInput) pagination: PaginationInput,
-    @Arg('order', returns => QuestionOrder, {
+    @Arg('pagination', (returns) => PaginationInput)
+    pagination: PaginationInput,
+    @Arg('order', (returns) => QuestionOrder, {
       nullable: true,
       defaultValue: QuestionOrder.Popular,
     })
@@ -276,42 +261,51 @@ export class QuestionResolver {
 
     return {
       list: questions,
+      hash,
       hasNextPage: offset + limit < totalCount,
       totalCount,
       ...pagination,
     }
   }
 
-  @Mutation(returns => Question, { description: 'Create question' })
+  @Mutation((returns) => Question, { description: 'Create question' })
   async createQuestion(
-    @Arg('input', returns => CreateQuestionInput) input: CreateQuestionInput,
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publish: Publisher<QuestionRealtimeSearchPayload>,
+    @Arg('input', (returns) => CreateQuestionInput) input: CreateQuestionInput,
     @Ctx() ctx: Context,
-  ): Promise<QuestionSchema> {
+  ): Promise<QuestionEntity> {
     const { eventId, content, anonymous } = input
     const authorId = ctx.user?.id as string
-    const event = await EventModel.findById(eventId).lean(true)
-    const question = await QuestionModel.create({
+    const author = await this.userRepository.findOneOrFail(authorId)
+    const event = await this.eventRepository.findOneOrFail(eventId)
+    const question = this.questionRepository.create({
       reviewStatus: event?.moderation
         ? ReviewStatus.Review
         : ReviewStatus.Publish,
       content,
       anonymous,
-      authorId,
-      event: eventId,
+      author,
+      event,
     })
+    await this.questionRepository.save(question)
+
+    await publish({ eventId })
 
     return question
   }
 
-  @Mutation(returns => Question, {
+  @Mutation((returns) => Question, {
     description: 'Update a question review status.',
   })
   async updateQuestionReviewStatus(
-    @Arg('ds_key', returns => ID) ds_key: string,
-    @Arg('reviewStatus', returns => ReviewStatus) reviewStatus: ReviewStatus,
-  ): Promise<QuestionSchema> {
-    const question = await QuestionModel.findOneAndUpdate(
-      { ds_key },
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publish: Publisher<QuestionRealtimeSearchPayload>,
+    @Arg('questionId', (returns) => ID) questionId: string,
+    @Arg('reviewStatus', (returns) => ReviewStatus) reviewStatus: ReviewStatus,
+  ): Promise<QuestionEntity> {
+    await this.questionRepository.update(
+      questionId,
       Object.assign(
         { reviewStatus },
         reviewStatus === ReviewStatus.Archive
@@ -320,218 +314,289 @@ export class QuestionResolver {
           ? { top: false, star: false }
           : {},
       ),
-      { new: true },
-    ).lean(true)
-    if (!question) {
-      throw new Error()
-    }
+    )
+    const question = await this.questionRepository.findOneOrFail(questionId, {
+      relations: ['event'],
+    })
+
+    await publish({ eventId: question.event.id })
 
     return question
   }
 
-  @Mutation(returns => Question, { description: 'Update a question content.' })
+  @Mutation((returns) => Question, {
+    description: 'Update a question content.',
+  })
   async updateQuestionContent(
-    @Arg('ds_key', returns => ID) ds_key: string,
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publish: Publisher<QuestionRealtimeSearchPayload>,
+    @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('content') content: string,
-  ): Promise<QuestionSchema> {
-    const question = await QuestionModel.findOneAndUpdate(
-      { ds_key },
-      { content },
-      { new: true },
-    ).lean(true)
-    if (!question) {
-      throw new Error()
-    }
+  ): Promise<QuestionEntity> {
+    await this.questionRepository.update(questionId, { content })
+    const question = await this.questionRepository.findOneOrFail(questionId, {
+      relations: ['event'],
+    })
+
+    await publish({ eventId: question.event.id })
 
     return question
   }
 
-  @Mutation(returns => Question, { description: 'Update a question star.' })
+  @Mutation((returns) => Question, { description: 'Update a question star.' })
   async updateQuestionStar(
-    @Arg('ds_key', returns => ID) ds_key: string,
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publish: Publisher<QuestionRealtimeSearchPayload>,
+    @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('star') star: boolean,
-  ): Promise<QuestionSchema> {
-    const question = await QuestionModel.findOneAndUpdate(
-      { ds_key },
-      { star },
-      { new: true },
-    ).lean(true)
-    if (!question) {
-      throw new Error()
-    }
+  ): Promise<QuestionEntity> {
+    await this.questionRepository.update(questionId, { star })
+    const question = await this.questionRepository.findOneOrFail(questionId, {
+      relations: ['event'],
+    })
+
+    await publish({ eventId: question.event.id })
 
     return question
   }
 
-  @Mutation(returns => Question, {
+  @Mutation((returns) => Question, {
     description: 'Top a question. Can only top one question at a time.',
   })
   async updateQuestionTop(
-    @Arg('ds_key', returns => ID) ds_key: string,
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publish: Publisher<QuestionRealtimeSearchPayload>,
+    @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('top') top: boolean,
-  ): Promise<QuestionSchema> {
-    let question = await QuestionModel.findOne({ ds_key })
-    if (!question) {
-      throw new Error()
-    }
+  ): Promise<QuestionEntity> {
+    const event = await this.questionRepository
+      .createQueryBuilder()
+      .relation(QuestionEntity, 'event')
+      .of(questionId)
+      .loadOne()
+
     if (top) {
       // cancel preview top questions
-      await QuestionModel.updateMany(
-        { eventId: question?.event, top: true },
-        { top: false },
-      )
+      await this.questionRepository.update({ event, top: true }, { top: false })
     }
 
-    question.top = top
-    await question.save()
+    await this.questionRepository.update(questionId, { top })
+    const question = await this.questionRepository.findOneOrFail(questionId)
+
+    await publish({ eventId: event.id })
 
     return question
   }
 
-  @Mutation(returns => ID, {
-    description: 'Delete a question by ds_key.',
+  @Mutation((returns) => Question, {
+    description: 'Delete a question by id.',
   })
   async deleteQuestion(
-    @Arg('ds_key', returns => ID) ds_key: string,
-  ): Promise<string> {
-    await QuestionModel.deleteOne({ ds_key })
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publish: Publisher<QuestionRealtimeSearchPayload>,
+    @Arg('questionId', (returns) => ID) questionId: string,
+  ): Promise<Pick<QuestionEntity, 'id'>> {
+    const event = await this.questionRepository
+      .createQueryBuilder()
+      .relation(QuestionEntity, 'event')
+      .of(questionId)
+      .loadOne()
+    await this.questionRepository.softDelete(questionId)
 
-    return ds_key
+    await publish({ eventId: event.id })
+
+    return { id: questionId }
   }
 
-  @Mutation(returns => Int, {
+  @Mutation((returns) => Int, {
     description: 'Delete all Review questions by event.',
   })
   async deleteAllReviewQuestions(
-    @Arg('eventId', returns => ID) eventId: string,
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publish: Publisher<QuestionRealtimeSearchPayload>,
+    @Arg('eventId', (returns) => ID) eventId: string,
   ): Promise<number> {
-    const { deletedCount } = await QuestionModel.deleteMany({
-      event: eventId,
+    const event = await this.eventRepository.findOneOrFail(eventId)
+    const { affected } = await this.questionRepository.softDelete({
+      event,
       reviewStatus: ReviewStatus.Review,
     })
 
-    return deletedCount as number
+    await publish({ eventId })
+
+    return Number(affected)
   }
 
-  @Mutation(returns => Int, {
+  @Mutation((returns) => Int, {
     description: 'Publish all Review questions by event.',
   })
   async publishAllReviewQuestions(
-    @Arg('eventId', returns => ID) eventId: string,
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publish: Publisher<QuestionRealtimeSearchPayload>,
+    @Arg('eventId', (returns) => ID) eventId: string,
   ): Promise<number> {
-    const { nModified } = await QuestionModel.updateMany(
+    const event = await this.eventRepository.findOneOrFail(eventId)
+    const { affected } = await this.questionRepository.update(
       {
-        event: eventId,
+        event,
         reviewStatus: ReviewStatus.Review,
       },
       { reviewStatus: ReviewStatus.Publish },
     )
 
-    return nModified as number
+    await publish({ eventId })
+
+    return Number(affected)
   }
 
-  @Mutation(returns => Question, { description: 'Vote a question.' })
+  @Mutation((returns) => Question, { description: 'Vote a question.' })
   async voteUpQuestion(
-    @Arg('ds_key', returns => ID) ds_key: string,
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publish: Publisher<QuestionRealtimeSearchPayload>,
+    @Arg('questionId', (returns) => ID) questionId: string,
     @Ctx() ctx: Context,
-  ): Promise<QuestionSchema> {
+  ): Promise<QuestionEntity> {
     const userId = ctx.user?.id as string
-    const question = await QuestionModel.findOneAndUpdate(
-      { ds_key },
-      (await getVoted(ctx, ds_key))
-        ? { $pull: { voteUpUsers: userId }, $inc: { voteUpCount: -1 } }
-        : { $addToSet: { voteUpUsers: userId }, $inc: { voteUpCount: 1 } },
-      { new: true },
-    ).lean(true)
-    if (!question) {
-      throw new Error()
+    if (await getVoted(ctx, questionId)) {
+      await this.questionRepository
+        .createQueryBuilder()
+        .relation(QuestionEntity, 'voteUpUsers')
+        .of(questionId)
+        .remove(userId)
+      await this.questionRepository.increment(
+        { id: questionId },
+        'voteUpCount',
+        -1,
+      )
+    } else {
+      await this.questionRepository
+        .createQueryBuilder()
+        .relation(QuestionEntity, 'voteUpUsers')
+        .of(questionId)
+        .add(userId)
+      await this.questionRepository.increment(
+        { id: questionId },
+        'voteUpCount',
+        1,
+      )
     }
+    const question = await this.questionRepository.findOneOrFail(questionId, {
+      relations: ['event'],
+    })
+
+    await publish({ eventId: question.event.id })
 
     return question
   }
 }
 
-async function getVoted(ctx: Context, ds_key: string) {
+async function getVoted(ctx: Context, questionId: string) {
   const userId = ctx.user?.id as string
   if (!userId) return false
-  const question = await QuestionModel.findOne({
-    ds_key,
-    voteUpUsers: { $all: [userId] },
-  }).lean(true)
+  const question = await getRepository(QuestionEntity)
+    .createQueryBuilder('question')
+    .where({ id: questionId })
+    .innerJoin('question.voteUpUsers', 'user', 'user.id = :userId', { userId })
+    .getOne()
 
   return Boolean(question)
 }
 
+function getQuestionOrderByCondition(
+  questionOrder: QuestionOrder,
+): OrderByCondition {
+  switch (questionOrder) {
+    case QuestionOrder.Recent:
+      return {
+        'question.top': 'DESC',
+        'question.createdAt': 'DESC',
+        'question.voteUpCount': 'DESC',
+      }
+    case QuestionOrder.Oldest:
+      return {
+        'question.top': 'DESC',
+        'question.createdAt': 'ASC',
+        'question.voteUpCount': 'DESC',
+      }
+    case QuestionOrder.Starred:
+      return {
+        'question.top': 'DESC',
+        'question.star': 'DESC',
+        'question.createdAt': 'DESC',
+      }
+    default:
+      // QuestionOrder.Popular:
+      return {
+        'question.top': 'DESC',
+        'question.voteUpCount': 'DESC',
+        'question.createdAt': 'DESC',
+      }
+  }
+}
+
 export async function findQuestionAndCountAll(
-  input: QuestionSearchInput,
+  queryInput: QuestionQueryInput,
   asRole: RoleName,
-  user: TokenPayload | undefined,
-): Promise<{ list: QuestionSchema[]; totalCount: number }> {
-  const { pagination, order } = input
+  userId: string,
+): Promise<{ list: QuestionEntity[]; totalCount: number }> {
+  const questionRepository = getRepository(QuestionEntity)
+  const {
+    eventId,
+    pagination,
+    questionFilter,
+    searchString,
+    order,
+  } = queryInput
   const { offset, limit } = pagination
-  const filter = getQuestionSearchFilter(input, asRole, user)
-  const totalCount = await QuestionModel.countDocuments(filter)
-  const list = await QuestionModel.find(filter)
-    .sort(getQuestionSortArg(order, true))
+  const options = {
+    [RoleName.Admin]: [
+      { top: true },
+      Object.assign(
+        questionFilter === QuestionFilter.Starred
+          ? { star: true }
+          : { reviewStatus: questionFilter },
+        { content: Like(`%${searchString}%`) },
+      ),
+    ],
+    [RoleName.Audience]: [
+      { top: true },
+      { reviewStatus: ReviewStatus.Publish },
+      { reviewStatus: ReviewStatus.Review, authorId: userId },
+    ],
+    [RoleName.Wall]: [{ top: true }, { reviewStatus: ReviewStatus.Publish }],
+  }
+
+  const totalCount = await questionRepository
+    .createQueryBuilder('question')
+    .innerJoin('question.event', 'event', 'event.id = :eventId', { eventId })
+    .where(options[asRole])
+    .getCount()
+  const list = await questionRepository
+    .createQueryBuilder('question')
+    .innerJoin('question.event', 'event', 'event.id = :eventId', { eventId })
+    .where(options[asRole])
     .skip(offset)
-    .limit(limit)
-    .lean(true)
+    .take(limit)
+    .orderBy(getQuestionOrderByCondition(order))
+    .getMany()
 
   return { totalCount, list }
 }
 
-export function getQuestionSearchFilter(
-  input: QuestionSearchInput,
-  asRole: RoleName,
-  user: TokenPayload | undefined,
-): FilterQuery<QuestionSchema> {
-  const { eventId, questionFilter, searchString } = input
-  const userId = user?.id as string
+async function getQuestionQueryHash(
+  queryInput: QuestionQueryInput,
+  questionList: QuestionEntity[],
+) {
+  const questionQueryMetaRepo = getRepository(QuestionQueryMeta)
+  const hash = MD5(JSON.stringify(queryInput)).toString(enc.Hex)
+  const queryMeta = questionQueryMetaRepo.create({
+    id: hash,
+    query: queryInput,
+    list: JSON.stringify(
+      questionList.map((item) => ({ id: item.id, updatedAt: item.updatedAt })),
+    ),
+  })
+  await questionQueryMetaRepo.save(queryMeta)
 
-  switch (asRole) {
-    case RoleName.Admin:
-      return Object.assign(
-        { event: eventId },
-        questionFilter === QuestionFilter.Starred
-          ? { star: true }
-          : { reviewStatus: questionFilter },
-        { content: { $regex: new RegExp(searchString) } },
-      )
-    case RoleName.Audience:
-      return {
-        event: eventId,
-        $or: [
-          { reviewStatus: ReviewStatus.Publish },
-          {
-            $and: [{ authorId: userId }, { reviewStatus: ReviewStatus.Review }],
-          },
-        ],
-      }
-    default:
-      // case RoleName.Wall:
-      return { event: eventId, reviewStatus: ReviewStatus.Publish }
-  }
-}
-
-export function getQuestionSortArg(
-  questionOrder: QuestionOrder,
-  top?: boolean,
-): { [key: string]: 1 | -1 } | {} {
-  let arg
-  switch (questionOrder) {
-    case QuestionOrder.Recent:
-      arg = { createdAt: -1, voteUpCount: -1 }
-      break
-    case QuestionOrder.Oldest:
-      arg = { createdAt: 1, voteUpCount: -1 }
-      break
-    case QuestionOrder.Starred:
-      arg = { star: -1, createdAt: -1 }
-      break
-    default:
-      // QuestionOrder.Popular:
-      arg = { voteUpCount: -1, createdAt: -1 }
-  }
-
-  return Object.assign(top ? { top: -1 } : {}, arg)
+  return hash
 }

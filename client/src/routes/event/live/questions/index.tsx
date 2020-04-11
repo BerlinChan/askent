@@ -6,7 +6,7 @@ import {
   MeQueryVariables,
   EventByIdQuery,
   EventByIdQueryVariables,
-  QuestionOrder
+  QuestionOrder,
 } from "../../../../generated/graphqlHooks";
 import QuestionList from "./QuestionList";
 import AskFabDialog from "./AskFabDialog";
@@ -19,13 +19,13 @@ interface Props {
 
 const LiveQuestions: React.FC<Props> = ({
   userQueryResult,
-  eventQueryResult
+  eventQueryResult,
 }) => {
   let { id } = useParams();
-  const questionSearchInput = {
+  const questionQueryInput = {
     eventId: id as string,
     order: QuestionOrder.Popular,
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
+    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
   };
 
   return (
@@ -33,7 +33,7 @@ const LiveQuestions: React.FC<Props> = ({
       <QuestionList
         userQueryResult={userQueryResult}
         eventQueryResult={eventQueryResult}
-        questionSearchInput={questionSearchInput}
+        questionQueryInput={questionQueryInput}
       />
 
       <AskFabDialog userQueryResult={userQueryResult} />

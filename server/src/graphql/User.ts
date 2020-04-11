@@ -22,7 +22,13 @@ import { Role } from './Role'
 
 @ObjectType()
 export class User {
-  @Field(returns => ID)
+  private userRepository: Repository<UserEntity>
+
+  constructor() {
+    this.userRepository = getRepository(UserEntity)
+  }
+
+  @Field((returns) => ID)
   public id!: string
 
   @Field({ nullable: true, defaultValue: '' })
@@ -35,7 +41,8 @@ export class User {
   public anonymous?: boolean
 
   @Field({
-    description: 'gravatar img, see https://en.gravatar.com/site/implement/images/',
+    description:
+      'gravatar img, see https://en.gravatar.com/site/implement/images/',
   })
   get avatar(): string {
     if (this.email) {
@@ -48,17 +55,15 @@ export class User {
     }
   }
 
-  @Field(returns => [Role])
-  async roles(@Root() root: User): Promise<Role[]> {
-    const user = await getRepository(UserEntity).findOne(root.id, {
-      relations: ['roles'],
-    })
+  @Field((returns) => [Role])
+  async roles(@Root() root: User): Promise<RoleEntity[]> {
+    const roles = await this.userRepository
+      .createQueryBuilder()
+      .relation(UserEntity, 'roles')
+      .of(root.id)
+      .loadMany()
 
-    if (!user?.roles) {
-      throw new Error()
-    }
-
-    return plainToClass(Role, user.roles)
+    return roles
   }
 
   @Field()
@@ -76,7 +81,7 @@ export class AuthPayload {
   @Field()
   public token!: string
 
-  @Field(returns => User)
+  @Field((returns) => User)
   public user!: User
 }
 
@@ -98,7 +103,7 @@ export class UpdateUserInput implements Partial<User> {
   public anonymous?: boolean
 }
 
-@Resolver(of => User)
+@Resolver((of) => User)
 export class UserResolver {
   private userRepository: Repository<UserEntity>
 
@@ -106,7 +111,7 @@ export class UserResolver {
     this.userRepository = getRepository(UserEntity)
   }
 
-  @Query(returns => User)
+  @Query((returns) => User)
   async me(@Ctx() ctx: Context): Promise<User> {
     const user = await this.userRepository.findOneOrFail(ctx.user?.id as string)
     if (!user) {
@@ -116,7 +121,7 @@ export class UserResolver {
     return plainToClass(User, user)
   }
 
-  @Query(returns => Boolean, {
+  @Query((returns) => Boolean, {
     description: 'Check if a email has already exist.',
   })
   checkEmailExist(
@@ -126,12 +131,12 @@ export class UserResolver {
     return checkEmailExist(ctx, email)
   }
 
-  @Query(returns => PGP, { description: 'For demo use' })
+  @Query((returns) => PGP, { description: 'For demo use' })
   pgp(): PGP {
     return { pubKey: process.env.JWT_PUB_KEY as string }
   }
 
-  @Mutation(returns => AuthPayload, { description: 'Signup a new user.' })
+  @Mutation((returns) => AuthPayload, { description: 'Signup a new user.' })
   async signup(
     @Arg('name', { description: 'User name' }) name: string,
     @Arg('email', { description: 'User Email' }) email: string,
@@ -160,7 +165,7 @@ export class UserResolver {
     }
   }
 
-  @Mutation(returns => AuthPayload)
+  @Mutation((returns) => AuthPayload)
   async login(
     @Arg('email', { description: 'User Email' }) email: string,
     @Arg('password') password: string,
@@ -181,13 +186,13 @@ export class UserResolver {
     return {
       token: signToken({
         id: user.id as string,
-        roles: user.roles.map(role => role.name),
+        roles: user.roles.map((role) => role.name),
       }),
       user: plainToClass(User, user),
     }
   }
 
-  @Mutation(returns => AuthPayload, {
+  @Mutation((returns) => AuthPayload, {
     description: `Audience 登陆。
   若 fingerprint 的 User 已存在则返回 token，
   若 fingerprint 的 User 不存在则 create 并返回 token`,
@@ -195,9 +200,7 @@ export class UserResolver {
   async loginAudience(
     @Arg('fingerprint') fingerprint: string,
   ): Promise<AuthPayload> {
-    let user = await this.userRepository.findOne({
-      where: { fingerprint },
-    })
+    let user = await this.userRepository.findOne({ fingerprint })
     const roleNames: Array<RoleName> = [RoleName.Audience]
     if (!user) {
       const roles = await getRepository(RoleEntity).find({
@@ -213,7 +216,7 @@ export class UserResolver {
     }
   }
 
-  @Mutation(returns => User)
+  @Mutation((returns) => User)
   async updateUser(
     @Arg('input') input: UpdateUserInput,
     @Ctx() ctx: Context,

@@ -19,29 +19,29 @@ registerEnumType(RoleName, {
 
 @ObjectType()
 export class Role {
-  @Field(returns => ID)
+  @Field((returns) => ID)
   public id!: string
 
   @Field()
   public name!: string
 }
 
-@Resolver(of => Role)
+@Resolver((of) => Role)
 export class RoleResolver {
   private roleRepository: Repository<RoleEneity>
 
   constructor() {
     this.roleRepository = getRepository(RoleEneity)
   }
-  
-  @Query(returns => [Role])
+
+  @Query((returns) => [Role])
   async roles(): Promise<Role[]> {
     const roles = await this.roleRepository.find()
     return plainToClass(Role, roles)
   }
 
-  @Mutation(returns => Role)
-  createRole(@Arg('name', type => RoleName) name: RoleName): Promise<Role> {
+  @Mutation((returns) => Role)
+  createRole(@Arg('name', (type) => RoleName) name: RoleName): Promise<Role> {
     const role = this.roleRepository.create({ name })
     return this.roleRepository.save(role)
   }

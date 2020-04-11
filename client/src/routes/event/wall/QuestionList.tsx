@@ -1,9 +1,12 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 import {
   QuestionWallFieldsFragment,
   useQuestionsByEventWallQuery,
   QuestionOrder,
-  QuestionSearchInput
+  QuestionQueryInput,
+  useQuestionRealtimeSearchWallSubscription,
+  QuestionsByEventWallDocument,
 } from "../../../generated/graphqlHooks";
 import QuestionItem from "./QuestionItem";
 import { Virtuoso } from "react-virtuoso";
@@ -12,36 +15,77 @@ import { sortQuestionBy } from "../../../utils";
 import ListFooter from "../../../components/ListFooter";
 
 interface Props {
-  questionSearchInput: QuestionSearchInput;
+  questionQueryInput: QuestionQueryInput;
 }
 
-const QuestionList: React.FC<Props> = ({ questionSearchInput }) => {
+const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
-  const questionsWallQueryResult = useQuestionsByEventWallQuery({
+  const { id } = useParams();
+  const questionsQueryResult = useQuestionsByEventWallQuery({
     fetchPolicy: "network-only",
-    variables: { input: questionSearchInput }
+    variables: { input: questionQueryInput },
   });
-  const { data, loading, fetchMore } = questionsWallQueryResult;
+  const { data, loading, fetchMore } = questionsQueryResult;
+
+  useQuestionRealtimeSearchWallSubscription({
+    variables: {
+      eventId: id as string,
+      hash: questionsQueryResult.data?.questionsByEventWall.hash as string,
+    },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.questionRealtimeSearch) {
+        const questionRealtimeSearch =
+          subscriptionData.data.questionRealtimeSearch;
+
+        if (data) {
+          client.writeQuery({
+            query: QuestionsByEventWallDocument,
+            variables: { input: questionQueryInput },
+            data: {
+              questionsByEventWall: {
+                ...data.questionsByEventWall,
+                totalCount: questionRealtimeSearch.totalCount,
+                list: data.questionsByEventWall.list
+                  // remove
+                  .filter(
+                    (preQuestion) =>
+                      !questionRealtimeSearch.deleteList.includes(
+                        preQuestion.id
+                      ) &&
+                      !questionRealtimeSearch.updateList
+                        .map((item) => item.id)
+                        .includes(preQuestion.id)
+                  )
+                  // add
+                  .concat(questionRealtimeSearch.insertList)
+                  .concat(questionRealtimeSearch.updateList),
+              },
+            },
+          });
+        }
+      }
+    },
+  });
 
   const orderedList = React.useMemo(() => {
     const list = sortQuestionBy<QuestionWallFieldsFragment>(
-      questionSearchInput.order || QuestionOrder.Popular
+      questionQueryInput.order || QuestionOrder.Popular
     )(data?.questionsByEventWall.list || []);
 
     return list;
-  }, [data, questionSearchInput]);
+  }, [data, questionQueryInput]);
   const loadMore = () => {
     if (data?.questionsByEventWall.hasNextPage) {
       fetchMore({
         variables: {
           input: {
-            ...questionSearchInput,
+            ...questionQueryInput,
             pagination: {
               offset:
                 data?.questionsByEventWall.list.length || DEFAULT_PAGE_OFFSET,
-              limit: data?.questionsByEventWall.limit || DEFAULT_PAGE_LIMIT
-            }
-          }
+              limit: data?.questionsByEventWall.limit || DEFAULT_PAGE_LIMIT,
+            },
+          },
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
@@ -51,11 +95,11 @@ const QuestionList: React.FC<Props> = ({ questionSearchInput }) => {
               ...fetchMoreResult.questionsByEventWall,
               list: [
                 ...prev.questionsByEventWall.list,
-                ...fetchMoreResult.questionsByEventWall.list
-              ]
-            }
+                ...fetchMoreResult.questionsByEventWall.list,
+              ],
+            },
           });
-        }
+        },
       });
     }
   };
@@ -64,11 +108,11 @@ const QuestionList: React.FC<Props> = ({ questionSearchInput }) => {
     <Virtuoso
       style={{ height: "100%", width: "100%" }}
       totalCount={orderedList.length}
-      scrollingStateChange={scrolling => {
+      scrollingStateChange={(scrolling) => {
         setIsScrolling(scrolling);
       }}
       endReached={loadMore}
-      item={index => {
+      item={(index) => {
         if (!orderedList[index]) return <div />;
         return (
           <QuestionItem

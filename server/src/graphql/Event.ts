@@ -12,19 +12,17 @@ import {
   Ctx,
   Mutation,
   Subscription,
+  ResolverFilterData,
+  PubSub,
+  Publisher,
 } from 'type-graphql'
-import { getRepository } from 'typeorm'
-import { plainToClass } from 'class-transformer'
+import { getRepository, Repository, Like, Brackets } from 'typeorm'
 import { Context } from '../context'
 import { User as UserEntity } from '../entity/User'
 import { User } from './User'
 import { IPagedType, PaginationInput } from './Pagination'
-import {
-  EventModel,
-  EventSchema,
-  QuestionSchema,
-  QuestionModel,
-} from '../model'
+import { Event as EventEntity } from '../entity/Event'
+import { Question as QuestionEntity } from '../entity/Question'
 import { Question } from './Question'
 
 export enum EventDateStatus {
@@ -36,76 +34,81 @@ registerEnumType(EventDateStatus, { name: 'EventDateStatus' })
 
 @ObjectType()
 export class Event {
-  @Field(returns => ID)
-  public _id!: string
+  private eventRepository: Repository<EventEntity>
 
-  @Field(returns => ID)
-  get id(): string {
-    return this._id
+  constructor() {
+    this.eventRepository = getRepository(EventEntity)
   }
 
-  @Field(returns => String)
+  @Field((returns) => ID)
+  public id!: string
+
+  @Field((returns) => String)
   public code!: string
 
-  @Field(returns => String)
+  @Field((returns) => String)
   public name!: string
 
-  @Field(returns => Date)
+  @Field((returns) => Date)
   public startAt!: Date
 
-  @Field(returns => Date)
+  @Field((returns) => Date)
   public endAt!: Date
 
-  @Field(returns => Boolean)
+  @Field((returns) => Boolean)
   public moderation!: boolean
 
-  @Field(returns => EventDateStatus)
-  get dateStatus(): EventDateStatus {
+  @Field((returns) => EventDateStatus)
+  dateStatus(@Root() root: Event): EventDateStatus {
     const NOW = new Date()
     if (
-      isAfter(NOW, new Date(this.startAt)) &&
-      isBefore(NOW, new Date(this.endAt))
+      isAfter(NOW, new Date(root.startAt)) &&
+      isBefore(NOW, new Date(root.endAt))
     ) {
       return EventDateStatus.Active
     } else if (
-      isAfter(NOW, new Date(this.endAt)) ||
-      isEqual(NOW, new Date(this.endAt))
+      isBefore(NOW, new Date(root.startAt)) ||
+      isEqual(NOW, new Date(root.startAt))
     ) {
-      return EventDateStatus.Past
+      return EventDateStatus.Upcoming
     } else {
       // if (
-      //   isBefore(NOW, new Date(this.startAt)) ||
-      //   isEqual(NOW, new Date(this.startAt))
+      // isAfter(NOW, new Date(root.endAt)) ||
+      // isEqual(NOW, new Date(root.endAt))
       // )
-      return EventDateStatus.Upcoming
+      return EventDateStatus.Past
     }
   }
 
-  @Field(returns => User)
-  async owner(@Root() root: User): Promise<User> {
-    const user = await getRepository(UserEntity).findOne(root.id)
-    if (!user) {
-      throw new Error()
-    }
+  @Field((returns) => User)
+  async owner(@Root() root: Event): Promise<UserEntity> {
+    const user = await this.eventRepository
+      .createQueryBuilder()
+      .relation(EventEntity, 'owner')
+      .of(root.id)
+      .loadOne()
 
-    return plainToClass(User, user)
+    return user
   }
 
-  @Field(returns => [ID])
-  public audienceIds!: string[]
+  @Field((returns) => [User])
+  async audiences(@Root() root: Event): Promise<UserEntity[]> {
+    const audiences = await this.eventRepository
+      .createQueryBuilder()
+      .relation(EventEntity, 'audiences')
+      .of(root.id)
+      .loadMany()
 
-  @Field(returns => [User])
-  async audiences(): Promise<User[]> {
-    const audiences = await getRepository(UserEntity).findByIds(
-      this.audienceIds,
-    )
-
-    return plainToClass(User, audiences)
+    return audiences
   }
 
-  @Field(returns => [Question])
-  async questions(@Root() root: Event): Promise<QuestionSchema[]> {
-    const questions = await QuestionModel.find({ eventId: root.id }).lean(true)
+  @Field((returns) => [Question])
+  async questions(@Root() root: Event): Promise<QuestionEntity[]> {
+    const questions = await this.eventRepository
+      .createQueryBuilder()
+      .relation(EventEntity, 'questions')
+      .of(root.id)
+      .loadMany()
 
     return questions
   }
@@ -124,13 +127,13 @@ export class EventPaged implements IPagedType {
   totalCount!: number
   hasNextPage!: boolean
 
-  @Field(returns => [Event])
-  public list!: EventSchema[]
+  @Field((returns) => [Event])
+  public list!: EventEntity[]
 }
 
 @InputType()
 export class UpdateEventInput implements Partial<Event> {
-  @Field(returns => ID)
+  @Field((returns) => ID)
   public eventId!: string
 
   @Field({ nullable: true })
@@ -149,87 +152,88 @@ export class UpdateEventInput implements Partial<Event> {
   public moderation?: boolean
 }
 
-@Resolver(of => Event)
+@Resolver((of) => Event)
 export class EventResolver {
-  @Query(returns => Event)
+  private userRepository: Repository<UserEntity>
+  private eventRepository: Repository<EventEntity>
+
+  constructor() {
+    this.userRepository = getRepository(UserEntity)
+    this.eventRepository = getRepository(EventEntity)
+  }
+
+  @Query((returns) => Event)
   async eventById(
-    @Arg('eventId', returns => ID) eventId: string,
-  ): Promise<EventSchema> {
-    const event = await EventModel.findById(eventId).lean(true)
-    if (!event) {
-      throw new Error()
-    }
+    @Arg('eventId', (returns) => ID) eventId: string,
+  ): Promise<EventEntity> {
+    const event = await this.eventRepository.findOneOrFail(eventId)
 
     return event
   }
 
-  @Query(returns => EventPaged, { description: 'Get all my events.' })
+  @Query((returns) => EventPaged, { description: 'Get all my events.' })
   async eventsByMe(
-    @Arg('pagination', returns => PaginationInput) pagination: PaginationInput,
+    @Arg('pagination', (returns) => PaginationInput)
+    pagination: PaginationInput,
     @Arg('searchString', { nullable: true }) searchString: string,
-    @Arg('dateStatusFilter', returns => EventDateStatus, { nullable: true })
+    @Arg('dateStatusFilter', (returns) => EventDateStatus, { nullable: true })
     dateStatusFilter: EventDateStatus,
     @Ctx() ctx: Context,
   ): Promise<EventPaged> {
-    const userId = ctx.user?.id as string
+    const ownerId = ctx.user?.id as string
     const { limit, offset } = pagination
-    const NOW = new Date()
-    const aggregations = [
-      {
-        $match: {
-          $and: [
-            { ownerId: userId }, // filter owner
-            dateStatusFilter === EventDateStatus.Active // filter dateStatus
-              ? { startAt: { $lt: NOW }, endAt: { $gt: NOW } }
-              : dateStatusFilter === EventDateStatus.Upcoming
-              ? { startAt: { $gte: NOW } }
-              : dateStatusFilter === EventDateStatus.Past
-              ? { endAt: { $lte: NOW } }
-              : {},
-            {
-              $or: [
-                // filter searchString
-                { name: { $regex: new RegExp(searchString) } },
-                { code: { $regex: new RegExp(searchString) } },
-              ],
-            },
-          ],
-        },
-      },
+    const options = [
+      dateStatusFilter === EventDateStatus.Active
+        ? 'NOW() BETWEEN "event"."startAt" AND "event"."endAt"'
+        : dateStatusFilter === EventDateStatus.Upcoming
+        ? 'NOW() <= "event"."startAt"'
+        : dateStatusFilter === EventDateStatus.Past
+        ? 'NOW() >= "event"."endAt"'
+        : '',
+      searchString
+        ? `"event"."name" LIKE '%${searchString}%' OR "event"."code" LIKE '%${searchString}%'`
+        : '',
     ]
-    const [{ totalCount }] = await EventModel.aggregate([
-      ...aggregations,
-      { $count: 'totalCount' },
-    ])
-    const events = await EventModel.aggregate([
-      ...aggregations,
-      {
-        // add dateWeight field
-        $addFields: {
-          dateWeight: {
-            $cond: {
-              if: {
-                $and: [{ $lt: ['$startAt', NOW] }, { $gt: ['$endAt', NOW] }],
-              },
-              then: 3,
-              else: {
-                $cond: {
-                  if: { $gte: ['$startAt', NOW] },
-                  then: 2,
-                  else: 1,
-                },
-              },
-            },
-          },
-        },
-      },
-      { $sort: { dateWeight: -1, startAt: -1, endAt: 1 } }, // order by dateWeight
-      { $skip: offset },
-      { $limit: limit },
-    ])
+
+    const totalCount = await this.eventRepository
+      .createQueryBuilder('event')
+      .leftJoin('event.owner', 'owner', 'owner.id = :ownerId', { ownerId })
+      .where(options[0])
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(options[1])
+        }),
+      )
+      .getCount()
+    const list = await this.eventRepository
+      .createQueryBuilder('event')
+      .addSelect(
+        `CASE
+          WHEN NOW() BETWEEN "event"."startAt" AND "event"."endAt" THEN 3
+          WHEN NOW() <= "event"."startAt" THEN 2
+          WHEN NOW() >= "event"."endAt" THEN 1
+          ELSE 0
+        END`,
+        'weight',
+      )
+      .leftJoin('event.owner', 'owner', 'owner.id = :ownerId', { ownerId })
+      .where(options[0])
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(options[1])
+        }),
+      )
+      .skip(offset)
+      .take(limit)
+      .orderBy({
+        weight: 'DESC',
+        'event.startAt': 'DESC',
+        'event.endAt': 'ASC',
+      })
+      .getMany()
 
     return {
-      list: events,
+      list,
       hasNextPage: limit + offset < totalCount,
       totalCount,
       limit,
@@ -237,18 +241,18 @@ export class EventResolver {
     }
   }
 
-  @Query(returns => [Event], { description: 'Get events by code.' })
+  @Query((returns) => [Event], { description: 'Get events by code.' })
   async eventsByCode(
     @Arg('code', { nullable: true, defaultValue: '' }) code: string,
-  ): Promise<EventSchema[]> {
-    const events = await EventModel.find({
-      code: { $regex: new RegExp(code) },
-    }).lean(true)
+  ): Promise<EventEntity[]> {
+    const events = await this.eventRepository.find({
+      code: Like(`%${code}%`),
+    })
 
     return events
   }
 
-  @Query(returns => Boolean, {
+  @Query((returns) => Boolean, {
     description: 'Check if a event code has already exist.',
   })
   async checkEventCodeExist(
@@ -258,94 +262,112 @@ export class EventResolver {
     return await checkEventCodeExist(ctx, code)
   }
 
-  @Query(returns => Boolean)
+  @Query((returns) => Boolean)
   async isEventAudience(
-    @Arg('eventId', returns => ID) eventId: string,
+    @Arg('eventId', (returns) => ID) eventId: string,
     @Ctx() ctx: Context,
   ): Promise<boolean> {
     const audienceId = ctx.user?.id as string
-    const event = await EventModel.findOne({
-      _id: eventId,
-      audienceIds: { $all: [audienceId] },
-    }).lean(true)
+    const event = await this.eventRepository
+      .createQueryBuilder('event')
+      .innerJoinAndSelect(
+        'event.audiences',
+        'audience',
+        'audience.id = :audienceId',
+        { audienceId },
+      )
+      .where('event.id = :eventId', { eventId })
+      .getOne()
 
     return Boolean(event)
   }
 
-  @Mutation(returns => Event)
+  @Mutation((returns) => Event)
   async createEvent(
     @Arg('code') code: string,
     @Arg('name') name: string,
     @Arg('startAt') startAt: Date,
     @Arg('endAt') endAt: Date,
     @Ctx() ctx: Context,
-  ): Promise<EventSchema> {
-    const userId = ctx.user?.id as string
-    const event = await EventModel.create({
+  ): Promise<EventEntity> {
+    const ownerId = ctx.user?.id as string
+    const owner = await this.userRepository.findOneOrFail(ownerId)
+    const event = this.eventRepository.create({
       code,
       name,
       startAt,
       endAt,
-      ownerId: userId,
+      owner,
+    })
+    await this.eventRepository.save(event)
+
+    return event
+  }
+
+  @Mutation((returns) => Event)
+  async updateEvent(
+    @PubSub('EVENT_UPDATED')
+    publish: Publisher<{ eventId: string; eventUpdated: EventEntity }>,
+    @Arg('input') input: UpdateEventInput,
+    @Ctx() ctx: Context,
+  ): Promise<EventEntity> {
+    const { eventId, ...update } = input
+    await this.eventRepository.update(eventId, update)
+    const event = await this.eventRepository.findOneOrFail(eventId)
+
+    await publish({
+      eventId,
+      eventUpdated: event,
     })
 
     return event
   }
 
-  @Mutation(returns => Event)
-  async updateEvent(
-    @Arg('input') input: UpdateEventInput,
-    @Ctx() ctx: Context,
-  ): Promise<EventSchema> {
-    const { eventId, ...update } = input
-    const event = await EventModel.findByIdAndUpdate(eventId, update, {
-      new: true,
-      omitUndefined: true,
-    }).lean(true)
-    if (!event) {
-      throw new Error()
-    }
+  @Mutation((returns) => Event)
+  async deleteEvent(
+    @Arg('eventId', (returns) => ID) eventId: string,
+  ): Promise<Pick<Event, 'id'>> {
+    await this.eventRepository.delete(eventId)
 
-    return event
+    return { id: eventId }
   }
 
-  @Mutation(returns => ID)
-  async deleteEvent(
-    @Arg('eventId', returns => ID) eventId: string,
+  @Mutation((returns) => ID, { description: `加入活动。` })
+  async joinEvent(
+    @Arg('eventId', (returns) => ID) eventId: string,
+    @Ctx() ctx: Context,
   ): Promise<string> {
-    await EventModel.deleteOne({ _id: eventId })
+    const audienceId = ctx.user?.id as string
+    await this.eventRepository
+      .createQueryBuilder()
+      .relation(UserEntity, 'attendedEvents')
+      .of(audienceId)
+      .add(eventId)
+
     return eventId
   }
 
-  @Mutation(returns => Event, { description: `加入活动。` })
-  async joinEvent(
-    @Arg('eventId', returns => ID) eventId: string,
-    @Ctx() ctx: Context,
-  ): Promise<EventSchema> {
-    const audienceId = ctx.user?.id as string
-    const event = await EventModel.findByIdAndUpdate(
-      eventId,
-      { $push: { audienceIds: audienceId } },
-      { new: true },
-    ).lean(true)
-    if (!event) {
-      throw new Error()
-    }
-
-    return event
-  }
-
-  @Subscription(returns => Event, {
-    topics: ['EVENT_UPDATED'],
-    filter: ({ payload, args }) => payload.eventId === args.eventId,
+  @Subscription((returns) => Event, {
+    topics: 'EVENT_UPDATED',
+    filter: ({
+      payload,
+      args,
+      context,
+    }: ResolverFilterData<
+      { eventId: string; eventUpdated: Event },
+      any,
+      Context
+    >) => payload.eventId === args.eventId,
   })
-  eventUpdatedSubscription(
+  eventUpdated(
     @Root() payload: { eventId: string; eventUpdated: Event },
+    @Arg('eventId', (returns) => ID) eventId: string,
+    @Ctx() ctx: Context,
   ): Event {
     return payload.eventUpdated
   }
 }
 
 async function checkEventCodeExist(ctx: Context, code: string) {
-  return Boolean(await EventModel.findOne({ code }).lean(true))
+  return Boolean(await getRepository(EventEntity).findOne({ code }))
 }

@@ -129,7 +129,7 @@ const QuestionListItem: React.FC<Props> = ({
   const handleArchiveClick: handleToggleType = async (e, id, currentStatus) => {
     await updateQuestionReviewStatusMutation({
       variables: {
-        ds_key: id,
+        questionId: id,
         reviewStatus: currentStatus
           ? ReviewStatus.Publish
           : ReviewStatus.Archive
@@ -139,19 +139,19 @@ const QuestionListItem: React.FC<Props> = ({
   const handlePublishClick: handleToggleType = async (e, id, currentStatus) => {
     await updateQuestionReviewStatusMutation({
       variables: {
-        ds_key: id,
+        questionId: id,
         reviewStatus: currentStatus ? ReviewStatus.Review : ReviewStatus.Publish
       }
     });
   };
   const handleStarClick: handleToggleType = async (e, id, star) => {
     await updateQuestionStarMutation({
-      variables: { ds_key: id, star: !star }
+      variables: { questionId: id, star: !star }
     });
   };
   const handleTopClick: handleToggleType = async (e, id, top) => {
     await updateQuestionTopMutation({
-      variables: { ds_key: id, top: !top }
+      variables: { questionId: id, top: !top }
     });
   };
 
@@ -217,11 +217,11 @@ const QuestionListItem: React.FC<Props> = ({
             onSubmit={async values => {
               await updateQuestionContentMutation({
                 variables: {
-                  ds_key: question.ds_key,
+                  questionId: question.id,
                   content: values.content
                 }
               });
-              handleEditContentToggle(question.ds_key);
+              handleEditContentToggle(question.id);
             }}
           >
             {formProps => (
@@ -253,7 +253,7 @@ const QuestionListItem: React.FC<Props> = ({
                   <Box className={classes.editContentFormButtons}>
                     <Button
                       size="small"
-                      onClick={() => handleEditContentToggle(question.ds_key)}
+                      onClick={() => handleEditContentToggle(question.id)}
                     >
                       <FormattedMessage id="Cancel" defaultMessage="Cancel" />
                     </Button>
@@ -281,7 +281,7 @@ const QuestionListItem: React.FC<Props> = ({
                 question.reviewStatus === ReviewStatus.Archive) && (
                 <QuestionToggleButton
                   className="questionHover"
-                  id={question.ds_key}
+                  id={question.id}
                   status={question.star}
                   onTitle={formatMessage({
                     id: "Unstar",
@@ -300,7 +300,7 @@ const QuestionListItem: React.FC<Props> = ({
               {question.reviewStatus === ReviewStatus.Publish && (
                 <QuestionToggleButton
                   className="questionHover"
-                  id={question.ds_key}
+                  id={question.id}
                   status={question.top}
                   onTitle={formatMessage({
                     id: "Untop",
@@ -318,7 +318,7 @@ const QuestionListItem: React.FC<Props> = ({
                   question.reviewStatus === ReviewStatus.Review) && (
                   <QuestionToggleButton
                     className="questionHover"
-                    id={question.ds_key}
+                    id={question.id}
                     status={question.reviewStatus === ReviewStatus.Publish}
                     onTitle={formatMessage({
                       id: "Unpublish",
@@ -338,7 +338,7 @@ const QuestionListItem: React.FC<Props> = ({
                 question.reviewStatus === ReviewStatus.Archive) && (
                 <QuestionToggleButton
                   className="questionHover"
-                  id={question.ds_key}
+                  id={question.id}
                   status={question.reviewStatus === ReviewStatus.Archive}
                   onTitle={formatMessage({
                     id: "Unarchive",
@@ -357,7 +357,7 @@ const QuestionListItem: React.FC<Props> = ({
 
               <IconButton
                 size="small"
-                onClick={e => handleMoreClick(e, question.ds_key)}
+                onClick={e => handleMoreClick(e, question.id)}
               >
                 <MoreHorizIcon fontSize="inherit" />
               </IconButton>

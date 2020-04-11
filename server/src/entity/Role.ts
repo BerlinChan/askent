@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToMany,
+  JoinTable,
 } from 'typeorm'
 import { User } from './User'
 
@@ -27,10 +28,8 @@ export class Role {
   })
   public name!: RoleName
 
-  @ManyToMany(
-    type => User,
-    user => user.roles,
-  )
+  @ManyToMany((type) => User, (user) => user.roles)
+  @JoinTable({ name: 'userRoles' })
   public users!: User[]
 
   @CreateDateColumn()

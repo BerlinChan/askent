@@ -64,11 +64,13 @@ mutation UpdateEvent($input: UpdateEventInput!) {
 }
 
 mutation DeleteEvent($eventId: ID!) {
-  deleteEvent(eventId: $eventId)
+  deleteEvent(eventId: $eventId) {
+    id
+  }
 }
 
-# subscription EventUpdated($eventId: ID!) {
-#   eventUpdated(eventId: $eventId) {
-#     ...EventDetailFields
-#   }
-# }
+subscription EventUpdated($eventId: ID!) {
+  eventUpdated(eventId: $eventId) {
+    ...EventDetailFields
+  }
+}
