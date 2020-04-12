@@ -251,29 +251,33 @@ export class QuestionResolver {
   async questionsByMe(
     @Arg('pagination', (returns) => PaginationInput)
     pagination: PaginationInput,
-    @Arg('order', (returns) => QuestionOrder, {
-      nullable: true,
-      defaultValue: QuestionOrder.Popular,
-    })
-    order: QuestionOrder,
+    @Arg('eventId', (returns) => ID)
+    eventId: string,
     @Ctx() ctx: Context,
   ): Promise<QuestionPaged> {
     const { offset, limit } = pagination
     const authorId = ctx.user?.id as string
-    const filter = {
-      authorId,
-      reviewStatus: { $in: [ReviewStatus.Publish, ReviewStatus.Review] },
-    }
-    const totalCount = await QuestionModel.countDocuments(filter)
-    const questions = await QuestionModel.find(filter)
-      .sort(getQuestionSortArg(order))
+    const totalCount = await this.questionRepository
+      .createQueryBuilder('question')
+      .innerJoin('question.author', 'author', 'author.id = :authorId', {
+        authorId,
+      })
+      .innerJoin('question.event', 'event', 'event.id = :eventId', { eventId })
+      .getCount()
+    const list = await this.questionRepository
+      .createQueryBuilder('question')
+      .innerJoin('question.author', 'author', 'author.id = :authorId', {
+        authorId,
+      })
+      .innerJoin('question.event', 'event', 'event.id = :eventId', { eventId })
       .skip(offset)
-      .limit(limit)
-      .lean(true)
+      .take(limit)
+      .orderBy(getQuestionOrderByCondition(QuestionOrder.Recent))
+      .getMany()
 
     return {
-      list: questions,
-      hash,
+      list,
+      hash: '',
       hasNextPage: offset + limit < totalCount,
       totalCount,
       ...pagination,
@@ -563,7 +567,7 @@ export async function findQuestionAndCountAll(
 
   if (asRole === RoleName.Admin) {
     const options = [
-      { top: true },
+      ...(questionFilter === QuestionFilter.Review ? [] : [{ top: true }]),
       Object.assign(
         questionFilter === QuestionFilter.Starred
           ? { star: true }

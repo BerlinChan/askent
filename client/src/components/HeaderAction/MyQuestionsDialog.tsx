@@ -4,43 +4,164 @@ import {
   Dialog,
   DialogTitle,
   DialogActions,
-  DialogContent
+  DialogContent,
 } from "@material-ui/core";
-// import { useQuestionsByMeQuery } from "../../generated/graphqlHooks";
+import { QueryResult } from "@apollo/react-common";
+import {
+  useEventByIdLazyQuery,
+  useQuestionsByMeLazyQuery,
+  MeQuery,
+  MeQueryVariables,
+} from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
-// import QuestionList from "./questions/QuestionList";
-// import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../constant";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../constant";
+import { useParams } from "react-router-dom";
+import { Virtuoso } from "react-virtuoso";
+import ListFooter from "../ListFooter";
+import QuestionItem from "../../routes/event/live/questions/QuestionItem";
+import QuestionListMenu from "../../routes/event/live/questions/QuestionListMenu";
 
 interface Props {
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   open: boolean;
   onClose: () => void;
 }
 
-const MyQuestionsDialog: React.FC<Props> = ({ open, onClose }) => {
-  // const myQuestionsResult = useQuestionsByMeQuery({
-  //   variables: {
-  //     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET }
-  //   }
-  // });
+const MyQuestionsDialog: React.FC<Props> = ({
+  userQueryResult,
+  open,
+  onClose,
+}) => {
+  const { id } = useParams();
+  const [isScrolling, setIsScrolling] = React.useState(false);
+  const moreMenuState = React.useState<{
+    anchorEl: null | HTMLElement;
+    id: string;
+  }>({ anchorEl: null, id: "" });
+  const editContentInputRef = React.useRef<HTMLInputElement>(null);
+  const editContentIdsState = React.useState<Array<string>>([]);
+  const [eventByIdLazyQuery, eventByIdQueryResult] = useEventByIdLazyQuery({
+    variables: { eventId: id as string },
+  });
+  const [questionsByMeLazyQuery, questionsResult] = useQuestionsByMeLazyQuery({
+    variables: {
+      eventId: id as string,
+      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+    },
+  });
+  const { data, loading, fetchMore } = questionsResult;
+
+  React.useEffect(() => {
+    if (open) {
+      questionsByMeLazyQuery();
+      eventByIdLazyQuery();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  const handleMoreClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    moreMenuState[1]({ anchorEl: event.currentTarget, id });
+  };
+  const handleMoreClose = () => {
+    moreMenuState[1]({ anchorEl: null, id: "" });
+  };
+
+  const handleEditContentToggle = (id: string) => {
+    const findId = editContentIdsState[0].find((item) => item === id);
+    editContentIdsState[1](
+      findId
+        ? editContentIdsState[0].filter((item) => item !== id)
+        : editContentIdsState[0].concat([id])
+    );
+    handleMoreClose();
+    setTimeout(() => editContentInputRef.current?.focus(), 100);
+  };
+
+  const loadMore = () => {
+    if (data?.questionsByMe.hasNextPage) {
+      fetchMore({
+        variables: {
+          pagination: {
+            offset: data?.questionsByMe.list.length || DEFAULT_PAGE_OFFSET,
+            limit: data?.questionsByMe.limit || DEFAULT_PAGE_LIMIT,
+          },
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
+          return Object.assign({}, fetchMoreResult, {
+            questionsByMe: {
+              ...fetchMoreResult.questionsByMe,
+              list: [
+                ...prev.questionsByMe.list,
+                ...fetchMoreResult.questionsByMe.list,
+              ],
+            },
+          });
+        },
+      });
+    }
+  };
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
-      <DialogTitle>
-        <FormattedMessage id="My_questions" defaultMessage="My questions" />
-      </DialogTitle>
-      <DialogContent>
-        {/* <QuestionList
-          userQueryResult={userQueryResult}
-          eventQueryResult={eventQueryResult}
-          myQuestionsResult={myQuestionsResult}
-        /> */}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>
-          <FormattedMessage id="Close" defaultMessage="Close" />
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <React.Fragment>
+      <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+        <DialogTitle>
+          <FormattedMessage id="My_questions" defaultMessage="My questions" />
+        </DialogTitle>
+        <DialogContent style={{ height: 500 }}>
+          <Virtuoso
+            className="scrollContainer"
+            style={{ height: "100%", width: "100%" }}
+            totalCount={data?.questionsByMe.list.length || 0}
+            scrollingStateChange={(scrolling) => {
+              setIsScrolling(scrolling);
+            }}
+            endReached={loadMore}
+            item={(index) => {
+              const question = data?.questionsByMe.list[index];
+              if (!question) return <div />;
+
+              return (
+                <QuestionItem
+                  disableVote
+                  disableItemShadow
+                  question={question}
+                  userQueryResult={userQueryResult}
+                  handleMoreClick={handleMoreClick}
+                  editContent={editContentIdsState[0].includes(question.id)}
+                  handleEditContentToggle={handleEditContentToggle}
+                  editContentInputRef={editContentInputRef}
+                  isScrolling={isScrolling}
+                />
+              );
+            }}
+            footer={() => (
+              <ListFooter
+                loading={loading}
+                hasNextPage={data?.questionsByMe.hasNextPage}
+              />
+            )}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>
+            <FormattedMessage id="Close" defaultMessage="Close" />
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <QuestionListMenu
+        eventQueryResult={eventByIdQueryResult}
+        questionList={questionsResult.data?.questionsByMe.list}
+        moreMenuState={moreMenuState}
+        editContentInputRef={editContentInputRef}
+        editContentIdsState={editContentIdsState}
+      />
+    </React.Fragment>
   );
 };
 

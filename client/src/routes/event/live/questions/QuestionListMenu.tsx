@@ -5,10 +5,9 @@ import { QueryResult } from "@apollo/react-common";
 import {
   EventByIdQuery,
   EventByIdQueryVariables,
-  QuestionsByEventAudienceQuery,
-  QuestionsByEventAudienceQueryVariables,
+  QuestionAudienceFieldsFragment,
   useDeleteQuestionMutation,
-  ReviewStatus
+  ReviewStatus,
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
@@ -16,10 +15,7 @@ import EditIcon from "@material-ui/icons/Edit";
 
 interface Props {
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  questionsQueryResult: QueryResult<
-    QuestionsByEventAudienceQuery,
-    QuestionsByEventAudienceQueryVariables
-  >;
+  questionList: QuestionAudienceFieldsFragment[] | undefined;
   moreMenuState: [
     {
       anchorEl: HTMLElement | null;
@@ -41,21 +37,20 @@ interface Props {
 
 const QuestionListMenu: React.FC<Props> = ({
   eventQueryResult,
-  questionsQueryResult,
+  questionList = [],
   moreMenuState,
   editContentInputRef,
-  editContentIdsState
+  editContentIdsState,
 }) => {
   const { formatMessage } = useIntl();
-  const { data } = questionsQueryResult;
   const [deleteQuestionMutation] = useDeleteQuestionMutation();
   const [moreMenu, setMoreMenu] = moreMenuState;
   const [deleteConfirm, setDeleteConfirm] = React.useState({
     open: false,
-    id: ""
+    id: "",
   });
-  const questionMoreTarget = data?.questionsByEventAudience.list.find(
-    question => question.id === moreMenu.id
+  const questionMoreTarget = questionList.find(
+    (question) => question.id === moreMenu.id
   );
 
   const handleMoreClose = () => {
@@ -72,16 +67,16 @@ const QuestionListMenu: React.FC<Props> = ({
   };
   const handleDelete = async () => {
     await deleteQuestionMutation({
-      variables: { questionId: deleteConfirm.id }
+      variables: { questionId: deleteConfirm.id },
     });
     handleCloseDelete();
   };
   const [editContentIds, setEditContentIds] = editContentIdsState;
   const handleEditContentToggle = (id: string) => {
-    const findId = editContentIds.find(item => item === id);
+    const findId = editContentIds.find((item) => item === id);
     setEditContentIds(
       findId
-        ? editContentIds.filter(item => item !== id)
+        ? editContentIds.filter((item) => item !== id)
         : editContentIds.concat([id])
     );
     handleMoreClose();
@@ -96,11 +91,11 @@ const QuestionListMenu: React.FC<Props> = ({
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right"
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "right"
+          horizontal: "right",
         }}
         open={Boolean(moreMenu.anchorEl)}
         onClose={handleMoreClose}
@@ -130,7 +125,7 @@ const QuestionListMenu: React.FC<Props> = ({
           <ListItemText
             primary={formatMessage({
               id: "Withdraw",
-              defaultMessage: "Withdraw"
+              defaultMessage: "Withdraw",
             })}
           />
         </MenuItem>

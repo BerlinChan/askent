@@ -159,6 +159,7 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
         onClose={() => setMyProfileDialogOpen(false)}
       />
       <MyQuestionsDialog
+        userQueryResult={userQueryResult}
         open={myQuestionsDialogOpen}
         onClose={() => setMyQuestionsDialogOpen(false)}
       />

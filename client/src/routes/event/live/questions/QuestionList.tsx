@@ -202,7 +202,7 @@ const QuestionList: React.FC<Props> = ({
 
       <QuestionListMenu
         eventQueryResult={eventQueryResult}
-        questionsQueryResult={questionsQueryResult}
+        questionList={questionsQueryResult.data?.questionsByEventAudience.list}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}

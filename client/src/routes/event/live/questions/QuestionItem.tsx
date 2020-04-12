@@ -8,19 +8,19 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  Tooltip
+  Tooltip,
 } from "@material-ui/core";
 import {
   FormattedMessage,
   FormattedTime,
   FormattedDate,
-  useIntl
+  useIntl,
 } from "react-intl";
 import {
   createStyles,
   makeStyles,
   Theme,
-  fade
+  fade,
 } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/react-common";
 import {
@@ -29,7 +29,7 @@ import {
   useVoteUpQuestionMutation,
   QuestionAudienceFieldsFragment,
   useUpdateQuestionContentMutation,
-  ReviewStatus
+  ReviewStatus,
 } from "../../../../generated/graphqlHooks";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
@@ -51,10 +51,12 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: "auto",
       borderBottom: `1px solid ${theme.palette.divider}`,
       backgroundColor: theme.palette.background.paper,
-      boxShadow: theme.shadows[1]
+    },
+    listItemShadow: {
+      boxShadow: theme.shadows[1],
     },
     topQuestion: {
-      backgroundColor: fade(theme.palette.success.light, 0.5)
+      backgroundColor: fade(theme.palette.success.light, 0.5),
     },
     questionContent: { width: "100%" },
     moreButton: { float: "right" },
@@ -64,23 +66,23 @@ const useStyles = makeStyles((theme: Theme) =>
       right: theme.spacing(1),
       display: "flex",
       alignItems: "center",
-      "& > *": { marginLeft: theme.spacing(1) }
+      "& > *": { marginLeft: theme.spacing(1) },
     },
     thumbUpButton: {
       height: 24,
       padding: theme.spacing(0, 1),
-      borderRadius: 12
+      borderRadius: 12,
     },
     voteCount: {
-      fontSize: 12
+      fontSize: 12,
     },
     thumbUpIcon: {
       fontSize: 12,
-      marginLeft: theme.spacing(1)
+      marginLeft: theme.spacing(1),
     },
     editContentForm: { width: "100%" },
     editContentAction: { display: "flex", justifyContent: "space-between" },
-    editContentFormButtons: { "& > *": { display: "inline-block" } }
+    editContentFormButtons: { "& > *": { display: "inline-block" } },
   })
 );
 
@@ -95,6 +97,8 @@ interface Props {
   handleEditContentToggle: (id: string) => void;
   editContentInputRef: React.RefObject<HTMLInputElement>;
   isScrolling?: boolean;
+  disableItemShadow?: boolean;
+  disableVote?: boolean;
 }
 
 const QuestionItem: React.FC<Props> = ({
@@ -104,17 +108,19 @@ const QuestionItem: React.FC<Props> = ({
   editContent,
   handleEditContentToggle,
   editContentInputRef,
-  isScrolling = false
+  isScrolling = false,
+  disableItemShadow = false,
+  disableVote = false,
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [
     voteUpQuestionMutation,
-    { loading: voteLoading }
+    { loading: voteLoading },
   ] = useVoteUpQuestionMutation();
   const [
     updateQuestionContentMutation,
-    { loading: updateQuestionContentLoading }
+    { loading: updateQuestionContentLoading },
   ] = useUpdateQuestionContentMutation();
 
   const handleThumbUpClick = (questionId: string) => {
@@ -125,8 +131,8 @@ const QuestionItem: React.FC<Props> = ({
     <ListItem
       component="div"
       className={`${classes.listItem} ${
-        question.top ? classes.topQuestion : ""
-      }`}
+        disableItemShadow ? "" : classes.listItemShadow
+      } ${question.top ? classes.topQuestion : ""}`}
       alignItems="flex-start"
     >
       <ListItemAvatar>
@@ -157,21 +163,19 @@ const QuestionItem: React.FC<Props> = ({
         <Formik
           initialValues={{ content: question.content }}
           validationSchema={Yup.object({
-            content: Yup.string()
-              .max(QUESTION_CONTENT_MAX_LENGTH)
-              .required()
+            content: Yup.string().max(QUESTION_CONTENT_MAX_LENGTH).required(),
           })}
-          onSubmit={async values => {
+          onSubmit={async (values) => {
             await updateQuestionContentMutation({
               variables: {
                 questionId: question.id,
-                content: values.content
-              }
+                content: values.content,
+              },
             });
             handleEditContentToggle(question.id);
           }}
         >
-          {formProps => (
+          {(formProps) => (
             <Form className={classes.editContentForm}>
               <Field
                 component={TextField}
@@ -226,7 +230,7 @@ const QuestionItem: React.FC<Props> = ({
               <IconButton
                 className={classes.moreButton}
                 size="small"
-                onClick={e => handleMoreClick(e, question.id)}
+                onClick={(e) => handleMoreClick(e, question.id)}
               >
                 <MoreHorizIcon fontSize="inherit" />
               </IconButton>
@@ -237,7 +241,7 @@ const QuestionItem: React.FC<Props> = ({
               <Tooltip
                 title={formatMessage({
                   id: "Waiting_review",
-                  defaultMessage: "Waiting review"
+                  defaultMessage: "Waiting review",
                 })}
               >
                 <ScheduleIcon fontSize="small" color="disabled" />
@@ -250,18 +254,20 @@ const QuestionItem: React.FC<Props> = ({
                 <TopIcon fontSize="small" color="disabled" />
               </Tooltip>
             )}
-            <Button
-              variant="outlined"
-              color={question.voted ? "primary" : "default"}
-              classes={{ root: classes.thumbUpButton }}
-              disabled={voteLoading}
-              onClick={() => handleThumbUpClick(question.id)}
-            >
-              <Typography color="inherit" className={classes.voteCount}>
-                {question.voteUpCount}
-              </Typography>
-              <ThumbUpIcon color="inherit" className={classes.thumbUpIcon} />
-            </Button>
+            {!disableVote && (
+              <Button
+                variant="outlined"
+                color={question.voted ? "primary" : "default"}
+                classes={{ root: classes.thumbUpButton }}
+                disabled={voteLoading}
+                onClick={() => handleThumbUpClick(question.id)}
+              >
+                <Typography color="inherit" className={classes.voteCount}>
+                  {question.voteUpCount}
+                </Typography>
+                <ThumbUpIcon color="inherit" className={classes.thumbUpIcon} />
+              </Button>
+            )}
           </Box>
         </React.Fragment>
       )}

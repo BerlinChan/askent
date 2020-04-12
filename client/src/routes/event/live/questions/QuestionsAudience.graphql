@@ -18,17 +18,14 @@ fragment QuestionAudienceFields on Question {
 query QuestionsByEventAudience($input: QuestionQueryInput!) {
   questionsByEventAudience(input: $input) {
     ...QuestionPagedFields
-    hash
     list {
       ...QuestionAudienceFields
     }
   }
 }
 
-query QuestionsByMe(
-  $pagination: PaginationInput! # $orderBy: QuestionOrderByInput
-) {
-  questionsByMe(pagination: $pagination) {
+query QuestionsByMe($eventId: ID!, $pagination: PaginationInput!) {
+  questionsByMe(eventId: $eventId, pagination: $pagination) {
     ...QuestionPagedFields
     list {
       ...QuestionAudienceFields
