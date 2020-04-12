@@ -9,12 +9,12 @@ import {
   InputAdornment,
   TextField,
   Tooltip,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import {
   ReviewStatus,
   QuestionFilter,
-  QuestionOrder
+  QuestionOrder,
 } from "../../../../generated/graphqlHooks";
 import QuestionOrderMenu from "../../../../components/QuestionOrderMenu";
 import SearchIcon from "@material-ui/icons/Search";
@@ -26,21 +26,16 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     filterBox: {
       display: "flex",
-      justifyContent: "space-between",
+      justifyContent: "flex-start",
       alignItems: "center",
       width: 320,
       cursor: "pointer",
       padding: theme.spacing(0, 1),
       borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
       backgroundColor: theme.palette.background.paper,
-      boxShadow: theme.shadows[1]
+      boxShadow: theme.shadows[1],
+      "& .arrowDown": { color: theme.palette.text.secondary },
     },
-    filterSelected: {
-      display: "flex",
-      alignItems: "center",
-      "& .arrowDown": { color: theme.palette.text.secondary }
-    },
-    totalCount: {},
     filterMenuList: { width: 320 },
     searchAndSort: { display: "flex", alignItems: "center" },
     iconButton: { width: 38, height: 38, padding: 8 },
@@ -50,10 +45,10 @@ const useStyles = makeStyles((theme: Theme) =>
       [theme.breakpoints.up("sm")]: {
         width: 50,
         "&:focus": {
-          width: 100
-        }
-      }
-    }
+          width: 100,
+        },
+      },
+    },
   })
 );
 
@@ -84,13 +79,13 @@ interface Props {
 
 const ActionRight: React.FC<Props> = ({
   questionQueryState,
-  orderSelectedState
+  orderSelectedState,
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [
     filterAnchorEl,
-    setFilterAnchorEl
+    setFilterAnchorEl,
   ] = React.useState<null | HTMLElement>(null);
   const searchRef = React.useRef<HTMLInputElement>(null);
   const orderMenuElState = React.useState<null | HTMLElement>(null);
@@ -105,7 +100,7 @@ const ActionRight: React.FC<Props> = ({
   const handleFilterOptionClick = (value: QuestionFilter) => {
     setQueryState({
       ...queryState,
-      filterSelected: value
+      filterSelected: value,
     });
     handleFilterClose();
   };
@@ -136,23 +131,10 @@ const ActionRight: React.FC<Props> = ({
         title={formatMessage({ id: "Filter", defaultMessage: "Filter" })}
       >
         <Box className={classes.filterBox} onClick={handleFilterOpen}>
-          <Box className={classes.filterSelected}>
-            <ArrowDropDownIcon className="arrowDown" />
-            <Typography variant="body1">
-              {getQuestionFilterLabel(queryState.filterSelected)}
-            </Typography>
-          </Box>
-          <Tooltip
-            title={formatMessage({ id: "Total", defaultMessage: "Total" })}
-          >
-            <Typography
-              className={classes.totalCount}
-              variant="body2"
-              color="textSecondary"
-            >
-              total
-            </Typography>
-          </Tooltip>
+          <ArrowDropDownIcon className="arrowDown" />
+          <Typography variant="body1">
+            {getQuestionFilterLabel(queryState.filterSelected)}
+          </Typography>
         </Box>
       </Tooltip>
       <Box className={classes.searchAndSort}>
@@ -160,13 +142,13 @@ const ActionRight: React.FC<Props> = ({
           inputRef={searchRef}
           placeholder={formatMessage({
             id: "SEARCH",
-            defaultMessage: "Search"
+            defaultMessage: "Search",
           })}
           InputProps={{
             disableUnderline: true,
             classes: {
               root: classes.searchInputRoot,
-              input: classes.searchInputInput
+              input: classes.searchInputInput,
             },
             endAdornment: (
               <InputAdornment position="end">
@@ -181,7 +163,7 @@ const ActionRight: React.FC<Props> = ({
                   <Tooltip
                     title={formatMessage({
                       id: "Search",
-                      defaultMessage: "Search"
+                      defaultMessage: "Search",
                     })}
                   >
                     <IconButton
@@ -193,7 +175,7 @@ const ActionRight: React.FC<Props> = ({
                   </Tooltip>
                 )}
               </InputAdornment>
-            )
+            ),
           }}
           value={queryState.searchString}
           onChange={handleSearchChange}
@@ -215,22 +197,22 @@ const ActionRight: React.FC<Props> = ({
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "center"
+          horizontal: "center",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "center"
+          horizontal: "center",
         }}
         open={Boolean(filterAnchorEl)}
         onClose={handleFilterClose}
       >
         {Object.values(QuestionFilter)
-          .filter(item => item !== QuestionFilter.Review)
+          .filter((item) => item !== QuestionFilter.Review)
           .map((filterItem, index) => (
             <MenuItem
               key={index}
               selected={filterItem === queryState.filterSelected}
-              onClick={e => handleFilterOptionClick(filterItem)}
+              onClick={(e) => handleFilterOptionClick(filterItem)}
             >
               {getQuestionFilterLabel(filterItem)}
             </MenuItem>
@@ -239,11 +221,11 @@ const ActionRight: React.FC<Props> = ({
       <QuestionOrderMenu
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right"
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "right"
+          horizontal: "right",
         }}
         menuElState={orderMenuElState}
         orderSelectedState={orderSelectedState}
