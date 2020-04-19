@@ -3,7 +3,7 @@ import { addDays } from 'date-fns'
 import { Context } from '../context'
 import { Event as EventEntity } from '../entity/Event'
 import { Question as QuestionEntity, ReviewStatus } from '../entity/Question'
-import { Event } from './Event'
+import { Event } from './Event-type'
 import { Repository, getRepository } from 'typeorm'
 import { User as UserEntity } from '../entity/User'
 

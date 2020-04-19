@@ -11,6 +11,7 @@ import {
 import { Role } from './Role'
 import { Event } from './Event'
 import { Question } from './Question'
+import { Reply } from './Reply'
 
 @Entity()
 export class User {
@@ -41,11 +42,17 @@ export class User {
   @ManyToMany((type) => Event, (event) => event.audiences)
   public attendedEvents!: Event[]
 
+  @ManyToMany((type) => Event, (event) => event.guestes)
+  public guestEvents!: Event[]
+
   @OneToMany((type) => Question, (question) => question.author)
   public questions!: Question[]
 
   @ManyToMany((type) => Question, (question) => question.voteUpUsers)
   public voteUpQuestions!: Question[]
+
+  @OneToMany((type) => Reply, (reply) => reply.author)
+  public replies!: Reply[]
 
   @CreateDateColumn()
   public readonly createdAt!: Date

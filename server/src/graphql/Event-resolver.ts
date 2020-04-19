@@ -1,10 +1,5 @@
-import { isAfter, isBefore, isEqual } from 'date-fns'
 import {
-  registerEnumType,
-  ObjectType,
-  Field,
   ID,
-  InputType,
   Root,
   Resolver,
   Query,
@@ -15,72 +10,35 @@ import {
   ResolverFilterData,
   PubSub,
   Publisher,
+  ResolverInterface,
+  FieldResolver,
 } from 'type-graphql'
 import { getRepository, Repository, Like, Brackets } from 'typeorm'
 import { Context } from '../context'
 import { User as UserEntity } from '../entity/User'
 import { User } from './User'
-import { IPagedType, PaginationInput } from './Pagination'
+import {
+  Event,
+  EventPaged,
+  EventDateStatus,
+  UpdateEventInput,
+} from './Event-type'
+import { PaginationInput } from './Pagination'
 import { Event as EventEntity } from '../entity/Event'
 import { Question as QuestionEntity } from '../entity/Question'
 import { Question } from './Question'
 
-export enum EventDateStatus {
-  Active = 'Active',
-  Upcoming = 'Upcoming',
-  Past = 'Past',
-}
-registerEnumType(EventDateStatus, { name: 'EventDateStatus' })
-
-@ObjectType()
-export class Event {
+@Resolver((of) => Event)
+export class EventResolver implements ResolverInterface<Event> {
+  private userRepository: Repository<UserEntity>
   private eventRepository: Repository<EventEntity>
 
   constructor() {
+    this.userRepository = getRepository(UserEntity)
     this.eventRepository = getRepository(EventEntity)
   }
 
-  @Field((returns) => ID)
-  public id!: string
-
-  @Field((returns) => String)
-  public code!: string
-
-  @Field((returns) => String)
-  public name!: string
-
-  @Field((returns) => Date)
-  public startAt!: Date
-
-  @Field((returns) => Date)
-  public endAt!: Date
-
-  @Field((returns) => Boolean)
-  public moderation!: boolean
-
-  @Field((returns) => EventDateStatus)
-  dateStatus(@Root() root: Event): EventDateStatus {
-    const NOW = new Date()
-    if (
-      isAfter(NOW, new Date(root.startAt)) &&
-      isBefore(NOW, new Date(root.endAt))
-    ) {
-      return EventDateStatus.Active
-    } else if (
-      isBefore(NOW, new Date(root.startAt)) ||
-      isEqual(NOW, new Date(root.startAt))
-    ) {
-      return EventDateStatus.Upcoming
-    } else {
-      // if (
-      // isAfter(NOW, new Date(root.endAt)) ||
-      // isEqual(NOW, new Date(root.endAt))
-      // )
-      return EventDateStatus.Past
-    }
-  }
-
-  @Field((returns) => User)
+  @FieldResolver((returns) => User)
   async owner(@Root() root: Event): Promise<UserEntity> {
     const user = await this.eventRepository
       .createQueryBuilder()
@@ -91,18 +49,25 @@ export class Event {
     return user
   }
 
-  @Field((returns) => [User])
-  async audiences(@Root() root: Event): Promise<UserEntity[]> {
-    const audiences = await this.eventRepository
+  @FieldResolver((returns) => [User])
+  audiences(@Root() root: Event): Promise<UserEntity[]> {
+    return this.eventRepository
       .createQueryBuilder()
       .relation(EventEntity, 'audiences')
       .of(root.id)
       .loadMany()
-
-    return audiences
   }
 
-  @Field((returns) => [Question])
+  @FieldResolver((returns) => [User])
+  guestes(@Root() root: Event): Promise<UserEntity[]> {
+    return this.eventRepository
+      .createQueryBuilder()
+      .relation(EventEntity, 'guestes')
+      .of(root.id)
+      .loadMany()
+  }
+
+  @FieldResolver((returns) => [Question])
   async questions(@Root() root: Event): Promise<QuestionEntity[]> {
     const questions = await this.eventRepository
       .createQueryBuilder()
@@ -111,55 +76,6 @@ export class Event {
       .loadMany()
 
     return questions
-  }
-
-  @Field()
-  public createdAt!: Date
-
-  @Field()
-  public updatedAt!: Date
-}
-
-@ObjectType({ implements: IPagedType })
-export class EventPaged implements IPagedType {
-  offset!: number
-  limit!: number
-  totalCount!: number
-  hasNextPage!: boolean
-
-  @Field((returns) => [Event])
-  public list!: EventEntity[]
-}
-
-@InputType()
-export class UpdateEventInput implements Partial<Event> {
-  @Field((returns) => ID)
-  public eventId!: string
-
-  @Field({ nullable: true })
-  public code?: string
-
-  @Field({ nullable: true })
-  public name?: string
-
-  @Field({ nullable: true })
-  public startAt?: Date
-
-  @Field({ nullable: true })
-  public endAt?: Date
-
-  @Field({ nullable: true })
-  public moderation?: boolean
-}
-
-@Resolver((of) => Event)
-export class EventResolver {
-  private userRepository: Repository<UserEntity>
-  private eventRepository: Repository<EventEntity>
-
-  constructor() {
-    this.userRepository = getRepository(UserEntity)
-    this.eventRepository = getRepository(EventEntity)
   }
 
   @Query((returns) => Event)
@@ -343,6 +259,36 @@ export class EventResolver {
       .add(eventId)
 
     return eventId
+  }
+
+  @Mutation((returns) => User)
+  async addGuest(
+    @Arg('eventId') eventId: string,
+    @Arg('email') email: string,
+  ): Promise<UserEntity> {
+    const guest = await this.userRepository.findOneOrFail({ email })
+    await this.eventRepository
+      .createQueryBuilder()
+      .relation(EventEntity, 'guestes')
+      .of(eventId)
+      .add(guest)
+
+    return guest
+  }
+
+  @Mutation((returns) => User)
+  async removeGuest(
+    @Arg('eventId') eventId: string,
+    @Arg('email') email: string,
+  ): Promise<UserEntity> {
+    const guest = await this.userRepository.findOneOrFail({ email })
+    await this.eventRepository
+      .createQueryBuilder()
+      .relation(EventEntity, 'guestes')
+      .of(eventId)
+      .remove(guest)
+
+    return guest
   }
 
   @Subscription((returns) => Event, {

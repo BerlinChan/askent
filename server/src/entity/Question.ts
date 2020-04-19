@@ -8,9 +8,11 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
+  OneToMany,
 } from 'typeorm'
 import { User } from './User'
 import { Event } from './Event'
+import { Reply } from './Reply'
 
 export enum ReviewStatus {
   Review = 'Review',
@@ -50,6 +52,9 @@ export class Question {
   @ManyToMany((type) => User, (user) => user.voteUpQuestions)
   @JoinTable({ name: 'usersVoteUpQuestions' })
   public voteUpUsers!: User[]
+
+  @OneToMany((type) => Reply, (reply) => reply.question)
+  public replies!: Reply[]
 
   @CreateDateColumn()
   public readonly createdAt!: Date

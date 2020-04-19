@@ -5,33 +5,27 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  ManyToMany,
-  JoinTable,
+  ManyToOne,
 } from 'typeorm'
 import { User } from './User'
-
-export enum RoleName {
-  Admin = 'Admin',
-  Guest = 'Guest',
-  Audience = 'Audience',
-  Wall = 'Wall',
-}
+import { Question } from './Question'
 
 @Entity()
-export class Role {
+export class Reply {
   @PrimaryGeneratedColumn('uuid')
   public readonly id!: string
 
-  @Column({
-    type: 'enum',
-    enum: RoleName,
-    unique: true,
-  })
-  public name!: RoleName
+  @Column()
+  public content!: string
 
-  @ManyToMany((type) => User, (user) => user.roles)
-  @JoinTable({ name: 'userRoles' })
-  public users!: User[]
+  @Column({ comment: 'If author is a moderator of the event?' })
+  public isModerator!: boolean
+
+  @ManyToOne((type) => Question, (question) => question.replies)
+  public question!: Question
+
+  @ManyToOne((type) => User, (user) => user.replies)
+  public author!: User
 
   @CreateDateColumn()
   public readonly createdAt!: Date

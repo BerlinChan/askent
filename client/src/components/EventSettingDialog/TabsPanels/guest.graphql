@@ -1,0 +1,25 @@
+query GuestesByEvent($eventId: ID!) {
+  eventById(eventId: $eventId) {
+    guestes {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation AddGuest($email: String!, $eventId: String!) {
+  addGuest(email: $email, eventId: $eventId) {
+    id
+    name
+    email
+  }
+}
+
+mutation RemoveGuest($email: String!, $eventId: String!) {
+  removeGuest(email: $email, eventId: $eventId) {
+    id
+    name
+    email
+  }
+}

@@ -2,14 +2,16 @@ import React from "react";
 import { FormattedMessage } from "react-intl";
 import TabPanelGeneral from "./TabPanelGeneral";
 import TabPanelFeatures from "./TabPanelFeatures";
+import TabPanelGuestes from "./TabPanelGuestes";
 import { EventSettingValues } from "../index";
 
 export const tabList = [
   <FormattedMessage id="General" defaultMessage="General" />,
+  <FormattedMessage id="Guestes" defaultMessage="Guestes" />,
   <FormattedMessage id="Features" defaultMessage="Features" />,
   <FormattedMessage id="Customization" defaultMessage="Customization" />,
   <FormattedMessage id="Integrations" defaultMessage="Integrations" />,
-  <FormattedMessage id="Share_access" defaultMessage="Share access" />
+  <FormattedMessage id="Share_access" defaultMessage="Share access" />,
 ];
 
 interface Props {
@@ -20,10 +22,11 @@ interface Props {
 export const TabPanel: React.FC<Props> = ({ index, defaultFocus = "name" }) => {
   const TabPanelList = [
     <TabPanelGeneral defaultFocus={defaultFocus} />,
+    <TabPanelGuestes />,
     <TabPanelFeatures />,
-    <div>Item Three</div>,
-    <div>Item Four</div>,
-    <div>Item Five</div>
+    <div>Item Customization</div>,
+    <div>Item Integrations</div>,
+    <div>Item Share_access</div>,
   ];
 
   return TabPanelList[index];
