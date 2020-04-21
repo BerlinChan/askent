@@ -17,12 +17,17 @@ export const tabList = [
 interface Props {
   index: number;
   defaultFocus?: keyof EventSettingValues;
+  eventId: string;
 }
 
-export const TabPanel: React.FC<Props> = ({ index, defaultFocus = "name" }) => {
+export const TabPanel: React.FC<Props> = ({
+  index,
+  defaultFocus = "name",
+  eventId,
+}) => {
   const TabPanelList = [
     <TabPanelGeneral defaultFocus={defaultFocus} />,
-    <TabPanelGuestes />,
+    <TabPanelGuestes eventId={eventId} />,
     <TabPanelFeatures />,
     <div>Item Customization</div>,
     <div>Item Integrations</div>,

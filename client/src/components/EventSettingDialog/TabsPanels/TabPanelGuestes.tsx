@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  CircularProgress,
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { TextField } from "formik-material-ui";
@@ -26,9 +27,10 @@ import {
   useAddGuestMutation,
   useRemoveGuestMutation,
 } from "../../../generated/graphqlHooks";
-import { useParams } from "react-router-dom";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { ButtonLoading } from "../../Form";
+import { EMAIL_MAX_LENGTH } from "../../../constant";
+import Confirm from "../../Confirm";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,14 +38,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props {}
+interface Props {
+  eventId: string;
+}
 
-const TabPanelGuestes: React.FC<Props> = () => {
+const TabPanelGuestes: React.FC<Props> = ({ eventId }) => {
   const classes = useStyles();
-  const { id } = useParams();
   const [addOpen, setAddOpen] = React.useState(false);
-  const { data, loading } = useGuestesByEventQuery({
-    variables: { eventId: id as string },
+  const [removeId, setRemoveId] = React.useState("");
+  const { data, loading, refetch } = useGuestesByEventQuery({
+    variables: { eventId },
   });
   const [
     removeGuestMutation,
@@ -53,8 +57,23 @@ const TabPanelGuestes: React.FC<Props> = () => {
   const handleAddDialogOpen = () => {
     setAddOpen(true);
   };
-  const handleAddDialogClose = () => {
+  const handleAddDialogClose = (submit?: boolean) => {
+    submit && refetch();
     setAddOpen(false);
+  };
+
+  const handleRemoveOpen = (id: string) => {
+    setRemoveId(id);
+  };
+  const handleRemoveClose = () => {
+    setRemoveId("");
+  };
+  const handleRemove = async () => {
+    await removeGuestMutation({
+      variables: { eventId, guestId: removeId },
+    });
+    refetch();
+    handleRemoveClose();
   };
 
   return (
@@ -80,7 +99,9 @@ const TabPanelGuestes: React.FC<Props> = () => {
               <TableCell align="right">
                 <FormattedMessage id="Email" defaultMessage="Email" />
               </TableCell>
-              <TableCell align="right"></TableCell>
+              <TableCell align="right">
+                <FormattedMessage id="Actions" defaultMessage="Actions" />
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -91,7 +112,11 @@ const TabPanelGuestes: React.FC<Props> = () => {
                 </TableCell>
                 <TableCell align="right">{row.email}</TableCell>
                 <TableCell align="right">
-                  <IconButton size="small" className={classes.removeButton}>
+                  <IconButton
+                    size="small"
+                    className={classes.removeButton}
+                    onClick={(e) => handleRemoveOpen(row.id)}
+                  >
                     <RemoveCircleOutlineIcon
                       fontSize="inherit"
                       color="inherit"
@@ -103,8 +128,26 @@ const TabPanelGuestes: React.FC<Props> = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      {loading && <CircularProgress />}
 
-      <AddGuestDialog open={addOpen} handleClose={handleAddDialogClose} />
+      <AddGuestDialog
+        open={addOpen}
+        eventId={eventId}
+        handleClose={handleAddDialogClose}
+      />
+      <Confirm
+        open={Boolean(removeId)}
+        loading={removeGuestLoading}
+        contentText={
+          <FormattedMessage
+            id="Remove_this_guest?"
+            defaultMessage="Remove this guest?"
+          />
+        }
+        okText={<FormattedMessage id="Remove" defaultMessage="Remove" />}
+        onCancel={handleRemoveClose}
+        onOk={handleRemove}
+      />
     </React.Fragment>
   );
 };
@@ -113,13 +156,14 @@ export default TabPanelGuestes;
 
 interface AddGuestDialogProps {
   open: boolean;
-  handleClose: () => void;
+  eventId: string;
+  handleClose: (refetch?: boolean) => void;
 }
 const AddGuestDialog: React.FC<AddGuestDialogProps> = ({
   open,
+  eventId,
   handleClose,
 }) => {
-  const { id } = useParams();
   const [
     checkEmailExistQuery,
     { data: checkEmailData, loading: checkEmailLoading },
@@ -137,7 +181,7 @@ const AddGuestDialog: React.FC<AddGuestDialogProps> = ({
   }) => {
     try {
       await Yup.object({
-        email: Yup.string().email().required(),
+        email: Yup.string().max(EMAIL_MAX_LENGTH).email().required(),
       }).validate({
         email,
       });
@@ -162,12 +206,12 @@ const AddGuestDialog: React.FC<AddGuestDialogProps> = ({
     values: typeof initialValues,
     formikHelpers: FormikHelpers<typeof initialValues>
   ) => void | Promise<any> = async ({ email }) => {
-    await addGuestMutation({ variables: { eventId: id as string, email } });
-    handleClose();
+    await addGuestMutation({ variables: { eventId, email } });
+    handleClose(true);
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={(e) => handleClose()}>
       <DialogTitle>
         <FormattedMessage id="Add guest" defaultMessage="Add guest" />
       </DialogTitle>
@@ -196,7 +240,7 @@ const AddGuestDialog: React.FC<AddGuestDialogProps> = ({
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>
+            <Button onClick={(e) => handleClose()}>
               <FormattedMessage id="Cancel" defaultMessage="Cancel" />
             </Button>
             <ButtonLoading

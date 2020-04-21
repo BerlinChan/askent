@@ -6,13 +6,13 @@ import {
   Button,
   Dialog,
   DialogContent,
-  DialogActions
+  DialogActions,
 } from "@material-ui/core";
 import {
   createStyles,
   makeStyles,
   Theme,
-  fade
+  fade,
 } from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Formik, Form, FormikErrors, FormikHelpers } from "formik";
@@ -23,7 +23,7 @@ import DialogTitleWithClose from "../DialogTitleWithClose";
 import {
   useCheckEventCodeExistLazyQuery,
   useEventByIdLazyQuery,
-  useUpdateEventMutation
+  useUpdateEventMutation,
 } from "../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
 import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../constant";
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
     dialogContent: { display: "flex", overflowY: "hidden" },
     tabs: {
       width: 200,
-      borderRight: `1px solid ${theme.palette.divider}`
+      borderRight: `1px solid ${theme.palette.divider}`,
     },
     tabRoot: { paddingRight: theme.spacing(2) },
     tabWrapper: { alignItems: "flex-end" },
@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
         background: `linear-gradient(to top, ${fade(
           theme.palette.background.paper,
           0
-        )} 0%, ${theme.palette.background.paper} 100%)`
+        )} 0%, ${theme.palette.background.paper} 100%)`,
       },
       "&:after": {
         content: "' '",
@@ -75,9 +75,9 @@ const useStyles = makeStyles((theme: Theme) =>
         background: `linear-gradient(to bottom, ${fade(
           theme.palette.background.paper,
           0
-        )} 0%, ${theme.palette.background.paper} 100%)`
-      }
-    }
+        )} 0%, ${theme.palette.background.paper} 100%)`,
+      },
+    },
   })
 );
 
@@ -98,7 +98,7 @@ interface Props {
 const EventSettingDialog: React.FC<Props> = ({
   defaultFocus = "name",
   eventIdState,
-  onExiting
+  onExiting,
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -107,15 +107,15 @@ const EventSettingDialog: React.FC<Props> = ({
   const [tabIndex, setTabIndex] = React.useState(0);
   const [
     eventByIdQuery,
-    { data: eventData, loading: eventLoading }
+    { data: eventData, loading: eventLoading },
   ] = useEventByIdLazyQuery();
   const [
     checkEventCodeExistLazyQuery,
-    { data: checkEventCodeData, loading: checkEventCodeLoading }
+    { data: checkEventCodeData, loading: checkEventCodeLoading },
   ] = useCheckEventCodeExistLazyQuery();
   const [
     updateEventMutation,
-    { loading: updateEventLoading }
+    { loading: updateEventLoading },
   ] = useUpdateEventMutation();
 
   React.useEffect(() => {
@@ -141,7 +141,7 @@ const EventSettingDialog: React.FC<Props> = ({
     startAt: new Date(eventData?.eventById.startAt),
     endAt: new Date(eventData?.eventById.endAt),
     eventLink: `${window.location.origin}/event/${eventData?.eventById.id}`,
-    moderation: eventData?.eventById.moderation
+    moderation: eventData?.eventById.moderation,
   };
   const handleValidate: (
     values: EventSettingValues
@@ -149,23 +149,19 @@ const EventSettingDialog: React.FC<Props> = ({
     name,
     code,
     startAt,
-    endAt
+    endAt,
   }) => {
     try {
       await Yup.object({
-        name: Yup.string()
-          .max(USERNAME_MAX_LENGTH)
-          .required(),
-        code: Yup.string()
-          .max(EVENT_CODE_MAX_LENGTH)
-          .required(),
+        name: Yup.string().max(USERNAME_MAX_LENGTH).required(),
+        code: Yup.string().max(EVENT_CODE_MAX_LENGTH).required(),
         startAt: Yup.date(),
-        endAt: Yup.date()
+        endAt: Yup.date(),
       }).validate({
         name,
         code,
         startAt,
-        endAt
+        endAt,
       });
     } catch (err) {
       const { path, message } = err as Yup.ValidationError;
@@ -179,8 +175,8 @@ const EventSettingDialog: React.FC<Props> = ({
       return {
         endAt: formatMessage({
           id: "End_must_after_start",
-          defaultMessage: "End must after start"
-        })
+          defaultMessage: "End must after start",
+        }),
       };
     }
 
@@ -190,8 +186,8 @@ const EventSettingDialog: React.FC<Props> = ({
         return {
           code: formatMessage({
             id: "Code_existed",
-            defaultMessage: "Code existed"
-          })
+            defaultMessage: "Code existed",
+          }),
         };
       }
     }
@@ -199,23 +195,23 @@ const EventSettingDialog: React.FC<Props> = ({
   const handleSubmit: (
     values: EventSettingValues,
     formikHelpers: FormikHelpers<EventSettingValues>
-  ) => void | Promise<any> = async values => {
+  ) => void | Promise<any> = async (values) => {
     const { data } = await updateEventMutation({
       variables: {
         input: R.omit(["eventLink"], {
           eventId,
-          ...values
-        })
-      }
+          ...values,
+        }),
+      },
     });
     if (data) {
       enqueueSnackbar(
         formatMessage({
           id: "Event_updated",
-          defaultMessage: "Event updated"
+          defaultMessage: "Event updated",
         }),
         {
-          variant: "success"
+          variant: "success",
         }
       );
       handleClose();
@@ -258,7 +254,7 @@ const EventSettingDialog: React.FC<Props> = ({
                 <Tab
                   classes={{
                     root: classes.tabRoot,
-                    wrapper: classes.tabWrapper
+                    wrapper: classes.tabWrapper,
                   }}
                   key={index}
                   label={item}
@@ -266,7 +262,11 @@ const EventSettingDialog: React.FC<Props> = ({
               ))}
             </Tabs>
             <Box className={classes.contentRightBox}>
-              <TabPanel index={tabIndex} defaultFocus={defaultFocus} />
+              <TabPanel
+                index={tabIndex}
+                defaultFocus={defaultFocus}
+                eventId={eventId}
+              />
             </Box>
           </DialogContent>
           <DialogActions>

@@ -11,13 +11,13 @@ import {
   IconButton,
   CircularProgress,
   Tooltip,
-  Grid
+  Grid,
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import {
   EventByIdQuery,
-  EventByIdQueryVariables
+  EventByIdQueryVariables,
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/react-common";
 import { FormattedDate, FormattedTime, useIntl } from "react-intl";
@@ -25,35 +25,35 @@ import HeaderAction from "../../../components/HeaderAction";
 import SettingsIcon from "@material-ui/icons/Settings";
 import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
 import EventSettingDialog, {
-  EventSettingValues
+  EventSettingValues,
 } from "../../../components/EventSettingDialog";
 import PresentModeButton from "./PresentModeButton";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     toolbarLeft: {
-      display: "flex"
+      display: "flex",
     },
     toolbarCenter: {
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
-      alignItems: "center"
+      alignItems: "center",
     },
     toolbarRight: {
       display: "flex",
       justifyContent: "flex-end",
-      alignItems: "center"
+      alignItems: "center",
     },
     openSettingText: {
       display: "inline-block",
-      cursor: "pointer"
+      cursor: "pointer",
     },
     tabAndActionBox: {
       display: "flex",
       justifyContent: "space-between",
-      alignItems: "center"
-    }
+      alignItems: "center",
+    },
   })
 );
 
@@ -68,7 +68,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
   const eventSettingState = React.useState<string>("");
   const [
     eventSettingDefaultFocus,
-    setEventSettingDefaultFocus
+    setEventSettingDefaultFocus,
   ] = React.useState<keyof EventSettingValues>("name");
   const { formatMessage } = useIntl();
   const { data, loading } = eventQueryResult;
@@ -105,7 +105,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
                       arrow
                       title={formatMessage({
                         id: "Edit event name",
-                        defaultMessage: "Edit event name"
+                        defaultMessage: "Edit event name",
                       })}
                       placement="right"
                     >
@@ -127,7 +127,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
                         arrow
                         title={formatMessage({
                           id: "Edit event date",
-                          defaultMessage: "Edit event date"
+                          defaultMessage: "Edit event date",
                         })}
                         placement="right"
                       >
@@ -159,7 +159,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
                     arrow
                     title={formatMessage({
                       id: "Edit event code",
-                      defaultMessage: "Edit event code"
+                      defaultMessage: "Edit event code",
                     })}
                     placement="right"
                   >
@@ -192,24 +192,24 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
                 {
                   label: formatMessage({
                     id: "Audience_Q&A",
-                    defaultMessage: "Audience Q&A"
+                    defaultMessage: "Audience Q&A",
                   }),
-                  to: `${url}/questions`
+                  to: `${url}/questions`,
                 },
                 {
                   label: formatMessage({
                     id: "Live_polls",
-                    defaultMessage: "Live polls"
+                    defaultMessage: "Live polls",
                   }),
-                  to: `${url}/polls`
+                  to: `${url}/polls`,
                 },
                 {
                   label: formatMessage({
                     id: "Analitics",
-                    defaultMessage: "Analitics"
+                    defaultMessage: "Analitics",
                   }),
-                  to: `${url}/analytics`
-                }
+                  to: `${url}/analytics`,
+                },
               ]}
               indicatorColor="primary"
               textColor="primary"
@@ -218,12 +218,12 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
               <Tooltip
                 title={formatMessage({
                   id: "Participant mode",
-                  defaultMessage: "Participant mode"
+                  defaultMessage: "Participant mode",
                 })}
               >
                 <IconButton
                   size="small"
-                  onClick={e => {
+                  onClick={(e) => {
                     window.open(`/event/${data?.eventById.id}`);
                   }}
                 >
@@ -233,14 +233,14 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
               <Tooltip
                 title={formatMessage({
                   id: "Open_event_settings",
-                  defaultMessage: "Open event settings"
+                  defaultMessage: "Open event settings",
                 })}
               >
                 <Box display="inline-block">
                   <IconButton
                     size="small"
                     disabled={loading && !data}
-                    onClick={e =>
+                    onClick={(e) =>
                       handleOpenSetting(data?.eventById.id as string)
                     }
                   >

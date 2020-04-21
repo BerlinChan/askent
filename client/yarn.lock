@@ -2657,18 +2657,6 @@
   dependencies:
     "@formatjs/intl-utils" "^2.2.2"
 
-"@formatjs/intl-unified-numberformat@^3.3.3":
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-unified-numberformat/-/intl-unified-numberformat-3.3.3.tgz#c0006fb06588ccce614df50f3469ca2ec92816f2"
-  integrity sha512-dic7DA8REMy8gkidkCSoWqTjaLIlCyLJ5fDtlgHzK/ftwxAlbSSHkbeozZ/IKQDPbbcSppI/t9hp9KT+co/Ksg==
-  dependencies:
-    "@formatjs/intl-utils" "^2.2.2"
-
-"@formatjs/intl-utils@^2.2.2":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.2.tgz#adc448035c2e3f60c550bd27c97eca336e641f5a"
-  integrity sha512-rKINaMRYH3FeNwYjEQwPtsA0kP2/hLLMB9mLi/QYfszz/huTqkInFmYilFRCX4oLlhFXDK5UQQMGNfEavN02Sg==
-
 "@formatjs/intl-utils@^2.2.2":
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.2.tgz#adc448035c2e3f60c550bd27c97eca336e641f5a"
@@ -4302,6 +4290,14 @@ apollo-client@2.6.8:
     ts-invariant "^0.4.0"
     tslib "^1.10.0"
     zen-observable "^0.8.0"
+
+apollo-link-context@^1.0.20:
+  version "1.0.20"
+  resolved "https://registry.npm.taobao.org/apollo-link-context/download/apollo-link-context-1.0.20.tgz#1939ac5dc65d6dff0c855ee53521150053c24676"
+  integrity sha1-GTmsXcZdbf8MhV7lNSEVAFPCRnY=
+  dependencies:
+    apollo-link "^1.2.14"
+    tslib "^1.9.3"
 
 apollo-link-error@1.1.13:
   version "1.1.13"
@@ -7800,6 +7796,11 @@ graphql-tools@5.0.0:
     tslib "^1.11.1"
     uuid "^7.0.3"
 
+graphql@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.npm.taobao.org/graphql/download/graphql-15.0.0.tgz?cache=0&sync_timestamp=1585840662829&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fgraphql%2Fdownload%2Fgraphql-15.0.0.tgz#042a5eb5e2506a2e2111ce41eb446a8e570b8be9"
+  integrity sha1-BCpeteJQai4hEc5B60RqjlcLi+k=
+
 growly@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npm.taobao.org/growly/download/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
@@ -8380,13 +8381,6 @@ intl-format-cache@^4.2.24:
   version "4.2.24"
   resolved "https://registry.yarnpkg.com/intl-format-cache/-/intl-format-cache-4.2.24.tgz#d6a264430553db233aa444acefc4150762d603e4"
   integrity sha512-eea8rHu7ipmUilSd9+MCglgR07E+xJXmTYVFODmeLKsO3Psr/OrixDr6vWprz1whli7cwRdSc1/jHVBxrd+QBw==
-
-intl-messageformat-parser@^4.1.4:
-  version "4.1.4"
-  resolved "https://registry.yarnpkg.com/intl-messageformat-parser/-/intl-messageformat-parser-4.1.4.tgz#98f3415e6990d44bebf2e0ad8e4cfbacf3ef5ed3"
-  integrity sha512-zV4kBUD1yhxSyaXm6bGhmP4HFH9Gh4pRQwNn+xq5P+B1dT8mpaAfU75nfUn4HgddIB6pyFnzM5MQjO55UpJwkQ==
-  dependencies:
-    "@formatjs/intl-unified-numberformat" "^3.3.3"
 
 intl-messageformat-parser@^4.1.4:
   version "4.1.4"

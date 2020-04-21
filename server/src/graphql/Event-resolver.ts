@@ -263,7 +263,7 @@ export class EventResolver implements ResolverInterface<Event> {
 
   @Mutation((returns) => User)
   async addGuest(
-    @Arg('eventId') eventId: string,
+    @Arg('eventId', (returns) => ID) eventId: string,
     @Arg('email') email: string,
   ): Promise<UserEntity> {
     const guest = await this.userRepository.findOneOrFail({ email })
@@ -276,19 +276,18 @@ export class EventResolver implements ResolverInterface<Event> {
     return guest
   }
 
-  @Mutation((returns) => User)
+  @Mutation((returns) => ID)
   async removeGuest(
-    @Arg('eventId') eventId: string,
-    @Arg('email') email: string,
-  ): Promise<UserEntity> {
-    const guest = await this.userRepository.findOneOrFail({ email })
+    @Arg('eventId', (returns) => ID) eventId: string,
+    @Arg('guestId', (returns) => ID) guestId: string,
+  ): Promise<String> {
     await this.eventRepository
       .createQueryBuilder()
       .relation(EventEntity, 'guestes')
       .of(eventId)
-      .remove(guest)
+      .remove(guestId)
 
-    return guest
+    return guestId
   }
 
   @Subscription((returns) => Event, {
