@@ -4915,6 +4915,11 @@ clsx@^1.0.2, clsx@^1.0.4:
   resolved "https://registry.npm.taobao.org/clsx/download/clsx-1.0.4.tgz#0c0171f6d5cb2fe83848463c15fcc26b4df8c2ec"
   integrity sha1-DAFx9tXLL+g4SEY8FfzCa034wuw=
 
+clsx@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.1.0.tgz#62937c6adfea771247c34b54d320fb99624f5702"
+  integrity sha512-3avwM37fSK5oP6M5rQ9CNe99lwxhXDOeSWVPAOYF6OazUTgZCMb0yWlJpmdD74REy1gkEaFiub2ULv4fq9GUhA==
+
 co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.npm.taobao.org/co/download/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
@@ -9990,12 +9995,12 @@ normalize-url@^3.0.0:
   resolved "https://registry.npm.taobao.org/normalize-url/download/normalize-url-3.3.0.tgz#b2e1c4dc4f7c6d57743df733a4f5978d18650559"
   integrity sha1-suHE3E98bVd0PfczpPWXjRhlBVk=
 
-notistack@0.9.10:
-  version "0.9.10"
-  resolved "https://registry.yarnpkg.com/notistack/-/notistack-0.9.10.tgz#f662cdd46f0a7ce7f26ff1a5d9515d38d8279164"
-  integrity sha512-Pm2lrbEUdAy7HF2o7nlrzkere3611xlPj+ggpfhs1ahD0b0ryY4nPtZPsD4sI9o0Efa2k/P9YMBfbLB0LDGklg==
+notistack@0.9.11:
+  version "0.9.11"
+  resolved "https://registry.yarnpkg.com/notistack/-/notistack-0.9.11.tgz#8ad61e5fc5bf29da3455fe3f2f809c1c421713e7"
+  integrity sha512-652+nnce7MC7eAgl6B4vPmo1wNOiFM9QBpIkH+b36rz0iMSjN/RTc9OL2xlRW4z/bzduLo5n9tnmXqD7MkAEJw==
   dependencies:
-    classnames "^2.2.6"
+    clsx "^1.1.0"
     hoist-non-react-statics "^3.3.0"
     react-is "^16.8.6"
 
