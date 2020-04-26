@@ -144,6 +144,7 @@ export class UserResolver {
     const hashedPassword = await hash(password, 10)
     const roleNames: Array<RoleName> = [
       RoleName.Admin,
+      RoleName.Guest,
       RoleName.Audience,
       RoleName.Wall,
     ]
