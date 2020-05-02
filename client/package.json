@@ -37,7 +37,7 @@
     "react-scripts": "3.4.1",
     "react-virtuoso": "0.16.1",
     "subscriptions-transport-ws": "0.9.16",
-    "yup": "0.28.4"
+    "yup": "0.28.5"
   },
   "scripts": {
     "start": "react-scripts start",
