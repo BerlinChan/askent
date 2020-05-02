@@ -140,10 +140,10 @@
   dependencies:
     "@types/express" "*"
 
-"@types/crypto-js@3.1.44":
-  version "3.1.44"
-  resolved "https://registry.npm.taobao.org/@types/crypto-js/download/@types/crypto-js-3.1.44.tgz#3ad6f046b8c248866b9e5726ce8a1c09f73db9e0"
-  integrity sha1-OtbwRrjCSIZrnlcmzoocCfc9ueA=
+"@types/crypto-js@3.1.45":
+  version "3.1.45"
+  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-3.1.45.tgz#d2ccd23ae926ff05e3a99b11945e0435185cc1f1"
+  integrity sha512-/4yiILxQnVfpAtrVctuEl0qwqAToqayoPEvutyWhHPslr2D9sx85KRmIq7etC0ZYKCK8ppucoLzJukjJdAtfdA==
 
 "@types/events@*":
   version "3.0.0"
