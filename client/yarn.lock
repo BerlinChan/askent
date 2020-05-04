@@ -2031,10 +2031,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
   integrity sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==
 
-"@formatjs/cli@1.6.8":
-  version "1.6.8"
-  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.6.8.tgz#148d6bcfefa7dd60cc71fe6bc36248366f223757"
-  integrity sha512-synhWE4KS0wZgoMwi2TuwuJ1+pqWmioEEePgCn06fJ3yqf/8Jt8OCsRPZJH4LemiW1m2Fdb43qJYxnmBPPVGwg==
+"@formatjs/cli@1.6.9":
+  version "1.6.9"
+  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.6.9.tgz#b36ae70857f3044844c8ab794fb8b3e57cdbba99"
+  integrity sha512-bCUHCafmLAcZ7e+cREXXhrB/qsnM9W9oO4sF/z0Rl062i1nWOzatf5CJTKNUBfIn8u1cd70u2lLUmLwJbs9Vng==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.8.3"
     "@babel/plugin-proposal-optional-chaining" "7"
@@ -2044,7 +2044,7 @@
     "@types/loader-utils" "^1.1.3"
     "@types/lodash" "^4.14.150"
     babel-plugin-const-enum "^1.0.1"
-    babel-plugin-react-intl "^7.5.3"
+    babel-plugin-react-intl "^7.5.4"
     commander "5.0.0"
     fs-extra "^9.0.0"
     glob "^7.1.6"
@@ -2087,6 +2087,13 @@
   dependencies:
     "@formatjs/intl-utils" "^2.2.3"
 
+"@formatjs/intl-unified-numberformat@^3.3.5":
+  version "3.3.5"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-unified-numberformat/-/intl-unified-numberformat-3.3.5.tgz#b150c25eb56c1b09a03bf24fb5d1e394b945a27c"
+  integrity sha512-LdRs9OoqG8Ah6wKKAcaq9wfeZ0w+Icway63thbbOam5DLY9G3u44NReFYWAmVSU+MXOQ+VPATMB9RUXGZxBdig==
+  dependencies:
+    "@formatjs/intl-utils" "^2.2.4"
+
 "@formatjs/intl-utils@^2.2.2":
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.2.tgz#adc448035c2e3f60c550bd27c97eca336e641f5a"
@@ -2096,6 +2103,11 @@
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.3.tgz#9e5ab8610b4b96c1be6f0f6119fc2fad96d3b297"
   integrity sha512-CeswyzLq2A3uu7dFptBTn1j815B/stndfHMr+ZPj0QxaN/Q9zLRTQxMYskRW07uPp+a7XobLFqEJHLrMu/tZEw==
+
+"@formatjs/intl-utils@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.4.tgz#fe62a96799d1f7dbe621fd38a4bd2e5a6a16cb0e"
+  integrity sha512-83fsJywew0o9wQsW3VuEp33HRiFd0qbQDyFFnwZCwk59eLZ33CtKyJ5ofKMrU2KK6hk1zaIdzisrZeoNfmI3Tw==
 
 "@graphql-codegen/cli@1.13.5":
   version "1.13.5"
@@ -2995,6 +3007,13 @@
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/fingerprintjs2/-/fingerprintjs2-2.0.0.tgz#3af76e165416fa75261bbce4393f5445fca4cadd"
   integrity sha512-isSTwNnW5I6zGZnpkinmVcV9pJqr7cLELns+tXDYzskIOAb2J+iCQ0mQJ9bRjHJhZfdlTFXZoCYK9ZgT3oMWXQ==
+
+"@types/fs-extra@^8.1.0":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-8.1.0.tgz#1114834b53c3914806cd03b3304b37b3bd221a4d"
+  integrity sha512-UoOfVEzAUpeSPmjm7h1uk5MH6KZma2z2O7a75onTGjnNvAvMVrPzPL/vBbT65iIGHWj6rokwfmYcmxmlSf2uwg==
+  dependencies:
+    "@types/node" "*"
 
 "@types/glob@^7.1.1":
   version "7.1.1"
@@ -4179,18 +4198,19 @@ babel-plugin-named-asset-import@^0.3.6:
   resolved "https://registry.yarnpkg.com/babel-plugin-named-asset-import/-/babel-plugin-named-asset-import-0.3.6.tgz#c9750a1b38d85112c9e166bf3ef7c5dbc605f4be"
   integrity sha512-1aGDUfL1qOOIoqk9QKGIo2lANk+C7ko/fqH0uIyC71x3PEGz0uVP8ISgfEsFuG+FKmjHTvFK/nNM8dowpmUxLA==
 
-babel-plugin-react-intl@^7.5.3:
-  version "7.5.3"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.5.3.tgz#3f3c223a6a246416a8d30adf66c35fb424245c14"
-  integrity sha512-xnVX7zuQWapEsi3/weWd8t26tXTqSa3JX1mfH6Gey84qgmk9xrGT+uURP52YwzJ7fkFKAzkClwybizQ4IlNKUg==
+babel-plugin-react-intl@^7.5.4:
+  version "7.5.4"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.5.4.tgz#f25437728d0c92b04639f6908925fc18e3da6216"
+  integrity sha512-sVOHX9XAt5r1d39gFZFRqjayyHJmcghAjvafn/LjelNORZmUGV04Tt/2iGi70zbVSiiNJ9oohkUvtO0IanSZfA==
   dependencies:
     "@babel/core" "^7.9.0"
     "@babel/helper-plugin-utils" "^7.8.3"
     "@babel/types" "^7.9.5"
     "@types/babel__core" "^7.1.7"
+    "@types/fs-extra" "^8.1.0"
     "@types/schema-utils" "^2.4.0"
     fs-extra "^9.0.0"
-    intl-messageformat-parser "^5.0.1"
+    intl-messageformat-parser "^5.0.2"
     schema-utils "^2.6.6"
 
 babel-plugin-syntax-object-rest-spread@^6.8.0:
@@ -7840,6 +7860,13 @@ intl-messageformat-parser@^5.0.0, intl-messageformat-parser@^5.0.1:
   integrity sha512-hADsMembGSrK2Jo7AKE34xFfnzBV79DTTAby6RZ4NixkC4hCO6zf/m/wj+pdJEmU4549OOeYQHDTSiNpvzavpw==
   dependencies:
     "@formatjs/intl-unified-numberformat" "^3.3.4"
+
+intl-messageformat-parser@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/intl-messageformat-parser/-/intl-messageformat-parser-5.0.2.tgz#878c0d66459b366f4135a812007a873789875b95"
+  integrity sha512-7logOIMKQX4cWTAGdMSPdlzlGG2aGcpdTr/Laroi3/LTgXvYqMQ8fbC7DolygSEWUxbYrzDIuQsoQGJO6Kp8Gg==
+  dependencies:
+    "@formatjs/intl-unified-numberformat" "^3.3.5"
 
 intl-messageformat@^8.3.7:
   version "8.3.8"
