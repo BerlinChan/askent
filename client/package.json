@@ -35,7 +35,7 @@
     "react-intl": "4.5.0",
     "react-router-dom": "5.1.2",
     "react-scripts": "3.4.1",
-    "react-virtuoso": "0.16.1",
+    "react-virtuoso": "0.16.2",
     "subscriptions-transport-ws": "0.9.16",
     "yup": "0.28.4"
   },
