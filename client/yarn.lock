@@ -2031,10 +2031,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
   integrity sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==
 
-"@formatjs/cli@1.6.9":
-  version "1.6.9"
-  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.6.9.tgz#b36ae70857f3044844c8ab794fb8b3e57cdbba99"
-  integrity sha512-bCUHCafmLAcZ7e+cREXXhrB/qsnM9W9oO4sF/z0Rl062i1nWOzatf5CJTKNUBfIn8u1cd70u2lLUmLwJbs9Vng==
+"@formatjs/cli@1.6.13":
+  version "1.6.13"
+  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.6.13.tgz#74dad4dc701aec6b7a01b5807b549e6ddeea255e"
+  integrity sha512-8PyRAxJN4YacHXeGHbxeApFdyDartkpC0xmTeTFOKGvSqABdZJVDzcenxsBvQqffYMYofYFdpoEfyFd3MPM4yQ==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.8.3"
     "@babel/plugin-proposal-optional-chaining" "7"
@@ -2044,7 +2044,7 @@
     "@types/loader-utils" "^1.1.3"
     "@types/lodash" "^4.14.150"
     babel-plugin-const-enum "^1.0.1"
-    babel-plugin-react-intl "^7.5.4"
+    babel-plugin-react-intl "^7.5.7"
     commander "5.0.0"
     fs-extra "^9.0.0"
     glob "^7.1.6"
@@ -2073,24 +2073,12 @@
   dependencies:
     "@formatjs/intl-utils" "^2.2.5"
 
-"@formatjs/intl-unified-numberformat@^3.3.5":
-  version "3.3.5"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-unified-numberformat/-/intl-unified-numberformat-3.3.5.tgz#b150c25eb56c1b09a03bf24fb5d1e394b945a27c"
-  integrity sha512-LdRs9OoqG8Ah6wKKAcaq9wfeZ0w+Icway63thbbOam5DLY9G3u44NReFYWAmVSU+MXOQ+VPATMB9RUXGZxBdig==
-  dependencies:
-    "@formatjs/intl-utils" "^2.2.4"
-
 "@formatjs/intl-unified-numberformat@^3.3.6":
   version "3.3.6"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-unified-numberformat/-/intl-unified-numberformat-3.3.6.tgz#ab69818f7568894023cb31fdb5b5c7eed62c6537"
   integrity sha512-VQYswh9Pxf4kN6FQvKprAQwSJrF93eJstCDPM1HIt3c3O6NqPFWNWhZ91PLTppOV11rLYsFK11ZxiGbnLNiPTg==
   dependencies:
     "@formatjs/intl-utils" "^2.2.5"
-
-"@formatjs/intl-utils@^2.2.4":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.4.tgz#fe62a96799d1f7dbe621fd38a4bd2e5a6a16cb0e"
-  integrity sha512-83fsJywew0o9wQsW3VuEp33HRiFd0qbQDyFFnwZCwk59eLZ33CtKyJ5ofKMrU2KK6hk1zaIdzisrZeoNfmI3Tw==
 
 "@formatjs/intl-utils@^2.2.5":
   version "2.2.5"
@@ -4196,10 +4184,10 @@ babel-plugin-named-asset-import@^0.3.6:
   resolved "https://registry.yarnpkg.com/babel-plugin-named-asset-import/-/babel-plugin-named-asset-import-0.3.6.tgz#c9750a1b38d85112c9e166bf3ef7c5dbc605f4be"
   integrity sha512-1aGDUfL1qOOIoqk9QKGIo2lANk+C7ko/fqH0uIyC71x3PEGz0uVP8ISgfEsFuG+FKmjHTvFK/nNM8dowpmUxLA==
 
-babel-plugin-react-intl@^7.5.4:
-  version "7.5.4"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.5.4.tgz#f25437728d0c92b04639f6908925fc18e3da6216"
-  integrity sha512-sVOHX9XAt5r1d39gFZFRqjayyHJmcghAjvafn/LjelNORZmUGV04Tt/2iGi70zbVSiiNJ9oohkUvtO0IanSZfA==
+babel-plugin-react-intl@^7.5.7:
+  version "7.5.7"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.5.7.tgz#00dc00389779f910866a9270f52e0b8c1640ba72"
+  integrity sha512-9WCijcMIyPhJ0LPgsd+EIF00wJGz8+IcKT17IG5FH7CDVTdJBvC5lK/9V42NP8/CHalXKJZTrqwhdzsm3KIG6w==
   dependencies:
     "@babel/core" "^7.9.0"
     "@babel/helper-plugin-utils" "^7.8.3"
@@ -4208,7 +4196,7 @@ babel-plugin-react-intl@^7.5.4:
     "@types/fs-extra" "^8.1.0"
     "@types/schema-utils" "^2.4.0"
     fs-extra "^9.0.0"
-    intl-messageformat-parser "^5.0.2"
+    intl-messageformat-parser "^5.0.3"
     schema-utils "^2.6.6"
 
 babel-plugin-syntax-object-rest-spread@^6.8.0:
@@ -7846,13 +7834,6 @@ intl-format-cache@^4.2.27:
   version "4.2.27"
   resolved "https://registry.yarnpkg.com/intl-format-cache/-/intl-format-cache-4.2.27.tgz#d25fa83639913aec10ca5a8f9e3b6449bb0eacf2"
   integrity sha512-blHXX9qBp8H6fGhQc0jHGh7j97HF0megj4rIB878iazMBdFk/tR7b3av0PJxE72TP8MycLFpeXW9vLY5cBmF4A==
-
-intl-messageformat-parser@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/intl-messageformat-parser/-/intl-messageformat-parser-5.0.2.tgz#878c0d66459b366f4135a812007a873789875b95"
-  integrity sha512-7logOIMKQX4cWTAGdMSPdlzlGG2aGcpdTr/Laroi3/LTgXvYqMQ8fbC7DolygSEWUxbYrzDIuQsoQGJO6Kp8Gg==
-  dependencies:
-    "@formatjs/intl-unified-numberformat" "^3.3.5"
 
 intl-messageformat-parser@^5.0.3:
   version "5.0.3"
