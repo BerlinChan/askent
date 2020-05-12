@@ -67,7 +67,7 @@
     "@graphql-codegen/cli": "1.13.5",
     "@graphql-codegen/typescript-operations": "1.13.5",
     "@graphql-codegen/typescript-react-apollo": "1.13.5",
-    "@testing-library/jest-dom": "5.5.0",
+    "@testing-library/jest-dom": "5.7.0",
     "@testing-library/react": "10.0.4",
     "@testing-library/user-event": "10.1.2",
     "@types/fingerprintjs2": "2.0.0",
