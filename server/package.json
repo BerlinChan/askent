@@ -27,7 +27,7 @@
     "@types/bcryptjs": "2.4.2",
     "@types/crypto-js": "3.1.45",
     "@types/jsonwebtoken": "8.3.9",
-    "@types/node": "13.13.4",
+    "@types/node": "13.13.5",
     "@types/ramda": "types/npm-ramda#dist",
     "ts-node": "8.10.1",
     "ts-node-dev": "1.0.0-pre.44",
