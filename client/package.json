@@ -33,7 +33,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-intl": "4.5.3",
-    "react-router-dom": "5.1.2",
+    "react-router-dom": "5.2.0",
     "react-scripts": "3.4.1",
     "react-virtuoso": "0.16.2",
     "subscriptions-transport-ws": "0.9.16",
