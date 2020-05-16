@@ -10,7 +10,7 @@
     "build": "npm -s run clean && tsc"
   },
   "dependencies": {
-    "apollo-server": "2.13.0",
+    "apollo-server": "2.13.1",
     "bcryptjs": "2.4.3",
     "crypto-js": "4.0.0",
     "date-fns": "2.13.0",
