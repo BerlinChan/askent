@@ -140,10 +140,10 @@
   dependencies:
     "@types/express" "*"
 
-"@types/crypto-js@3.1.46":
-  version "3.1.46"
-  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-3.1.46.tgz#7469f88b6a574046d7e1265a4d043c57a2c61778"
-  integrity sha512-w1rUo6jY6dhNQXOl85UAvJHPX8pIqzfUH2E1+HxU3Z4HsuAaiYPkogEplJqD5QmtDtWC5MUkULtJEvpX5501xQ==
+"@types/crypto-js@3.1.47":
+  version "3.1.47"
+  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-3.1.47.tgz#36e549dd3f1322742a3a738e7c113ebe48221860"
+  integrity sha512-eI6gvpcGHLk3dAuHYnRCAjX+41gMv1nz/VP55wAe5HtmAKDOoPSfr3f6vkMc08ov1S0NsjvUBxDtHHxqQY1LGA==
 
 "@types/events@*":
   version "3.0.0"
