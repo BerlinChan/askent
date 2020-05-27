@@ -21,7 +21,7 @@
     "ramda": "0.27.0",
     "reflect-metadata": "0.1.13",
     "type-graphql": "0.17.6",
-    "typeorm": "0.2.24"
+    "typeorm": "0.2.25"
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
