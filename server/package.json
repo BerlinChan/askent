@@ -29,7 +29,7 @@
     "@types/jsonwebtoken": "8.5.0",
     "@types/node": "13.13.9",
     "@types/ramda": "types/npm-ramda#dist",
-    "ts-node": "8.10.1",
+    "ts-node": "8.10.2",
     "ts-node-dev": "1.0.0-pre.44",
     "typescript": "3.9.3"
   },
