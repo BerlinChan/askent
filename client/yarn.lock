@@ -11936,10 +11936,10 @@ react-transition-group@^4.4.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-virtuoso@0.17.0:
-  version "0.17.0"
-  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-0.17.0.tgz#12c20860e4b359fb932434052305cc79999a88e3"
-  integrity sha512-Etp3zPQoGPBNphqHZguU/g3+Nb9la5Y3oTQ9Bf65PppS1dNTdMS7crU8NcICr2ptHuuNROHqidoWChDg2MKlZw==
+react-virtuoso@0.17.3:
+  version "0.17.3"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-0.17.3.tgz#373b7bbb8a81087a6df255855fcb1e9006691668"
+  integrity sha512-terKMw3uZ8UerBa9sjeP2B6TGgL5dbKDtZlg63teRPyi9AJrJ9vdAmGxPrQ1FhWwXKLFB61aK57FZ7K1KYHRPA==
   dependencies:
     "@scarf/scarf" "^1.0.5"
     resize-observer-polyfill "^1.5.1"
