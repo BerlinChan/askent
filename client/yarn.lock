@@ -2109,10 +2109,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
   integrity sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==
 
-"@formatjs/cli@1.8.2":
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.8.2.tgz#d4ebec84274785c7aee84a0be8ef24fe88694cb8"
-  integrity sha512-ef5Y0ugcEc6xgwDEsX1R9V2oq6VpTUNnIhdFUCci08xwF268l0bk0LGas6wgeZDUXJwQp3bY8BY2GDKWdOYolg==
+"@formatjs/cli@1.8.3":
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.8.3.tgz#50b286544127c7bd20841cb9ab83dfa372f0e444"
+  integrity sha512-BHeViizgz5gFBUAqhfJNjOBqBVLx1MjhP+5qgW4y1TK2SzxvmEz663o7QfLHs4ZbUorWWWRuKFjdNk2xQQse0g==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.8.3"
     "@babel/plugin-proposal-optional-chaining" "7"
@@ -2122,7 +2122,7 @@
     "@types/babel__core" "^7.1.7"
     "@types/lodash" "^4.14.150"
     babel-plugin-const-enum "^1.0.1"
-    babel-plugin-react-intl "^7.5.23"
+    babel-plugin-react-intl "^7.5.24"
     chalk "^4.0.0"
     commander "5.1.0"
     fs-extra "^9.0.0"
@@ -2163,13 +2163,6 @@
   version "4.2.10"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-numberformat/-/intl-numberformat-4.2.10.tgz#2c05add2233bb87e58e992778f9eb39996703421"
   integrity sha512-mdubK3/Ml16LB/sS9LGSqCsXZ2CAHd7B3CvFhLTiPYFZSwNE9YUxp7n0VK3P/g8H5C9oweegI05onILkRCp6XQ==
-  dependencies:
-    "@formatjs/intl-utils" "^3.4.1"
-
-"@formatjs/intl-numberformat@^4.2.9":
-  version "4.2.9"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-numberformat/-/intl-numberformat-4.2.9.tgz#ed36f3c47e4e991ad36a4831c699123895ca136d"
-  integrity sha512-/z3aUGWKcM5p5tASB8OpVPkmUJxKbs/yB4ejBepzqdgO7pZ0CNBnHGGwaC6d54CpWuKGbmhF6ertRryhG8khpg==
   dependencies:
     "@formatjs/intl-utils" "^3.4.1"
 
@@ -4268,10 +4261,10 @@ babel-plugin-named-asset-import@^0.3.6:
   resolved "https://registry.yarnpkg.com/babel-plugin-named-asset-import/-/babel-plugin-named-asset-import-0.3.6.tgz#c9750a1b38d85112c9e166bf3ef7c5dbc605f4be"
   integrity sha512-1aGDUfL1qOOIoqk9QKGIo2lANk+C7ko/fqH0uIyC71x3PEGz0uVP8ISgfEsFuG+FKmjHTvFK/nNM8dowpmUxLA==
 
-babel-plugin-react-intl@^7.5.23:
-  version "7.5.23"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.5.23.tgz#da4cf2ccd6aa368ea5c9d31a9d076ae5982cdc5c"
-  integrity sha512-jLkOaTezoWvLzuQpmSoTEOGCYTs0buMZbdtDH+w9XzlpOM85lOk6bjFa1lHqdPOE/r9g6GFET5qv3XF4jUq4Ig==
+babel-plugin-react-intl@^7.5.24:
+  version "7.5.24"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.5.24.tgz#23bb9719adc66030131e285ec45b2e3ce49bd2ea"
+  integrity sha512-U/zhokfHp+XRvZkqfpqucDkAZAtb+N1YqChTGQwIgK8Te/Zghh7bcXGvOBq1TXp/xQsDR4OP7+GKUOZ8qSvNng==
   dependencies:
     "@babel/core" "^7.9.0"
     "@babel/helper-plugin-utils" "^7.8.3"
@@ -4280,7 +4273,7 @@ babel-plugin-react-intl@^7.5.23:
     "@types/fs-extra" "^8.1.0"
     "@types/schema-utils" "^2.4.0"
     fs-extra "^9.0.0"
-    intl-messageformat-parser "^5.1.6"
+    intl-messageformat-parser "^5.2.0"
     schema-utils "^2.6.6"
 
 babel-plugin-syntax-object-rest-spread@^6.8.0:
@@ -7952,13 +7945,6 @@ intl-format-cache@^4.2.42:
   version "4.2.42"
   resolved "https://registry.yarnpkg.com/intl-format-cache/-/intl-format-cache-4.2.42.tgz#8fc1de0fe72764d05b339a71b7ee0517c5ef0757"
   integrity sha512-NJldCapugigFv1yAyqsY8jDdHFIJU427Ko47xf4yg2qLj4TtBA0d9lwqFnP5s9WOLJoNP/4ddu85B3ix0c5R7Q==
-
-intl-messageformat-parser@^5.1.6:
-  version "5.1.6"
-  resolved "https://registry.yarnpkg.com/intl-messageformat-parser/-/intl-messageformat-parser-5.1.6.tgz#0c63c1828e3ea09344420d882daeb4e3c53f45e0"
-  integrity sha512-gGbR2GbaQt7L9+edO/zL5CUmnBOnkTn8AT+mujxo05h7ofNChcN8DLAMynVOLehgtU40Ycrj+SrGTYetXWrYAw==
-  dependencies:
-    "@formatjs/intl-numberformat" "^4.2.9"
 
 intl-messageformat-parser@^5.2.0:
   version "5.2.0"
