@@ -2933,11 +2933,6 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@scarf/scarf@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.0.5.tgz#accee0bce88a9047672f7c8faf3cada59c996b81"
-  integrity sha512-9WKaGVpQH905Aqkk+BczFEeLQxS07rl04afFRPUG9IcSlOwmo5EVVuuNu0d4M9LMYucObvK0LoAe+5HfMW2QhQ==
-
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
   resolved "https://registry.npm.taobao.org/@svgr/babel-plugin-add-jsx-attribute/download/@svgr/babel-plugin-add-jsx-attribute-4.2.0.tgz?cache=0&sync_timestamp=1577614243676&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40svgr%2Fbabel-plugin-add-jsx-attribute%2Fdownload%2F%40svgr%2Fbabel-plugin-add-jsx-attribute-4.2.0.tgz#dadcb6218503532d6884b210e7f3c502caaa44b1"
@@ -11982,12 +11977,11 @@ react-transition-group@^4.4.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-virtuoso@0.17.3:
-  version "0.17.3"
-  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-0.17.3.tgz#373b7bbb8a81087a6df255855fcb1e9006691668"
-  integrity sha512-terKMw3uZ8UerBa9sjeP2B6TGgL5dbKDtZlg63teRPyi9AJrJ9vdAmGxPrQ1FhWwXKLFB61aK57FZ7K1KYHRPA==
+react-virtuoso@0.17.5:
+  version "0.17.5"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-0.17.5.tgz#e4a4f5a524ab977997489089ad8f4b82a813caf2"
+  integrity sha512-wVgzFePfey1WDR7l+yElEwzrDmn3WnL0OCn2fSJDupKvhO/EcDh4Z6IV5VJAmDU9msajINUW7y5NQ6rEOORXmQ==
   dependencies:
-    "@scarf/scarf" "^1.0.5"
     resize-observer-polyfill "^1.5.1"
     tslib "^1.11.1"
 
