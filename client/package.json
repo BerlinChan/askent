@@ -24,7 +24,7 @@
     "formik": "2.1.4",
     "formik-material-ui": "2.0.1",
     "formik-material-ui-pickers": "0.0.10",
-    "graphql": "15.2.0",
+    "graphql": "15.3.0",
     "graphql-tag": "2.10.3",
     "material-ui-popup-state": "1.6.1",
     "notistack": "0.9.17",
