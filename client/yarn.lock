@@ -2124,20 +2124,20 @@
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
   integrity sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==
 
-"@formatjs/cli@1.8.3":
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.8.3.tgz#50b286544127c7bd20841cb9ab83dfa372f0e444"
-  integrity sha512-BHeViizgz5gFBUAqhfJNjOBqBVLx1MjhP+5qgW4y1TK2SzxvmEz663o7QfLHs4ZbUorWWWRuKFjdNk2xQQse0g==
+"@formatjs/cli@1.9.3":
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-1.9.3.tgz#e27f7a7fb891f80215b37b86de4f904c3d7214cb"
+  integrity sha512-7PWdM8VUkvthxl+HE92JDajkWA8rzxZtNVSSkp3zaZ0pJR23u2s9rFy0hsK/s8u3mky8aLBXxRR0X82isg6blA==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.8.3"
     "@babel/plugin-proposal-optional-chaining" "7"
     "@babel/preset-env" "^7.9.5"
     "@babel/preset-typescript" "^7.9.0"
-    "@formatjs/intl-utils" "^3.4.1"
+    "@formatjs/ts-transformer" "^2.2.1"
     "@types/babel__core" "^7.1.7"
     "@types/lodash" "^4.14.150"
     babel-plugin-const-enum "^1.0.1"
-    babel-plugin-react-intl "^7.5.24"
+    babel-plugin-react-intl "^7.5.28"
     chalk "^4.0.0"
     commander "5.1.0"
     fs-extra "^9.0.0"
@@ -2174,13 +2174,6 @@
   dependencies:
     "@formatjs/intl-utils" "^3.6.0"
 
-"@formatjs/intl-numberformat@^4.2.10":
-  version "4.2.10"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-numberformat/-/intl-numberformat-4.2.10.tgz#2c05add2233bb87e58e992778f9eb39996703421"
-  integrity sha512-mdubK3/Ml16LB/sS9LGSqCsXZ2CAHd7B3CvFhLTiPYFZSwNE9YUxp7n0VK3P/g8H5C9oweegI05onILkRCp6XQ==
-  dependencies:
-    "@formatjs/intl-utils" "^3.4.1"
-
 "@formatjs/intl-numberformat@^5.0.2":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-numberformat/-/intl-numberformat-5.0.2.tgz#c99c48300ba1c97ce3b3babee1896411bd99a05f"
@@ -2195,19 +2188,20 @@
   dependencies:
     "@formatjs/intl-utils" "^3.6.0"
 
-"@formatjs/intl-utils@^3.4.1":
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-3.4.1.tgz#705646e3be11e5851c33c44448dc3d828997ac41"
-  integrity sha512-4rdSTl+ki74ncP0GsdqoKczVWHZQKAemW9YRkhbvpcJrAFDLSEMIagQ+YPy+25plyLfgE/iOYManLdpdUF2IcA==
-  dependencies:
-    emojis-list "^3.0.0"
-
 "@formatjs/intl-utils@^3.6.0":
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-3.6.0.tgz#25c11a099c01ac9b7b904dda84cb840417893fa3"
   integrity sha512-KojfGYH3b0HbyN8H+HRHxEYOctC9tOne8jU1MNw7O+g8QyIPK9y0y1cyXlj6FoLsHRi26u9jR1CJg5XrRfArug==
   dependencies:
     emojis-list "^3.0.0"
+
+"@formatjs/ts-transformer@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@formatjs/ts-transformer/-/ts-transformer-2.2.1.tgz#859dfe78d7ab420a5aa5966ce008936044076e41"
+  integrity sha512-uyQCecX9RHnOEOTTv+9eqjgFDBCxNcJLKDn33jER3sM/2Eh/ID9yA8a6HW87ZuUkcHhbUUrPGIRMNZuTZf+QVA==
+  dependencies:
+    "@formatjs/intl-utils" "^3.6.0"
+    typescript "3.8"
 
 "@graphql-codegen/cli@1.15.4":
   version "1.15.4"
@@ -4291,10 +4285,10 @@ babel-plugin-named-asset-import@^0.3.6:
   resolved "https://registry.yarnpkg.com/babel-plugin-named-asset-import/-/babel-plugin-named-asset-import-0.3.6.tgz#c9750a1b38d85112c9e166bf3ef7c5dbc605f4be"
   integrity sha512-1aGDUfL1qOOIoqk9QKGIo2lANk+C7ko/fqH0uIyC71x3PEGz0uVP8ISgfEsFuG+FKmjHTvFK/nNM8dowpmUxLA==
 
-babel-plugin-react-intl@^7.5.24:
-  version "7.5.24"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.5.24.tgz#23bb9719adc66030131e285ec45b2e3ce49bd2ea"
-  integrity sha512-U/zhokfHp+XRvZkqfpqucDkAZAtb+N1YqChTGQwIgK8Te/Zghh7bcXGvOBq1TXp/xQsDR4OP7+GKUOZ8qSvNng==
+babel-plugin-react-intl@^7.5.28:
+  version "7.5.28"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.5.28.tgz#cb97f6abc1e00217f65da08613356ee386197341"
+  integrity sha512-i/8n7HBYN182A8GJTBWFfcx1Ghc70c8zIvyjWWIK2w6PXQXPi8wr6sZnGDATU4GUnvXyYS4VUR6lxpATI+vaDw==
   dependencies:
     "@babel/core" "^7.9.0"
     "@babel/helper-plugin-utils" "^7.8.3"
@@ -4303,7 +4297,7 @@ babel-plugin-react-intl@^7.5.24:
     "@types/fs-extra" "^8.1.0"
     "@types/schema-utils" "^2.4.0"
     fs-extra "^9.0.0"
-    intl-messageformat-parser "^5.2.0"
+    intl-messageformat-parser "^5.2.4"
     schema-utils "^2.6.6"
 
 babel-plugin-syntax-object-rest-spread@^6.8.0:
@@ -7975,13 +7969,6 @@ intl-format-cache@^4.2.46:
   version "4.2.46"
   resolved "https://registry.yarnpkg.com/intl-format-cache/-/intl-format-cache-4.2.46.tgz#045a6e4fb75a6b47ff3f0b4290836c72df4e65e1"
   integrity sha512-J8Rkun92yCQEnQDia2yO5o8SY82CzhxLx2G0ocbOysP93ZtIIbtAXDkVQK/a1DwSi70pp69fh4vpO2BbINxPSg==
-
-intl-messageformat-parser@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/intl-messageformat-parser/-/intl-messageformat-parser-5.2.0.tgz#c9b0cb60dbd327c4ed93f24db7d1806cd45f4769"
-  integrity sha512-SNEyrrDkkSVUfnt+b+RCwn2rq5cMz7hZIJvn76ot0CcoRMIm8i9rU4Rpy6xUM8oayJyD1ayQYVjjeC1+Qea6Aw==
-  dependencies:
-    "@formatjs/intl-numberformat" "^4.2.10"
 
 intl-messageformat-parser@^5.2.4:
   version "5.2.4"
@@ -13817,6 +13804,11 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
+
+typescript@3.8:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
+  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 typescript@3.9.5:
   version "3.9.5"
