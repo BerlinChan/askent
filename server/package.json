@@ -15,7 +15,7 @@
     "crypto-js": "4.0.0",
     "date-fns": "2.14.0",
     "dotenv": "8.2.0",
-    "graphql": "15.2.0",
+    "graphql": "15.3.0",
     "jsonwebtoken": "8.5.1",
     "pg": "8.2.1",
     "ramda": "0.27.0",
