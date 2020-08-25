@@ -6,17 +6,29 @@ import { Question as QuestionEntity, ReviewStatus } from '../entity/Question'
 import { Event } from './Event-type'
 import { Repository, getRepository } from 'typeorm'
 import { User as UserEntity } from '../entity/User'
+import { Role as RoleEntity, RoleName } from '../entity/Role'
 
 @Resolver((of) => Event)
 export class SeedResolver {
   private userRepository: Repository<UserEntity>
   private eventRepository: Repository<EventEntity>
   private questionRepository: Repository<QuestionEntity>
+  private roleRepository: Repository<RoleEntity>
 
   constructor() {
     this.userRepository = getRepository(UserEntity)
     this.eventRepository = getRepository(EventEntity)
     this.questionRepository = getRepository(QuestionEntity)
+    this.roleRepository = getRepository(RoleEntity)
+  }
+
+  @Mutation((returns) => Int)
+  async seedRole(): Promise<number> {
+    const { identifiers } = await this.roleRepository.insert(
+      Object.values(RoleName).map((item) => ({ name: item })),
+    )
+
+    return identifiers.length
   }
 
   @Mutation((returns) => Int)
@@ -27,8 +39,8 @@ export class SeedResolver {
       Array.from({ length: 200 }, () => 'event').map((item, index) => ({
         code: `code_${index}`,
         name: `name_${index}`,
-        startAt: addDays(new Date('2020-01-02T01:01:01'), index),
-        endAt: addDays(new Date('2020-01-02T01:01:01'), index + 4),
+        startAt: addDays(new Date('2020-08-02T01:01:01'), index),
+        endAt: addDays(new Date('2020-08-02T01:01:01'), index + 4),
         owner,
       })),
     )

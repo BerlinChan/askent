@@ -4,7 +4,7 @@
   "license": "MIT",
   "description": "",
   "scripts": {
-    "dev": "ts-node-dev --no-notify --respawn --transpileOnly --inspect=9229 src/index",
+    "dev": "ts-node-dev --no-notify --respawn --transpile-only --inspect=9229 src/index",
     "start": "node dist/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && tsc"
@@ -12,15 +12,16 @@
   "dependencies": {
     "apollo-server": "2.16.1",
     "bcryptjs": "2.4.3",
+    "class-validator": "^0.12.2",
     "crypto-js": "4.0.0",
     "date-fns": "2.15.0",
     "dotenv": "8.2.0",
     "graphql": "15.3.0",
     "jsonwebtoken": "8.5.1",
-    "pg": "8.3.0",
-    "ramda": "0.27.0",
+    "pg": "8.3.2",
+    "ramda": "0.27.1",
     "reflect-metadata": "0.1.13",
-    "type-graphql": "0.17.6",
+    "type-graphql": "1.0.0",
     "typeorm": "0.2.25"
   },
   "devDependencies": {
