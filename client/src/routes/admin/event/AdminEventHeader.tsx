@@ -19,7 +19,7 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
 } from "../../../generated/graphqlHooks";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import { FormattedDate, FormattedTime, useIntl } from "react-intl";
 import HeaderAction from "../../../components/HeaderAction";
 import SettingsIcon from "@material-ui/icons/Settings";

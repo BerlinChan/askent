@@ -9,7 +9,7 @@ import {
   QuestionFilter,
   QuestionOrder,
 } from "../../../../generated/graphqlHooks";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
 import ActionRight, { QuestionQueryStateType } from "./ActionRight";

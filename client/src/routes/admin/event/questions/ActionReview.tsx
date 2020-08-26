@@ -9,7 +9,7 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables
 } from "../../../../generated/graphqlHooks";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import Confirm from "../../../../components/Confirm";
 
 interface Props {

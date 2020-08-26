@@ -6,7 +6,7 @@ import {
   DialogActions,
   DialogContent,
 } from "@material-ui/core";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   useEventByIdLazyQuery,
   useQuestionsByMeLazyQuery,

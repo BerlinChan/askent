@@ -3,7 +3,7 @@ import { Typography } from "@material-ui/core";
 import { FormattedMessage } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import { MeQuery, MeQueryVariables } from "../../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>

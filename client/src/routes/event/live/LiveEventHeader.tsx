@@ -24,7 +24,7 @@ import {
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   EventByIdQuery,
   EventByIdQueryVariables

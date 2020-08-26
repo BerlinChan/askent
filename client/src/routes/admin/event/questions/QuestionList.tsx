@@ -1,5 +1,5 @@
 import React from "react";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   QuestionsByEventDocument,
   useQuestionsByEventQuery,

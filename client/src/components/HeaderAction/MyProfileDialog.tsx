@@ -15,7 +15,7 @@ import { TextField } from "formik-material-ui";
 import { ButtonLoading } from "../Form";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import { MeQuery, MeQueryVariables } from "../../generated/graphqlHooks";
 import { FormattedMessage, useIntl } from "react-intl";
 import PersonIcon from "@material-ui/icons/Person";

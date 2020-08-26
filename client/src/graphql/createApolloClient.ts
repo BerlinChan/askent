@@ -1,11 +1,11 @@
-import { ApolloClient } from "apollo-client";
+import { ApolloClient } from "@apollo/client/core";
 import { getMainDefinition } from "apollo-utilities";
-import { setContext } from "apollo-link-context";
-import { from, split } from "apollo-link";
-import { WebSocketLink } from "apollo-link-ws";
-import { onError } from "apollo-link-error";
-import { HttpLink } from "apollo-link-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { setContext } from "@apollo/client/link/context";
+import { from, split } from "@apollo/client";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { onError } from "@apollo/client/link/error";
+import { HttpLink } from "@apollo/client";
+import { InMemoryCache } from "@apollo/client/cache";
 import { resolvers, typeDefs } from "./resolvers";
 import config from "../config";
 import { AUTH_TOKEN } from "../constant";

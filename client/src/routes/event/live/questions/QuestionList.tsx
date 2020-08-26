@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, useMediaQuery } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   MeQuery,
   MeQueryVariables,

@@ -1,6 +1,6 @@
 import React from "react";
 import { AUTH_TOKEN } from "../constant";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client";
 
 export function useToken() {
   const [token, setTokenState] = React.useState<string>(

@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   MeQuery,
   MeQueryVariables,

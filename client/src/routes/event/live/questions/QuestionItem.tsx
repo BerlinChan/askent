@@ -22,7 +22,7 @@ import {
   Theme,
   fade,
 } from "@material-ui/core/styles";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   MeQuery,
   MeQueryVariables,

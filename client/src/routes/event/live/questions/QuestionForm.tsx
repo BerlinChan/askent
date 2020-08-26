@@ -25,7 +25,7 @@ import {
   USERNAME_MAX_LENGTH
 } from "../../../../constant";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   MeQuery,
   MeQueryVariables,

@@ -13,7 +13,7 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../components/Form";
 import { add } from "date-fns";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   useCheckEventCodeExistLazyQuery,
   useCreateEventMutation,

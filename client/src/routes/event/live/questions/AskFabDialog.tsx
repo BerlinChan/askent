@@ -13,7 +13,7 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import { FormattedMessage } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import { MeQuery, MeQueryVariables } from "../../../../generated/graphqlHooks";
 import DialogTitleWithClose from "../../../../components/DialogTitleWithClose";
 import CloseIcon from "@material-ui/icons/Close";

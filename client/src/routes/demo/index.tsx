@@ -15,7 +15,7 @@ const Demo: React.FC = props => {
   return (
     <React.Fragment>
       <p>
-        演示使用 codegen 生成的 hooks。这些 hooks 实际是 @apollo/react-hooks
+        演示使用 codegen 生成的 hooks。这些 hooks 实际是 @apollo/client
         的包装， 他们的使用可参见{" "}
         <a href="https://www.apollographql.com/docs/tutorial/introduction/">
           官方教程

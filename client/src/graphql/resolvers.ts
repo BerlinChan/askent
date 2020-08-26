@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { Resolvers } from "apollo-client";
+import { Resolvers } from "@apollo/client/core";
 
 export const typeDefs = gql`
   type PackageInfo {

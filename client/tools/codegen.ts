@@ -7,7 +7,7 @@ async function codegen() {
       schema: config.apiUri,
       documents: "./src/**/*.{graphql,ts,tsx}",
       generates: {
-        ["src/generated/graphqlHooks.tsx"]: {
+        "src/generated/graphqlHooks.tsx": {
           schema: "./src/graphql/resolvers.ts",
           plugins: [
             "typescript",
@@ -15,8 +15,6 @@ async function codegen() {
             "typescript-react-apollo"
           ],
           config: {
-            withComponent: false,
-            withHOC: false,
             withHooks: true
           }
         }

@@ -22,7 +22,7 @@ import {
   FormattedDate,
   FormattedTime
 } from "react-intl";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   QuestionFieldsFragment,
   EventByIdQuery,

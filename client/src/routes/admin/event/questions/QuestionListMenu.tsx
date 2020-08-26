@@ -1,7 +1,7 @@
 import React from "react";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { useIntl, FormattedMessage } from "react-intl";
-import { QueryResult } from "@apollo/react-common";
+import { QueryResult } from "@apollo/client";
 import {
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
