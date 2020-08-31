@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@apollo/client@^3.1.3":
-  version "3.1.3"
-  resolved "https://registry.npm.taobao.org/@apollo/client/download/@apollo/client-3.1.3.tgz#4ea9c3818bd2836a3dbe26088227c3d8cb46ad2b"
-  integrity sha1-TqnDgYvSg2o9viYIgifD2MtGrSs=
+"@apollo/client@^3.1.4":
+  version "3.1.4"
+  resolved "https://registry.npm.taobao.org/@apollo/client/download/@apollo/client-3.1.4.tgz#2848a9f29619275df9af55966c4f5984e31cea6e"
+  integrity sha1-KEip8pYZJ135r1WWbE9ZhOMc6m4=
   dependencies:
     "@types/zen-observable" "^0.8.0"
     "@wry/context" "^0.5.2"
@@ -16,6 +16,7 @@
     optimism "^0.12.1"
     prop-types "^15.7.2"
     symbol-observable "^1.2.0"
+    terser "^5.2.0"
     ts-invariant "^0.4.4"
     tslib "^1.10.0"
     zen-observable "^0.8.14"
@@ -3217,10 +3218,10 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/react@16.9.47":
-  version "16.9.47"
-  resolved "https://registry.npm.taobao.org/@types/react/download/@types/react-16.9.47.tgz?cache=0&sync_timestamp=1598334155774&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Freact%2Fdownload%2F%40types%2Freact-16.9.47.tgz#fb092936f0b56425f874d0ff1b08051fdf70c1ba"
-  integrity sha1-+wkpNvC1ZCX4dND/GwgFH99wwbo=
+"@types/react@16.9.48":
+  version "16.9.48"
+  resolved "https://registry.npm.taobao.org/@types/react/download/@types/react-16.9.48.tgz?cache=0&sync_timestamp=1598472228956&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Freact%2Fdownload%2F%40types%2Freact-16.9.48.tgz#d3387329f070d1b1bc0ff4a54a54ceefd5a8485c"
+  integrity sha1-0zhzKfBw0bG8D/SlSlTO79WoSFw=
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
@@ -13245,6 +13246,15 @@ terser@^4.6.12:
   version "4.8.0"
   resolved "https://registry.npm.taobao.org/terser/download/terser-4.8.0.tgz?cache=0&sync_timestamp=1597937545162&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fterser%2Fdownload%2Fterser-4.8.0.tgz#63056343d7c70bb29f3af665865a46fe03a0df17"
   integrity sha1-YwVjQ9fHC7KfOvZlhlpG/gOg3xc=
+  dependencies:
+    commander "^2.20.0"
+    source-map "~0.6.1"
+    source-map-support "~0.5.12"
+
+terser@^5.2.0:
+  version "5.2.1"
+  resolved "https://registry.npm.taobao.org/terser/download/terser-5.2.1.tgz?cache=0&sync_timestamp=1597937545162&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fterser%2Fdownload%2Fterser-5.2.1.tgz#40b971b8d28b4fe98c9e8c0d073ab48e7bb96cd8"
+  integrity sha1-QLlxuNKLT+mMnowNBzq0jnu5bNg=
   dependencies:
     commander "^2.20.0"
     source-map "~0.6.1"

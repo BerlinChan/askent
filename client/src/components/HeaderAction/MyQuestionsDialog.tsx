@@ -83,26 +83,27 @@ const MyQuestionsDialog: React.FC<Props> = ({
 
   const loadMore = () => {
     if (data?.questionsByMe.hasNextPage) {
-      fetchMore({
-        variables: {
-          pagination: {
-            offset: data?.questionsByMe.list.length || DEFAULT_PAGE_OFFSET,
-            limit: data?.questionsByMe.limit || DEFAULT_PAGE_LIMIT,
-          },
-        },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-          return Object.assign({}, fetchMoreResult, {
-            questionsByMe: {
-              ...fetchMoreResult.questionsByMe,
-              list: [
-                ...prev.questionsByMe.list,
-                ...fetchMoreResult.questionsByMe.list,
-              ],
+      fetchMore &&
+        fetchMore({
+          variables: {
+            pagination: {
+              offset: data?.questionsByMe.list.length || DEFAULT_PAGE_OFFSET,
+              limit: data?.questionsByMe.limit || DEFAULT_PAGE_LIMIT,
             },
-          });
-        },
-      });
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            if (!fetchMoreResult) return prev;
+            return Object.assign({}, fetchMoreResult, {
+              questionsByMe: {
+                ...fetchMoreResult.questionsByMe,
+                list: [
+                  ...prev.questionsByMe.list,
+                  ...fetchMoreResult.questionsByMe.list,
+                ],
+              },
+            });
+          },
+        });
     }
   };
 

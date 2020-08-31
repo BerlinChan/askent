@@ -1,7 +1,7 @@
 import React from "react";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
-import { QueryResult } from "@apollo/client";
+import { LazyQueryResult } from "@apollo/client";
 import {
   EventByIdQuery,
   EventByIdQueryVariables,
@@ -14,7 +14,7 @@ import Confirm from "../../../../components/Confirm";
 import EditIcon from "@material-ui/icons/Edit";
 
 interface Props {
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventQueryResult: LazyQueryResult<EventByIdQuery, EventByIdQueryVariables>;
   questionList: QuestionAudienceFieldsFragment[] | undefined;
   moreMenuState: [
     {
