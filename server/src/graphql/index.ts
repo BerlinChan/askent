@@ -14,4 +14,4 @@ export default [
   QuestionSubscription,
   ReplyResolver,
   SeedResolver,
-]
+] as const

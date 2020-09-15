@@ -1,41 +1,21 @@
 import {
-  registerEnumType,
   ObjectType,
   Field,
   ID,
-  InputType,
-  Root,
   Resolver,
   Query,
   Arg,
   Ctx,
   Mutation,
-  Int,
-  Publisher,
-  PubSub,
 } from 'type-graphql'
 import { Context } from '../context'
-import { User as UserEntity } from '../entity/User'
-import { QuestionOrder, QuestionFilter } from './FilterOrder'
-import { IPagedType, PaginationInput } from './Pagination'
-import { ReviewStatus } from '../entity/Question'
-import { Event as EventEntity } from '../entity/Event'
 import { Question as QuestionEntity } from '../entity/Question'
 import { Reply as ReplyEntity } from '../entity/Reply'
-import { Event } from './Event-type'
-import { User } from './User'
-import { getRepository, Repository, Like, OrderByCondition } from 'typeorm'
-import { RoleName } from '../entity/Role'
-import { QuestionQueryMeta } from '../entity/QuestionQueryMeta'
-import { MD5, enc } from 'crypto-js'
-import { QuestionRealtimeSearchPayload } from './QuestionSubscription'
+import { getRepository, Repository } from 'typeorm'
 
 @ObjectType()
 export class Reply {
-  private replyRepository: Repository<ReplyEntity>
-
   constructor() {
-    this.replyRepository = getRepository(ReplyEntity)
   }
 
   @Field((returns) => ID)
@@ -53,14 +33,10 @@ export class Reply {
 
 @Resolver((of) => Reply)
 export class ReplyResolver {
-  private userRepository: Repository<UserEntity>
-  private eventRepository: Repository<EventEntity>
   private questionRepository: Repository<QuestionEntity>
   private replyRepository: Repository<ReplyEntity>
 
   constructor() {
-    this.userRepository = getRepository(UserEntity)
-    this.eventRepository = getRepository(EventEntity)
     this.questionRepository = getRepository(QuestionEntity)
     this.replyRepository = getRepository(ReplyEntity)
   }
