@@ -52,7 +52,7 @@ export class Reply {
 }
 
 @Resolver((of) => Reply)
-export class QuestionResolver {
+export class ReplyResolver {
   private userRepository: Repository<UserEntity>
   private eventRepository: Repository<EventEntity>
   private questionRepository: Repository<QuestionEntity>
@@ -84,14 +84,22 @@ export class QuestionResolver {
     @Ctx() ctx: Context,
   ): Promise<ReplyEntity> {
     const authorId = ctx.user?.id
-    const event = await this.questionRepository
-      .createQueryBuilder()
-      .relation(QuestionEntity, 'event')
-      .of(questionId)
-      .loadOne()
+    const question = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.event', 'event')
+      .leftJoinAndSelect('event.owner', 'owner', 'owner.id = :authorId', {
+        authorId,
+      })
+      .leftJoinAndSelect('event.guestes', 'guest', 'guest.id = :authorId', {
+        authorId,
+      })
+      .where('question.id = :questionId', { questionId })
+      .getOne()
     const reply = this.replyRepository.create({
       content,
-      // isModerator: true,
+      isModerator: Boolean(
+        question?.event?.owner || question?.event?.guestes.length,
+      ),
       question: { id: questionId },
       author: { id: authorId },
     })
