@@ -6826,10 +6826,10 @@ form-data@~2.3.2:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
-formik-material-ui-pickers@0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/formik-material-ui-pickers/-/formik-material-ui-pickers-0.0.10.tgz#cdea5f4ba6a7c2fa6cad23db1d48aaa44235ff00"
-  integrity sha512-/UVSe477nw7Db3+3BmD19oXAlyoTZFCNq916IaOHp3OcIw1gdJy5Da9mF7uuTJbmcQkueIHK79TwwyrsV7ei/Q==
+formik-material-ui-pickers@0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/formik-material-ui-pickers/-/formik-material-ui-pickers-0.0.11.tgz#c73d6d42170d2dd18ebe34f3b6b4549dbc8b447a"
+  integrity sha512-YVY5v0585rHlDneNBEQ1YnJVNhgieqbJjnojvB2GgeR/4Za5P0UdGpo5V9WvajtaAFJRpm7U9/TTcoUl5uiyxQ==
 
 formik-material-ui@3.0.0:
   version "3.0.0"
