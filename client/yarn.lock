@@ -11685,10 +11685,10 @@ react-transition-group@^4.4.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-virtuoso@0.17.7:
-  version "0.17.7"
-  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-0.17.7.tgz#99cbc8a98eb0e1925b7bac70ce4849b6c8576206"
-  integrity sha512-mP8wjgIOo3pMigj6SXtX9YiN2wKP24FIVdl6x3+7b31EU9024i9lF3yKMcmICvF7eDkVjvubTNXaRIB/3kJh6w==
+react-virtuoso@0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-0.20.0.tgz#df1d6e33e358f817dbf954bd556333fcdcc91eb1"
+  integrity sha512-h+U6t/+m91AzfUe6bBfaacdLLJl1y8v7CfcXwPgQ/Dic+vNlgQmi6cIKTq18zuF+kI8Q7QN0ojIeqPHWbU8TZA==
   dependencies:
     resize-observer-polyfill "^1.5.1"
     tslib "^1.11.1"
