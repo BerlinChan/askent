@@ -21,9 +21,9 @@ const LiveQuestions: React.FC<Props> = ({
   userQueryResult,
   eventQueryResult,
 }) => {
-  let { id } = useParams();
+  let { id } = useParams<{ id: string }>();
   const questionQueryInput = {
-    eventId: id as string,
+    eventId: id,
     order: QuestionOrder.Popular,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
   };

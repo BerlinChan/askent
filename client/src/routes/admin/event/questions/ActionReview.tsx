@@ -7,7 +7,7 @@ import {
   useDeleteAllReviewQuestionsMutation,
   usePublishAllReviewQuestionsMutation,
   EventByIdQuery,
-  EventByIdQueryVariables
+  EventByIdQueryVariables,
 } from "../../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/client";
 import Confirm from "../../../../components/Confirm";
@@ -18,14 +18,14 @@ interface Props {
 
 const ActionReview: React.FC<Props> = ({ eventQueryResult }) => {
   const { formatMessage } = useIntl();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const { data } = eventQueryResult;
   const [updateEventMutation] = useUpdateEventMutation();
   const [
-    deleteAllReviewQuestionsMutation
+    deleteAllReviewQuestionsMutation,
   ] = useDeleteAllReviewQuestionsMutation();
   const [
-    publishAllReviewQuestionsMutation
+    publishAllReviewQuestionsMutation,
   ] = usePublishAllReviewQuestionsMutation();
   const [confirmModeration, setConfirmModeration] = React.useState(false);
 
@@ -36,38 +36,38 @@ const ActionReview: React.FC<Props> = ({ eventQueryResult }) => {
       await updateEventMutation({
         variables: {
           input: {
-            eventId: id as string,
-            moderation: true
-          }
-        }
+            eventId: id,
+            moderation: true,
+          },
+        },
       });
     }
   };
   const handleDeleteAll = async () => {
     await deleteAllReviewQuestionsMutation({
-      variables: { eventId: id as string }
+      variables: { eventId: id },
     });
     await updateEventMutation({
       variables: {
         input: {
-          eventId: id as string,
-          moderation: false
-        }
-      }
+          eventId: id,
+          moderation: false,
+        },
+      },
     });
     setConfirmModeration(false);
   };
   const handlePublishAll = async () => {
     await publishAllReviewQuestionsMutation({
-      variables: { eventId: id as string }
+      variables: { eventId: id },
     });
     await updateEventMutation({
       variables: {
         input: {
-          eventId: id as string,
-          moderation: false
-        }
-      }
+          eventId: id,
+          moderation: false,
+        },
+      },
     });
     setConfirmModeration(false);
   };
@@ -87,7 +87,7 @@ const ActionReview: React.FC<Props> = ({ eventQueryResult }) => {
         }
         label={formatMessage({
           id: "Moderation",
-          defaultMessage: "Moderation"
+          defaultMessage: "Moderation",
         })}
       />
 
@@ -96,7 +96,7 @@ const ActionReview: React.FC<Props> = ({ eventQueryResult }) => {
         disableEscapeKeyDown
         contentText={formatMessage({
           id: "Publish_or_delete_all_unreview_questions?",
-          defaultMessage: "Publish or delete all unreview questions?"
+          defaultMessage: "Publish or delete all unreview questions?",
         })}
         open={confirmModeration}
         cancelText={

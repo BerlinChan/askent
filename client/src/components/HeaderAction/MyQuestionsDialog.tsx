@@ -32,7 +32,7 @@ const MyQuestionsDialog: React.FC<Props> = ({
   open,
   onClose,
 }) => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -41,11 +41,11 @@ const MyQuestionsDialog: React.FC<Props> = ({
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
   const [eventByIdLazyQuery, eventByIdQueryResult] = useEventByIdLazyQuery({
-    variables: { eventId: id as string },
+    variables: { eventId: id  },
   });
   const [questionsByMeLazyQuery, questionsResult] = useQuestionsByMeLazyQuery({
     variables: {
-      eventId: id as string,
+      eventId: id ,
       pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     },
   });

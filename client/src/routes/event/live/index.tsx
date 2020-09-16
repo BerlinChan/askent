@@ -17,14 +17,14 @@ const LiveQuestionsComponent = loadable(() => import("./questions"), {
 
 const Live: React.FC = () => {
   let { path } = useRouteMatch();
-  let { id } = useParams();
+  let { id } = useParams<{ id: string }>();
   const meQueryResult = useMeQuery();
   const eventByIdQueryResult = useEventByIdQuery({
-    variables: { eventId: id as string },
+    variables: { eventId: id },
   });
 
   useEventUpdatedSubscription({
-    variables: { eventId: id as string },
+    variables: { eventId: id },
   });
 
   return (

@@ -11,7 +11,7 @@ import {
   FormHelperText,
   ClickAwayListener,
   Avatar,
-  Hidden
+  Hidden,
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -22,7 +22,7 @@ import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   QUESTION_CONTENT_MAX_LENGTH,
-  USERNAME_MAX_LENGTH
+  USERNAME_MAX_LENGTH,
 } from "../../../../constant";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import { QueryResult } from "@apollo/client";
@@ -30,7 +30,7 @@ import {
   MeQuery,
   MeQueryVariables,
   useCreateQuestionMutation,
-  useUpdateUserMutation
+  useUpdateUserMutation,
 } from "../../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
 
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
       display: "flex",
       flexWrap: "nowrap",
-      flexDirection: "row"
+      flexDirection: "row",
     },
     adornmentBox: {
       textAlign: "center",
@@ -49,19 +49,19 @@ const useStyles = makeStyles((theme: Theme) =>
       width: 32,
       overflow: "hidden",
       transition: theme.transitions.create(["width", "opacity"]),
-      "&.collapse": { width: 0, opacity: 0 }
+      "&.collapse": { width: 0, opacity: 0 },
     },
     questionInput: {
       flex: 1,
       width: "100%",
-      fontSize: theme.typography.pxToRem(18)
+      fontSize: theme.typography.pxToRem(18),
     },
     helperTextBox: {
       display: "flex",
-      justifyContent: "space-between"
+      justifyContent: "space-between",
     },
     cardActions: {
-      justifyContent: "space-between"
+      justifyContent: "space-between",
     },
     cardActionsMobile: { flexDirection: "column", alignItems: "flex-start" },
     nameBox: { display: "flex", alignItems: "center" },
@@ -70,13 +70,13 @@ const useStyles = makeStyles((theme: Theme) =>
       width: theme.spacing(4),
       height: theme.spacing(4),
       marginRight: theme.spacing(1),
-      fontSize: theme.typography.pxToRem(16)
+      fontSize: theme.typography.pxToRem(16),
     },
     anonymousSwitchLabel: {
       marginLeft: "unset",
-      marginRight: "unset"
+      marginRight: "unset",
     },
-    mobileSubmit: { width: "100%", marginTop: theme.spacing(1) }
+    mobileSubmit: { width: "100%", marginTop: theme.spacing(1) },
   })
 );
 
@@ -94,23 +94,23 @@ const QuestionForm: React.FC<Props> = ({
   userQueryResult,
   onAfterSubmit,
   onFocus,
-  className
+  className,
 }) => {
   const classes = useStyles();
-  let { id } = useParams();
+  let { id } = useParams<{ id: string }>();
   const { formatMessage } = useIntl();
   const { enqueueSnackbar } = useSnackbar();
   const [expanded, setExpanded] = React.useState<boolean>(false);
   const [createQuestionMutation, { loading }] = useCreateQuestionMutation();
   const [
     updateAudienceUserMutation,
-    { loading: updateUserLoading }
+    { loading: updateUserLoading },
   ] = useUpdateUserMutation();
 
   const initialValues: QuestionValues = {
     content: "",
     name: "",
-    anonymous: false
+    anonymous: false,
   };
   const handleSubmit: (
     values: QuestionValues,
@@ -132,18 +132,18 @@ const QuestionForm: React.FC<Props> = ({
             values.anonymous !== userQueryResult.data?.me.anonymous &&
             values.anonymous
               ? { anonymous: true }
-              : { name: values.name, anonymous: values.anonymous }
-        }
+              : { name: values.name, anonymous: values.anonymous },
+        },
       });
     }
     await createQuestionMutation({
       variables: {
         input: {
-          eventId: id as string,
+          eventId: id,
           content: values.content,
-          anonymous: Boolean(values.anonymous && values.name)
-        }
-      }
+          anonymous: Boolean(values.anonymous && values.name),
+        },
+      },
     });
     !autoFocus && setExpanded(false);
     formikBag.resetForm();
@@ -155,7 +155,7 @@ const QuestionForm: React.FC<Props> = ({
       formProps.setValues({
         ...formProps.values,
         name: userQueryResult.data?.me.name || "",
-        anonymous: Boolean(userQueryResult.data?.me.anonymous)
+        anonymous: Boolean(userQueryResult.data?.me.anonymous),
       });
       setExpanded(true);
     }
@@ -169,14 +169,14 @@ const QuestionForm: React.FC<Props> = ({
       currentAnonymous
         ? formatMessage({
             id: "As",
-            defaultMessage: "As"
+            defaultMessage: "As",
           }) + " user"
         : formatMessage({
             id: "As anonymous",
-            defaultMessage: "As anonymous"
+            defaultMessage: "As anonymous",
           }),
       {
-        variant: "success"
+        variant: "success",
       }
     );
   };
@@ -188,7 +188,7 @@ const QuestionForm: React.FC<Props> = ({
           className={classes.avatar}
           alt={formatMessage({
             id: "Anonymous",
-            defaultMessage: "Anonymous"
+            defaultMessage: "Anonymous",
           })}
         />
         <Typography
@@ -212,7 +212,7 @@ const QuestionForm: React.FC<Props> = ({
           name="name"
           placeholder={formatMessage({
             id: "Your_name(optional)",
-            defaultMessage: "Your name(optional)"
+            defaultMessage: "Your name(optional)",
           })}
           disabled={loading || updateUserLoading}
           onFocus={() => setExpanded(true)}
@@ -271,14 +271,12 @@ const QuestionForm: React.FC<Props> = ({
     <Formik
       initialValues={initialValues}
       validationSchema={Yup.object({
-        content: Yup.string()
-          .max(QUESTION_CONTENT_MAX_LENGTH)
-          .required(),
-        name: Yup.string().max(USERNAME_MAX_LENGTH)
+        content: Yup.string().max(QUESTION_CONTENT_MAX_LENGTH).required(),
+        name: Yup.string().max(USERNAME_MAX_LENGTH),
       })}
       onSubmit={handleSubmit}
     >
-      {formProps => (
+      {(formProps) => (
         <ClickAwayListener onClickAway={handleClickAway}>
           <Card className={className}>
             <Form>
@@ -301,7 +299,7 @@ const QuestionForm: React.FC<Props> = ({
                     className={classes.questionInput}
                     placeholder={formatMessage({
                       id: "Type_your_question",
-                      defaultMessage: "Type your question"
+                      defaultMessage: "Type your question",
                     })}
                     disabled={loading || updateUserLoading}
                     onFocus={() => handleInputFocus(formProps)}

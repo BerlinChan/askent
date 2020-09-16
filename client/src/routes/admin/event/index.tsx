@@ -7,25 +7,25 @@ import AdminEventHeader from "./AdminEventHeader";
 import Layout from "../../../components/Layout";
 import {
   useEventByIdQuery,
-  useEventUpdatedSubscription
+  useEventUpdatedSubscription,
 } from "../../../generated/graphqlHooks";
 
 const QuestionsComponent = loadable(() => import("./questions"), {
-  fallback: <Loading />
+  fallback: <Loading />,
 });
 const PollsComponent = loadable(() => import("./polls"), {
-  fallback: <Loading />
+  fallback: <Loading />,
 });
 
 const AdminEvent: React.FC = () => {
   const { path } = useRouteMatch();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const eventQueryResult = useEventByIdQuery({
-    variables: { eventId: id as string }
+    variables: { eventId: id },
   });
 
   useEventUpdatedSubscription({
-    variables: { eventId: id as string }
+    variables: { eventId: id },
   });
 
   return (

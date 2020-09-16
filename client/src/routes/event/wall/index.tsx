@@ -50,24 +50,24 @@ interface Props {}
 
 const EventWall: React.FC<Props> = () => {
   const classes = useStyles();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const qrcodeCardRef = React.useRef<HTMLElement>(null);
   const [qrcodeCardWidth, setQrcodeCardWidth] = React.useState(0);
   const eventByIdQueryResult = useEventByIdQuery({
-    variables: { eventId: id as string },
+    variables: { eventId: id },
   });
   const orderSelectedState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
   const questionQueryInput = {
-    eventId: id as string,
+    eventId: id,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: orderSelectedState[0],
   };
 
   // subscription
   useEventUpdatedSubscription({
-    variables: { eventId: id as string }
+    variables: { eventId: id },
   });
 
   const onResize = () => {

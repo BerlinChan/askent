@@ -4,20 +4,20 @@ import {
   createStyles,
   makeStyles,
   withStyles,
-  Theme
+  Theme,
 } from "@material-ui/core/styles";
 import {
   Button,
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Divider
+  Divider,
 } from "@material-ui/core";
 import HoverMenu from "material-ui-popup-state/HoverMenu";
 import {
   usePopupState,
   bindHover,
-  bindMenu
+  bindMenu,
 } from "material-ui-popup-state/hooks";
 import { useIntl, FormattedMessage } from "react-intl";
 import { useSnackbar } from "notistack";
@@ -28,11 +28,11 @@ import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 import copy from "copy-to-clipboard";
 
 const StyledMenuItem = withStyles({
-  root: { whiteSpace: "unset", width: 280 }
+  root: { whiteSpace: "unset", width: 280 },
 })(MenuItem);
 const StyledListItemIcon = withStyles((theme: Theme) =>
   createStyles({
-    root: { minWidth: 28, color: theme.palette.primary.main, fontSize: 18 }
+    root: { minWidth: 28, color: theme.palette.primary.main, fontSize: 18 },
   })
 )(ListItemIcon);
 const StyledListItemText = withStyles((theme: Theme) =>
@@ -40,12 +40,12 @@ const StyledListItemText = withStyles((theme: Theme) =>
     primary: {
       fontSize: 16,
       fontWeight: theme.typography.fontWeightMedium,
-      color: theme.palette.primary.main
+      color: theme.palette.primary.main,
     },
     secondary: {
       fontSize: 12,
-      color: theme.palette.text.secondary
-    }
+      color: theme.palette.text.secondary,
+    },
   })
 )(ListItemText);
 
@@ -53,11 +53,11 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     presentModeBtn: {
       marginRight: theme.spacing(1),
-      borderRadius: theme.spacing(2)
+      borderRadius: theme.spacing(2),
     },
     presentModeIcon: {
-      marginRight: theme.spacing(1)
-    }
+      marginRight: theme.spacing(1),
+    },
   })
 );
 
@@ -65,12 +65,12 @@ interface Props {}
 
 const PresentModeButton: React.FC<Props> = () => {
   const classes = useStyles();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const { enqueueSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
   const popupState = usePopupState({
     variant: "popover",
-    popupId: "presentModeMenu"
+    popupId: "presentModeMenu",
   });
 
   const handleCopyEventLink = () => {
@@ -78,10 +78,10 @@ const PresentModeButton: React.FC<Props> = () => {
       enqueueSnackbar(
         formatMessage({
           id: "Copied!",
-          defaultMessage: "Copied!"
+          defaultMessage: "Copied!",
         }),
         {
-          variant: "success"
+          variant: "success",
         }
       );
     }
@@ -92,26 +92,26 @@ const PresentModeButton: React.FC<Props> = () => {
       icon: <FullscreenIcon color="inherit" fontSize="inherit" />,
       primary: formatMessage({
         id: "Present in fullscreen",
-        defaultMessage: "Present in fullscreen"
+        defaultMessage: "Present in fullscreen",
       }),
       secondary: formatMessage({
         id: "Display audience questions or poll results on a big screen",
         defaultMessage:
-          "Display audience questions or poll results on a big screen"
+          "Display audience questions or poll results on a big screen",
       }),
-      handleClick: () => {}
+      handleClick: () => {},
     },
     {
       icon: <LaunchIcon color="inherit" fontSize="inherit" />,
       primary: formatMessage({
         id: "Present on another screen",
-        defaultMessage: "Present on another screen"
+        defaultMessage: "Present on another screen",
       }),
       secondary: formatMessage({
         id:
           "Open Present mode in a new window and display it on your extended screen",
         defaultMessage:
-          "Open Present mode in a new window and display it on your extended screen"
+          "Open Present mode in a new window and display it on your extended screen",
       }),
       handleClick: () => {
         window.open(
@@ -119,8 +119,8 @@ const PresentModeButton: React.FC<Props> = () => {
           "AskentPresentation",
           "menubar=no,location=yes,resizable=yes,scrollbars=no,status=no,width=1066,height=600"
         );
-      }
-    }
+      },
+    },
   ];
 
   return (
@@ -147,11 +147,11 @@ const PresentModeButton: React.FC<Props> = () => {
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right"
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "right"
+          horizontal: "right",
         }}
       >
         {menuItemList.map((item, index) => (
@@ -177,7 +177,7 @@ const PresentModeButton: React.FC<Props> = () => {
           <StyledListItemText
             primary={formatMessage({
               id: "Copy Present mode link",
-              defaultMessage: "Copy Present mode link"
+              defaultMessage: "Copy Present mode link",
             })}
           />
         </StyledMenuItem>

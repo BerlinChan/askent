@@ -52,7 +52,7 @@ interface Props {
 
 const Questions: React.FC<Props> = ({ eventQueryResult }) => {
   const classes = useStyles();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const questionQueryState = React.useState<QuestionQueryStateType>({
     filterSelected: QuestionFilter.Publish,
     searchString: "",
@@ -60,7 +60,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQueryResult;
   const questionQueryInput = {
-    eventId: id as string,
+    eventId: id,
     questionFilter: questionQueryState[0].filterSelected,
     searchString: questionQueryState[0].searchString
       ? questionQueryState[0].searchString
@@ -69,7 +69,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
     order: questionOrderSelectedState[0],
   };
   const questionQueryInputReview = {
-    eventId: id as string,
+    eventId: id,
     questionFilter: QuestionFilter.Review,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: QuestionOrder.Oldest,

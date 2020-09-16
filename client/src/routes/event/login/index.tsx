@@ -7,7 +7,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  fade
+  fade,
 } from "@material-ui/core/styles";
 import { FormattedMessage, FormattedDate, FormattedTime } from "react-intl";
 import { QueryResult } from "@apollo/client";
@@ -16,7 +16,7 @@ import {
   EventForLoginQueryVariables,
   useLoginAudienceMutation,
   useIsEventAudienceLazyQuery,
-  useJoinEventMutation
+  useJoinEventMutation,
 } from "../../../generated/graphqlHooks";
 import { useFingerprint, useToken } from "../../../hooks";
 
@@ -29,11 +29,11 @@ const useStyles = makeStyles((theme: Theme) =>
       height: "100vh",
       background: `radial-gradient(circle, 
         ${fade(theme.palette.primary.main, 0.1)} 0%,
-         ${fade(theme.palette.primary.main, 0.4)} 100%)`
+         ${fade(theme.palette.primary.main, 0.4)} 100%)`,
     },
     eventInfoBox: {
-      marginTop: theme.spacing(5)
-    }
+      marginTop: theme.spacing(5),
+    },
   })
 );
 
@@ -44,28 +44,28 @@ interface Props {
 const EventLogin: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const history = useHistory();
-  let { id } = useParams();
+  let { id } = useParams<{ id: string }>();
   const { token, setToken } = useToken();
   const { data, loading: eventForLoginLoading } = eventQuery;
   const [
     loginAudienceMutation,
-    { loading: loginAudienceLoading }
+    { loading: loginAudienceLoading },
   ] = useLoginAudienceMutation();
   const [
     joinEventMutation,
-    { loading: joinEventLoading }
+    { loading: joinEventLoading },
   ] = useJoinEventMutation();
   const fingerprint = useFingerprint();
   const [
     isEventAudienceLazyQuery,
-    { data: isEventAudienceData, called }
+    { data: isEventAudienceData, called },
   ] = useIsEventAudienceLazyQuery();
 
   React.useEffect(() => {
     if (!called && token) {
       (async () => {
         await isEventAudienceLazyQuery({
-          variables: { eventId: id as string }
+          variables: { eventId: id },
         });
       })();
     } else if (isEventAudienceData?.isEventAudience) {
@@ -77,11 +77,11 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
   const handleEventLogin = async () => {
     if (!token) {
       const { data } = await loginAudienceMutation({
-        variables: { fingerprint }
+        variables: { fingerprint },
       });
       setToken(data?.loginAudience.token || "");
     }
-    await joinEventMutation({ variables: { eventId: id as string } });
+    await joinEventMutation({ variables: { eventId: id } });
     history.replace(`/event/${id}/live/questions`);
   };
 
