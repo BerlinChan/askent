@@ -1925,10 +1925,10 @@ pg-types@^2.1.0:
     postgres-date "~1.0.4"
     postgres-interval "^1.1.0"
 
-pg@8.3.2:
-  version "8.3.2"
-  resolved "https://registry.npm.taobao.org/pg/download/pg-8.3.2.tgz#52766e41302f5b878fe1efa10d4cdd486f6dff50"
-  integrity sha1-UnZuQTAvW4eP4e+hDUzdSG9t/1A=
+pg@8.3.3:
+  version "8.3.3"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-8.3.3.tgz#0338631ca3c39b4fb425b699d494cab17f5bb7eb"
+  integrity sha512-wmUyoQM/Xzmo62wgOdQAn5tl7u+IA1ZYK7qbuppi+3E+Gj4hlUxVHjInulieWrd0SfHi/ADriTb5ILJ/lsJrSg==
   dependencies:
     buffer-writer "2.0.0"
     packet-reader "1.0.0"
