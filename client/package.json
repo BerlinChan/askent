@@ -5,7 +5,7 @@
   "description": "A simple presentation tool",
   "dependencies": {
     "@apollo/client": "3.2.0",
-    "@date-io/date-fns": "1.3.13",
+    "@date-io/date-fns": "2.10.6",
     "@loadable/component": "5.13.2",
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "4.9.1",
