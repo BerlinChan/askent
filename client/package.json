@@ -12,7 +12,7 @@
     "@material-ui/lab": "4.0.0-alpha.56",
     "@material-ui/pickers": "3.2.10",
     "copy-to-clipboard": "3.3.1",
-    "date-fns": "2.15.0",
+    "date-fns": "2.16.1",
     "fingerprintjs2": "2.1.2",
     "formik": "2.1.5",
     "formik-material-ui": "3.0.0",
