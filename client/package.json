@@ -65,7 +65,7 @@
     "@testing-library/user-event": "12.1.6",
     "@types/fingerprintjs2": "2.0.0",
     "@types/jest": "26.0.14",
-    "@types/loadable__component": "5.13.0",
+    "@types/loadable__component": "5.13.1",
     "@types/qrcode.react": "1.0.1",
     "@types/ramda": "types/npm-ramda#dist",
     "@types/react": "16.9.49",
