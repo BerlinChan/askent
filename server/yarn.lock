@@ -147,10 +147,10 @@
   dependencies:
     "@types/express" "*"
 
-"@types/crypto-js@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-4.0.0.tgz#bd408b3031c2430d2feb0752d6c7d20c5b73dd82"
-  integrity sha512-PxWOv3cj3XbRdwxwq7505AdQ4ZirnZRPddPq254SDMinhDUGLzk7V7fd5K47nXMJYzE6w2f0GXtmohTUMGp7bA==
+"@types/crypto-js@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-4.0.1.tgz#3a4bd24518b0e6c5940da4e2659eeb2ef0806963"
+  integrity sha512-6+OPzqhKX/cx5xh+yO8Cqg3u3alrkhoxhE5ZOdSEv0DOzJ13lwJ6laqGU0Kv6+XDMFmlnGId04LtY22PsFLQUw==
 
 "@types/express-serve-static-core@*":
   version "4.17.7"
