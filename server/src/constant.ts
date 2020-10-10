@@ -8,7 +8,7 @@ export enum ReviewStatus {
   Publish = 'Publish',
   Archive = 'Archive',
 }
-registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
+registerEnumType(ReviewStatus, { name: 'ReviewStatus', description:"Question's review status" })
 
 export enum RoleName {
   Admin = 'Admin',

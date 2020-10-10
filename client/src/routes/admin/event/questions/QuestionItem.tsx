@@ -8,19 +8,19 @@ import {
   ListItemAvatar,
   Avatar,
   IconButton,
-  Button
+  Button,
 } from "@material-ui/core";
 import {
   createStyles,
   makeStyles,
   Theme,
-  fade
+  fade,
 } from "@material-ui/core/styles";
 import {
   useIntl,
   FormattedMessage,
   FormattedDate,
-  FormattedTime
+  FormattedTime,
 } from "react-intl";
 import { QueryResult } from "@apollo/client";
 import {
@@ -31,7 +31,7 @@ import {
   useUpdateQuestionStarMutation,
   useUpdateQuestionTopMutation,
   useUpdateQuestionContentMutation,
-  ReviewStatus
+  ReviewStatus,
 } from "../../../../generated/graphqlHooks";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
@@ -43,7 +43,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import StarIcon from "@material-ui/icons/Star";
 import TopIcon from "@material-ui/icons/Publish";
 import QuestionToggleButton, {
-  handleToggleType
+  handleToggleType,
 } from "../../../../components/QuestionToggleButton";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -57,17 +57,17 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: "wrap",
       position: "relative",
       "&:hover .questionHover": { display: "inline-flex" },
-      "& .questionHover": { display: "none" }
+      "& .questionHover": { display: "none" },
     },
     starQuestion: {
-      backgroundColor: fade(theme.palette.warning.light, 0.3)
+      backgroundColor: fade(theme.palette.warning.light, 0.3),
     },
     topQuestion: {
-      backgroundColor: fade(theme.palette.success.light, 0.3)
+      backgroundColor: fade(theme.palette.success.light, 0.3),
     },
     questionMeta: {
       marginLeft: theme.spacing(0.5),
-      marginRight: theme.spacing(1)
+      marginRight: theme.spacing(1),
     },
     questionContent: { width: "100%" },
     editContentForm: { width: "100%" },
@@ -79,8 +79,8 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       top: 0,
       right: 8,
-      height: 48
-    }
+      height: 48,
+    },
   })
 );
 
@@ -104,26 +104,26 @@ const QuestionListItem: React.FC<Props> = ({
   editContent,
   handleEditContentToggle,
   editContentInputRef,
-  isScrolling = false
+  isScrolling = false,
 }) => {
   const classes = useStyles();
   const { data } = eventQueryResult;
   const { formatMessage } = useIntl();
   const [
     updateQuestionReviewStatusMutation,
-    { loading: updateQuestionReviewStatusLoading }
+    { loading: updateQuestionReviewStatusLoading },
   ] = useUpdateQuestionReviewStatusMutation();
   const [
     updateQuestionStarMutation,
-    { loading: updateQuestionStarLoading }
+    { loading: updateQuestionStarLoading },
   ] = useUpdateQuestionStarMutation();
   const [
     updateQuestionTopMutation,
-    { loading: updateQuestionTopLoading }
+    { loading: updateQuestionTopLoading },
   ] = useUpdateQuestionTopMutation();
   const [
     updateQuestionContentMutation,
-    { loading: updateQuestionContentLoading }
+    { loading: updateQuestionContentLoading },
   ] = useUpdateQuestionContentMutation();
 
   const handleArchiveClick: handleToggleType = async (e, id, currentStatus) => {
@@ -132,26 +132,28 @@ const QuestionListItem: React.FC<Props> = ({
         questionId: id,
         reviewStatus: currentStatus
           ? ReviewStatus.Publish
-          : ReviewStatus.Archive
-      }
+          : ReviewStatus.Archive,
+      },
     });
   };
   const handlePublishClick: handleToggleType = async (e, id, currentStatus) => {
     await updateQuestionReviewStatusMutation({
       variables: {
         questionId: id,
-        reviewStatus: currentStatus ? ReviewStatus.Review : ReviewStatus.Publish
-      }
+        reviewStatus: currentStatus
+          ? ReviewStatus.Review
+          : ReviewStatus.Publish,
+      },
     });
   };
   const handleStarClick: handleToggleType = async (e, id, star) => {
     await updateQuestionStarMutation({
-      variables: { questionId: id, star: !star }
+      variables: { questionId: id, star: !star },
     });
   };
   const handleTopClick: handleToggleType = async (e, id, top) => {
     await updateQuestionTopMutation({
-      variables: { questionId: id, top: !top }
+      variables: { questionId: id, top: !top },
     });
   };
 
@@ -210,21 +212,19 @@ const QuestionListItem: React.FC<Props> = ({
           <Formik
             initialValues={{ content: question.content }}
             validationSchema={Yup.object({
-              content: Yup.string()
-                .max(QUESTION_CONTENT_MAX_LENGTH)
-                .required()
+              content: Yup.string().max(QUESTION_CONTENT_MAX_LENGTH).required(),
             })}
-            onSubmit={async values => {
+            onSubmit={async (values) => {
               await updateQuestionContentMutation({
                 variables: {
                   questionId: question.id,
-                  content: values.content
-                }
+                  content: values.content,
+                },
               });
               handleEditContentToggle(question.id);
             }}
           >
-            {formProps => (
+            {(formProps) => (
               <Form className={classes.editContentForm}>
                 <Field
                   component={TextField}
@@ -276,6 +276,9 @@ const QuestionListItem: React.FC<Props> = ({
             <Typography className={classes.questionContent} variant="body1">
               {question.content}
             </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {question.replyCount}
+            </Typography>
             <Box className={classes.questionActionBox}>
               {(question.reviewStatus === ReviewStatus.Publish ||
                 question.reviewStatus === ReviewStatus.Archive) && (
@@ -285,11 +288,11 @@ const QuestionListItem: React.FC<Props> = ({
                   status={question.star}
                   onTitle={formatMessage({
                     id: "Unstar",
-                    defaultMessage: "Unstar"
+                    defaultMessage: "Unstar",
                   })}
                   offTitle={formatMessage({
                     id: "Star",
-                    defaultMessage: "Star"
+                    defaultMessage: "Star",
                   })}
                   onIcon={<StarIcon fontSize="inherit" color="secondary" />}
                   offIcon={<StarIcon fontSize="inherit" color="inherit" />}
@@ -304,7 +307,7 @@ const QuestionListItem: React.FC<Props> = ({
                   status={question.top}
                   onTitle={formatMessage({
                     id: "Untop",
-                    defaultMessage: "Untop"
+                    defaultMessage: "Untop",
                   })}
                   offTitle={formatMessage({ id: "Top", defaultMessage: "Top" })}
                   onIcon={<TopIcon fontSize="inherit" color="secondary" />}
@@ -322,11 +325,11 @@ const QuestionListItem: React.FC<Props> = ({
                     status={question.reviewStatus === ReviewStatus.Publish}
                     onTitle={formatMessage({
                       id: "Unpublish",
-                      defaultMessage: "Unpublish"
+                      defaultMessage: "Unpublish",
                     })}
                     offTitle={formatMessage({
                       id: "Publish",
-                      defaultMessage: "Publish"
+                      defaultMessage: "Publish",
                     })}
                     onIcon={<ClearIcon fontSize="inherit" />}
                     offIcon={<CheckIcon fontSize="inherit" />}
@@ -342,11 +345,11 @@ const QuestionListItem: React.FC<Props> = ({
                   status={question.reviewStatus === ReviewStatus.Archive}
                   onTitle={formatMessage({
                     id: "Unarchive",
-                    defaultMessage: "Unarchive"
+                    defaultMessage: "Unarchive",
                   })}
                   offTitle={formatMessage({
                     id: "Archive",
-                    defaultMessage: "Archive"
+                    defaultMessage: "Archive",
                   })}
                   onIcon={<UnarchiveIcon fontSize="inherit" />}
                   offIcon={<ArchiveIcon fontSize="inherit" />}
@@ -357,7 +360,7 @@ const QuestionListItem: React.FC<Props> = ({
 
               <IconButton
                 size="small"
-                onClick={e => handleMoreClick(e, question.id)}
+                onClick={(e) => handleMoreClick(e, question.id)}
               >
                 <MoreHorizIcon fontSize="inherit" />
               </IconButton>

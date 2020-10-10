@@ -38,6 +38,9 @@ export class Question {
   @Column({ default: 0 })
   public voteUpCount?: number
 
+  @Column({ default: 0 })
+  public replyCount?: number
+
   @ManyToOne((type) => Event, (event) => event.questions)
   public event!: Event
 

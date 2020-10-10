@@ -10,6 +10,7 @@ fragment QuestionFields on Question {
   createdAt
   updatedAt
   voteUpCount
+  replyCount
   content
   reviewStatus
   star

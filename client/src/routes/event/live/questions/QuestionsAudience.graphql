@@ -8,6 +8,7 @@ fragment QuestionAudienceFields on Question {
   star
   voted
   voteUpCount
+  replyCount
   author {
     id
     name

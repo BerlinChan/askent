@@ -7,6 +7,7 @@ fragment QuestionWallFields on Question {
   top
   star
   voteUpCount
+  replyCount
   author {
     id
     name

@@ -74,6 +74,7 @@ export class ReplyResolver {
       })
       .where('question.id = :questionId', { questionId })
       .getOne()
+    await this.questionRepository.increment({ id: questionId }, 'replyCount', 1)
     const reply = this.replyRepository.create({
       content,
       isModerator: Boolean(

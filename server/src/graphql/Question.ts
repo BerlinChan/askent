@@ -57,6 +57,9 @@ export class Question {
   @Field((returns) => Int)
   public voteUpCount!: number
 
+  @Field((returns) => Int)
+  public replyCount!: number
+
   @Field((returns) => Event)
   async event(@Root() root: Question): Promise<EventEntity> {
     const event = await this.questionRepository
