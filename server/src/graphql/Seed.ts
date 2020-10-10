@@ -2,11 +2,13 @@ import { Resolver, Ctx, Mutation, Int, Arg } from 'type-graphql'
 import { addDays } from 'date-fns'
 import { Context } from '../context'
 import { Event as EventEntity } from '../entity/Event'
-import { Question as QuestionEntity, ReviewStatus } from '../entity/Question'
-import { Event } from './Event-type'
+import { Question as QuestionEntity } from '../entity/Question'
+import { ReviewStatus } from '../constant'
+import { Event } from './EventType'
 import { Repository, getRepository } from 'typeorm'
 import { User as UserEntity } from '../entity/User'
-import { Role as RoleEntity, RoleName } from '../entity/Role'
+import { Role as RoleEntity } from '../entity/Role'
+import { RoleName } from '../constant'
 
 @Resolver((of) => Event)
 export class SeedResolver {

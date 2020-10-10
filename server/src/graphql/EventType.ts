@@ -1,25 +1,12 @@
 import { isAfter, isBefore, isEqual } from 'date-fns'
-import {
-  registerEnumType,
-  ObjectType,
-  Field,
-  ID,
-  InputType,
-  Root,
-} from 'type-graphql'
+import { ObjectType, Field, ID, InputType, Root } from 'type-graphql'
 import { User } from './User'
 import { User as UserEntity } from '../entity/User'
 import { Event as EventEntity } from '../entity/Event'
 import { Question as QuestionEntity } from '../entity/Question'
 import { IPagedType } from './Pagination'
 import { Question } from './Question'
-
-export enum EventDateStatus {
-  Active = 'Active',
-  Upcoming = 'Upcoming',
-  Past = 'Past',
-}
-registerEnumType(EventDateStatus, { name: 'EventDateStatus' })
+import { EventDateStatus } from '../constant'
 
 @ObjectType()
 export class Event {

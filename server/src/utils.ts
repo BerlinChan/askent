@@ -1,5 +1,5 @@
 import { sign, verify } from 'jsonwebtoken'
-import { RoleName } from './entity/Role'
+import { RoleName } from './constant'
 import { Request } from 'express'
 
 export type TokenPayload = {

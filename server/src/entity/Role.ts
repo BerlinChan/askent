@@ -9,13 +9,7 @@ import {
   JoinTable,
 } from 'typeorm'
 import { User } from './User'
-
-export enum RoleName {
-  Admin = 'Admin',
-  Guest = 'Guest',
-  Audience = 'Audience',
-  Wall = 'Wall',
-}
+import { RoleName } from '../constant'
 
 @Entity()
 export class Role {

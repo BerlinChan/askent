@@ -1,5 +1,4 @@
 import {
-  registerEnumType,
   ObjectType,
   Field,
   ID,
@@ -16,20 +15,18 @@ import {
 } from 'type-graphql'
 import { Context } from '../context'
 import { User as UserEntity } from '../entity/User'
-import { QuestionOrder, QuestionFilter } from './FilterOrder'
+import { QuestionOrder, QuestionFilter } from '../constant'
 import { IPagedType, PaginationInput } from './Pagination'
-import { ReviewStatus } from '../entity/Question'
+import { ReviewStatus } from '../constant'
 import { Event as EventEntity } from '../entity/Event'
 import { Question as QuestionEntity } from '../entity/Question'
-import { Event } from './Event-type'
+import { Event } from './EventType'
 import { User } from './User'
 import { getRepository, Repository, Like, OrderByCondition } from 'typeorm'
-import { RoleName } from '../entity/Role'
+import { RoleName } from '../constant'
 import { QuestionQueryMeta } from '../entity/QuestionQueryMeta'
 import { MD5, enc } from 'crypto-js'
 import { QuestionRealtimeSearchPayload } from './QuestionSubscription'
-
-registerEnumType(ReviewStatus, { name: 'ReviewStatus' })
 
 @ObjectType()
 export class Question {

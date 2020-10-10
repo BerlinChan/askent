@@ -10,19 +10,22 @@ import {
 } from 'type-graphql'
 import { Context } from '../context'
 import { Question as QuestionEntity } from '../entity/Question'
+import { ReviewStatus } from '../constant'
 import { Reply as ReplyEntity } from '../entity/Reply'
 import { getRepository, Repository } from 'typeorm'
 
 @ObjectType()
 export class Reply {
-  constructor() {
-  }
+  constructor() {}
 
   @Field((returns) => ID)
   public id!: string
 
   @Field()
   public content!: string
+
+  @Field((returns) => ReviewStatus)
+  public reviewStatus!: ReviewStatus
 
   @Field()
   public createdAt!: Date

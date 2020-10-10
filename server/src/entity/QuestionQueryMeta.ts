@@ -6,7 +6,7 @@ import {
   PrimaryColumn,
 } from 'typeorm'
 import { QuestionQueryInput } from '../graphql/Question'
-import { RoleName } from './Role'
+import { RoleName } from '../constant'
 
 @Entity()
 export class QuestionQueryMeta {

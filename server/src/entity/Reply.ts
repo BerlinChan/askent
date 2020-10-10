@@ -9,6 +9,7 @@ import {
 } from 'typeorm'
 import { User } from './User'
 import { Question } from './Question'
+import { ReviewStatus } from '../constant'
 
 @Entity()
 export class Reply {
@@ -17,6 +18,9 @@ export class Reply {
 
   @Column()
   public content!: string
+
+  @Column({type:'enum', enum: ReviewStatus, default: ReviewStatus.Publish })
+  public reviewStatus!: ReviewStatus
 
   @Column({ comment: 'If author is a moderator of the event?' })
   public isModerator!: boolean

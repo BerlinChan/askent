@@ -13,12 +13,7 @@ import {
 import { User } from './User'
 import { Event } from './Event'
 import { Reply } from './Reply'
-
-export enum ReviewStatus {
-  Review = 'Review',
-  Publish = 'Publish',
-  Archive = 'Archive',
-}
+import { ReviewStatus } from '../constant'
 
 @Entity()
 export class Question {
@@ -31,7 +26,7 @@ export class Question {
   @Column({ default: false })
   public anonymous?: boolean
 
-  @Column({ enum: ReviewStatus, default: ReviewStatus.Publish })
+  @Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.Publish })
   public reviewStatus!: ReviewStatus
 
   @Column({ default: false })

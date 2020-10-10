@@ -17,12 +17,8 @@ import { getRepository, Repository, Like, Brackets } from 'typeorm'
 import { Context } from '../context'
 import { User as UserEntity } from '../entity/User'
 import { User } from './User'
-import {
-  Event,
-  EventPaged,
-  EventDateStatus,
-  UpdateEventInput,
-} from './Event-type'
+import { Event, EventPaged, UpdateEventInput } from './EventType'
+import { EventDateStatus } from '../constant'
 import { PaginationInput } from './Pagination'
 import { Event as EventEntity } from '../entity/Event'
 import { Question as QuestionEntity } from '../entity/Question'
