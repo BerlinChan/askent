@@ -21,6 +21,7 @@ import {
   FormattedMessage,
   FormattedDate,
   FormattedTime,
+  FormattedPlural,
 } from "react-intl";
 import { QueryResult } from "@apollo/client";
 import {
@@ -276,9 +277,16 @@ const QuestionListItem: React.FC<Props> = ({
             <Typography className={classes.questionContent} variant="body1">
               {question.content}
             </Typography>
-            <Typography variant="body2" color="textSecondary">
-              {question.replyCount}
-            </Typography>
+            {Boolean(question.replyCount) && (
+              <Typography variant="body2" color="textSecondary">
+                {question.replyCount}{" "}
+                <FormattedPlural
+                  value={question.replyCount}
+                  one="reply"
+                  other="replies"
+                />
+              </Typography>
+            )}
             <Box className={classes.questionActionBox}>
               {(question.reviewStatus === ReviewStatus.Publish ||
                 question.reviewStatus === ReviewStatus.Archive) && (

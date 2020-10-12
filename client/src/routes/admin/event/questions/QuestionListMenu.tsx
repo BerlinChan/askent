@@ -5,11 +5,13 @@ import { QueryResult } from "@apollo/client";
 import {
   QuestionsByEventQuery,
   QuestionsByEventQueryVariables,
-  useDeleteQuestionMutation
+  useDeleteQuestionMutation,
 } from "../../../../generated/graphqlHooks";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
+import ReplyDialog from "./ReplyDialog";
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
+import ReplyIcon from "@material-ui/icons/Reply";
 
 interface Props {
   questionsQueryResult: QueryResult<
@@ -39,14 +41,15 @@ const QuestionListMenu: React.FC<Props> = ({
   questionsQueryResult,
   moreMenuState,
   editContentInputRef,
-  editContentIdsState
+  editContentIdsState,
 }) => {
   const { formatMessage } = useIntl();
   const { data } = questionsQueryResult;
   const [moreMenu, setMoreMenu] = moreMenuState;
+  const openState = React.useState(false);
   const [deleteConfirm, setDeleteConfirm] = React.useState({
     open: false,
-    id: ""
+    id: "",
   });
   const [deleteQuestionMutation] = useDeleteQuestionMutation();
 
@@ -54,6 +57,11 @@ const QuestionListMenu: React.FC<Props> = ({
     setMoreMenu({ anchorEl: null, id: "" });
   };
 
+  const handleOpenReply = (id: string) => {
+    console.log("handleOpenReply -> id", id);
+    openState[1](true);
+  };
+  const handleCloseReply = () => {};
   const handleOpenDelete = (id: string) => {
     setDeleteConfirm({ open: true, id });
     handleMoreClose();
@@ -63,16 +71,16 @@ const QuestionListMenu: React.FC<Props> = ({
   };
   const handleDelete = async () => {
     await deleteQuestionMutation({
-      variables: { questionId: deleteConfirm.id }
+      variables: { questionId: deleteConfirm.id },
     });
     handleCloseDelete();
   };
   const [editContentIds, setEditContentIds] = editContentIdsState;
   const handleEditContentToggle = (id: string) => {
-    const findId = editContentIds.find(item => item === id);
+    const findId = editContentIds.find((item) => item === id);
     setEditContentIds(
       findId
-        ? editContentIds.filter(item => item !== id)
+        ? editContentIds.filter((item) => item !== id)
         : editContentIds.concat([id])
     );
     handleMoreClose();
@@ -87,11 +95,11 @@ const QuestionListMenu: React.FC<Props> = ({
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right"
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "right"
+          horizontal: "right",
         }}
         open={Boolean(moreMenu.anchorEl)}
         onClose={handleMoreClose}
@@ -103,14 +111,25 @@ const QuestionListMenu: React.FC<Props> = ({
           <ListItemText
             primary={formatMessage({
               id: "Edit",
-              defaultMessage: "Edit"
+              defaultMessage: "Edit",
+            })}
+          />
+        </MenuItem>
+        <MenuItem onClick={() => handleOpenReply(moreMenu.id)}>
+          <ListItemIcon>
+            <ReplyIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary={formatMessage({
+              id: "Reply",
+              defaultMessage: "Reply",
             })}
           />
         </MenuItem>
         <MenuItem
           disabled={
             (data?.questionsByEvent.list || []).find(
-              question => question.id === moreMenu.id
+              (question) => question.id === moreMenu.id
             )?.top
           }
           onClick={() => handleOpenDelete(moreMenu.id)}
@@ -121,7 +140,7 @@ const QuestionListMenu: React.FC<Props> = ({
           <ListItemText
             primary={formatMessage({
               id: "Delete",
-              defaultMessage: "Delete"
+              defaultMessage: "Delete",
             })}
           />
         </MenuItem>
@@ -138,6 +157,7 @@ const QuestionListMenu: React.FC<Props> = ({
         onCancel={handleCloseDelete}
         onOk={handleDelete}
       />
+      <ReplyDialog openState={openState} />
     </React.Fragment>
   );
 };
