@@ -8,13 +8,13 @@ const useStyles = makeStyles((theme: Theme) =>
     dialogTitle: {
       display: "flex",
       justifyContent: "space-between",
-      alignItems: "center"
-    }
+      alignItems: "center",
+    },
   })
 );
 
 interface Props {
-  title: React.ReactElement;
+  title: React.ReactElement | string;
   onClose: () => void;
 }
 

@@ -7,6 +7,7 @@ import {
   Arg,
   Ctx,
   Mutation,
+  InputType,
 } from 'type-graphql'
 import { Context } from '../context'
 import { Question as QuestionEntity } from '../entity/Question'
@@ -34,6 +35,12 @@ export class Reply {
   public updatedAt!: Date
 }
 
+@InputType()
+export class ReplyQueryInput {
+  @Field((returns) => ID)
+  public questionId!: string
+}
+
 @Resolver((of) => Reply)
 export class ReplyResolver {
   private questionRepository: Repository<QuestionEntity>
@@ -46,11 +53,11 @@ export class ReplyResolver {
 
   @Query((returns) => [Reply])
   async repliesByQuestion(
-    @Arg('questionId', (returns) => ID) questionId: string,
+    @Arg('input', (returns) => ReplyQueryInput) input: ReplyQueryInput,
     @Ctx() ctx: Context,
   ): Promise<ReplyEntity[]> {
     const replies = await this.replyRepository.find({
-      question: { id: questionId },
+      question: { id: input.questionId },
     })
 
     return replies

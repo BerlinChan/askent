@@ -8,7 +8,6 @@ import {
   useDeleteQuestionMutation,
 } from "../../../../generated/graphqlHooks";
 import Confirm from "../../../../components/Confirm";
-import ReplyDialog from "./ReplyDialog";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
 import ReplyIcon from "@material-ui/icons/Reply";
@@ -35,6 +34,7 @@ interface Props {
     string[],
     React.Dispatch<React.SetStateAction<string[]>>
   ];
+  handleOpenReply: (id: string) => void;
 }
 
 const QuestionListMenu: React.FC<Props> = ({
@@ -42,11 +42,11 @@ const QuestionListMenu: React.FC<Props> = ({
   moreMenuState,
   editContentInputRef,
   editContentIdsState,
+  handleOpenReply,
 }) => {
   const { formatMessage } = useIntl();
   const { data } = questionsQueryResult;
   const [moreMenu, setMoreMenu] = moreMenuState;
-  const openState = React.useState(false);
   const [deleteConfirm, setDeleteConfirm] = React.useState({
     open: false,
     id: "",
@@ -57,11 +57,6 @@ const QuestionListMenu: React.FC<Props> = ({
     setMoreMenu({ anchorEl: null, id: "" });
   };
 
-  const handleOpenReply = (id: string) => {
-    console.log("handleOpenReply -> id", id);
-    openState[1](true);
-  };
-  const handleCloseReply = () => {};
   const handleOpenDelete = (id: string) => {
     setDeleteConfirm({ open: true, id });
     handleMoreClose();
@@ -157,7 +152,6 @@ const QuestionListMenu: React.FC<Props> = ({
         onCancel={handleCloseDelete}
         onOk={handleDelete}
       />
-      <ReplyDialog openState={openState} />
     </React.Fragment>
   );
 };

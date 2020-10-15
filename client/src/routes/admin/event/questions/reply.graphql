@@ -1,0 +1,18 @@
+fragment ReplyFields on Reply {
+  id
+  createdAt
+  updatedAt
+  content
+  reviewStatus
+  author {
+    id
+    name
+    avatar
+  }
+}
+
+query RepliesByQuestion($input: ReplyQueryInput!) {
+  repliesByQuestion(input: $input) {
+    ...ReplyFields
+  }
+}

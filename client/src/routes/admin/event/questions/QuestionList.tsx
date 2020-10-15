@@ -10,9 +10,10 @@ import {
   QuestionQueryInput,
   useQuestionRealtimeSearchSubscription,
 } from "../../../../generated/graphqlHooks";
+import { Virtuoso } from "react-virtuoso";
 import QuestionItem from "./QuestionItem";
 import QuestionListMenu from "./QuestionListMenu";
-import { Virtuoso } from "react-virtuoso";
+import ReplyDialog from "./ReplyDialog";
 import ListFooter from "../../../../components/ListFooter";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
 import { sortQuestionBy } from "../../../../utils";
@@ -87,6 +88,14 @@ const QuestionList: React.FC<Props> = ({
   };
   const handleMoreClose = () => {
     moreMenuState[1]({ anchorEl: null, id: "" });
+  };
+
+  const [replyQuestionId, setReplyQuestionId] = React.useState("");
+  const handleOpenReply = (id: string) => {
+    setReplyQuestionId(id);
+  };
+  const handleCloseReply = () => {
+    setReplyQuestionId('');
   };
 
   const handleEditContentToggle = (id: string) => {
@@ -175,6 +184,11 @@ const QuestionList: React.FC<Props> = ({
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}
+        handleOpenReply={handleOpenReply}
+      />
+      <ReplyDialog
+        questionId={replyQuestionId}
+        onCancel={handleCloseReply}
       />
     </React.Fragment>
   );
