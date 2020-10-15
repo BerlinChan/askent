@@ -31,7 +31,7 @@
     "@types/node": "13.13.25",
     "@types/ramda": "types/npm-ramda#dist",
     "ts-node": "9.0.0",
-    "ts-node-dev": "1.0.0-pre.64",
+    "ts-node-dev": "1.0.0-pre.65",
     "typescript": "4.0.2"
   },
   "prettier": {
