@@ -14,6 +14,7 @@
 - [ ] admin event list - duplicate event
 - [ ] question list refetch after network error recovery
 - [ ] event edit dialog
+- [ ] GraphQL Server permissions use graphql-shield
 - [ ] Build server for production
 - [ ] [Benchmark](https://github.com/benawad/node-graphql-benchmarks)
 - [ ] [API logout, invalid JWT](https://www.npmjs.com/package/express-jwt)

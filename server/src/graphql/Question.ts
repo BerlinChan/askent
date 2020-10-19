@@ -631,8 +631,7 @@ export async function findQuestionAndCountAll(
       .getMany()
 
     return { totalCount, list }
-  } else {
-    // asRole===RoleName.Wall
+  } else if (asRole === RoleName.Wall) {
     const options = [{ top: true }, { reviewStatus: ReviewStatus.Publish }]
     const totalCount = await questionRepository
       .createQueryBuilder('question')
@@ -649,6 +648,8 @@ export async function findQuestionAndCountAll(
       .getMany()
 
     return { totalCount, list }
+  } else {
+    return { totalCount: 0, list: [] }
   }
 }
 

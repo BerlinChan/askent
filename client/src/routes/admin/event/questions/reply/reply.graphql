@@ -1,9 +1,20 @@
+fragment ReplyPagedFields on ReplyPaged {
+  hash
+  limit
+  offset
+  totalCount
+  hasNextPage
+}
 fragment ReplyFields on Reply {
   id
   createdAt
   updatedAt
   content
   reviewStatus
+  isModerator
+  question {
+    ...QuestionFields
+  }
   author {
     id
     name
@@ -13,6 +24,9 @@ fragment ReplyFields on Reply {
 
 query RepliesByQuestion($input: ReplyQueryInput!) {
   repliesByQuestion(input: $input) {
-    ...ReplyFields
+    ...ReplyPagedFields
+    list {
+      ...ReplyFields
+    }
   }
 }

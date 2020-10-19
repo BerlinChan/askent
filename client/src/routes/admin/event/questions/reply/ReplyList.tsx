@@ -3,20 +3,21 @@ import { QueryResult } from "@apollo/client";
 import {
   QuestionsByEventDocument,
   useQuestionsByEventQuery,
+  useRepliesByQuestionLazyQuery,
   EventByIdQuery,
   EventByIdQueryVariables,
   QuestionFieldsFragment,
-  QuestionOrder,
   QuestionQueryInput,
   useQuestionRealtimeSearchSubscription,
-} from "../../../../generated/graphqlHooks";
+} from "../../../../../generated/graphqlHooks";
 import { Virtuoso } from "react-virtuoso";
-import QuestionItem from "./QuestionItem";
-import QuestionListMenu from "./QuestionListMenu";
-import ReplyDialog from "./reply/ReplyDialog";
-import ListFooter from "../../../../components/ListFooter";
-import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
-import { sortQuestionBy } from "../../../../utils";
+import ReplyItem from "./ReplyItem";
+import ReplyListMenu from "./ReplyListMenu";
+import ListFooter from "../../../../../components/ListFooter";
+import {
+  DEFAULT_PAGE_OFFSET,
+  DEFAULT_PAGE_LIMIT,
+} from "../../../../../constant";
 
 interface Props {
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
@@ -39,6 +40,11 @@ const QuestionList: React.FC<Props> = ({
     variables: { input: questionQueryInput },
   });
   const { data, loading, fetchMore } = questionsQueryResult;
+
+  const [
+    repliesByQuestionLazyQuery,
+    { data: repliesByQuestionData, loading: repliesByQuestionLoading },
+  ] = useRepliesByQuestionLazyQuery();
 
   useQuestionRealtimeSearchSubscription({
     variables: {
@@ -94,9 +100,6 @@ const QuestionList: React.FC<Props> = ({
   const handleOpenReply = (id: string) => {
     setReplyQuestionId(id);
   };
-  const handleCloseReply = () => {
-    setReplyQuestionId('');
-  };
 
   const handleEditContentToggle = (id: string) => {
     const findId = editContentIdsState[0].find((item) => item === id);
@@ -109,13 +112,6 @@ const QuestionList: React.FC<Props> = ({
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
 
-  const orderedList = React.useMemo(() => {
-    const orderedList = sortQuestionBy<QuestionFieldsFragment>(
-      questionQueryInput.order || QuestionOrder.Popular
-    )(data?.questionsByEvent.list || []);
-
-    return orderedList;
-  }, [data, questionQueryInput]);
   const loadMore = () => {
     if (data?.questionsByEvent.hasNextPage) {
       fetchMore({
@@ -145,22 +141,28 @@ const QuestionList: React.FC<Props> = ({
     }
   };
 
+  React.useEffect(() => {
+    if (questionId) {
+      repliesByQuestionLazyQuery({ variables: { input: { questionId } } });
+    }
+  }, [questionId]);
+
   return (
     <React.Fragment>
       <Virtuoso
         style={{ height: "100%", width: "100%" }}
-        totalCount={orderedList.length}
+        totalCount={data?.questionsByEvent.list.length || 0}
         scrollingStateChange={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}
         item={(index) => {
-          const question = orderedList[index] as
+          const question = data?.questionsByEvent.list[index] as
             | QuestionFieldsFragment
             | undefined;
           if (!question) return <div />;
           return (
-            <QuestionItem
+            <ReplyItem
               question={question}
               eventQueryResult={eventQueryResult}
               handleMoreClick={handleMoreOpen}
@@ -179,16 +181,12 @@ const QuestionList: React.FC<Props> = ({
         )}
       />
 
-      <QuestionListMenu
+      <ReplyListMenu
         questionsQueryResult={questionsQueryResult}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}
         handleOpenReply={handleOpenReply}
-      />
-      <ReplyDialog
-        questionId={replyQuestionId}
-        onCancel={handleCloseReply}
       />
     </React.Fragment>
   );
