@@ -51,7 +51,7 @@ const QuestionList: React.FC<Props> = ({
   useQuestionRealtimeSearchAudienceSubscription({
     variables: {
       eventId: questionQueryInput.eventId,
-      hash: questionsQueryResult.data?.questionsByEventAudience.hash as string,
+      hash: data?.questionsByEventAudience.hash as string,
     },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRealtimeSearch) {
@@ -202,7 +202,7 @@ const QuestionList: React.FC<Props> = ({
 
       <QuestionListMenu
         eventQueryResult={eventQueryResult}
-        questionList={questionsQueryResult.data?.questionsByEventAudience.list}
+        questionList={data?.questionsByEventAudience.list}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}

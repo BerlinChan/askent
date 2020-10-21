@@ -34,7 +34,7 @@ const QuestionList: React.FC<Props> = ({
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
-  const replyQuestionIdState = React.useState<string>("");
+  const replyDialogState = React.useState({ open: false, questionId: "" });
   const questionsQueryResult = useQuestionsByEventQuery({
     fetchPolicy: "network-only",
     variables: { input: questionQueryInput },
@@ -44,7 +44,7 @@ const QuestionList: React.FC<Props> = ({
   useQuestionRealtimeSearchSubscription({
     variables: {
       eventId: questionQueryInput.eventId,
-      hash: questionsQueryResult.data?.questionsByEvent.hash as string,
+      hash: data?.questionsByEvent.hash as string,
     },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRealtimeSearch) {
@@ -177,9 +177,9 @@ const QuestionList: React.FC<Props> = ({
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}
-        replyQuestionIdState={replyQuestionIdState}
+        replyDialogState={replyDialogState}
       />
-      <ReplyDialog replyQuestionIdState={replyQuestionIdState} />
+      <ReplyDialog replyDialogState={replyDialogState} />
     </React.Fragment>
   );
 };

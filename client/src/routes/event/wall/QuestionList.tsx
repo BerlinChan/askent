@@ -28,7 +28,7 @@ const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
   useQuestionRealtimeSearchWallSubscription({
     variables: {
       eventId: questionQueryInput.eventId,
-      hash: questionsQueryResult.data?.questionsByEventWall.hash as string,
+      hash: data?.questionsByEventWall.hash as string,
     },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRealtimeSearch) {

@@ -11,6 +11,7 @@ import Confirm from "../../../../components/Confirm";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
 import ReplyIcon from "@material-ui/icons/Reply";
+import { Props as ReplyDialogProps } from "./reply/ReplyDialog";
 
 interface Props {
   questionsQueryResult: QueryResult<
@@ -34,15 +35,14 @@ interface Props {
     string[],
     React.Dispatch<React.SetStateAction<string[]>>
   ];
-  replyQuestionIdState: [string, React.Dispatch<React.SetStateAction<string>>];
 }
 
-const QuestionListMenu: React.FC<Props> = ({
+const QuestionListMenu: React.FC<Props & ReplyDialogProps> = ({
   questionsQueryResult,
   moreMenuState,
   editContentInputRef,
   editContentIdsState,
-  replyQuestionIdState,
+  replyDialogState,
 }) => {
   const { formatMessage } = useIntl();
   const { data } = questionsQueryResult;
@@ -71,7 +71,7 @@ const QuestionListMenu: React.FC<Props> = ({
     handleCloseDelete();
   };
   const handleOpenReply = (id: string) => {
-    replyQuestionIdState[1](id);
+    replyDialogState[1]({ open: true, questionId: id });
     handleMoreClose();
   };
   const [editContentIds, setEditContentIds] = editContentIdsState;

@@ -4,25 +4,46 @@ import { FormattedMessage } from "react-intl";
 import DialogTitleWithClose from "../../../../../components/DialogTitleWithClose";
 import ReplyList from "./ReplyList";
 
-interface Props {
-  replyQuestionIdState: [string, React.Dispatch<React.SetStateAction<string>>];
+export interface Props {
+  replyDialogState: [
+    {
+      open: boolean;
+      questionId: string;
+    },
+    React.Dispatch<
+      React.SetStateAction<{
+        open: boolean;
+        questionId: string;
+      }>
+    >
+  ];
 }
 
-const ReplyDialog: React.FC<Props> = ({ replyQuestionIdState }) => {
-  const [replyQuestionId, setReplyQuestionId] = replyQuestionIdState;
-  const handleCancel = () => {
-    setReplyQuestionId("");
+const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
+  const [replyDialog, setReplyDialog] = replyDialogState;
+  const handleClose = () => {
+    setReplyDialog(Object.assign({}, replyDialog, { open: false }));
+  };
+  const onExited = () => {
+    setReplyDialog({ open: false, questionId: "" });
   };
 
   return (
-    <Dialog open={Boolean(replyQuestionId)} onClose={handleCancel} fullWidth>
+    <Dialog
+      open={replyDialog.open}
+      onClose={handleClose}
+      onExited={onExited}
+      fullWidth
+    >
       <DialogTitleWithClose
         title={<FormattedMessage id="Reply" defaultMessage="Reply" />}
-        onClose={handleCancel}
+        onClose={handleClose}
       />
       <DialogContent>
-        ReplyDialog {replyQuestionId}
-        <ReplyList questionId={replyQuestionId} />
+        ReplyDialog {replyDialog.questionId}
+        {replyDialog.questionId ? (
+          <ReplyList questionId={replyDialog.questionId} />
+        ) : null}
       </DialogContent>
     </Dialog>
   );
