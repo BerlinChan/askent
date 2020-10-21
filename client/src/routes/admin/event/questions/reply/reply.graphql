@@ -30,3 +30,16 @@ query RepliesByQuestion($input: ReplyQueryInput!) {
     }
   }
 }
+
+subscription ReplyRealtimeSearch($questionId: String!, $hash: String!) {
+  replyRealtimeSearch(questionId: $questionId, hash: $hash) {
+    totalCount
+    insertList {
+      ...ReplyFields
+    }
+    updateList {
+      ...ReplyFields
+    }
+    deleteList
+  }
+}

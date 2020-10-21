@@ -21,28 +21,17 @@ import {
   FormattedMessage,
   FormattedDate,
   FormattedTime,
-  FormattedPlural,
 } from "react-intl";
-import { QueryResult } from "@apollo/client";
 import {
-  QuestionFieldsFragment,
-  EventByIdQuery,
-  EventByIdQueryVariables,
+  ReplyFieldsFragment,
   useUpdateQuestionReviewStatusMutation,
-  useUpdateQuestionStarMutation,
-  useUpdateQuestionTopMutation,
   useUpdateQuestionContentMutation,
   ReviewStatus,
 } from "../../../../../generated/graphqlHooks";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
-import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import UnarchiveIcon from "@material-ui/icons/Unarchive";
-import CheckIcon from "@material-ui/icons/Check";
-import ClearIcon from "@material-ui/icons/Clear";
-import StarIcon from "@material-ui/icons/Star";
-import TopIcon from "@material-ui/icons/Publish";
 import QuestionToggleButton, {
   handleToggleType,
 } from "../../../../../components/QuestionToggleButton";
@@ -60,11 +49,8 @@ const useStyles = makeStyles((theme: Theme) =>
       "&:hover .questionHover": { display: "inline-flex" },
       "& .questionHover": { display: "none" },
     },
-    starQuestion: {
+    archiveQuestion: {
       backgroundColor: fade(theme.palette.warning.light, 0.3),
-    },
-    topQuestion: {
-      backgroundColor: fade(theme.palette.success.light, 0.3),
     },
     questionMeta: {
       marginLeft: theme.spacing(0.5),
@@ -86,8 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  question: QuestionFieldsFragment;
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  reply: ReplyFieldsFragment;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
@@ -98,30 +83,20 @@ interface Props {
   isScrolling?: boolean;
 }
 
-const QuestionListItem: React.FC<Props> = ({
-  question,
+const ReplyListItem: React.FC<Props> = ({
+  reply,
   handleMoreClick,
-  eventQueryResult,
   editContent,
   handleEditContentToggle,
   editContentInputRef,
   isScrolling = false,
 }) => {
   const classes = useStyles();
-  const { data } = eventQueryResult;
   const { formatMessage } = useIntl();
   const [
     updateQuestionReviewStatusMutation,
     { loading: updateQuestionReviewStatusLoading },
   ] = useUpdateQuestionReviewStatusMutation();
-  const [
-    updateQuestionStarMutation,
-    { loading: updateQuestionStarLoading },
-  ] = useUpdateQuestionStarMutation();
-  const [
-    updateQuestionTopMutation,
-    { loading: updateQuestionTopLoading },
-  ] = useUpdateQuestionTopMutation();
   const [
     updateQuestionContentMutation,
     { loading: updateQuestionContentLoading },
@@ -137,48 +112,30 @@ const QuestionListItem: React.FC<Props> = ({
       },
     });
   };
-  const handlePublishClick: handleToggleType = async (e, id, currentStatus) => {
-    await updateQuestionReviewStatusMutation({
-      variables: {
-        questionId: id,
-        reviewStatus: currentStatus
-          ? ReviewStatus.Review
-          : ReviewStatus.Publish,
-      },
-    });
-  };
-  const handleStarClick: handleToggleType = async (e, id, star) => {
-    await updateQuestionStarMutation({
-      variables: { questionId: id, star: !star },
-    });
-  };
-  const handleTopClick: handleToggleType = async (e, id, top) => {
-    await updateQuestionTopMutation({
-      variables: { questionId: id, top: !top },
-    });
-  };
 
   return (
     <ListItem
       component="div"
       className={`${classes.listItem} ${
-        question.star ? classes.starQuestion : ""
-      } ${question.top ? classes.topQuestion : ""}`}
+        reply.reviewStatus === ReviewStatus.Archive
+          ? classes.archiveQuestion
+          : ""
+      }`}
       alignItems="flex-start"
       divider
     >
       <React.Fragment>
         <ListItemAvatar>
           <Avatar
-            alt={question.author?.name as string}
-            src={isScrolling ? "" : question.author?.avatar}
+            alt={reply.author?.name as string}
+            src={isScrolling ? "" : reply.author?.avatar}
           />
         </ListItemAvatar>
         <ListItemText
           primary={
             <Typography component="span" variant="body2" color="textPrimary">
-              {question.author?.name ? (
-                question.author?.name
+              {reply.author?.name ? (
+                reply.author?.name
               ) : (
                 <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
               )}
@@ -186,15 +143,6 @@ const QuestionListItem: React.FC<Props> = ({
           }
           secondary={
             <React.Fragment>
-              <ThumbUpIcon style={{ fontSize: 12 }} />
-              <Typography
-                className={classes.questionMeta}
-                component="span"
-                variant="body2"
-                color="inherit"
-              >
-                {question.voteUpCount}
-              </Typography>
               <AccessTimeIcon style={{ fontSize: 12 }} />
               <Typography
                 className={classes.questionMeta}
@@ -202,27 +150,27 @@ const QuestionListItem: React.FC<Props> = ({
                 variant="body2"
                 color="inherit"
               >
-                <FormattedDate value={question.createdAt} />
+                <FormattedDate value={reply.createdAt} />
                 {", "}
-                <FormattedTime value={question.createdAt} />
+                <FormattedTime value={reply.createdAt} />
               </Typography>
             </React.Fragment>
           }
         />
         {editContent ? (
           <Formik
-            initialValues={{ content: question.content }}
+            initialValues={{ content: reply.content }}
             validationSchema={Yup.object({
               content: Yup.string().max(QUESTION_CONTENT_MAX_LENGTH).required(),
             })}
             onSubmit={async (values) => {
               await updateQuestionContentMutation({
                 variables: {
-                  questionId: question.id,
+                  questionId: reply.id,
                   content: values.content,
                 },
               });
-              handleEditContentToggle(question.id);
+              handleEditContentToggle(reply.id);
             }}
           >
             {(formProps) => (
@@ -254,7 +202,7 @@ const QuestionListItem: React.FC<Props> = ({
                   <Box className={classes.editContentFormButtons}>
                     <Button
                       size="small"
-                      onClick={() => handleEditContentToggle(question.id)}
+                      onClick={() => handleEditContentToggle(reply.id)}
                     >
                       <FormattedMessage id="Cancel" defaultMessage="Cancel" />
                     </Button>
@@ -275,82 +223,15 @@ const QuestionListItem: React.FC<Props> = ({
         ) : (
           <React.Fragment>
             <Typography className={classes.questionContent} variant="body1">
-              {question.content}
+              {reply.content}
             </Typography>
-            {Boolean(question.replyCount) && (
-              <Typography variant="body2" color="textSecondary">
-                {question.replyCount}{" "}
-                <FormattedPlural
-                  value={question.replyCount}
-                  one="reply"
-                  other="replies"
-                />
-              </Typography>
-            )}
             <Box className={classes.questionActionBox}>
-              {(question.reviewStatus === ReviewStatus.Publish ||
-                question.reviewStatus === ReviewStatus.Archive) && (
+              {(reply.reviewStatus === ReviewStatus.Publish ||
+                reply.reviewStatus === ReviewStatus.Archive) && (
                 <QuestionToggleButton
                   className="questionHover"
-                  id={question.id}
-                  status={question.star}
-                  onTitle={formatMessage({
-                    id: "Unstar",
-                    defaultMessage: "Unstar",
-                  })}
-                  offTitle={formatMessage({
-                    id: "Star",
-                    defaultMessage: "Star",
-                  })}
-                  onIcon={<StarIcon fontSize="inherit" color="secondary" />}
-                  offIcon={<StarIcon fontSize="inherit" color="inherit" />}
-                  disabled={updateQuestionStarLoading}
-                  handleToggle={handleStarClick}
-                />
-              )}
-              {question.reviewStatus === ReviewStatus.Publish && (
-                <QuestionToggleButton
-                  className="questionHover"
-                  id={question.id}
-                  status={question.top}
-                  onTitle={formatMessage({
-                    id: "Untop",
-                    defaultMessage: "Untop",
-                  })}
-                  offTitle={formatMessage({ id: "Top", defaultMessage: "Top" })}
-                  onIcon={<TopIcon fontSize="inherit" color="secondary" />}
-                  offIcon={<TopIcon fontSize="inherit" color="inherit" />}
-                  disabled={updateQuestionTopLoading}
-                  handleToggle={handleTopClick}
-                />
-              )}
-              {data?.eventById.moderation &&
-                (question.reviewStatus === ReviewStatus.Publish ||
-                  question.reviewStatus === ReviewStatus.Review) && (
-                  <QuestionToggleButton
-                    className="questionHover"
-                    id={question.id}
-                    status={question.reviewStatus === ReviewStatus.Publish}
-                    onTitle={formatMessage({
-                      id: "Unpublish",
-                      defaultMessage: "Unpublish",
-                    })}
-                    offTitle={formatMessage({
-                      id: "Publish",
-                      defaultMessage: "Publish",
-                    })}
-                    onIcon={<ClearIcon fontSize="inherit" />}
-                    offIcon={<CheckIcon fontSize="inherit" />}
-                    disabled={updateQuestionReviewStatusLoading}
-                    handleToggle={handlePublishClick}
-                  />
-                )}
-              {(question.reviewStatus === ReviewStatus.Publish ||
-                question.reviewStatus === ReviewStatus.Archive) && (
-                <QuestionToggleButton
-                  className="questionHover"
-                  id={question.id}
-                  status={question.reviewStatus === ReviewStatus.Archive}
+                  id={reply.id}
+                  status={reply.reviewStatus === ReviewStatus.Archive}
                   onTitle={formatMessage({
                     id: "Unarchive",
                     defaultMessage: "Unarchive",
@@ -368,7 +249,7 @@ const QuestionListItem: React.FC<Props> = ({
 
               <IconButton
                 size="small"
-                onClick={(e) => handleMoreClick(e, question.id)}
+                onClick={(e) => handleMoreClick(e, reply.id)}
               >
                 <MoreHorizIcon fontSize="inherit" />
               </IconButton>
@@ -380,7 +261,7 @@ const QuestionListItem: React.FC<Props> = ({
   );
 };
 
-export default React.memo(QuestionListItem, (prevProps, nextProps) => {
+export default React.memo(ReplyListItem, (prevProps, nextProps) => {
   /*
   return true if passing nextProps to render would return
   the same result as passing prevProps to render,

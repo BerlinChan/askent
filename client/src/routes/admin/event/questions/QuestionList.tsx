@@ -95,7 +95,7 @@ const QuestionList: React.FC<Props> = ({
     setReplyQuestionId(id);
   };
   const handleCloseReply = () => {
-    setReplyQuestionId('');
+    setReplyQuestionId("");
   };
 
   const handleEditContentToggle = (id: string) => {
@@ -155,10 +155,10 @@ const QuestionList: React.FC<Props> = ({
         }}
         endReached={loadMore}
         item={(index) => {
-          const question = orderedList[index] as
-            | QuestionFieldsFragment
-            | undefined;
+          const question: QuestionFieldsFragment | undefined =
+            orderedList[index];
           if (!question) return <div />;
+
           return (
             <QuestionItem
               question={question}
@@ -186,10 +186,7 @@ const QuestionList: React.FC<Props> = ({
         editContentIdsState={editContentIdsState}
         handleOpenReply={handleOpenReply}
       />
-      <ReplyDialog
-        questionId={replyQuestionId}
-        onCancel={handleCloseReply}
-      />
+      <ReplyDialog questionId={replyQuestionId} onCancel={handleCloseReply} />
     </React.Fragment>
   );
 };

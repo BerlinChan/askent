@@ -1,14 +1,9 @@
 import React from "react";
-import { QueryResult } from "@apollo/client";
 import {
-  QuestionsByEventDocument,
-  useQuestionsByEventQuery,
-  useRepliesByQuestionLazyQuery,
-  EventByIdQuery,
-  EventByIdQueryVariables,
-  QuestionFieldsFragment,
-  QuestionQueryInput,
-  useQuestionRealtimeSearchSubscription,
+  RepliesByQuestionDocument,
+  useRepliesByQuestionQuery,
+  ReplyFieldsFragment,
+  useReplyRealtimeSearchSubscription,
 } from "../../../../../generated/graphqlHooks";
 import { Virtuoso } from "react-virtuoso";
 import ReplyItem from "./ReplyItem";
@@ -20,14 +15,10 @@ import {
 } from "../../../../../constant";
 
 interface Props {
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  questionQueryInput: QuestionQueryInput;
+  questionId: string;
 }
 
-const QuestionList: React.FC<Props> = ({
-  eventQueryResult,
-  questionQueryInput,
-}) => {
+const ReplyList: React.FC<Props> = ({ questionId }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -35,49 +26,47 @@ const QuestionList: React.FC<Props> = ({
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
-  const questionsQueryResult = useQuestionsByEventQuery({
+  const replyQueryInput = {
+    questionId,
+    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+  };
+  const repliesQueryResult = useRepliesByQuestionQuery({
     fetchPolicy: "network-only",
-    variables: { input: questionQueryInput },
+    variables: { input: replyQueryInput },
   });
-  const { data, loading, fetchMore } = questionsQueryResult;
+  const { data, loading, fetchMore } = repliesQueryResult;
 
-  const [
-    repliesByQuestionLazyQuery,
-    { data: repliesByQuestionData, loading: repliesByQuestionLoading },
-  ] = useRepliesByQuestionLazyQuery();
-
-  useQuestionRealtimeSearchSubscription({
+  useReplyRealtimeSearchSubscription({
     variables: {
-      eventId: questionQueryInput.eventId,
-      hash: questionsQueryResult.data?.questionsByEvent.hash as string,
+      questionId: replyQueryInput.questionId,
+      hash: repliesQueryResult.data?.repliesByQuestion.hash as string,
     },
     onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionRealtimeSearch) {
-        const questionRealtimeSearch =
-          subscriptionData.data.questionRealtimeSearch;
+      if (subscriptionData.data?.replyRealtimeSearch) {
+        const replyRealtimeSearch = subscriptionData.data.replyRealtimeSearch;
 
         if (data) {
           client.writeQuery({
-            query: QuestionsByEventDocument,
-            variables: { input: questionQueryInput },
+            query: RepliesByQuestionDocument,
+            variables: { input: replyQueryInput },
             data: {
-              questionsByEvent: {
-                ...data.questionsByEvent,
-                totalCount: questionRealtimeSearch.totalCount,
-                list: data.questionsByEvent.list
+              repliesByQuestion: {
+                ...data.repliesByQuestion,
+                totalCount: replyRealtimeSearch.totalCount,
+                list: data.repliesByQuestion.list
                   // remove
                   .filter(
                     (preQuestion) =>
-                      !questionRealtimeSearch.deleteList.includes(
+                      !replyRealtimeSearch.deleteList.includes(
                         preQuestion.id
                       ) &&
-                      !questionRealtimeSearch.updateList
+                      !replyRealtimeSearch.updateList
                         .map((item) => item.id)
                         .includes(preQuestion.id)
                   )
                   // add
-                  .concat(questionRealtimeSearch.insertList)
-                  .concat(questionRealtimeSearch.updateList),
+                  .concat(replyRealtimeSearch.insertList)
+                  .concat(replyRealtimeSearch.updateList),
               },
             },
           });
@@ -96,11 +85,6 @@ const QuestionList: React.FC<Props> = ({
     moreMenuState[1]({ anchorEl: null, id: "" });
   };
 
-  const [replyQuestionId, setReplyQuestionId] = React.useState("");
-  const handleOpenReply = (id: string) => {
-    setReplyQuestionId(id);
-  };
-
   const handleEditContentToggle = (id: string) => {
     const findId = editContentIdsState[0].find((item) => item === id);
     editContentIdsState[1](
@@ -113,14 +97,15 @@ const QuestionList: React.FC<Props> = ({
   };
 
   const loadMore = () => {
-    if (data?.questionsByEvent.hasNextPage) {
+    if (data?.repliesByQuestion.hasNextPage) {
       fetchMore({
         variables: {
           input: {
-            ...questionQueryInput,
+            ...replyQueryInput,
             pagination: {
-              offset: data?.questionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
-              limit: data?.questionsByEvent.limit || DEFAULT_PAGE_LIMIT,
+              offset:
+                data?.repliesByQuestion.list.length || DEFAULT_PAGE_OFFSET,
+              limit: data?.repliesByQuestion.limit || DEFAULT_PAGE_LIMIT,
             },
           },
         },
@@ -128,11 +113,11 @@ const QuestionList: React.FC<Props> = ({
           if (!fetchMoreResult) return prev;
 
           return Object.assign({}, fetchMoreResult, {
-            questionsByEvent: {
-              ...fetchMoreResult.questionsByEvent,
+            repliesByQuestion: {
+              ...fetchMoreResult.repliesByQuestion,
               list: [
-                ...prev.questionsByEvent.list,
-                ...fetchMoreResult.questionsByEvent.list,
+                ...prev.repliesByQuestion.list,
+                ...fetchMoreResult.repliesByQuestion.list,
               ],
             },
           });
@@ -141,32 +126,25 @@ const QuestionList: React.FC<Props> = ({
     }
   };
 
-  React.useEffect(() => {
-    if (questionId) {
-      repliesByQuestionLazyQuery({ variables: { input: { questionId } } });
-    }
-  }, [questionId]);
-
   return (
     <React.Fragment>
       <Virtuoso
         style={{ height: "100%", width: "100%" }}
-        totalCount={data?.questionsByEvent.list.length || 0}
+        totalCount={data?.repliesByQuestion.list.length || 0}
         scrollingStateChange={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}
         item={(index) => {
-          const question = data?.questionsByEvent.list[index] as
-            | QuestionFieldsFragment
-            | undefined;
-          if (!question) return <div />;
+          const reply: ReplyFieldsFragment | undefined =
+            data?.repliesByQuestion.list[index];
+          if (!reply) return <div />;
+
           return (
             <ReplyItem
-              question={question}
-              eventQueryResult={eventQueryResult}
+              reply={reply}
               handleMoreClick={handleMoreOpen}
-              editContent={editContentIdsState[0].includes(question.id)}
+              editContent={editContentIdsState[0].includes(reply.id)}
               handleEditContentToggle={handleEditContentToggle}
               editContentInputRef={editContentInputRef}
               isScrolling={isScrolling}
@@ -176,20 +154,18 @@ const QuestionList: React.FC<Props> = ({
         footer={() => (
           <ListFooter
             loading={loading}
-            hasNextPage={data?.questionsByEvent.hasNextPage}
+            hasNextPage={data?.repliesByQuestion.hasNextPage}
           />
         )}
       />
 
       <ReplyListMenu
-        questionsQueryResult={questionsQueryResult}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}
-        handleOpenReply={handleOpenReply}
       />
     </React.Fragment>
   );
 };
 
-export default QuestionList;
+export default ReplyList;

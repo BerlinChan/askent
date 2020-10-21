@@ -38,7 +38,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "codegen": "ts-node --skip-project tools/codegen.ts",
-    "intl:extract": "npx formatjs extract --messages-dir src/generated src/**/*.tsx"
+    "intl:extract": "npx formatjs extract src/**/*.tsx --out-file src/generated/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'"
   },
   "eslintConfig": {
     "extends": "react-app"
