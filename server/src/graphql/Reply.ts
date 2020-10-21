@@ -9,6 +9,8 @@ import {
   Mutation,
   InputType,
   Root,
+  Publisher,
+  PubSub,
 } from 'type-graphql'
 import { Context } from '../context'
 import { Question as QuestionEntity } from '../entity/Question'
@@ -21,6 +23,7 @@ import { getRepository, Repository } from 'typeorm'
 import { IPagedType, PaginationInput } from './Pagination'
 import { enc, MD5 } from 'crypto-js'
 import { ReplyQueryMeta } from '../entity/ReplyQueryMeta'
+import { ReplyRealtimeSearchPayload } from './ReplySubscription'
 
 @ObjectType()
 export class Reply {
@@ -55,13 +58,13 @@ export class Reply {
 
   @Field((returns) => User)
   async author(@Root() root: Reply): Promise<UserEntity> {
-    const author = await this.replyRepository
+    const user = await this.replyRepository
       .createQueryBuilder()
       .relation(ReplyEntity, 'author')
       .of(root.id)
       .loadOne()
 
-    return author
+    return user
   }
 
   @Field()
@@ -133,6 +136,8 @@ export class ReplyResolver {
 
   @Mutation((returns) => Reply)
   async createReply(
+    @PubSub('REPLY_REALTIME_SEARCH')
+    publish: Publisher<ReplyRealtimeSearchPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('content') content: string,
     @Ctx() ctx: Context,
@@ -158,8 +163,9 @@ export class ReplyResolver {
       question: { id: questionId },
       author: { id: authorId },
     })
-
     await this.replyRepository.save(reply)
+
+    await publish({ questionId })
 
     return reply
   }

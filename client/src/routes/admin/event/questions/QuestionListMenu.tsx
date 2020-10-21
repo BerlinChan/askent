@@ -34,7 +34,7 @@ interface Props {
     string[],
     React.Dispatch<React.SetStateAction<string[]>>
   ];
-  handleOpenReply: (id: string) => void;
+  replyQuestionIdState: [string, React.Dispatch<React.SetStateAction<string>>];
 }
 
 const QuestionListMenu: React.FC<Props> = ({
@@ -42,7 +42,7 @@ const QuestionListMenu: React.FC<Props> = ({
   moreMenuState,
   editContentInputRef,
   editContentIdsState,
-  handleOpenReply,
+  replyQuestionIdState,
 }) => {
   const { formatMessage } = useIntl();
   const { data } = questionsQueryResult;
@@ -69,6 +69,10 @@ const QuestionListMenu: React.FC<Props> = ({
       variables: { questionId: deleteConfirm.id },
     });
     handleCloseDelete();
+  };
+  const handleOpenReply = (id: string) => {
+    replyQuestionIdState[1](id);
+    handleMoreClose();
   };
   const [editContentIds, setEditContentIds] = editContentIdsState;
   const handleEditContentToggle = (id: string) => {

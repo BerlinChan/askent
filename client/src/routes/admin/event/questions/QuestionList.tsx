@@ -34,6 +34,7 @@ const QuestionList: React.FC<Props> = ({
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
+  const replyQuestionIdState = React.useState<string>("");
   const questionsQueryResult = useQuestionsByEventQuery({
     fetchPolicy: "network-only",
     variables: { input: questionQueryInput },
@@ -88,14 +89,6 @@ const QuestionList: React.FC<Props> = ({
   };
   const handleMoreClose = () => {
     moreMenuState[1]({ anchorEl: null, id: "" });
-  };
-
-  const [replyQuestionId, setReplyQuestionId] = React.useState("");
-  const handleOpenReply = (id: string) => {
-    setReplyQuestionId(id);
-  };
-  const handleCloseReply = () => {
-    setReplyQuestionId("");
   };
 
   const handleEditContentToggle = (id: string) => {
@@ -184,9 +177,9 @@ const QuestionList: React.FC<Props> = ({
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}
-        handleOpenReply={handleOpenReply}
+        replyQuestionIdState={replyQuestionIdState}
       />
-      <ReplyDialog questionId={replyQuestionId} onCancel={handleCloseReply} />
+      <ReplyDialog replyQuestionIdState={replyQuestionIdState} />
     </React.Fragment>
   );
 };

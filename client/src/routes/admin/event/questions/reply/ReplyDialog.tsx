@@ -5,20 +5,24 @@ import DialogTitleWithClose from "../../../../../components/DialogTitleWithClose
 import ReplyList from "./ReplyList";
 
 interface Props {
-  questionId: string;
-  onCancel: () => void;
+  replyQuestionIdState: [string, React.Dispatch<React.SetStateAction<string>>];
 }
 
-const ReplyDialog: React.FC<Props> = ({ questionId, onCancel }) => {
+const ReplyDialog: React.FC<Props> = ({ replyQuestionIdState }) => {
+  const [replyQuestionId, setReplyQuestionId] = replyQuestionIdState;
+  const handleCancel = () => {
+    setReplyQuestionId("");
+  };
+
   return (
-    <Dialog open={Boolean(questionId)}>
+    <Dialog open={Boolean(replyQuestionId)} onClose={handleCancel} fullWidth>
       <DialogTitleWithClose
         title={<FormattedMessage id="Reply" defaultMessage="Reply" />}
-        onClose={onCancel}
+        onClose={handleCancel}
       />
       <DialogContent>
-        ReplyDialog {questionId}
-        <ReplyList questionId={questionId} />
+        ReplyDialog {replyQuestionId}
+        <ReplyList questionId={replyQuestionId} />
       </DialogContent>
     </Dialog>
   );

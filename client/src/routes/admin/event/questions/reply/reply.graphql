@@ -12,9 +12,6 @@ fragment ReplyFields on Reply {
   content
   reviewStatus
   isModerator
-  question {
-    ...QuestionFields
-  }
   author {
     id
     name

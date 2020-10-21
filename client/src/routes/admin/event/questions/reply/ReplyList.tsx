@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  ReplyQueryInput,
   RepliesByQuestionDocument,
   useRepliesByQuestionQuery,
   ReplyFieldsFragment,
@@ -26,7 +27,7 @@ const ReplyList: React.FC<Props> = ({ questionId }) => {
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
-  const replyQueryInput = {
+  const replyQueryInput: ReplyQueryInput = {
     questionId,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
   };
@@ -39,7 +40,7 @@ const ReplyList: React.FC<Props> = ({ questionId }) => {
   useReplyRealtimeSearchSubscription({
     variables: {
       questionId: replyQueryInput.questionId,
-      hash: repliesQueryResult.data?.repliesByQuestion.hash as string,
+      hash: data?.repliesByQuestion.hash as string,
     },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.replyRealtimeSearch) {
@@ -129,7 +130,7 @@ const ReplyList: React.FC<Props> = ({ questionId }) => {
   return (
     <React.Fragment>
       <Virtuoso
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "300px", width: "100%" }}
         totalCount={data?.repliesByQuestion.list.length || 0}
         scrollingStateChange={(scrolling) => {
           setIsScrolling(scrolling);
