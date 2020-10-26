@@ -26,7 +26,7 @@ const DialogTitleWithClose: React.FC<Props> = ({ title, onClose }) => {
       <Typography variant="subtitle1" color="textSecondary">
         {title}
       </Typography>
-      <IconButton onClick={onClose}>
+      <IconButton onClick={onClose} size="small">
         <CloseIcon color="inherit" fontSize="small" />
       </IconButton>
     </DialogTitle>

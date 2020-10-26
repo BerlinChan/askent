@@ -130,7 +130,7 @@ const ReplyList: React.FC<Props> = ({ questionId }) => {
   return (
     <React.Fragment>
       <Virtuoso
-        style={{ height: "300px", width: "100%" }}
+        style={{ height: "100%", width: "100%" }}
         totalCount={data?.repliesByQuestion.list.length || 0}
         scrollingStateChange={(scrolling) => {
           setIsScrolling(scrolling);

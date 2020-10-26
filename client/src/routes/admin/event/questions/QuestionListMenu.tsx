@@ -13,22 +13,19 @@ import EditIcon from "@material-ui/icons/Edit";
 import ReplyIcon from "@material-ui/icons/Reply";
 import { Props as ReplyDialogProps } from "./reply/ReplyDialog";
 
-interface Props {
+type MoreMenuStateType = {
+  anchorEl: HTMLElement | null;
+  id: string;
+};
+
+interface Props extends ReplyDialogProps {
   questionsQueryResult: QueryResult<
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables
   >;
   moreMenuState: [
-    {
-      anchorEl: HTMLElement | null;
-      id: string;
-    },
-    React.Dispatch<
-      React.SetStateAction<{
-        anchorEl: HTMLElement | null;
-        id: string;
-      }>
-    >
+    MoreMenuStateType,
+    React.Dispatch<React.SetStateAction<MoreMenuStateType>>
   ];
   editContentInputRef: React.RefObject<HTMLInputElement>;
   editContentIdsState: [
@@ -37,7 +34,7 @@ interface Props {
   ];
 }
 
-const QuestionListMenu: React.FC<Props & ReplyDialogProps> = ({
+const QuestionListMenu: React.FC<Props> = ({
   questionsQueryResult,
   moreMenuState,
   editContentInputRef,

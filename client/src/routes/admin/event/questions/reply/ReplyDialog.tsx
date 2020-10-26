@@ -1,25 +1,30 @@
 import React from "react";
 import { Dialog, DialogContent } from "@material-ui/core";
+import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import DialogTitleWithClose from "../../../../../components/DialogTitleWithClose";
 import ReplyList from "./ReplyList";
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    content: { minHeight: 300, overflowY: "hidden" },
+  })
+);
+
+type ReplyDialogStateType = {
+  open: boolean;
+  questionId: string;
+};
+
 export interface Props {
   replyDialogState: [
-    {
-      open: boolean;
-      questionId: string;
-    },
-    React.Dispatch<
-      React.SetStateAction<{
-        open: boolean;
-        questionId: string;
-      }>
-    >
+    ReplyDialogStateType,
+    React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
   ];
 }
 
 const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
+  const classes = useStyles();
   const [replyDialog, setReplyDialog] = replyDialogState;
   const handleClose = () => {
     setReplyDialog(Object.assign({}, replyDialog, { open: false }));
@@ -39,7 +44,7 @@ const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
         title={<FormattedMessage id="Reply" defaultMessage="Reply" />}
         onClose={handleClose}
       />
-      <DialogContent>
+      <DialogContent className={classes.content}>
         ReplyDialog {replyDialog.questionId}
         {replyDialog.questionId ? (
           <ReplyList questionId={replyDialog.questionId} />

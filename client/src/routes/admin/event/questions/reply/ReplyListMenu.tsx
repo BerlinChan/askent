@@ -6,18 +6,15 @@ import Confirm from "../../../../../components/Confirm";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
 
+type MoreMenuStateType = {
+  anchorEl: HTMLElement | null;
+  id: string;
+};
+
 interface Props {
   moreMenuState: [
-    {
-      anchorEl: HTMLElement | null;
-      id: string;
-    },
-    React.Dispatch<
-      React.SetStateAction<{
-        anchorEl: HTMLElement | null;
-        id: string;
-      }>
-    >
+    MoreMenuStateType,
+    React.Dispatch<React.SetStateAction<MoreMenuStateType>>
   ];
   editContentInputRef: React.RefObject<HTMLInputElement>;
   editContentIdsState: [
