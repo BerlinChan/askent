@@ -7,7 +7,7 @@ import ReplyList from "./ReplyList";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    content: { minHeight: 300, overflowY: "hidden" },
+    content: {},
   })
 );
 
@@ -45,10 +45,7 @@ const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
         onClose={handleClose}
       />
       <DialogContent className={classes.content}>
-        ReplyDialog {replyDialog.questionId}
-        {replyDialog.questionId ? (
-          <ReplyList questionId={replyDialog.questionId} />
-        ) : null}
+        <ReplyList questionId={replyDialog.questionId} />
       </DialogContent>
     </Dialog>
   );

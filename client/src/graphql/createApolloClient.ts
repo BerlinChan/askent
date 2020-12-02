@@ -1,11 +1,10 @@
+import { from, split, HttpLink } from "@apollo/client";
 import { ApolloClient } from "@apollo/client/core";
-import { getMainDefinition } from "apollo-utilities";
 import { setContext } from "@apollo/client/link/context";
-import { from, split } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { onError } from "@apollo/client/link/error";
-import { HttpLink } from "@apollo/client";
 import { InMemoryCache } from "@apollo/client/cache";
+import { getMainDefinition } from '@apollo/client/utilities';
 import { resolvers, typeDefs } from "./resolvers";
 import config from "../config";
 import { AUTH_TOKEN } from "../constant";
@@ -17,8 +16,8 @@ const authMiddleware = setContext((operation, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: localStorage.getItem(AUTH_TOKEN) || ""
-    }
+      Authorization: localStorage.getItem(AUTH_TOKEN) || "",
+    },
   };
 });
 
@@ -30,13 +29,13 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
     connectionParams: {
-      Authorization: localStorage.getItem(AUTH_TOKEN) || ""
-    } as ConnectionParamsType
-  }
+      Authorization: localStorage.getItem(AUTH_TOKEN) || "",
+    } as ConnectionParamsType,
+  },
 });
 
 const httpLink = new HttpLink({
-  uri: config.apiUri
+  uri: config.apiUri,
 });
 const link = from([
   // TODO: apollo error handling, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
@@ -70,7 +69,7 @@ const link = from([
     },
     wsLink,
     httpLink
-  )
+  ),
 ]);
 
 export default function createApolloClient() {
@@ -80,6 +79,6 @@ export default function createApolloClient() {
     typeDefs,
     resolvers,
     queryDeduplication: true,
-    connectToDevTools: true
+    connectToDevTools: true,
   });
 }
