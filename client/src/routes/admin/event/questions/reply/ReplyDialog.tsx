@@ -35,6 +35,7 @@ const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
 
   return (
     <Dialog
+      scroll={'body'}
       open={replyDialog.open}
       onClose={handleClose}
       onExited={onExited}

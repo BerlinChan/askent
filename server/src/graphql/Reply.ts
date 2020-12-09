@@ -169,6 +169,45 @@ export class ReplyResolver {
 
     return reply
   }
+
+  @Mutation((returns) => Reply, {
+    description: 'Update a reply\'s content.',
+  })
+  async updateReplyContent(
+    @PubSub('REPLY_REALTIME_SEARCH')
+    publish: Publisher<ReplyRealtimeSearchPayload>,
+    @Arg('replyId', (returns) => ID) replyId: string,
+    @Arg('content') content: string,
+  ): Promise<ReplyEntity> {
+    await this.replyRepository.update(replyId, { content })
+    const reply = await this.replyRepository.findOneOrFail(replyId, {
+      relations: ['question'],
+    })
+
+    await publish({ questionId: reply.question.id })
+
+    return reply
+  }
+
+  @Mutation((returns) => Reply, {
+    description: 'Delete a reply by id.',
+  })
+  async deleteReply(
+    @PubSub('REPLY_REALTIME_SEARCH')
+    publish: Publisher<ReplyRealtimeSearchPayload>,
+    @Arg('replyId', (returns) => ID) replyId: string,
+  ): Promise<Pick<ReplyEntity, 'id'>> {
+    const question = await this.replyRepository
+      .createQueryBuilder()
+      .relation(ReplyEntity, 'question')
+      .of(replyId)
+      .loadOne()
+    await this.replyRepository.softDelete(replyId)
+
+    await publish({ questionId: question.id })
+
+    return { id: replyId }
+  }
 }
 
 export async function findReplyAndCountAll(
