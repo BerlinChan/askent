@@ -24,6 +24,7 @@ import { IPagedType, PaginationInput } from './Pagination'
 import { enc, MD5 } from 'crypto-js'
 import { ReplyQueryMeta } from '../entity/ReplyQueryMeta'
 import { ReplyRealtimeSearchPayload } from './ReplySubscription'
+import { QuestionRealtimeSearchPayload } from './QuestionSubscription'
 
 @ObjectType()
 export class Reply {
@@ -193,16 +194,35 @@ export class ReplyResolver {
     description: "Update a reply's review status.",
   })
   async updateReplyReviewStatus(
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publishQuestion: Publisher<QuestionRealtimeSearchPayload>,
     @PubSub('REPLY_REALTIME_SEARCH')
     publish: Publisher<ReplyRealtimeSearchPayload>,
     @Arg('replyId', (returns) => ID) replyId: string,
     @Arg('reviewStatus', (returns) => ReviewStatus) reviewStatus: ReviewStatus,
   ): Promise<ReplyEntity> {
     await this.replyRepository.update(replyId, { reviewStatus })
-    const reply = await this.replyRepository.findOneOrFail(replyId, {
-      relations: ['question'],
-    })
+    const reply = (await this.replyRepository
+      .createQueryBuilder('reply')
+      .leftJoinAndSelect('reply.question', 'question')
+      .leftJoinAndSelect('question.event', 'event')
+      .where('reply.id = :replyId', { replyId })
+      .getOne()) as ReplyEntity
+    if (reviewStatus === ReviewStatus.Publish) {
+      await this.questionRepository.increment(
+        { id: reply.question.id },
+        'replyCount',
+        1,
+      )
+    } else {
+      await this.questionRepository.decrement(
+        { id: reply.question.id },
+        'replyCount',
+        1,
+      )
+    }
 
+    await publishQuestion({ eventId: reply.question.event.id })
     await publish({ questionId: reply.question.id })
 
     return reply
@@ -212,18 +232,27 @@ export class ReplyResolver {
     description: 'Delete a reply by id.',
   })
   async deleteReply(
+    @PubSub('QUESTION_REALTIME_SEARCH')
+    publishQuestion: Publisher<QuestionRealtimeSearchPayload>,
     @PubSub('REPLY_REALTIME_SEARCH')
     publish: Publisher<ReplyRealtimeSearchPayload>,
     @Arg('replyId', (returns) => ID) replyId: string,
   ): Promise<Pick<ReplyEntity, 'id'>> {
-    const question = await this.replyRepository
-      .createQueryBuilder()
-      .relation(ReplyEntity, 'question')
-      .of(replyId)
-      .loadOne()
+    const reply = (await this.replyRepository
+      .createQueryBuilder('reply')
+      .leftJoinAndSelect('reply.question', 'question')
+      .leftJoinAndSelect('question.event', 'event')
+      .where('reply.id === :replyId', { replyId })
+      .getOne()) as ReplyEntity
     await this.replyRepository.softDelete(replyId)
+    await this.questionRepository.decrement(
+      { id: reply.question.id },
+      'replyCount',
+      1,
+    )
 
-    await publish({ questionId: question.id })
+    await publishQuestion({ eventId: reply.question.event.id })
+    await publish({ questionId: reply.question.id })
 
     return { id: replyId }
   }
