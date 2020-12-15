@@ -8,7 +8,7 @@ import {
   EventsByMeQueryVariables,
   useDeleteEventMutation,
   EventFieldsFragment,
-  EventDateStatus
+  EventDateStatus,
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/client";
 import { useHistory } from "react-router-dom";
@@ -25,13 +25,13 @@ const useStyles = makeStyles((theme: Theme) =>
     eventList: {
       margin: theme.spacing(2, 0),
       flex: 1,
-      overflow: "hidden"
+      overflow: "hidden",
     },
     listGroup: {
       color: theme.palette.primary.contrastText,
       fontWeight: theme.typography.fontWeightBold,
-      backgroundColor: theme.palette.primary.main
-    }
+      backgroundColor: theme.palette.primary.main,
+    },
   })
 );
 
@@ -49,7 +49,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   }>({ anchorEl: null, id: "" });
   const [deleteConfirm, setDeleteConfirm] = React.useState({
     open: false,
-    id: ""
+    id: "",
   });
   const eventSettingState = React.useState<string>("");
   const [deleteEventMutation] = useDeleteEventMutation();
@@ -68,7 +68,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   };
   const handleDelete = async () => {
     await deleteEventMutation({
-      variables: { eventId: deleteConfirm.id }
+      variables: { eventId: deleteConfirm.id },
     });
     refetch();
     setDeleteConfirm({ open: false, id: "" });
@@ -76,14 +76,14 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
 
   const { groupKeys, groupCounts } = React.useMemo(() => {
     const groupedEvents = R.groupBy<EventFieldsFragment>(
-      item => item.dateStatus
+      (item) => item.dateStatus
     )(data?.eventsByMe.list || []);
     const groupKeys = Object.keys(groupedEvents);
-    const groupCounts = Object.values(groupedEvents).map(item => item.length);
+    const groupCounts = Object.values(groupedEvents).map((item) => item.length);
 
     return {
       groupKeys,
-      groupCounts
+      groupCounts,
     };
   }, [data]);
   const loadMore = () => {
@@ -92,8 +92,8 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
         variables: {
           pagination: {
             offset: data?.eventsByMe.list.length || DEFAULT_PAGE_OFFSET,
-            limit: data?.eventsByMe.limit || DEFAULT_PAGE_LIMIT
-          }
+            limit: data?.eventsByMe.limit || DEFAULT_PAGE_LIMIT,
+          },
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
@@ -107,11 +107,11 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
                   prev.eventsByMe.list,
                   fetchMoreResult.eventsByMe.list
                 ),
-                ...fetchMoreResult.eventsByMe.list
-              ]
-            }
+                ...fetchMoreResult.eventsByMe.list,
+              ],
+            },
           });
-        }
+        },
       });
     }
   };
@@ -121,39 +121,39 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
       text: <FormattedMessage id="Open" defaultMessage="Open" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
         history.push(`/admin/event/${moreMenuState[0].id}`);
-      }
+      },
     },
     {
       text: <FormattedMessage id="Setting" defaultMessage="Setting" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
         eventSettingState[1](moreMenuState[0].id);
         handleMoreClose();
-      }
+      },
     },
     {
       disabled: true,
       text: (
         <FormattedMessage id="Share_access" defaultMessage="Share access" />
       ),
-      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {},
     },
     {
       disabled: true,
       text: <FormattedMessage id="Duplicate" defaultMessage="Duplicate" />,
-      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {},
     },
     {
       disabled: true,
       text: <FormattedMessage id="Transfer" defaultMessage="Transfer" />,
-      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {}
+      onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {},
     },
     {
       text: <FormattedMessage id="Delete" defaultMessage="Delete" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
         handleOpenDelete(e, moreMenuState[0].id);
         handleMoreClose();
-      }
-    }
+      },
+    },
   ];
 
   return (
@@ -163,26 +163,28 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
           style={{ height: "100%", width: "100%" }}
           groupCounts={groupCounts}
           endReached={loadMore}
-          GroupContainer={({ children, ...props }) => (
-            <ListSubheader {...props} className={classes.listGroup}>
-              {children}
-            </ListSubheader>
-          )}
-          group={index =>
+          components={{
+            Group: ({ children, ...props }) => (
+              <ListSubheader {...props} className={classes.listGroup}>
+                {children}
+              </ListSubheader>
+            ),
+            Footer: () => (
+              <ListFooter
+                loading={loading}
+                hasNextPage={data?.eventsByMe.hasNextPage}
+              />
+            ),
+          }}
+          groupContent={(index) =>
             getEventDateFilterLabel(groupKeys[index] as EventDateStatus)
           }
-          item={index => {
+          itemContent={(index) => {
             const event = data?.eventsByMe.list[index];
             if (!event) return <div />;
 
             return <EventItem event={event} moreMenuState={moreMenuState} />;
           }}
-          footer={() => (
-            <ListFooter
-              loading={loading}
-              hasNextPage={data?.eventsByMe.hasNextPage}
-            />
-          )}
         />
       </Paper>
 
@@ -192,11 +194,11 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right"
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "right"
+          horizontal: "right",
         }}
         open={Boolean(moreMenuState[0].anchorEl)}
         onClose={handleMoreClose}

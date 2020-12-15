@@ -187,17 +187,19 @@ const QuestionList: React.FC<Props> = ({
         className="scrollContainer"
         style={{ height: "100%", width: "100%" }}
         totalCount={orderedList.length + (matcheMdUp ? 1 : 0)}
-        scrollingStateChange={(scrolling) => {
+        isScrolling={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}
-        item={renderListItem}
-        footer={() => (
-          <ListFooter
-            loading={loading}
-            hasNextPage={data?.questionsByEventAudience.hasNextPage}
-          />
-        )}
+        itemContent={renderListItem}
+        components={{
+          Footer: () => (
+            <ListFooter
+              loading={loading}
+              hasNextPage={data?.questionsByEventAudience.hasNextPage}
+            />
+          ),
+        }}
       />
 
       <QuestionListMenu

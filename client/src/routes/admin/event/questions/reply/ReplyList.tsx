@@ -132,11 +132,11 @@ const ReplyList: React.FC<Props> = ({ questionId }) => {
       <Virtuoso
         style={{ height: "100%", width: "100%", minHeight: 300 }}
         totalCount={data?.repliesByQuestion.list.length || 0}
-        scrollingStateChange={(scrolling) => {
+        isScrolling={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}
-        item={(index) => {
+        itemContent={(index) => {
           const reply: ReplyFieldsFragment | undefined =
             data?.repliesByQuestion.list[index];
           if (!reply) return <div />;
@@ -152,12 +152,14 @@ const ReplyList: React.FC<Props> = ({ questionId }) => {
             />
           );
         }}
-        footer={() => (
-          <ListFooter
-            loading={loading}
-            hasNextPage={data?.repliesByQuestion.hasNextPage}
-          />
-        )}
+        components={{
+          Footer: () => (
+            <ListFooter
+              loading={loading}
+              hasNextPage={data?.repliesByQuestion.hasNextPage}
+            />
+          ),
+        }}
       />
 
       <ReplyListMenu

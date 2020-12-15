@@ -106,11 +106,11 @@ const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
     <Virtuoso
       style={{ height: "100%", width: "100%" }}
       totalCount={orderedList.length}
-      scrollingStateChange={(scrolling) => {
+      isScrolling={(scrolling) => {
         setIsScrolling(scrolling);
       }}
       endReached={loadMore}
-      item={(index) => {
+      itemContent={(index) => {
         if (!orderedList[index]) return <div />;
         return (
           <QuestionItem
@@ -119,12 +119,14 @@ const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
           />
         );
       }}
-      footer={() => (
-        <ListFooter
-          loading={loading}
-          hasNextPage={data?.questionsByEventWall.hasNextPage}
-        />
-      )}
+      components={{
+        Footer: () => (
+          <ListFooter
+            loading={loading}
+            hasNextPage={data?.questionsByEventWall.hasNextPage}
+          />
+        ),
+      }}
     />
   );
 };

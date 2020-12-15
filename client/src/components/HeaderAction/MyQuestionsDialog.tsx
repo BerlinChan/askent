@@ -41,11 +41,11 @@ const MyQuestionsDialog: React.FC<Props> = ({
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
   const [eventByIdLazyQuery, eventByIdQueryResult] = useEventByIdLazyQuery({
-    variables: { eventId: id  },
+    variables: { eventId: id },
   });
   const [questionsByMeLazyQuery, questionsResult] = useQuestionsByMeLazyQuery({
     variables: {
-      eventId: id ,
+      eventId: id,
       pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     },
   });
@@ -118,11 +118,11 @@ const MyQuestionsDialog: React.FC<Props> = ({
             className="scrollContainer"
             style={{ height: "100%", width: "100%" }}
             totalCount={data?.questionsByMe.list.length || 0}
-            scrollingStateChange={(scrolling) => {
+            isScrolling={(scrolling) => {
               setIsScrolling(scrolling);
             }}
             endReached={loadMore}
-            item={(index) => {
+            itemContent={(index) => {
               const question = data?.questionsByMe.list[index];
               if (!question) return <div />;
 
@@ -140,12 +140,14 @@ const MyQuestionsDialog: React.FC<Props> = ({
                 />
               );
             }}
-            footer={() => (
-              <ListFooter
-                loading={loading}
-                hasNextPage={data?.questionsByMe.hasNextPage}
-              />
-            )}
+            components={{
+              Footer: () => (
+                <ListFooter
+                  loading={loading}
+                  hasNextPage={data?.questionsByMe.hasNextPage}
+                />
+              ),
+            }}
           />
         </DialogContent>
         <DialogActions>
