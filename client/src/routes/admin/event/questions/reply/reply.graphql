@@ -28,6 +28,24 @@ query RepliesByQuestion($input: ReplyQueryInput!) {
   }
 }
 
+mutation UpdateReplyContent($replyId: ID!, $content: String!) {
+  updateReplyContent(replyId: $replyId, content: $content) {
+    ...ReplyFields
+  }
+}
+
+mutation UpdateReplyReviewStatus($replyId: ID!, $reviewStatus: ReviewStatus!) {
+  updateReplyReviewStatus(replyId: $replyId, reviewStatus: $reviewStatus) {
+    ...ReplyFields
+  }
+}
+
+mutation DeleteReply($replyId: ID!) {
+  deleteReply(replyId: $replyId) {
+    id
+  }
+}
+
 subscription ReplyRealtimeSearch($questionId: String!, $hash: String!) {
   replyRealtimeSearch(questionId: $questionId, hash: $hash) {
     totalCount

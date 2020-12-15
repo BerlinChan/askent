@@ -171,7 +171,7 @@ export class ReplyResolver {
   }
 
   @Mutation((returns) => Reply, {
-    description: 'Update a reply\'s content.',
+    description: "Update a reply's content.",
   })
   async updateReplyContent(
     @PubSub('REPLY_REALTIME_SEARCH')
@@ -180,6 +180,25 @@ export class ReplyResolver {
     @Arg('content') content: string,
   ): Promise<ReplyEntity> {
     await this.replyRepository.update(replyId, { content })
+    const reply = await this.replyRepository.findOneOrFail(replyId, {
+      relations: ['question'],
+    })
+
+    await publish({ questionId: reply.question.id })
+
+    return reply
+  }
+
+  @Mutation((returns) => Reply, {
+    description: "Update a reply's review status.",
+  })
+  async updateReplyReviewStatus(
+    @PubSub('REPLY_REALTIME_SEARCH')
+    publish: Publisher<ReplyRealtimeSearchPayload>,
+    @Arg('replyId', (returns) => ID) replyId: string,
+    @Arg('reviewStatus', (returns) => ReviewStatus) reviewStatus: ReviewStatus,
+  ): Promise<ReplyEntity> {
+    await this.replyRepository.update(replyId, { reviewStatus })
     const reply = await this.replyRepository.findOneOrFail(replyId, {
       relations: ['question'],
     })

@@ -1,7 +1,7 @@
 import React from "react";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { useIntl, FormattedMessage } from "react-intl";
-import { useDeleteQuestionMutation } from "../../../../../generated/graphqlHooks";
+import { useDeleteReplyMutation } from "../../../../../generated/graphqlHooks";
 import Confirm from "../../../../../components/Confirm";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
@@ -34,7 +34,7 @@ const ReplyListMenu: React.FC<Props> = ({
     open: false,
     id: "",
   });
-  const [deleteQuestionMutation] = useDeleteQuestionMutation();
+  const [deleteReplyMutation] = useDeleteReplyMutation();
 
   const handleMoreClose = () => {
     setMoreMenu({ anchorEl: null, id: "" });
@@ -48,8 +48,8 @@ const ReplyListMenu: React.FC<Props> = ({
     setDeleteConfirm({ open: false, id: "" });
   };
   const handleDelete = async () => {
-    await deleteQuestionMutation({
-      variables: { questionId: deleteConfirm.id },
+    await deleteReplyMutation({
+      variables: { replyId: deleteConfirm.id },
     });
     handleCloseDelete();
   };
@@ -107,7 +107,7 @@ const ReplyListMenu: React.FC<Props> = ({
       </Menu>
       <Confirm
         open={deleteConfirm.open}
-        contentText={<FormattedMessage defaultMessage="Delete this reply?" />}
+        contentText={<FormattedMessage id="Delete this reply?" defaultMessage="Delete this reply?" />}
         okText={<FormattedMessage id="Delete" defaultMessage="Delete" />}
         onCancel={handleCloseDelete}
         onOk={handleDelete}

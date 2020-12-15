@@ -24,9 +24,9 @@ import {
 } from "react-intl";
 import {
   ReplyFieldsFragment,
-  useUpdateQuestionReviewStatusMutation,
-  useUpdateQuestionContentMutation,
   ReviewStatus,
+  useUpdateReplyContentMutation,
+  useUpdateReplyReviewStatusMutation,
 } from "../../../../../generated/graphqlHooks";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
@@ -49,18 +49,18 @@ const useStyles = makeStyles((theme: Theme) =>
       "&:hover .questionHover": { display: "inline-flex" },
       "& .questionHover": { display: "none" },
     },
-    archiveQuestion: {
+    archived: {
       backgroundColor: fade(theme.palette.warning.light, 0.3),
     },
-    questionMeta: {
+    meta: {
       marginLeft: theme.spacing(0.5),
       marginRight: theme.spacing(1),
     },
-    questionContent: { width: "100%" },
+    content: { width: "100%" },
     editContentForm: { width: "100%" },
     editContentAction: { display: "flex", justifyContent: "space-between" },
     editContentFormButtons: { "& > *": { display: "inline-block" } },
-    questionActionBox: {
+    actionBox: {
       position: "absolute",
       display: "flex",
       alignItems: "center",
@@ -94,18 +94,18 @@ const ReplyListItem: React.FC<Props> = ({
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [
-    updateQuestionReviewStatusMutation,
-    { loading: updateQuestionReviewStatusLoading },
-  ] = useUpdateQuestionReviewStatusMutation();
+    updateReplyReviewStatusMutation,
+    { loading: updateReplyReviewStatusLoading },
+  ] = useUpdateReplyReviewStatusMutation();
   const [
-    updateQuestionContentMutation,
-    { loading: updateQuestionContentLoading },
-  ] = useUpdateQuestionContentMutation();
+    updateReplyContentMutation,
+    { loading: updateReplyContentLoading },
+  ] = useUpdateReplyContentMutation();
 
   const handleArchiveClick: handleToggleType = async (e, id, currentStatus) => {
-    await updateQuestionReviewStatusMutation({
+    await updateReplyReviewStatusMutation({
       variables: {
-        questionId: id,
+        replyId: id,
         reviewStatus: currentStatus
           ? ReviewStatus.Publish
           : ReviewStatus.Archive,
@@ -117,9 +117,7 @@ const ReplyListItem: React.FC<Props> = ({
     <ListItem
       component="div"
       className={`${classes.listItem} ${
-        reply.reviewStatus === ReviewStatus.Archive
-          ? classes.archiveQuestion
-          : ""
+        reply.reviewStatus === ReviewStatus.Archive ? classes.archived : ""
       }`}
       alignItems="flex-start"
       divider
@@ -145,7 +143,7 @@ const ReplyListItem: React.FC<Props> = ({
             <React.Fragment>
               <AccessTimeIcon style={{ fontSize: 12 }} />
               <Typography
-                className={classes.questionMeta}
+                className={classes.meta}
                 component="span"
                 variant="body2"
                 color="inherit"
@@ -164,9 +162,9 @@ const ReplyListItem: React.FC<Props> = ({
               content: Yup.string().max(QUESTION_CONTENT_MAX_LENGTH).required(),
             })}
             onSubmit={async (values) => {
-              await updateQuestionContentMutation({
+              await updateReplyContentMutation({
                 variables: {
-                  questionId: reply.id,
+                  replyId: reply.id,
                   content: values.content,
                 },
               });
@@ -183,7 +181,7 @@ const ReplyListItem: React.FC<Props> = ({
                   name="content"
                   margin="normal"
                   size="small"
-                  disabled={updateQuestionContentLoading}
+                  disabled={updateReplyContentLoading}
                 />
                 <Box className={classes.editContentAction}>
                   <Typography
@@ -210,8 +208,8 @@ const ReplyListItem: React.FC<Props> = ({
                       size="small"
                       type="submit"
                       color="primary"
-                      loading={updateQuestionContentLoading}
-                      disabled={updateQuestionContentLoading}
+                      loading={updateReplyContentLoading}
+                      disabled={updateReplyContentLoading}
                     >
                       <FormattedMessage id="Save" defaultMessage="Save" />
                     </ButtonLoading>
@@ -222,10 +220,10 @@ const ReplyListItem: React.FC<Props> = ({
           </Formik>
         ) : (
           <React.Fragment>
-            <Typography className={classes.questionContent} variant="body1">
+            <Typography className={classes.content} variant="body1">
               {reply.content}
             </Typography>
-            <Box className={classes.questionActionBox}>
+            <Box className={classes.actionBox}>
               {(reply.reviewStatus === ReviewStatus.Publish ||
                 reply.reviewStatus === ReviewStatus.Archive) && (
                 <QuestionToggleButton
@@ -242,7 +240,7 @@ const ReplyListItem: React.FC<Props> = ({
                   })}
                   onIcon={<UnarchiveIcon fontSize="inherit" />}
                   offIcon={<ArchiveIcon fontSize="inherit" />}
-                  disabled={updateQuestionReviewStatusLoading}
+                  disabled={updateReplyReviewStatusLoading}
                   handleToggle={handleArchiveClick}
                 />
               )}
