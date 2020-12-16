@@ -242,7 +242,7 @@ export class ReplyResolver {
       .createQueryBuilder('reply')
       .leftJoinAndSelect('reply.question', 'question')
       .leftJoinAndSelect('question.event', 'event')
-      .where('reply.id === :replyId', { replyId })
+      .where('reply.id = :replyId', { replyId })
       .getOne()) as ReplyEntity
     await this.replyRepository.softDelete(replyId)
     await this.questionRepository.decrement(

@@ -34,7 +34,7 @@ const QuestionList: React.FC<Props> = ({
   questionQueryInput,
 }) => {
   const theme = useTheme();
-  const matcheMdUp = useMediaQuery(theme.breakpoints.up("md"));
+  const matchMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -147,26 +147,7 @@ const QuestionList: React.FC<Props> = ({
   };
 
   const renderListItem = (index: number) => {
-    let question: QuestionAudienceFieldsFragment;
-    if (matcheMdUp) {
-      if (index === 0) {
-        return (
-          <Container maxWidth="sm">
-            <QuestionListHeader userQueryResult={userQueryResult} />
-          </Container>
-        );
-      } else if (!orderedList[index - 1]) {
-        return <div />;
-      } else {
-        question = orderedList[index - 1];
-      }
-    } else {
-      if (!orderedList[index]) {
-        return <div />;
-      } else {
-        question = orderedList[index];
-      }
-    }
+    const question: QuestionAudienceFieldsFragment = orderedList[index];
 
     return (
       <QuestionItem
@@ -186,13 +167,19 @@ const QuestionList: React.FC<Props> = ({
       <Virtuoso
         className="scrollContainer"
         style={{ height: "100%", width: "100%" }}
-        totalCount={orderedList.length + (matcheMdUp ? 1 : 0)}
+        totalCount={orderedList.length}
         isScrolling={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}
         itemContent={renderListItem}
         components={{
+          Header: () =>
+            matchMdUp ? (
+              <Container maxWidth="sm">
+                <QuestionListHeader userQueryResult={userQueryResult} />
+              </Container>
+            ) : null,
           Footer: () => (
             <ListFooter
               loading={loading}
