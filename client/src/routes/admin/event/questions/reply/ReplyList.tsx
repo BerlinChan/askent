@@ -153,7 +153,7 @@ const ReplyList: React.FC<Props> = ({ questionId }) => {
           );
         }}
         components={{
-          Header: () => null,
+          Header: () => <div>Question Item</div>,
           Footer: () => (
             <ListFooter
               loading={loading}

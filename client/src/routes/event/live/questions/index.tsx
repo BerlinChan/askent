@@ -21,7 +21,7 @@ const LiveQuestions: React.FC<Props> = ({
   userQueryResult,
   eventQueryResult,
 }) => {
-  let { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const questionQueryInput = {
     eventId: id,
     order: QuestionOrder.Popular,
@@ -36,7 +36,7 @@ const LiveQuestions: React.FC<Props> = ({
         questionQueryInput={questionQueryInput}
       />
 
-      <AskFabDialog userQueryResult={userQueryResult} />
+      <AskFabDialog />
     </React.Fragment>
   );
 };

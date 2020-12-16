@@ -177,7 +177,7 @@ const QuestionList: React.FC<Props> = ({
           Header: () =>
             matchMdUp ? (
               <Container maxWidth="sm">
-                <QuestionListHeader userQueryResult={userQueryResult} />
+                <QuestionListHeader />
               </Container>
             ) : null,
           Footer: () => (

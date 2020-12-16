@@ -4,6 +4,7 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import DialogTitleWithClose from "../../../../../components/DialogTitleWithClose";
 import ReplyList from "./ReplyList";
+import ReplyForm from "./ReplyForm";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,7 +36,7 @@ const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
 
   return (
     <Dialog
-      scroll={'body'}
+      scroll={"body"}
       open={replyDialog.open}
       onClose={handleClose}
       onExited={onExited}
@@ -47,6 +48,7 @@ const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
       />
       <DialogContent className={classes.content}>
         <ReplyList questionId={replyDialog.questionId} />
+        <ReplyForm />
       </DialogContent>
     </Dialog>
   );
