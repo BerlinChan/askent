@@ -25,14 +25,12 @@ import {
   USERNAME_MAX_LENGTH,
 } from "../../../../constant";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
-import { QueryResult } from "@apollo/client";
+import { useSnackbar } from "notistack";
 import {
-  MeQuery,
-  MeQueryVariables,
   useCreateQuestionMutation,
   useUpdateUserMutation,
+  useMeQuery,
 } from "../../../../generated/graphqlHooks";
-import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -83,7 +81,6 @@ const useStyles = makeStyles((theme: Theme) =>
 type QuestionValues = { content: string; name: string; anonymous: boolean };
 interface Props {
   autoFocus?: boolean;
-  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   onAfterSubmit?: () => void;
   onFocus?: () => void;
   className?: string;
@@ -91,16 +88,16 @@ interface Props {
 
 const QuestionForm: React.FC<Props> = ({
   autoFocus = false,
-  userQueryResult,
   onAfterSubmit,
   onFocus,
   className,
 }) => {
   const classes = useStyles();
-  let { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const { formatMessage } = useIntl();
   const { enqueueSnackbar } = useSnackbar();
   const [expanded, setExpanded] = React.useState<boolean>(false);
+  const { data: userMeData } = useMeQuery();
   const [createQuestionMutation, { loading }] = useCreateQuestionMutation();
   const [
     updateAudienceUserMutation,
@@ -117,10 +114,10 @@ const QuestionForm: React.FC<Props> = ({
     formikHelpers: FormikHelpers<QuestionValues>
   ) => void | Promise<any> = async (values, formikBag) => {
     if (
-      values.name !== userQueryResult.data?.me.name ||
-      values.anonymous !== userQueryResult.data?.me.anonymous
+      values.name !== userMeData?.me.name ||
+      values.anonymous !== userMeData?.me.anonymous
     ) {
-      if (values.name !== userQueryResult.data?.me.name && !values.anonymous) {
+      if (values.name !== userMeData?.me.name && !values.anonymous) {
         // TODO: confirm.
         console.log(
           "Change your name? You are about to change your name. All your previous questions or poll votes will use your new name. However, you will not be able to change it again for the next 1 hour."
@@ -129,8 +126,7 @@ const QuestionForm: React.FC<Props> = ({
       await updateAudienceUserMutation({
         variables: {
           input:
-            values.anonymous !== userQueryResult.data?.me.anonymous &&
-            values.anonymous
+            values.anonymous !== userMeData?.me.anonymous && values.anonymous
               ? { anonymous: true }
               : { name: values.name, anonymous: values.anonymous },
         },
@@ -154,8 +150,8 @@ const QuestionForm: React.FC<Props> = ({
     if (!expanded) {
       formProps.setValues({
         ...formProps.values,
-        name: userQueryResult.data?.me.name || "",
-        anonymous: Boolean(userQueryResult.data?.me.anonymous),
+        name: userMeData?.me.name || "",
+        anonymous: Boolean(userMeData?.me.anonymous),
       });
       setExpanded(true);
     }
@@ -204,7 +200,7 @@ const QuestionForm: React.FC<Props> = ({
         <Avatar
           className={classes.avatar}
           alt={formProps.values.name}
-          src={userQueryResult.data?.me.avatar}
+          src={userMeData?.me.avatar}
         />
         <Field
           component={InputBase}
@@ -220,7 +216,7 @@ const QuestionForm: React.FC<Props> = ({
       </React.Fragment>
     );
   };
-  const renderAnonymous = (formProps: FormikProps<QuestionValues>) => {
+  const renderAnonymousSwitch = (formProps: FormikProps<QuestionValues>) => {
     return (
       formProps.values.name && (
         <FormControlLabel
@@ -328,7 +324,7 @@ const QuestionForm: React.FC<Props> = ({
                   <CardActions className={classes.cardActions}>
                     <Box className={classes.nameBox}>
                       {renderAvatarName(formProps)}
-                      {renderAnonymous(formProps)}
+                      {renderAnonymousSwitch(formProps)}
                     </Box>
                     {renderSubmitButton()}
                   </CardActions>
@@ -344,7 +340,7 @@ const QuestionForm: React.FC<Props> = ({
                       width="100%"
                     >
                       <Box display="flex">{renderAvatarName(formProps)}</Box>
-                      {renderAnonymous(formProps)}
+                      {renderAnonymousSwitch(formProps)}
                     </Box>
                     <Box className={classes.mobileSubmit}>
                       {renderSubmitButton(true)}

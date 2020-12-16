@@ -7,14 +7,12 @@ import {
   Slide,
   AppBar,
   Toolbar,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { FormattedMessage } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
-import { QueryResult } from "@apollo/client";
-import { MeQuery, MeQueryVariables } from "../../../../generated/graphqlHooks";
 import DialogTitleWithClose from "../../../../components/DialogTitleWithClose";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -24,9 +22,9 @@ const useStyles = makeStyles((theme: Theme) =>
     askFab: {
       position: "fixed",
       bottom: theme.spacing(2),
-      right: theme.spacing(2)
+      right: theme.spacing(2),
     },
-    toolbarTitle: { marginLeft: theme.spacing(2) }
+    toolbarTitle: { marginLeft: theme.spacing(2) },
   })
 );
 
@@ -37,11 +35,9 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-interface Props {
-  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-}
+interface Props {}
 
-const AskFabDialog: React.FC<Props> = ({ userQueryResult }) => {
+const AskFabDialog: React.FC<Props> = () => {
   const classes = useStyles();
   const [openAskDialog, setOpenAskDialog] = React.useState(false);
 
@@ -77,11 +73,7 @@ const AskFabDialog: React.FC<Props> = ({ userQueryResult }) => {
             }
             onClose={handleAskClose}
           />
-          <QuestionForm
-            autoFocus
-            userQueryResult={userQueryResult}
-            onAfterSubmit={handleAskClose}
-          />
+          <QuestionForm autoFocus onAfterSubmit={handleAskClose} />
         </Dialog>
       </Hidden>
 
@@ -105,11 +97,7 @@ const AskFabDialog: React.FC<Props> = ({ userQueryResult }) => {
               </Typography>
             </Toolbar>
           </AppBar>
-          <QuestionForm
-            autoFocus
-            userQueryResult={userQueryResult}
-            onAfterSubmit={handleAskClose}
-          />
+          <QuestionForm autoFocus onAfterSubmit={handleAskClose} />
         </Dialog>
       </Hidden>
     </React.Fragment>

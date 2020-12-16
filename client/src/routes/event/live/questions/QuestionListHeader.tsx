@@ -3,24 +3,20 @@ import { Typography } from "@material-ui/core";
 import { FormattedMessage } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
-import { QueryResult } from "@apollo/client";
-import { MeQuery, MeQueryVariables } from "../../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     title: {
       marginTop: theme.spacing(1),
-      marginDown: theme.spacing(1)
+      marginDown: theme.spacing(1),
     },
-    questionForm: { marginBottom: theme.spacing(2) }
+    questionForm: { marginBottom: theme.spacing(2) },
   })
 );
 
-interface Props {
-  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-}
+interface Props {}
 
-const QuestionListHeader: React.FC<Props> = ({ userQueryResult }) => {
+const QuestionListHeader: React.FC<Props> = () => {
   const classes = useStyles();
 
   return (
@@ -37,7 +33,6 @@ const QuestionListHeader: React.FC<Props> = ({ userQueryResult }) => {
       </Typography>
       <QuestionForm
         className={classes.questionForm}
-        userQueryResult={userQueryResult}
         onFocus={() => {
           document.querySelector(".scrollContainer")?.scrollTo(0, 0);
         }}
