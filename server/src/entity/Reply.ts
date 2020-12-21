@@ -19,11 +19,14 @@ export class Reply {
   @Column()
   public content!: string
 
-  @Column({type:'enum', enum: ReviewStatus, default: ReviewStatus.Publish })
+  @Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.Publish })
   public reviewStatus!: ReviewStatus
 
   @Column({ comment: 'If author is a moderator of the event?' })
   public isModerator!: boolean
+
+  @Column()
+  public anonymous!: boolean
 
   @ManyToOne((type) => Question, (question) => question.replies)
   public question!: Question

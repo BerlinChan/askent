@@ -48,7 +48,7 @@ const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
       />
       <DialogContent className={classes.content}>
         <ReplyList questionId={replyDialog.questionId} />
-        <ReplyForm />
+        <ReplyForm questionId={replyDialog.questionId} />
       </DialogContent>
     </Dialog>
   );

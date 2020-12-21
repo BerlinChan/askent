@@ -28,6 +28,12 @@ query RepliesByQuestion($input: ReplyQueryInput!) {
   }
 }
 
+mutation CreateReply($input: CreateReplyInput!) {
+  createReply(input: $input) {
+    ...ReplyFields
+  }
+}
+
 mutation UpdateReplyContent($replyId: ID!, $content: String!) {
   updateReplyContent(replyId: $replyId, content: $content) {
     ...ReplyFields

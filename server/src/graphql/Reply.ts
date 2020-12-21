@@ -46,6 +46,9 @@ export class Reply {
   @Field({ description: 'If author is a moderator of the event?' })
   public isModerator!: boolean
 
+  @Field()
+  public anonymous!: boolean
+
   @Field((returns) => Question)
   async question(@Root() root: Reply): Promise<QuestionEntity> {
     const question = await this.replyRepository
@@ -57,15 +60,17 @@ export class Reply {
     return question
   }
 
-  @Field((returns) => User)
-  async author(@Root() root: Reply): Promise<UserEntity> {
-    const user = await this.replyRepository
-      .createQueryBuilder()
-      .relation(ReplyEntity, 'author')
-      .of(root.id)
-      .loadOne()
+  @Field((returns) => User, { nullable: true })
+  async author(@Root() root: Reply): Promise<UserEntity | undefined> {
+    if (!root.anonymous) {
+      const user = await this.replyRepository
+        .createQueryBuilder()
+        .relation(ReplyEntity, 'author')
+        .of(root.id)
+        .loadOne()
 
-    return user
+      return user
+    }
   }
 
   @Field()
@@ -87,6 +92,18 @@ export class ReplyPaged implements IPagedType {
 
   @Field((returns) => [Reply])
   public list!: ReplyEntity[]
+}
+
+@InputType()
+export class CreateReplyInput implements Partial<Reply> {
+  @Field((returns) => ID)
+  public questionId!: string
+
+  @Field()
+  public content!: string
+
+  @Field()
+  public anonymous!: boolean
 }
 
 @InputType()
@@ -139,10 +156,10 @@ export class ReplyResolver {
   async createReply(
     @PubSub('REPLY_REALTIME_SEARCH')
     publish: Publisher<ReplyRealtimeSearchPayload>,
-    @Arg('questionId', (returns) => ID) questionId: string,
-    @Arg('content') content: string,
+    @Arg('input', (returns) => CreateReplyInput) input: CreateReplyInput,
     @Ctx() ctx: Context,
   ): Promise<ReplyEntity> {
+    const { questionId, content, anonymous } = input
     const authorId = ctx.user?.id
     const question = await this.questionRepository
       .createQueryBuilder('question')
@@ -158,9 +175,10 @@ export class ReplyResolver {
     await this.questionRepository.increment({ id: questionId }, 'replyCount', 1)
     const reply = this.replyRepository.create({
       content,
-      isModerator: Boolean(
-        question?.event?.owner || question?.event?.guestes.length,
-      ),
+      anonymous,
+      isModerator:
+        !anonymous &&
+        Boolean(question?.event?.owner || question?.event?.guestes.length),
       question: { id: questionId },
       author: { id: authorId },
     })

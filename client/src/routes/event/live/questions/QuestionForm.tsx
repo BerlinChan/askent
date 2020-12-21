@@ -106,8 +106,8 @@ const QuestionForm: React.FC<Props> = ({
 
   const initialValues: QuestionValues = {
     content: "",
-    name: "",
-    anonymous: false,
+    name: userMeData?.me.name || "",
+    anonymous: Boolean(userMeData?.me.anonymous),
   };
   const handleSubmit: (
     values: QuestionValues,
@@ -265,6 +265,7 @@ const QuestionForm: React.FC<Props> = ({
 
   return (
     <Formik
+      enableReinitialize
       initialValues={initialValues}
       validationSchema={Yup.object({
         content: Yup.string().max(QUESTION_CONTENT_MAX_LENGTH).required(),

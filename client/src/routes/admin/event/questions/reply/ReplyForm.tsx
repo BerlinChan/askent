@@ -9,7 +9,6 @@ import {
   IconButton,
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
-import { useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { InputBase, Switch } from "formik-material-ui";
 import { Formik, Form, Field, FormikProps, FormikHelpers } from "formik";
@@ -21,7 +20,7 @@ import {
 } from "../../../../../constant";
 import { useSnackbar } from "notistack";
 import {
-  useCreateQuestionMutation,
+  useCreateReplyMutation,
   useUpdateUserMutation,
   useMeQuery,
 } from "../../../../../generated/graphqlHooks";
@@ -64,17 +63,21 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type ReplyValues = { content: string; name: string; anonymous: boolean };
 interface Props {
+  questionId: string;
   autoFocus?: boolean;
   onAfterSubmit?: () => void;
 }
 
-const ReplyForm: React.FC<Props> = ({ autoFocus = false, onAfterSubmit }) => {
+const ReplyForm: React.FC<Props> = ({
+  questionId,
+  autoFocus = false,
+  onAfterSubmit,
+}) => {
   const classes = useStyles();
-  const { id } = useParams<{ id: string }>();
   const { formatMessage } = useIntl();
   const { enqueueSnackbar } = useSnackbar();
   const { data: userMeData } = useMeQuery();
-  const [createQuestionMutation, { loading }] = useCreateQuestionMutation();
+  const [createReplyMutation, { loading }] = useCreateReplyMutation();
   const [
     updateAudienceUserMutation,
     { loading: updateUserLoading },
@@ -83,7 +86,7 @@ const ReplyForm: React.FC<Props> = ({ autoFocus = false, onAfterSubmit }) => {
   const initialValues: ReplyValues = {
     content: "",
     name: userMeData?.me.name || "",
-    anonymous: false,
+    anonymous: Boolean(userMeData?.me.anonymous),
   };
   const handleSubmit: (
     values: ReplyValues,
@@ -108,10 +111,10 @@ const ReplyForm: React.FC<Props> = ({ autoFocus = false, onAfterSubmit }) => {
         },
       });
     }
-    await createQuestionMutation({
+    await createReplyMutation({
       variables: {
         input: {
-          eventId: id,
+          questionId,
           content: values.content,
           anonymous: Boolean(values.anonymous && values.name),
         },
@@ -225,6 +228,7 @@ const ReplyForm: React.FC<Props> = ({ autoFocus = false, onAfterSubmit }) => {
 
   return (
     <Formik
+      enableReinitialize
       initialValues={initialValues}
       validationSchema={Yup.object({
         content: Yup.string().max(REPLY_CONTENT_MAX_LENGTH).required(),
