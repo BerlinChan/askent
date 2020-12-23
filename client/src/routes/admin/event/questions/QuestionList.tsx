@@ -148,10 +148,8 @@ const QuestionList: React.FC<Props> = ({
         }}
         endReached={loadMore}
         itemContent={(index) => {
-          const question: QuestionFieldsFragment | undefined =
-            orderedList[index];
-          if (!question) return <div />;
-
+          const question: QuestionFieldsFragment = orderedList[index];
+          
           return (
             <QuestionItem
               question={question}
@@ -160,6 +158,7 @@ const QuestionList: React.FC<Props> = ({
               editContent={editContentIdsState[0].includes(question.id)}
               handleEditContentToggle={handleEditContentToggle}
               editContentInputRef={editContentInputRef}
+              replyDialogState={replyDialogState}
               isScrolling={isScrolling}
             />
           );
@@ -167,9 +166,9 @@ const QuestionList: React.FC<Props> = ({
         components={{
           Footer: () => (
             <ListFooter
-            loading={loading}
-            hasNextPage={data?.questionsByEvent.hasNextPage}
-          />
+              loading={loading}
+              hasNextPage={data?.questionsByEvent.hasNextPage}
+            />
           ),
         }}
       />

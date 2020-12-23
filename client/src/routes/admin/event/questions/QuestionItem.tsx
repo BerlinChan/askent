@@ -51,6 +51,7 @@ import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
 import { TextField } from "formik-material-ui";
+import { Props as ReplyDialogProps } from "./reply/ReplyDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,6 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1),
     },
     questionContent: { width: "100%" },
+    reply: { cursor: "pointer" },
     editContentForm: { width: "100%" },
     editContentAction: { display: "flex", justifyContent: "space-between" },
     editContentFormButtons: { "& > *": { display: "inline-block" } },
@@ -85,16 +87,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props {
+interface Props extends ReplyDialogProps {
   question: QuestionFieldsFragment;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  handleMoreClick: (
+  handleMoreClick?: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
   ) => void;
-  editContent: boolean;
-  handleEditContentToggle: (id: string) => void;
-  editContentInputRef: React.RefObject<HTMLInputElement>;
+  editContent?: boolean;
+  handleEditContentToggle?: (id: string) => void;
+  editContentInputRef?: React.RefObject<HTMLInputElement>;
   isScrolling?: boolean;
 }
 
@@ -102,10 +104,11 @@ const QuestionListItem: React.FC<Props> = ({
   question,
   handleMoreClick,
   eventQueryResult,
-  editContent,
-  handleEditContentToggle,
+  editContent = false,
+  handleEditContentToggle = () => {},
   editContentInputRef,
   isScrolling = false,
+  replyDialogState,
 }) => {
   const classes = useStyles();
   const { data } = eventQueryResult;
@@ -156,6 +159,10 @@ const QuestionListItem: React.FC<Props> = ({
     await updateQuestionTopMutation({
       variables: { questionId: id, top: !top },
     });
+  };
+
+  const handleOpenReply = () => {
+    replyDialogState[1]({ open: true, questionId: question.id });
   };
 
   return (
@@ -278,7 +285,12 @@ const QuestionListItem: React.FC<Props> = ({
               {question.content}
             </Typography>
             {Boolean(question.replyCount) && (
-              <Typography variant="body2" color="textSecondary">
+              <Typography
+                className={classes.reply}
+                variant="body2"
+                color="textSecondary"
+                onClick={handleOpenReply}
+              >
                 {question.replyCount}{" "}
                 <FormattedPlural
                   value={question.replyCount}
@@ -366,12 +378,14 @@ const QuestionListItem: React.FC<Props> = ({
                 />
               )}
 
-              <IconButton
-                size="small"
-                onClick={(e) => handleMoreClick(e, question.id)}
-              >
-                <MoreHorizIcon fontSize="inherit" />
-              </IconButton>
+              {handleMoreClick ? (
+                <IconButton
+                  size="small"
+                  onClick={(e) => handleMoreClick(e, question.id)}
+                >
+                  <MoreHorizIcon fontSize="inherit" />
+                </IconButton>
+              ) : null}
             </Box>
           </React.Fragment>
         )}
