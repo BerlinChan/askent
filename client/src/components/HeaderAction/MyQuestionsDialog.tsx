@@ -19,7 +19,7 @@ import { useParams } from "react-router-dom";
 import { Virtuoso } from "react-virtuoso";
 import ListFooter from "../ListFooter";
 import QuestionItem from "../../routes/event/live/questions/QuestionItem";
-import QuestionListMenu from "../../routes/event/live/questions/QuestionListMenu";
+import QuestionItemMenu from "../../routes/event/live/questions/QuestionItemMenu";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
@@ -157,7 +157,7 @@ const MyQuestionsDialog: React.FC<Props> = ({
         </DialogActions>
       </Dialog>
 
-      <QuestionListMenu
+      <QuestionItemMenu
         eventQueryResult={eventByIdQueryResult}
         questionList={questionsResult.data?.questionsByMe.list}
         moreMenuState={moreMenuState}

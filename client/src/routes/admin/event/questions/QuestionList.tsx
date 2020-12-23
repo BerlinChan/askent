@@ -12,7 +12,7 @@ import {
 } from "../../../../generated/graphqlHooks";
 import { Virtuoso } from "react-virtuoso";
 import QuestionItem from "./QuestionItem";
-import QuestionListMenu from "./QuestionListMenu";
+import QuestionItemMenu from "./QuestionItemMenu";
 import ReplyDialog from "./reply/ReplyDialog";
 import ListFooter from "../../../../components/ListFooter";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
@@ -173,7 +173,7 @@ const QuestionList: React.FC<Props> = ({
         }}
       />
 
-      <QuestionListMenu
+      <QuestionItemMenu
         questionsQueryResult={questionsQueryResult}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}

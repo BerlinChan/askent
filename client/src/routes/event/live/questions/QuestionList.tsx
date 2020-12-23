@@ -15,7 +15,7 @@ import {
   useQuestionRealtimeSearchAudienceSubscription,
 } from "../../../../generated/graphqlHooks";
 import QuestionItem from "./QuestionItem";
-import QuestionListMenu from "./QuestionListMenu";
+import QuestionItemMenu from "./QuestionItemMenu";
 import QuestionListHeader from "./QuestionListHeader";
 import { Virtuoso } from "react-virtuoso";
 import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
@@ -189,7 +189,7 @@ const QuestionList: React.FC<Props> = ({
         }}
       />
 
-      <QuestionListMenu
+      <QuestionItemMenu
         eventQueryResult={eventQueryResult}
         questionList={data?.questionsByEventAudience.list}
         moreMenuState={moreMenuState}

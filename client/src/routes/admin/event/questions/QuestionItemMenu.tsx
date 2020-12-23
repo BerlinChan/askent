@@ -1,32 +1,31 @@
 import React from "react";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
-import { FormattedMessage, useIntl } from "react-intl";
-import { LazyQueryResult } from "@apollo/client";
+import { useIntl, FormattedMessage } from "react-intl";
+import { QueryResult } from "@apollo/client";
 import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
-  QuestionAudienceFieldsFragment,
+  QuestionsByEventQuery,
+  QuestionsByEventQueryVariables,
   useDeleteQuestionMutation,
-  ReviewStatus,
 } from "../../../../generated/graphqlHooks";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
+import ReplyIcon from "@material-ui/icons/Reply";
+import { Props as ReplyDialogProps } from "./reply/ReplyDialog";
 
-interface Props {
-  eventQueryResult: LazyQueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  questionList: QuestionAudienceFieldsFragment[] | undefined;
+type MoreMenuStateType = {
+  anchorEl: HTMLElement | null;
+  id: string;
+};
+
+interface Props extends ReplyDialogProps {
+  questionsQueryResult: QueryResult<
+    QuestionsByEventQuery,
+    QuestionsByEventQueryVariables
+  >;
   moreMenuState: [
-    {
-      anchorEl: HTMLElement | null;
-      id: string;
-    },
-    React.Dispatch<
-      React.SetStateAction<{
-        anchorEl: HTMLElement | null;
-        id: string;
-      }>
-    >
+    MoreMenuStateType,
+    React.Dispatch<React.SetStateAction<MoreMenuStateType>>
   ];
   editContentInputRef: React.RefObject<HTMLInputElement>;
   editContentIdsState: [
@@ -35,23 +34,21 @@ interface Props {
   ];
 }
 
-const QuestionListMenu: React.FC<Props> = ({
-  eventQueryResult,
-  questionList = [],
+const QuestionItemMenu: React.FC<Props> = ({
+  questionsQueryResult,
   moreMenuState,
   editContentInputRef,
   editContentIdsState,
+  replyDialogState,
 }) => {
   const { formatMessage } = useIntl();
-  const [deleteQuestionMutation] = useDeleteQuestionMutation();
+  const { data } = questionsQueryResult;
   const [moreMenu, setMoreMenu] = moreMenuState;
   const [deleteConfirm, setDeleteConfirm] = React.useState({
     open: false,
     id: "",
   });
-  const questionMoreTarget = questionList.find(
-    (question) => question.id === moreMenu.id
-  );
+  const [deleteQuestionMutation] = useDeleteQuestionMutation();
 
   const handleMoreClose = () => {
     setMoreMenu({ anchorEl: null, id: "" });
@@ -63,13 +60,16 @@ const QuestionListMenu: React.FC<Props> = ({
   };
   const handleCloseDelete = () => {
     setDeleteConfirm({ open: false, id: "" });
-    handleMoreClose();
   };
   const handleDelete = async () => {
     await deleteQuestionMutation({
       variables: { questionId: deleteConfirm.id },
     });
     handleCloseDelete();
+  };
+  const handleOpenReply = (id: string) => {
+    replyDialogState[1]({ open: true, questionId: id });
+    handleMoreClose();
   };
   const [editContentIds, setEditContentIds] = editContentIdsState;
   const handleEditContentToggle = (id: string) => {
@@ -100,23 +100,34 @@ const QuestionListMenu: React.FC<Props> = ({
         open={Boolean(moreMenu.anchorEl)}
         onClose={handleMoreClose}
       >
-        <MenuItem
-          disabled={Boolean(
-            questionMoreTarget?.top ||
-              (eventQueryResult.data?.eventById.moderation &&
-                questionMoreTarget?.reviewStatus === ReviewStatus.Publish)
-          )}
-          onClick={() => handleEditContentToggle(moreMenu.id)}
-        >
+        <MenuItem onClick={() => handleEditContentToggle(moreMenu.id)}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText
-            primary={formatMessage({ id: "Edit", defaultMessage: "Edit" })}
+            primary={formatMessage({
+              id: "Edit",
+              defaultMessage: "Edit",
+            })}
+          />
+        </MenuItem>
+        <MenuItem onClick={() => handleOpenReply(moreMenu.id)}>
+          <ListItemIcon>
+            <ReplyIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary={formatMessage({
+              id: "Reply",
+              defaultMessage: "Reply",
+            })}
           />
         </MenuItem>
         <MenuItem
-          disabled={questionMoreTarget?.top}
+          disabled={
+            (data?.questionsByEvent.list || []).find(
+              (question) => question.id === moreMenu.id
+            )?.top
+          }
           onClick={() => handleOpenDelete(moreMenu.id)}
         >
           <ListItemIcon>
@@ -124,8 +135,8 @@ const QuestionListMenu: React.FC<Props> = ({
           </ListItemIcon>
           <ListItemText
             primary={formatMessage({
-              id: "Withdraw",
-              defaultMessage: "Withdraw",
+              id: "Delete",
+              defaultMessage: "Delete",
             })}
           />
         </MenuItem>
@@ -134,11 +145,11 @@ const QuestionListMenu: React.FC<Props> = ({
         open={deleteConfirm.open}
         contentText={
           <FormattedMessage
-            id="Withdraw_this_question?"
-            defaultMessage="Withdraw this question?"
+            id="Delete_this_question?"
+            defaultMessage="Delete this question?"
           />
         }
-        okText={<FormattedMessage id="Withdraw" defaultMessage="Withdraw" />}
+        okText={<FormattedMessage id="Delete" defaultMessage="Delete" />}
         onCancel={handleCloseDelete}
         onOk={handleDelete}
       />
@@ -146,4 +157,4 @@ const QuestionListMenu: React.FC<Props> = ({
   );
 };
 
-export default QuestionListMenu;
+export default QuestionItemMenu;
