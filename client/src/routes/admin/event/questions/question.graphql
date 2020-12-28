@@ -31,6 +31,12 @@ query QuestionsByEvent($input: QuestionQueryInput!) {
   }
 }
 
+query QuestionById($id: ID!) {
+  questionById(id: $id) {
+    ...QuestionFields
+  }
+}
+
 mutation DeleteQuestion($questionId: ID!) {
   deleteQuestion(questionId: $questionId) {
     id

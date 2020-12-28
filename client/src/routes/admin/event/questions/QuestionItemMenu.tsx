@@ -11,14 +11,14 @@ import Confirm from "../../../../components/Confirm";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
 import ReplyIcon from "@material-ui/icons/Reply";
-import { Props as ReplyDialogProps } from "./reply/ReplyDialog";
+import { ReplyDialogStateType } from "./reply/ReplyDialog";
 
 type MoreMenuStateType = {
   anchorEl: HTMLElement | null;
   id: string;
 };
 
-interface Props extends ReplyDialogProps {
+interface Props {
   questionsQueryResult: QueryResult<
     QuestionsByEventQuery,
     QuestionsByEventQueryVariables
@@ -31,6 +31,10 @@ interface Props extends ReplyDialogProps {
   editContentIdsState: [
     string[],
     React.Dispatch<React.SetStateAction<string[]>>
+  ];
+  replyDialogState?: [
+    ReplyDialogStateType,
+    React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
   ];
 }
 
@@ -68,8 +72,10 @@ const QuestionItemMenu: React.FC<Props> = ({
     handleCloseDelete();
   };
   const handleOpenReply = (id: string) => {
-    replyDialogState[1]({ open: true, questionId: id });
-    handleMoreClose();
+    if (replyDialogState) {
+      replyDialogState[1]({ open: true, questionId: id });
+      handleMoreClose();
+    }
   };
   const [editContentIds, setEditContentIds] = editContentIdsState;
   const handleEditContentToggle = (id: string) => {
@@ -111,17 +117,19 @@ const QuestionItemMenu: React.FC<Props> = ({
             })}
           />
         </MenuItem>
-        <MenuItem onClick={() => handleOpenReply(moreMenu.id)}>
-          <ListItemIcon>
-            <ReplyIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatMessage({
-              id: "Reply",
-              defaultMessage: "Reply",
-            })}
-          />
-        </MenuItem>
+        {replyDialogState ? (
+          <MenuItem onClick={() => handleOpenReply(moreMenu.id)}>
+            <ListItemIcon>
+              <ReplyIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={formatMessage({
+                id: "Reply",
+                defaultMessage: "Reply",
+              })}
+            />
+          </MenuItem>
+        ) : null}
         <MenuItem
           disabled={
             (data?.questionsByEvent.list || []).find(

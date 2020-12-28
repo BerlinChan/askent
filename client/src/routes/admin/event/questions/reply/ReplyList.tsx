@@ -1,12 +1,17 @@
 import React from "react";
+import { CircularProgress } from "@material-ui/core";
 import {
   ReplyQueryInput,
   RepliesByQuestionDocument,
   useRepliesByQuestionQuery,
   ReplyFieldsFragment,
   useReplyRealtimeSearchSubscription,
+  useQuestionByIdQuery,
+  EventByIdQuery,
+  EventByIdQueryVariables,
 } from "../../../../../generated/graphqlHooks";
 import { Virtuoso } from "react-virtuoso";
+import QuestionItem from "../QuestionItem";
 import ReplyItem from "./ReplyItem";
 import ReplyListMenu from "./ReplyListMenu";
 import ListFooter from "../../../../../components/ListFooter";
@@ -14,12 +19,14 @@ import {
   DEFAULT_PAGE_OFFSET,
   DEFAULT_PAGE_LIMIT,
 } from "../../../../../constant";
+import { QueryResult } from "@apollo/client";
 
 interface Props {
   questionId: string;
+  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
-const ReplyList: React.FC<Props> = ({ questionId }) => {
+const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -36,6 +43,10 @@ const ReplyList: React.FC<Props> = ({ questionId }) => {
     variables: { input: replyQueryInput },
   });
   const { data, loading, fetchMore } = repliesQueryResult;
+  const {
+    data: questionData,
+    loading: questionLoading,
+  } = useQuestionByIdQuery({ variables: { id: questionId } });
 
   useReplyRealtimeSearchSubscription({
     variables: {
@@ -153,7 +164,16 @@ const ReplyList: React.FC<Props> = ({ questionId }) => {
           );
         }}
         components={{
-          Header: () => <div>Question Item</div>,
+          Header: () =>
+            questionLoading ? (
+              <CircularProgress />
+            ) : questionData ? (
+              <QuestionItem
+                question={questionData?.questionById}
+                eventQueryResult={eventQueryResult}
+                isScrolling={isScrolling}
+              />
+            ) : null,
           Footer: () => (
             <ListFooter
               loading={loading}

@@ -149,7 +149,7 @@ const QuestionList: React.FC<Props> = ({
         endReached={loadMore}
         itemContent={(index) => {
           const question: QuestionFieldsFragment = orderedList[index];
-          
+
           return (
             <QuestionItem
               question={question}
@@ -180,7 +180,10 @@ const QuestionList: React.FC<Props> = ({
         editContentIdsState={editContentIdsState}
         replyDialogState={replyDialogState}
       />
-      <ReplyDialog replyDialogState={replyDialogState} />
+      <ReplyDialog
+        replyDialogState={replyDialogState}
+        eventQueryResult={eventQueryResult}
+      />
     </React.Fragment>
   );
 };

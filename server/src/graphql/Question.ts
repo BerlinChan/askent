@@ -187,6 +187,16 @@ export class QuestionResolver {
     }
   }
 
+  @Query((returns) => Question)
+  async questionById(
+    @Arg('id', (returns) => ID) id: string,
+    @Ctx() ctx: Context,
+  ): Promise<QuestionEntity> {
+    const question = await this.questionRepository.findOneOrFail(id)
+
+    return question
+  }
+
   @Query((returns) => QuestionPaged, {
     description: 'Query question by event for Role.Audience.',
   })

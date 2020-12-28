@@ -5,6 +5,11 @@ import { FormattedMessage } from "react-intl";
 import DialogTitleWithClose from "../../../../../components/DialogTitleWithClose";
 import ReplyList from "./ReplyList";
 import ReplyForm from "./ReplyForm";
+import { QueryResult } from "@apollo/client";
+import {
+  EventByIdQuery,
+  EventByIdQueryVariables,
+} from "../../../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -12,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type ReplyDialogStateType = {
+export type ReplyDialogStateType = {
   open: boolean;
   questionId: string;
 };
@@ -22,9 +27,13 @@ export interface Props {
     ReplyDialogStateType,
     React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
   ];
+  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
-const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
+const ReplyDialog: React.FC<Props> = ({
+  replyDialogState,
+  eventQueryResult,
+}) => {
   const classes = useStyles();
   const [replyDialog, setReplyDialog] = replyDialogState;
   const handleClose = () => {
@@ -47,7 +56,10 @@ const ReplyDialog: React.FC<Props> = ({ replyDialogState }) => {
         onClose={handleClose}
       />
       <DialogContent className={classes.content}>
-        <ReplyList questionId={replyDialog.questionId} />
+        <ReplyList
+          questionId={replyDialog.questionId}
+          eventQueryResult={eventQueryResult}
+        />
         <ReplyForm questionId={replyDialog.questionId} />
       </DialogContent>
     </Dialog>

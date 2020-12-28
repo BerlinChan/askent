@@ -51,7 +51,7 @@ import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
 import { TextField } from "formik-material-ui";
-import { Props as ReplyDialogProps } from "./reply/ReplyDialog";
+import { ReplyDialogStateType } from "./reply/ReplyDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props extends ReplyDialogProps {
+interface Props {
   question: QuestionFieldsFragment;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
   handleMoreClick?: (
@@ -98,6 +98,10 @@ interface Props extends ReplyDialogProps {
   handleEditContentToggle?: (id: string) => void;
   editContentInputRef?: React.RefObject<HTMLInputElement>;
   isScrolling?: boolean;
+  replyDialogState?: [
+    ReplyDialogStateType,
+    React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
+  ];
 }
 
 const QuestionListItem: React.FC<Props> = ({
@@ -162,7 +166,9 @@ const QuestionListItem: React.FC<Props> = ({
   };
 
   const handleOpenReply = () => {
-    replyDialogState[1]({ open: true, questionId: question.id });
+    if (replyDialogState) {
+      replyDialogState[1]({ open: true, questionId: question.id });
+    }
   };
 
   return (
