@@ -40,6 +40,14 @@ const QuestionList: React.FC<Props> = ({
     variables: { input: questionQueryInput },
   });
   const { data, loading, fetchMore } = questionsQueryResult;
+  
+  const moreMenuContextQuestion = React.useMemo(
+    () =>
+      data?.questionsByEvent.list.find(
+        (item) => item.id === moreMenuState[0].id
+      ),
+    [data, moreMenuState]
+  );
 
   useQuestionRealtimeSearchSubscription({
     variables: {
@@ -174,7 +182,7 @@ const QuestionList: React.FC<Props> = ({
       />
 
       <QuestionItemMenu
-        questionsQueryResult={questionsQueryResult}
+        question={moreMenuContextQuestion}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}

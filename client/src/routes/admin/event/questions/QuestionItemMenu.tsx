@@ -1,11 +1,9 @@
 import React from "react";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { useIntl, FormattedMessage } from "react-intl";
-import { QueryResult } from "@apollo/client";
 import {
-  QuestionsByEventQuery,
-  QuestionsByEventQueryVariables,
   useDeleteQuestionMutation,
+  QuestionFieldsFragment,
 } from "../../../../generated/graphqlHooks";
 import Confirm from "../../../../components/Confirm";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
@@ -19,10 +17,7 @@ type MoreMenuStateType = {
 };
 
 interface Props {
-  questionsQueryResult: QueryResult<
-    QuestionsByEventQuery,
-    QuestionsByEventQueryVariables
-  >;
+  question?: QuestionFieldsFragment;
   moreMenuState: [
     MoreMenuStateType,
     React.Dispatch<React.SetStateAction<MoreMenuStateType>>
@@ -39,14 +34,13 @@ interface Props {
 }
 
 const QuestionItemMenu: React.FC<Props> = ({
-  questionsQueryResult,
+  question,
   moreMenuState,
   editContentInputRef,
   editContentIdsState,
   replyDialogState,
 }) => {
   const { formatMessage } = useIntl();
-  const { data } = questionsQueryResult;
   const [moreMenu, setMoreMenu] = moreMenuState;
   const [deleteConfirm, setDeleteConfirm] = React.useState({
     open: false,
@@ -131,11 +125,7 @@ const QuestionItemMenu: React.FC<Props> = ({
           </MenuItem>
         ) : null}
         <MenuItem
-          disabled={
-            (data?.questionsByEvent.list || []).find(
-              (question) => question.id === moreMenu.id
-            )?.top
-          }
+          disabled={question?.top}
           onClick={() => handleOpenDelete(moreMenu.id)}
         >
           <ListItemIcon>
@@ -149,6 +139,7 @@ const QuestionItemMenu: React.FC<Props> = ({
           />
         </MenuItem>
       </Menu>
+
       <Confirm
         open={deleteConfirm.open}
         contentText={

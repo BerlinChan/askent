@@ -1,5 +1,4 @@
 import React from "react";
-import { CircularProgress } from "@material-ui/core";
 import {
   ReplyQueryInput,
   RepliesByQuestionDocument,
@@ -11,8 +10,8 @@ import {
   EventByIdQueryVariables,
 } from "../../../../../generated/graphqlHooks";
 import { Virtuoso } from "react-virtuoso";
-import QuestionItem from "../QuestionItem";
 import ReplyItem from "./ReplyItem";
+import ReplyListHeader from "./ReplyListHeader";
 import ReplyListMenu from "./ReplyListMenu";
 import ListFooter from "../../../../../components/ListFooter";
 import {
@@ -164,16 +163,14 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
           );
         }}
         components={{
-          Header: () =>
-            questionLoading ? (
-              <CircularProgress />
-            ) : questionData ? (
-              <QuestionItem
-                question={questionData?.questionById}
-                eventQueryResult={eventQueryResult}
-                isScrolling={isScrolling}
-              />
-            ) : null,
+          Header: () => (
+            <ReplyListHeader
+              loading={questionLoading}
+              isScrolling={isScrolling}
+              question={questionData?.questionById}
+              eventQueryResult={eventQueryResult}
+            />
+          ),
           Footer: () => (
             <ListFooter
               loading={loading}
