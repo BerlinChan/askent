@@ -17,7 +17,7 @@ import { Question as QuestionEntity } from '../entity/Question'
 import { QuestionQueryMeta } from '../entity/QuestionQueryMeta'
 import { getRepository, Repository } from 'typeorm'
 import * as R from 'ramda'
-import {  SubscriptionTopics } from '../constant'
+import { SubscriptionTopics } from '../constant'
 
 @ObjectType()
 export class QuestionRealtimeSearchPayload {
@@ -49,12 +49,26 @@ export class QuestionRealtimeSearchResult {
   public deleteList!: string[]
 }
 
+@ObjectType()
+export class SubscribeQuestionByIdPayload {
+  @Field((returns) => ID)
+  public questionId!: string
+}
+
+@ArgsType()
+export class SubscribeQuestionByIdArgs {
+  @Field({ description: 'Subscription which question?' })
+  public questionId!: string
+}
+
 @Resolver((of) => Question)
 export class QuestionSubscription {
   private questionQueryMetaRepo: Repository<QuestionQueryMeta>
+  private questionRepository: Repository<QuestionEntity>
 
   constructor() {
     this.questionQueryMetaRepo = getRepository(QuestionQueryMeta)
+    this.questionRepository = getRepository(QuestionEntity)
   }
 
   @Subscription((returns) => QuestionRealtimeSearchResult, {
@@ -118,5 +132,29 @@ export class QuestionSubscription {
       updateList,
       deleteList,
     }
+  }
+
+  @Subscription((returns) => Question, {
+    topics: SubscriptionTopics.QUESTION_BY_ID,
+    filter: ({
+      payload,
+      args,
+      context,
+    }: ResolverFilterData<
+      SubscribeQuestionByIdPayload,
+      SubscribeQuestionByIdArgs,
+      Context
+    >) => {
+      return payload.questionId === args.questionId
+    },
+  })
+  async questionById(
+    @Root() payload: SubscribeQuestionByIdPayload,
+    @Args() { questionId }: SubscribeQuestionByIdArgs,
+    @Ctx() ctx: Context,
+  ): Promise<QuestionEntity> {
+    const question = await this.questionRepository.findOneOrFail(questionId)
+
+    return question
   }
 }

@@ -12,14 +12,14 @@ import QuestionItemMenu from "../QuestionItemMenu";
 
 interface Props {
   loading: boolean;
-  isScrolling: boolean;
+  isScrolling?: boolean;
   question?: QuestionFieldsFragment;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
 const ReplyListHeader: React.FC<Props> = ({
   loading,
-  isScrolling,
+  isScrolling = false,
   question,
   eventQueryResult,
 }) => {

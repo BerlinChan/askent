@@ -30,7 +30,10 @@ import { User } from './User'
 import { getRepository, Repository, Like, OrderByCondition } from 'typeorm'
 import { QuestionQueryMeta } from '../entity/QuestionQueryMeta'
 import { MD5, enc } from 'crypto-js'
-import { QuestionRealtimeSearchPayload } from './QuestionSubscription'
+import {
+  QuestionRealtimeSearchPayload,
+  SubscribeQuestionByIdPayload,
+} from './QuestionSubscription'
 
 @ObjectType()
 export class Question {
@@ -331,6 +334,9 @@ export class QuestionResolver {
   async updateQuestionReviewStatus(
     @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
+    @PubSub(SubscriptionTopics.QUESTION_BY_ID)
+    publishQuestionById: Publisher<SubscribeQuestionByIdPayload>,
+    @Arg('input', (returns) => CreateQuestionInput) input: CreateQuestionInput,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('reviewStatus', (returns) => ReviewStatus) reviewStatus: ReviewStatus,
   ): Promise<QuestionEntity> {
@@ -350,6 +356,7 @@ export class QuestionResolver {
     })
 
     await publish({ eventId: question.event.id })
+    await publishQuestionById({ questionId })
 
     return question
   }
@@ -360,6 +367,8 @@ export class QuestionResolver {
   async updateQuestionContent(
     @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
+    @PubSub(SubscriptionTopics.QUESTION_BY_ID)
+    publishQuestionById: Publisher<SubscribeQuestionByIdPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('content') content: string,
   ): Promise<QuestionEntity> {
@@ -369,6 +378,7 @@ export class QuestionResolver {
     })
 
     await publish({ eventId: question.event.id })
+    await publishQuestionById({ questionId })
 
     return question
   }
@@ -377,6 +387,8 @@ export class QuestionResolver {
   async updateQuestionStar(
     @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
+    @PubSub(SubscriptionTopics.QUESTION_BY_ID)
+    publishQuestionById: Publisher<SubscribeQuestionByIdPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('star') star: boolean,
   ): Promise<QuestionEntity> {
@@ -386,6 +398,7 @@ export class QuestionResolver {
     })
 
     await publish({ eventId: question.event.id })
+    await publishQuestionById({ questionId })
 
     return question
   }
@@ -396,6 +409,8 @@ export class QuestionResolver {
   async updateQuestionTop(
     @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
+    @PubSub(SubscriptionTopics.QUESTION_BY_ID)
+    publishQuestionById: Publisher<SubscribeQuestionByIdPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('top') top: boolean,
   ): Promise<QuestionEntity> {
@@ -414,6 +429,7 @@ export class QuestionResolver {
     const question = await this.questionRepository.findOneOrFail(questionId)
 
     await publish({ eventId: event.id })
+    await publishQuestionById({ questionId })
 
     return question
   }
@@ -424,6 +440,8 @@ export class QuestionResolver {
   async deleteQuestion(
     @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
+    @PubSub(SubscriptionTopics.QUESTION_BY_ID)
+    publishQuestionById: Publisher<SubscribeQuestionByIdPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
   ): Promise<Pick<QuestionEntity, 'id'>> {
     const event = await this.questionRepository
@@ -434,6 +452,7 @@ export class QuestionResolver {
     await this.questionRepository.softDelete(questionId)
 
     await publish({ eventId: event.id })
+    await publishQuestionById({ questionId })
 
     return { id: questionId }
   }
@@ -483,6 +502,8 @@ export class QuestionResolver {
   async voteUpQuestion(
     @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
+    @PubSub(SubscriptionTopics.QUESTION_BY_ID)
+    publishQuestionById: Publisher<SubscribeQuestionByIdPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Ctx() ctx: Context,
   ): Promise<QuestionEntity> {
@@ -515,6 +536,7 @@ export class QuestionResolver {
     })
 
     await publish({ eventId: question.event.id })
+    await publishQuestionById({ questionId })
 
     return question
   }
