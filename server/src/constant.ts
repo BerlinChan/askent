@@ -3,12 +3,21 @@ import { registerEnumType } from 'type-graphql'
 export const DEFAULT_PAGE_OFFSET = 0
 export const DEFAULT_PAGE_LIMIT = 50
 
+export const SubscriptionTopics = {
+  QUESTION_REALTIME_SEARCH: 'QUESTION_REALTIME_SEARCH',
+  EVENT_UPDATED: 'EVENT_UPDATED',
+  REPLY_REALTIME_SEARCH: 'REPLY_REALTIME_SEARCH',
+}
+
 export enum ReviewStatus {
   Review = 'Review',
   Publish = 'Publish',
   Archive = 'Archive',
 }
-registerEnumType(ReviewStatus, { name: 'ReviewStatus', description:"Question's or Reply's review status" })
+registerEnumType(ReviewStatus, {
+  name: 'ReviewStatus',
+  description: "Question's or Reply's review status",
+})
 
 export enum RoleName {
   Admin = 'Admin',

@@ -17,6 +17,7 @@ import { Reply as ReplyEntity } from '../entity/Reply'
 import { ReplyQueryMeta } from '../entity/ReplyQueryMeta'
 import { getRepository, Repository } from 'typeorm'
 import * as R from 'ramda'
+import { SubscriptionTopics } from '../constant'
 
 @ObjectType()
 export class ReplyRealtimeSearchPayload {
@@ -57,7 +58,7 @@ export class ReplySubscription {
   }
 
   @Subscription((returns) => ReplyRealtimeSearchResult, {
-    topics: 'REPLY_REALTIME_SEARCH',
+    topics: SubscriptionTopics.REPLY_REALTIME_SEARCH,
     filter: ({
       payload,
       args,
@@ -87,7 +88,7 @@ export class ReplySubscription {
       replyMeta.query.asRole,
       ctx.connection?.context.id as string,
     )
-    await getRepository(ReplyQueryMeta).update(hash, {
+    await this.replyQueryMetaRepo.update(hash, {
       list: JSON.stringify(
         newList.map((item) => ({ id: item.id, updatedAt: item.updatedAt })),
       ),
@@ -98,12 +99,8 @@ export class ReplySubscription {
       oldList,
     )
     const updateList = newList.filter((newReply) => {
-      const findOldReply = oldList.find(
-        (oldItem) => oldItem.id === newReply.id,
-      )
-      return (
-        findOldReply && newReply.updatedAt > findOldReply.updatedAt
-      )
+      const findOldReply = oldList.find((oldItem) => oldItem.id === newReply.id)
+      return findOldReply && newReply.updatedAt > findOldReply.updatedAt
     })
     const deleteList = R.differenceWith(
       (x, y) => x.id === y.id,

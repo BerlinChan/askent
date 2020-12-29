@@ -17,7 +17,7 @@ import { Question as QuestionEntity } from '../entity/Question'
 import { Question } from './Question'
 import { User } from './User'
 import { User as UserEntity } from '../entity/User'
-import { ReviewStatus, RoleName } from '../constant'
+import { ReviewStatus, RoleName, SubscriptionTopics } from '../constant'
 import { Reply as ReplyEntity } from '../entity/Reply'
 import { getRepository, Repository } from 'typeorm'
 import { IPagedType, PaginationInput } from './Pagination'
@@ -154,7 +154,7 @@ export class ReplyResolver {
 
   @Mutation((returns) => Reply)
   async createReply(
-    @PubSub('REPLY_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.REPLY_REALTIME_SEARCH)
     publish: Publisher<ReplyRealtimeSearchPayload>,
     @Arg('input', (returns) => CreateReplyInput) input: CreateReplyInput,
     @Ctx() ctx: Context,
@@ -193,7 +193,7 @@ export class ReplyResolver {
     description: "Update a reply's content.",
   })
   async updateReplyContent(
-    @PubSub('REPLY_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.REPLY_REALTIME_SEARCH)
     publish: Publisher<ReplyRealtimeSearchPayload>,
     @Arg('replyId', (returns) => ID) replyId: string,
     @Arg('content') content: string,
@@ -212,9 +212,9 @@ export class ReplyResolver {
     description: "Update a reply's review status.",
   })
   async updateReplyReviewStatus(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publishQuestion: Publisher<QuestionRealtimeSearchPayload>,
-    @PubSub('REPLY_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.REPLY_REALTIME_SEARCH)
     publish: Publisher<ReplyRealtimeSearchPayload>,
     @Arg('replyId', (returns) => ID) replyId: string,
     @Arg('reviewStatus', (returns) => ReviewStatus) reviewStatus: ReviewStatus,
@@ -250,9 +250,9 @@ export class ReplyResolver {
     description: 'Delete a reply by id.',
   })
   async deleteReply(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publishQuestion: Publisher<QuestionRealtimeSearchPayload>,
-    @PubSub('REPLY_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.REPLY_REALTIME_SEARCH)
     publish: Publisher<ReplyRealtimeSearchPayload>,
     @Arg('replyId', (returns) => ID) replyId: string,
   ): Promise<Pick<ReplyEntity, 'id'>> {

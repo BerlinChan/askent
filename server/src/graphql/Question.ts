@@ -15,15 +15,19 @@ import {
 } from 'type-graphql'
 import { Context } from '../context'
 import { User as UserEntity } from '../entity/User'
-import { QuestionOrder, QuestionFilter } from '../constant'
+import {
+  QuestionOrder,
+  QuestionFilter,
+  RoleName,
+  ReviewStatus,
+  SubscriptionTopics,
+} from '../constant'
 import { IPagedType, PaginationInput } from './Pagination'
-import { ReviewStatus } from '../constant'
 import { Event as EventEntity } from '../entity/Event'
 import { Question as QuestionEntity } from '../entity/Question'
 import { Event } from './EventType'
 import { User } from './User'
 import { getRepository, Repository, Like, OrderByCondition } from 'typeorm'
-import { RoleName } from '../constant'
 import { QuestionQueryMeta } from '../entity/QuestionQueryMeta'
 import { MD5, enc } from 'crypto-js'
 import { QuestionRealtimeSearchPayload } from './QuestionSubscription'
@@ -296,7 +300,7 @@ export class QuestionResolver {
 
   @Mutation((returns) => Question, { description: 'Create question' })
   async createQuestion(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @Arg('input', (returns) => CreateQuestionInput) input: CreateQuestionInput,
     @Ctx() ctx: Context,
@@ -325,7 +329,7 @@ export class QuestionResolver {
     description: 'Update a question review status.',
   })
   async updateQuestionReviewStatus(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('reviewStatus', (returns) => ReviewStatus) reviewStatus: ReviewStatus,
@@ -354,7 +358,7 @@ export class QuestionResolver {
     description: 'Update a question content.',
   })
   async updateQuestionContent(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('content') content: string,
@@ -371,7 +375,7 @@ export class QuestionResolver {
 
   @Mutation((returns) => Question, { description: 'Update a question star.' })
   async updateQuestionStar(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('star') star: boolean,
@@ -390,7 +394,7 @@ export class QuestionResolver {
     description: 'Top a question. Can only top one question at a time.',
   })
   async updateQuestionTop(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('top') top: boolean,
@@ -418,7 +422,7 @@ export class QuestionResolver {
     description: 'Delete a question by id.',
   })
   async deleteQuestion(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
   ): Promise<Pick<QuestionEntity, 'id'>> {
@@ -438,7 +442,7 @@ export class QuestionResolver {
     description: 'Delete all Review questions by event.',
   })
   async deleteAllReviewQuestions(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @Arg('eventId', (returns) => ID) eventId: string,
   ): Promise<number> {
@@ -457,7 +461,7 @@ export class QuestionResolver {
     description: 'Publish all Review questions by event.',
   })
   async publishAllReviewQuestions(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @Arg('eventId', (returns) => ID) eventId: string,
   ): Promise<number> {
@@ -477,7 +481,7 @@ export class QuestionResolver {
 
   @Mutation((returns) => Question, { description: 'Vote a question.' })
   async voteUpQuestion(
-    @PubSub('QUESTION_REALTIME_SEARCH')
+    @PubSub(SubscriptionTopics.QUESTION_REALTIME_SEARCH)
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Ctx() ctx: Context,

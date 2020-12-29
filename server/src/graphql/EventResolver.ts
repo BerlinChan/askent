@@ -18,7 +18,7 @@ import { Context } from '../context'
 import { User as UserEntity } from '../entity/User'
 import { User } from './User'
 import { Event, EventPaged, UpdateEventInput } from './EventType'
-import { EventDateStatus } from '../constant'
+import { EventDateStatus, SubscriptionTopics } from '../constant'
 import { PaginationInput } from './Pagination'
 import { Event as EventEntity } from '../entity/Event'
 import { Question as QuestionEntity } from '../entity/Question'
@@ -216,7 +216,7 @@ export class EventResolver implements ResolverInterface<Event> {
 
   @Mutation((returns) => Event)
   async updateEvent(
-    @PubSub('EVENT_UPDATED')
+    @PubSub(SubscriptionTopics.EVENT_UPDATED)
     publish: Publisher<{ eventId: string; eventUpdated: EventEntity }>,
     @Arg('input') input: UpdateEventInput,
     @Ctx() ctx: Context,
@@ -287,7 +287,7 @@ export class EventResolver implements ResolverInterface<Event> {
   }
 
   @Subscription((returns) => Event, {
-    topics: 'EVENT_UPDATED',
+    topics: SubscriptionTopics.EVENT_UPDATED,
     filter: ({
       payload,
       args,

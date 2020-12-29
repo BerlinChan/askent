@@ -17,6 +17,7 @@ import { Question as QuestionEntity } from '../entity/Question'
 import { QuestionQueryMeta } from '../entity/QuestionQueryMeta'
 import { getRepository, Repository } from 'typeorm'
 import * as R from 'ramda'
+import {  SubscriptionTopics } from '../constant'
 
 @ObjectType()
 export class QuestionRealtimeSearchPayload {
@@ -57,7 +58,7 @@ export class QuestionSubscription {
   }
 
   @Subscription((returns) => QuestionRealtimeSearchResult, {
-    topics: 'QUESTION_REALTIME_SEARCH',
+    topics: SubscriptionTopics.QUESTION_REALTIME_SEARCH,
     filter: ({
       payload,
       args,
@@ -87,7 +88,7 @@ export class QuestionSubscription {
       questionMeta.query.asRole,
       ctx.connection?.context.id as string,
     )
-    await getRepository(QuestionQueryMeta).update(hash, {
+    await this.questionQueryMetaRepo.update(hash, {
       list: JSON.stringify(
         newList.map((item) => ({ id: item.id, updatedAt: item.updatedAt })),
       ),
