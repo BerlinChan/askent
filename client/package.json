@@ -62,7 +62,7 @@
     "@graphql-codegen/typescript-react-apollo": "2.2.1",
     "@testing-library/jest-dom": "5.11.6",
     "@testing-library/react": "11.2.2",
-    "@testing-library/user-event": "12.3.0",
+    "@testing-library/user-event": "12.6.0",
     "@types/fingerprintjs2": "2.0.0",
     "@types/jest": "26.0.19",
     "@types/loadable__component": "5.13.1",
