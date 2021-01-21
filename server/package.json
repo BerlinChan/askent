@@ -10,7 +10,7 @@
     "build": "npm -s run clean && tsc"
   },
   "dependencies": {
-    "apollo-server": "2.19.0",
+    "apollo-server": "2.19.1",
     "bcryptjs": "2.4.3",
     "class-validator": "0.12.2",
     "crypto-js": "4.0.0",
@@ -28,7 +28,7 @@
     "@types/bcryptjs": "2.4.2",
     "@types/crypto-js": "4.0.1",
     "@types/jsonwebtoken": "8.5.0",
-    "@types/node": "13.13.34",
+    "@types/node": "13.13.39",
     "@types/ramda": "types/npm-ramda#dist",
     "ts-node": "9.0.0",
     "ts-node-dev": "1.0.0-pre.65",
