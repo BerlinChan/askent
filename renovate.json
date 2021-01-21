@@ -1,3 +1,7 @@
 {
-  "extends": ["config:base", "schedule:monthly"]
+  "extends": [
+    "config:base",
+    ":pinAllExceptPeerDependencies",
+    "schedule:monthly"
+  ]
 }
