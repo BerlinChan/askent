@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
-import Fingerprint2 from "fingerprintjs2";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 export function useFingerprint() {
   const [fingerprint, setFingerprint] = useState<string>("");
 
   useEffect(() => {
-    setTimeout(async () => {
-      const components = await Fingerprint2.getPromise({
-        excludes: {
-          adBlock: true,
-          enumerateDevices: true
-        }
-      });
-      const values = components.map(component => component.value);
-      const murmur = Fingerprint2.x64hash128(values.join(""), 31);
-      setFingerprint(murmur);
-    }, 500);
+    (async () => {
+      // We recommend to call `load` at application startup.
+      const fp = await FingerprintJS.load();
+
+      // The FingerprintJS agent is ready.
+      // Get a visitor identifier when you'd like to.
+      const result = await fp.get();
+
+      // This is the visitor identifier:
+      const visitorId = result.visitorId;
+      console.log(visitorId);
+      setFingerprint(visitorId);
+    })();
   }, []);
 
   return fingerprint;
