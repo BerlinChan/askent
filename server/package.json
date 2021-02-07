@@ -12,7 +12,7 @@
   "dependencies": {
     "apollo-server": "2.19.2",
     "bcryptjs": "2.4.3",
-    "class-validator": "0.12.2",
+    "class-validator": "0.13.1",
     "crypto-js": "4.0.0",
     "date-fns": "2.16.1",
     "dotenv": "8.2.0",
