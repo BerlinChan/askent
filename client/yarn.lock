@@ -1186,7 +1186,7 @@
     ts-node "^9"
     tslib "^2"
 
-"@fingerprintjs/fingerprintjs@^3.0.5":
+"@fingerprintjs/fingerprintjs@3.0.5":
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/@fingerprintjs/fingerprintjs/-/fingerprintjs-3.0.5.tgz#c7a35e57c6c50b493c4db9f69106d5a3f4850c7f"
   integrity sha512-VCC7S3ExuScyIfRS8X5pmHj8Nb+GCKssD7DqXjMwgQdlijVKHG8Yo/tvShwdjwz3L7yL2iWF/bq7z6mEwQ8vQQ==
@@ -2395,15 +2395,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*":
-  version "17.0.1"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.1.tgz#eb1f1407dea8da3bc741879c1192aa703ab9975b"
-  integrity sha512-w8t9f53B2ei4jeOqf/gxtc2Sswnc3LBK5s0DyJcg5xd10tMHXts2N31cKjWfH9IC/JvEPa/YF1U4YeP1t4R6HQ==
-  dependencies:
-    "@types/prop-types" "*"
-    csstype "^3.0.2"
-
-"@types/react@17.0.1":
+"@types/react@*", "@types/react@17.0.1":
   version "17.0.1"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.1.tgz#eb1f1407dea8da3bc741879c1192aa703ab9975b"
   integrity sha512-w8t9f53B2ei4jeOqf/gxtc2Sswnc3LBK5s0DyJcg5xd10tMHXts2N31cKjWfH9IC/JvEPa/YF1U4YeP1t4R6HQ==
