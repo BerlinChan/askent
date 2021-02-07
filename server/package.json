@@ -4,7 +4,7 @@
   "license": "MIT",
   "description": "",
   "scripts": {
-    "dev": "ts-node-dev --no-notify --respawn --transpile-only --inspect=9229 src/index",
+    "dev": "ts-node-dev --no-notify --respawn --transpile-only --inspect -- src/index",
     "start": "node dist/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && tsc"
