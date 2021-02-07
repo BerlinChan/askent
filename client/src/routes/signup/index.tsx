@@ -4,14 +4,14 @@ import {
   Typography,
   Card,
   CardActions,
-  CardContent
+  CardContent,
 } from "@material-ui/core";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   useSignupMutation,
-  useCheckEmailExistLazyQuery
+  useCheckEmailExistLazyQuery,
 } from "../../generated/graphqlHooks";
 import { ButtonLoading } from "../../components/Form";
 import { useHistory } from "react-router-dom";
@@ -21,23 +21,23 @@ import { TextField } from "formik-material-ui";
 import {
   USERNAME_MAX_LENGTH,
   EMAIL_MAX_LENGTH,
-  PASSWORD_MAX_LENGTH
+  PASSWORD_MAX_LENGTH,
 } from "../../constant";
 import { useToken } from "../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     signupBox: {
-      textAlign: "center"
+      textAlign: "center",
     },
     form: {
       width: 475,
       marginLeft: "auto",
-      marginRight: "auto"
+      marginRight: "auto",
     },
     card: {
-      padding: theme.spacing(2)
-    }
+      padding: theme.spacing(2),
+    },
   })
 );
 
@@ -49,7 +49,7 @@ const Signup: React.FC = () => {
   const [signupMutation, { loading }] = useSignupMutation();
   const [
     checkEmailExistLazyQuery,
-    { data: checkEmailData, loading: checkEmailLoading }
+    { data: checkEmailData, loading: checkEmailLoading },
   ] = useCheckEmailExistLazyQuery();
   const { token } = useToken();
 
@@ -69,7 +69,7 @@ const Signup: React.FC = () => {
           name: "",
           email: "",
           password: "",
-          repeatPassword: ""
+          repeatPassword: "",
         }}
         validate={async ({ name, email, password, repeatPassword }) => {
           try {
@@ -98,19 +98,16 @@ const Signup: React.FC = () => {
                   PASSWORD_MAX_LENGTH,
                   `Must be ${PASSWORD_MAX_LENGTH} characters or less`
                 )
-                .required("Required")
+                .required("Required"),
             }).validate({
               name,
               email,
               password,
-              repeatPassword
+              repeatPassword,
             });
           } catch (err) {
-            const { path, message } = err as Yup.ValidationError;
-            const error: any = {};
-            error[path] = message;
-
-            return error;
+            const { path, errors } = err as Yup.ValidationError;
+            console.error(path, errors);
           }
 
           if (password !== repeatPassword) {
@@ -119,19 +116,19 @@ const Signup: React.FC = () => {
 
           await checkEmailExistLazyQuery({
             variables: {
-              email
-            }
+              email,
+            },
           });
           if (checkEmailData?.checkEmailExist) {
             return { email: "Eamil exist" };
           }
         }}
-        onSubmit={async values => {
+        onSubmit={async (values) => {
           const { data } = await signupMutation({ variables: values });
 
           if (data) {
             enqueueSnackbar("Sign up success!", {
-              variant: "success"
+              variant: "success",
             });
             history.replace("/login");
           }
@@ -148,7 +145,7 @@ const Signup: React.FC = () => {
                 fullWidth
                 label={formatMessage({
                   id: "User_name",
-                  defaultMessage: "User name"
+                  defaultMessage: "User name",
                 })}
                 margin="normal"
                 disabled={loading}
@@ -170,7 +167,7 @@ const Signup: React.FC = () => {
                 fullWidth
                 label={formatMessage({
                   id: "Password",
-                  defaultMessage: "Password"
+                  defaultMessage: "Password",
                 })}
                 type="password"
                 margin="normal"
@@ -183,7 +180,7 @@ const Signup: React.FC = () => {
                 fullWidth
                 label={formatMessage({
                   id: "Password_repeat",
-                  defaultMessage: "Password repeat"
+                  defaultMessage: "Password repeat",
                 })}
                 type="password"
                 margin="normal"

@@ -186,11 +186,8 @@ const AddGuestDialog: React.FC<AddGuestDialogProps> = ({
         email,
       });
     } catch (err) {
-      const { path, message } = err as Yup.ValidationError;
-      const error: any = {};
-      error[path] = message;
-
-      return error;
+      const { path, errors } = err as Yup.ValidationError;
+      console.error(path, errors);
     }
 
     await checkEmailExistQuery({

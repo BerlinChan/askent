@@ -5,7 +5,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -18,7 +18,7 @@ import {
   useCheckEventCodeExistLazyQuery,
   useCreateEventMutation,
   EventsByMeQuery,
-  EventsByMeQueryVariables
+  EventsByMeQueryVariables,
 } from "../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
 import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../../constant";
@@ -31,11 +31,11 @@ const useStyles = makeStyles((theme: Theme) =>
     dateRange: {
       display: "flex",
       justifyContent: "space-between",
-      "& > *": { width: "47%" }
+      "& > *": { width: "47%" },
     },
     boldButton: {
-      fontWeight: theme.typography.fontWeightBold
-    }
+      fontWeight: theme.typography.fontWeightBold,
+    },
   })
 );
 
@@ -46,7 +46,7 @@ interface Props {
 
 const CreateEventDialog: React.FC<Props> = ({
   openState,
-  eventsQueryResult
+  eventsQueryResult,
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -54,11 +54,11 @@ const CreateEventDialog: React.FC<Props> = ({
   const [open, setOpen] = openState;
   const [
     checkEventCodeExistLazyQuery,
-    { data: checkEventCodeData, loading: checkEventCodeLoading }
+    { data: checkEventCodeData, loading: checkEventCodeLoading },
   ] = useCheckEventCodeExistLazyQuery();
   const [
     createEventMutation,
-    { loading: createEventLoading }
+    { loading: createEventLoading },
   ] = useCreateEventMutation();
 
   const handleClose = () => {
@@ -73,39 +73,32 @@ const CreateEventDialog: React.FC<Props> = ({
           name: "",
           code: "",
           startAt: new Date(),
-          endAt: add(new Date(), { days: 4 })
+          endAt: add(new Date(), { days: 4 }),
         }}
         validate={async ({ name, code, startAt, endAt }) => {
           try {
             await Yup.object({
-              name: Yup.string()
-                .max(USERNAME_MAX_LENGTH)
-                .required(),
-              code: Yup.string()
-                .max(EVENT_CODE_MAX_LENGTH)
-                .required(),
+              name: Yup.string().max(USERNAME_MAX_LENGTH).required(),
+              code: Yup.string().max(EVENT_CODE_MAX_LENGTH).required(),
               startAt: Yup.date(),
-              endAt: Yup.date()
+              endAt: Yup.date(),
             }).validate({
               name,
               code,
               startAt,
-              endAt
+              endAt,
             });
           } catch (err) {
-            const { path, message } = err as Yup.ValidationError;
-            const error: any = {};
-            error[path] = message;
-
-            return error;
+            const { path, errors } = err as Yup.ValidationError;
+            console.error(path, errors);
           }
 
           if (endAt < startAt) {
             return {
               endAt: formatMessage({
                 id: "End_must_after_start",
-                defaultMessage: "End must after start"
-              })
+                defaultMessage: "End must after start",
+              }),
             };
           }
 
@@ -114,21 +107,21 @@ const CreateEventDialog: React.FC<Props> = ({
             return {
               code: formatMessage({
                 id: "Code_existed",
-                defaultMessage: "Code existed"
-              })
+                defaultMessage: "Code existed",
+              }),
             };
           }
         }}
-        onSubmit={async values => {
+        onSubmit={async (values) => {
           const { data } = await createEventMutation({ variables: values });
           if (data) {
             enqueueSnackbar(
               formatMessage({
                 id: "Event_created",
-                defaultMessage: "Event created"
+                defaultMessage: "Event created",
               }),
               {
-                variant: "success"
+                variant: "success",
               }
             );
             handleClose();
@@ -147,7 +140,7 @@ const CreateEventDialog: React.FC<Props> = ({
               name="name"
               label={formatMessage({
                 id: "Event_name",
-                defaultMessage: "Event name"
+                defaultMessage: "Event name",
               })}
               margin="normal"
             />
@@ -157,7 +150,7 @@ const CreateEventDialog: React.FC<Props> = ({
                 name="startAt"
                 label={formatMessage({
                   id: "Start_datetime",
-                  defaultMessage: "Start date time"
+                  defaultMessage: "Start date time",
                 })}
                 variant="inline"
                 margin="normal"
@@ -169,7 +162,7 @@ const CreateEventDialog: React.FC<Props> = ({
                 name="endAt"
                 label={formatMessage({
                   id: "End_datetime",
-                  defaultMessage: "End date time"
+                  defaultMessage: "End date time",
                 })}
                 variant="inline"
                 margin="normal"
@@ -183,7 +176,7 @@ const CreateEventDialog: React.FC<Props> = ({
               name="code"
               label={formatMessage({
                 id: "Event_code",
-                defaultMessage: "Event code"
+                defaultMessage: "Event code",
               })}
               margin="normal"
             />

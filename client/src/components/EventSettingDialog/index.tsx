@@ -164,11 +164,8 @@ const EventSettingDialog: React.FC<Props> = ({
         endAt,
       });
     } catch (err) {
-      const { path, message } = err as Yup.ValidationError;
-      const error: any = {};
-      error[path] = message;
-
-      return error;
+      const { path, errors } = err as Yup.ValidationError;
+      console.error(path, errors);
     }
 
     if (endAt < startAt) {
