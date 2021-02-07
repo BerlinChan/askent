@@ -1,6 +1,6 @@
 # Askent Server
 
-FROM node:12.19.0-alpine
+FROM node:12.20.1-alpine
 
 WORKDIR "/askent"
 
