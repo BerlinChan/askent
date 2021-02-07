@@ -85,19 +85,6 @@ const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
             },
           },
         },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-
-          return Object.assign({}, fetchMoreResult, {
-            questionsByEventWall: {
-              ...fetchMoreResult.questionsByEventWall,
-              list: [
-                ...prev.questionsByEventWall.list,
-                ...fetchMoreResult.questionsByEventWall.list,
-              ],
-            },
-          });
-        },
       });
     }
   };

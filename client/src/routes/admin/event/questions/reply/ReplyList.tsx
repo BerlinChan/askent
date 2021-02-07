@@ -120,19 +120,6 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
             },
           },
         },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-
-          return Object.assign({}, fetchMoreResult, {
-            repliesByQuestion: {
-              ...fetchMoreResult.repliesByQuestion,
-              list: [
-                ...prev.repliesByQuestion.list,
-                ...fetchMoreResult.repliesByQuestion.list,
-              ],
-            },
-          });
-        },
       });
     }
   };

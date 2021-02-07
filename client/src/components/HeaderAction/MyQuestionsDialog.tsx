@@ -91,18 +91,6 @@ const MyQuestionsDialog: React.FC<Props> = ({
               limit: data?.questionsByMe.limit || DEFAULT_PAGE_LIMIT,
             },
           },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return prev;
-            return Object.assign({}, fetchMoreResult, {
-              questionsByMe: {
-                ...fetchMoreResult.questionsByMe,
-                list: [
-                  ...prev.questionsByMe.list,
-                  ...fetchMoreResult.questionsByMe.list,
-                ],
-              },
-            });
-          },
         });
     }
   };

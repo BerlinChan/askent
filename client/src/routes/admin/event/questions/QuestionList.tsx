@@ -40,7 +40,7 @@ const QuestionList: React.FC<Props> = ({
     variables: { input: questionQueryInput },
   });
   const { data, loading, fetchMore } = questionsQueryResult;
-  
+
   const moreMenuContextQuestion = React.useMemo(
     () =>
       data?.questionsByEvent.list.find(
@@ -128,19 +128,6 @@ const QuestionList: React.FC<Props> = ({
               limit: data?.questionsByEvent.limit || DEFAULT_PAGE_LIMIT,
             },
           },
-        },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-
-          return Object.assign({}, fetchMoreResult, {
-            questionsByEvent: {
-              ...fetchMoreResult.questionsByEvent,
-              list: [
-                ...prev.questionsByEvent.list,
-                ...fetchMoreResult.questionsByEvent.list,
-              ],
-            },
-          });
         },
       });
     }

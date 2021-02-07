@@ -9,6 +9,7 @@ import { Repository, getRepository } from 'typeorm'
 import { User as UserEntity } from '../entity/User'
 import { Role as RoleEntity } from '../entity/Role'
 import { RoleName } from '../constant'
+import { Reply as ReplyEntity } from '../entity/Reply'
 
 @Resolver((of) => Event)
 export class SeedResolver {
@@ -16,12 +17,14 @@ export class SeedResolver {
   private eventRepository: Repository<EventEntity>
   private questionRepository: Repository<QuestionEntity>
   private roleRepository: Repository<RoleEntity>
+  private replyRepository: Repository<ReplyEntity>
 
   constructor() {
     this.userRepository = getRepository(UserEntity)
     this.eventRepository = getRepository(EventEntity)
     this.questionRepository = getRepository(QuestionEntity)
     this.roleRepository = getRepository(RoleEntity)
+    this.replyRepository = getRepository(ReplyEntity)
   }
 
   @Mutation((returns) => Int)
@@ -65,6 +68,40 @@ export class SeedResolver {
         content: `${Math.floor(Math.random() * 100000)}-${new Date()}`,
         event,
         author,
+      })),
+    )
+
+    return identifiers.length
+  }
+
+  @Mutation((returns) => Int)
+  async seedReply(
+    @Arg('questionId') questionId: string,
+    @Arg('anonymous', { nullable: true }) anonymous: boolean = false,
+    @Ctx() ctx: Context,
+  ): Promise<number> {
+    const authorId = ctx.user?.id as string
+    const question = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.event', 'event')
+      .leftJoinAndSelect('event.owner', 'owner', 'owner.id = :authorId', {
+        authorId,
+      })
+      .leftJoinAndSelect('event.guestes', 'guest', 'guest.id = :authorId', {
+        authorId,
+      })
+      .where('question.id = :questionId', { questionId })
+      .getOne()
+
+    const { identifiers } = await this.replyRepository.insert(
+      Array.from({ length: 100 }, () => 'reply').map((item, index) => ({
+        content: `${Math.floor(Math.random() * 100000)}-${new Date()}`,
+        anonymous,
+        isModerator:
+          !anonymous &&
+          Boolean(question?.event?.owner || question?.event?.guestes.length),
+        question: { id: questionId },
+        author: { id: authorId },
       })),
     )
 

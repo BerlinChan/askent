@@ -130,18 +130,6 @@ const QuestionList: React.FC<Props> = ({
             },
           },
         },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-          return Object.assign({}, fetchMoreResult, {
-            questionsByEventAudience: {
-              ...fetchMoreResult.questionsByEventAudience,
-              list: [
-                ...prev.questionsByEventAudience.list,
-                ...fetchMoreResult.questionsByEventAudience.list,
-              ],
-            },
-          });
-        },
       });
     }
   };
