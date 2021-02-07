@@ -4,7 +4,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import {
   useEventsByMeQuery,
-  EventDateStatus
+  EventDateStatus,
 } from "../../../generated/graphqlHooks";
 import CreateEventDialog from "./CreateEventDialog";
 import EventList from "./EventList";
@@ -15,18 +15,18 @@ const useStyles = makeStyles((theme: Theme) =>
     eventsBox: {
       display: "flex",
       flexDirection: "column",
-      height: "100%"
+      height: "100%",
     },
     actionBox: {
       display: "flex",
-      justifyContent: "flex-end"
+      justifyContent: "flex-end",
     },
     actionField: {
       marginLeft: theme.spacing(2),
       "&.eventDateFilter": {
-        width: 120
-      }
-    }
+        width: 120,
+      },
+    },
   })
 );
 
@@ -56,9 +56,9 @@ const Events: React.FC<Props> = ({ searchString }) => {
   const eventsByMeQueryResult = useEventsByMeQuery({
     variables: {
       searchString,
+      dateStatusFilter: eventDateFilter !== "ALL" ? eventDateFilter : undefined,
       pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-      dateStatusFilter: eventDateFilter !== "ALL" ? eventDateFilter : undefined
-    }
+    },
   });
 
   const handleEventDateFilterChange = (

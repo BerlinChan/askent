@@ -336,7 +336,6 @@ export class QuestionResolver {
     publish: Publisher<QuestionRealtimeSearchPayload>,
     @PubSub(SubscriptionTopics.QUESTION_BY_ID)
     publishQuestionById: Publisher<SubscribeQuestionByIdPayload>,
-    @Arg('input', (returns) => CreateQuestionInput) input: CreateQuestionInput,
     @Arg('questionId', (returns) => ID) questionId: string,
     @Arg('reviewStatus', (returns) => ReviewStatus) reviewStatus: ReviewStatus,
   ): Promise<QuestionEntity> {

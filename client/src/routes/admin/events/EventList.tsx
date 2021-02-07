@@ -95,23 +95,6 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
             limit: data?.eventsByMe.limit || DEFAULT_PAGE_LIMIT,
           },
         },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-
-          return Object.assign({}, fetchMoreResult, {
-            eventsByMe: {
-              ...fetchMoreResult.eventsByMe,
-              list: [
-                ...R.differenceWith<EventFieldsFragment>(
-                  (a, b) => a.id === b.id,
-                  prev.eventsByMe.list,
-                  fetchMoreResult.eventsByMe.list
-                ),
-                ...fetchMoreResult.eventsByMe.list,
-              ],
-            },
-          });
-        },
       });
     }
   };

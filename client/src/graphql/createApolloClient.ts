@@ -1,16 +1,15 @@
-import { from, split, HttpLink } from "@apollo/client";
-import { ApolloClient } from "@apollo/client/core";
+import { from, split, HttpLink, ApolloClient } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { onError } from "@apollo/client/link/error";
-import { InMemoryCache } from "@apollo/client/cache";
-import { getMainDefinition } from '@apollo/client/utilities';
+import { getMainDefinition } from "@apollo/client/utilities";
 import { resolvers, typeDefs } from "./resolvers";
 import config from "../config";
 import { AUTH_TOKEN } from "../constant";
+import createCache from "./createCache";
 
-// TODO: refactor to createChache, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
-const cache = new InMemoryCache();
+// Restore cache defaults to make the same one in server.js. Ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
+const cache = createCache();
 
 const authMiddleware = setContext((operation, { headers }) => {
   return {
