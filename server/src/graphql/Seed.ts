@@ -93,6 +93,11 @@ export class SeedResolver {
       .where('question.id = :questionId', { questionId })
       .getOne()
 
+    await this.questionRepository.increment(
+      { id: questionId },
+      'replyCount',
+      100,
+    )
     const { identifiers } = await this.replyRepository.insert(
       Array.from({ length: 100 }, () => 'reply').map((item, index) => ({
         content: `${Math.floor(Math.random() * 100000)}-${new Date()}`,
