@@ -57,10 +57,10 @@ const QuestionList: React.FC<Props> = ({
     },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.questionRealtimeSearch) {
-        const questionRealtimeSearch =
-          subscriptionData.data.questionRealtimeSearch;
-
         if (data) {
+          const questionRealtimeSearch =
+            subscriptionData.data.questionRealtimeSearch;
+
           client.writeQuery({
             query: QuestionsByEventDocument,
             variables: { input: questionQueryInput },

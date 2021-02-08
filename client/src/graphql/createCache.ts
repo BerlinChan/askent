@@ -1,7 +1,12 @@
-import { InMemoryCache, FieldFunctionOptions } from "@apollo/client/cache";
+import {
+  InMemoryCache,
+  FieldFunctionOptions,
+  FieldPolicy,
+} from "@apollo/client/cache";
 import {
   EventsByMeQuery,
   EventsByMeQueryVariables,
+  QuestionQueryInput,
   QuestionsByEventQuery,
   QuestionsByEventAudienceQuery,
   QuestionsByEventWallQuery,
@@ -18,8 +23,8 @@ export default function createCache() {
           eventsByMe: {
             keyArgs: ["dateStatusFilter", "searchString"],
             merge(
-              existing: EventsByMeQuery["eventsByMe"] | undefined,
-              incoming: EventsByMeQuery["eventsByMe"],
+              existing,
+              incoming,
               {
                 args,
                 readField,
@@ -43,80 +48,72 @@ export default function createCache() {
                 ],
               };
             },
-          },
+          } as FieldPolicy<EventsByMeQuery["eventsByMe"]>,
           questionsByEvent: {
             keyArgs: [
               "input",
-              ["eventId", "questionFilter", "searchString", "order"],
+              [
+                "eventId",
+                "questionFilter",
+                "searchString",
+                "order",
+              ] as (keyof QuestionQueryInput)[],
             ],
-            merge(
-              existing: QuestionsByEventQuery["questionsByEvent"] | undefined,
-              incoming: QuestionsByEventQuery["questionsByEvent"]
-            ) {
-              return {
-                ...incoming,
-                list: [...(existing?.list || []), ...incoming.list],
-              };
+            merge(existing, incoming, { variables }) {
+              if (variables?.type === "subscription") {
+                return incoming;
+              } else {
+                return {
+                  ...incoming,
+                  list: [...(existing?.list || []), ...incoming.list],
+                };
+              }
             },
-          },
+          } as FieldPolicy<QuestionsByEventQuery["questionsByEvent"]>,
           questionsByEventAudience: {
             keyArgs: [
               "input",
               ["eventId", "questionFilter", "searchString", "order"],
             ],
-            merge(
-              existing:
-                | QuestionsByEventAudienceQuery["questionsByEventAudience"]
-                | undefined,
-              incoming: QuestionsByEventAudienceQuery["questionsByEventAudience"]
-            ) {
+            merge(existing, incoming) {
               return {
                 ...incoming,
                 list: [...(existing?.list || []), ...incoming.list],
               };
             },
-          },
+          } as FieldPolicy<
+            QuestionsByEventAudienceQuery["questionsByEventAudience"]
+          >,
           questionsByEventWall: {
             keyArgs: [
               "input",
               ["eventId", "questionFilter", "searchString", "order"],
             ],
-            merge(
-              existing:
-                | QuestionsByEventWallQuery["questionsByEventWall"]
-                | undefined,
-              incoming: QuestionsByEventWallQuery["questionsByEventWall"]
-            ) {
+            merge(existing, incoming) {
               return {
                 ...incoming,
                 list: [...(existing?.list || []), ...incoming.list],
               };
             },
-          },
+          } as FieldPolicy<QuestionsByEventWallQuery["questionsByEventWall"]>,
           questionsByMe: {
             keyArgs: ["eventId"],
-            merge(
-              existing: QuestionsByMeQuery["questionsByMe"] | undefined,
-              incoming: QuestionsByMeQuery["questionsByMe"]
-            ) {
+            merge(existing, incoming) {
               return {
                 ...incoming,
                 list: [...(existing?.list || []), ...incoming.list],
               };
             },
-          },
+          } as FieldPolicy<QuestionsByMeQuery["questionsByMe"]>,
           repliesByQuestion: {
             keyArgs: ["input", ["questionId"]],
-            merge(
-              existing: RepliesByQuestionQuery["repliesByQuestion"] | undefined,
-              incoming: RepliesByQuestionQuery["repliesByQuestion"]
-            ) {
+            merge(existing, incoming) {
               return {
                 ...incoming,
                 list: [...(existing?.list || []), ...incoming.list],
               };
             },
-          },
+          } as FieldPolicy<RepliesByQuestionQuery["repliesByQuestion"]>,
         },
       },
     },
