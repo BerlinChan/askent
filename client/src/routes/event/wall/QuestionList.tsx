@@ -26,6 +26,7 @@ const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
   const { data, loading, fetchMore } = questionsQueryResult;
 
   useQuestionRealtimeSearchWallSubscription({
+    skip: !Boolean(data?.questionsByEventWall.hash),
     variables: {
       eventId: questionQueryInput.eventId,
       hash: data?.questionsByEventWall.hash as string,

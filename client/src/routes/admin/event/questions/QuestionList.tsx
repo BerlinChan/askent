@@ -50,6 +50,7 @@ const QuestionList: React.FC<Props> = ({
   );
 
   useQuestionRealtimeSearchSubscription({
+    skip: !Boolean(data?.questionsByEvent.hash),
     variables: {
       eventId: questionQueryInput.eventId,
       hash: data?.questionsByEvent.hash as string,

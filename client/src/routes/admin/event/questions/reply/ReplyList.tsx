@@ -48,6 +48,7 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
   } = useQuestionByIdQuery({ variables: { id: questionId } });
 
   useReplyRealtimeSearchSubscription({
+    skip: !Boolean(data?.repliesByQuestion.hash),
     variables: {
       questionId: replyQueryInput.questionId,
       hash: data?.repliesByQuestion.hash as string,
