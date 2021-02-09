@@ -14,6 +14,7 @@ import {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {},
+    form: { marginTop: theme.spacing(1) },
   })
 );
 
@@ -60,7 +61,11 @@ const ReplyDialog: React.FC<Props> = ({
           questionId={replyDialog.questionId}
           eventQueryResult={eventQueryResult}
         />
-        <ReplyForm questionId={replyDialog.questionId} />
+        <ReplyForm
+          className={classes.form}
+          questionId={replyDialog.questionId}
+          autoFocus
+        />
       </DialogContent>
     </Dialog>
   );

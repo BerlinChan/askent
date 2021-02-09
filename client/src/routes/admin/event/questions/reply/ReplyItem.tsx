@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     listItem: {
       flexWrap: "wrap",
       position: "relative",
+      backgroundColor: theme.palette.background.default,
       "&:hover .questionHover": { display: "inline-flex" },
       "& .questionHover": { display: "none" },
     },

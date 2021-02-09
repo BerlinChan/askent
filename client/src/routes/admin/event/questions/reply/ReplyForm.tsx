@@ -12,6 +12,7 @@ import SendIcon from "@material-ui/icons/Send";
 import { FormattedMessage, useIntl } from "react-intl";
 import { InputBase, Switch } from "formik-material-ui";
 import { Formik, Form, Field, FormikProps, FormikHelpers } from "formik";
+import { FInputWithLabel } from "../../../../../components/Form";
 import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
@@ -63,12 +64,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type ReplyValues = { content: string; name: string; anonymous: boolean };
 interface Props {
+  className?: string;
   questionId: string;
   autoFocus?: boolean;
   onAfterSubmit?: () => void;
 }
 
 const ReplyForm: React.FC<Props> = ({
+  className,
   questionId,
   autoFocus = false,
   onAfterSubmit,
@@ -237,17 +240,17 @@ const ReplyForm: React.FC<Props> = ({
       onSubmit={handleSubmit}
     >
       {(formProps) => (
-        <Form>
+        <Form className={className}>
           <FormControl className={classes.contentFormControl}>
-            <Field
-              component={InputBase}
+            <FInputWithLabel
               autoFocus={autoFocus}
               multiline
               rows={1}
-              rowsMax={8}
-              name="content"
+              rowsMax={5}
               className={classes.replyInput}
-              placeholder={formatMessage({
+              size="small"
+              name="content"
+              label={formatMessage({
                 id: "Type_your_reply",
                 defaultMessage: "Type your reply",
               })}
@@ -264,7 +267,10 @@ const ReplyForm: React.FC<Props> = ({
               {formProps.errors.content || formProps.errors.name}
             </FormHelperText>
             <Typography variant="body2" color="textSecondary">
-              {REPLY_CONTENT_MAX_LENGTH - formProps.values.content.length}
+              {REPLY_CONTENT_MAX_LENGTH -
+                formProps.values.content.length +
+                " / " +
+                REPLY_CONTENT_MAX_LENGTH}
             </Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
