@@ -20,7 +20,6 @@ interface Props {
 const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const questionsQueryResult = useQuestionsByEventWallQuery({
-    fetchPolicy: "network-only",
     variables: { input: questionQueryInput },
   });
   const { data, loading, fetchMore } = questionsQueryResult;

@@ -43,7 +43,6 @@ const QuestionList: React.FC<Props> = ({
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
   const questionsQueryResult = useQuestionsByEventAudienceQuery({
-    fetchPolicy: "network-only",
     variables: { input: questionQueryInput },
   });
   const { data, loading, fetchMore } = questionsQueryResult;

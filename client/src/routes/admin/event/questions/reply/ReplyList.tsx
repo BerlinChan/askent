@@ -38,7 +38,6 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
   };
   const repliesQueryResult = useRepliesByQuestionQuery({
-    fetchPolicy: "network-only",
     variables: { input: replyQueryInput },
   });
   const { data, loading, fetchMore } = repliesQueryResult;

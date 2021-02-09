@@ -36,7 +36,6 @@ const QuestionList: React.FC<Props> = ({
   const editContentIdsState = React.useState<Array<string>>([]);
   const replyDialogState = React.useState({ open: false, questionId: "" });
   const questionsQueryResult = useQuestionsByEventQuery({
-    fetchPolicy: "network-only",
     variables: { input: questionQueryInput },
   });
   const { data, loading, fetchMore } = questionsQueryResult;
@@ -61,7 +60,7 @@ const QuestionList: React.FC<Props> = ({
           const questionRealtimeSearch =
             subscriptionData.data.questionRealtimeSearch;
 
-          // should not trigger a field merge
+          // BUG: should not trigger a field merge
           // https://github.com/apollographql/apollo-client/issues/7491#ref-commit-b62d097
           client.writeQuery({
             query: QuestionsByEventDocument,
