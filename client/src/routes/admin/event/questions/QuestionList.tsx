@@ -61,6 +61,8 @@ const QuestionList: React.FC<Props> = ({
           const questionRealtimeSearch =
             subscriptionData.data.questionRealtimeSearch;
 
+          // should not trigger a field merge
+          // https://github.com/apollographql/apollo-client/issues/7491#ref-commit-b62d097
           client.writeQuery({
             query: QuestionsByEventDocument,
             variables: { input: questionQueryInput },
