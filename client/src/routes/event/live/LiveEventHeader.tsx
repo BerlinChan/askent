@@ -4,7 +4,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  useTheme
+  useTheme,
 } from "@material-ui/core/styles";
 import {
   Box,
@@ -20,14 +20,14 @@ import {
   ListItemText,
   Divider,
   Hidden,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
 import { QueryResult } from "@apollo/client";
 import {
   EventByIdQuery,
-  EventByIdQueryVariables
+  EventByIdQueryVariables,
 } from "../../../generated/graphqlHooks";
 import HeaderAction from "../../../components/HeaderAction";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
@@ -39,46 +39,45 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    "@global": { body: { overflow: "hidden" } }, // disable body scroll on iOS Safari
     appBar: {
       [theme.breakpoints.up("md")]: {
-        zIndex: theme.zIndex.drawer + 1
-      }
+        zIndex: theme.zIndex.drawer + 1,
+      },
     },
     toolbarRegular: {
-      minHeight: 56
+      minHeight: 56,
     },
     left: {
       display: "flex",
-      alignItems: "center"
+      alignItems: "center",
     },
     center: {
       display: "flex",
       justifyContent: "center",
-      alignItems: "center"
+      alignItems: "center",
     },
     right: {
       display: "flex",
-      justifyContent: "flex-end"
+      justifyContent: "flex-end",
     },
     tabRoot: {
-      minHeight: 56
+      minHeight: 56,
     },
     tabIcon: {
       verticalAlign: "middle",
-      marginRight: theme.spacing(1)
+      marginRight: theme.spacing(1),
     },
     drawer: {
       width: drawerWidth,
-      flexShrink: 0
+      flexShrink: 0,
     },
     drawerPaper: {
       paddingTop: 56,
-      width: drawerWidth
+      width: drawerWidth,
     },
     drawerInfo: {
-      margin: theme.spacing(1, 2)
-    }
+      margin: theme.spacing(1, 2),
+    },
   })
 );
 
@@ -120,7 +119,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
               <FormattedMessage id="Q&A" defaultMessage="Q&A" />
             </Typography>
           ),
-          to: `${url}/questions`
+          to: `${url}/questions`,
         },
         {
           label: (
@@ -129,7 +128,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
               <FormattedMessage id="Ideas" defaultMessage="Ideas" />
             </Typography>
           ),
-          to: `${url}/ideas`
+          to: `${url}/ideas`,
         },
         {
           label: (
@@ -138,15 +137,19 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
               <FormattedMessage id="Polls" defaultMessage="Polls" />
             </Typography>
           ),
-          to: `${url}/polls`
-        }
+          to: `${url}/polls`,
+        },
       ]}
     />
   );
 
   return (
     <React.Fragment>
-      <AppBar position="static" elevation={2} className={classes.appBar}>
+      <AppBar
+        position={matcheMdUp ? "static" : "sticky"}
+        elevation={2}
+        className={classes.appBar}
+      >
         <React.Fragment>
           <Toolbar classes={{ regular: classes.toolbarRegular }}>
             <Grid container>

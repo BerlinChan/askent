@@ -98,6 +98,7 @@ interface Props {
   handleEditContentToggle?: (id: string) => void;
   editContentInputRef?: React.RefObject<HTMLInputElement>;
   isScrolling?: boolean;
+  showReplyCount?: boolean;
   replyDialogState?: [
     ReplyDialogStateType,
     React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
@@ -112,6 +113,7 @@ const QuestionListItem: React.FC<Props> = ({
   handleEditContentToggle = () => {},
   editContentInputRef,
   isScrolling = false,
+  showReplyCount = true,
   replyDialogState,
 }) => {
   const classes = useStyles();
@@ -290,7 +292,7 @@ const QuestionListItem: React.FC<Props> = ({
             <Typography className={classes.questionContent} variant="body1">
               {question.content}
             </Typography>
-            {Boolean(question.replyCount) && (
+            {showReplyCount && Boolean(question.replyCount) && (
               <Typography
                 className={classes.reply}
                 variant="body2"

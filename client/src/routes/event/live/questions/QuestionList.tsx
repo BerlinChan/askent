@@ -153,8 +153,8 @@ const QuestionList: React.FC<Props> = ({
   return (
     <React.Fragment>
       <Virtuoso
-        className="scrollContainer"
         style={{ height: "100%", width: "100%" }}
+        useWindowScroll={!matchMdUp}
         totalCount={orderedList.length}
         isScrolling={(scrolling) => {
           setIsScrolling(scrolling);

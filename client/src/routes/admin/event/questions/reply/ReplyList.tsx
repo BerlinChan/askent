@@ -54,9 +54,9 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
     },
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.replyRealtimeSearch) {
-        const replyRealtimeSearch = subscriptionData.data.replyRealtimeSearch;
-
         if (data) {
+          const replyRealtimeSearch = subscriptionData.data.replyRealtimeSearch;
+
           client.writeQuery({
             query: RepliesByQuestionDocument,
             variables: { input: replyQueryInput },

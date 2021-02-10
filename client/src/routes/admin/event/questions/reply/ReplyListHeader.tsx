@@ -65,6 +65,7 @@ const ReplyListHeader: React.FC<Props> = ({
           handleEditContentToggle={handleEditContentToggle}
           editContentInputRef={editContentInputRef}
           isScrolling={isScrolling}
+          showReplyCount={false}
         />
       ) : null}
 
