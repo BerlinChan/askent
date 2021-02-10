@@ -3,7 +3,7 @@ import { Switch, Redirect, useRouteMatch, useParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
 import PrivateRoute from "../../../components/PrivateRoute";
-import Layout from "../../../components/Layout";
+import {Layout} from "../../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
 import {
   useEventByIdQuery,

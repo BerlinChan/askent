@@ -3,17 +3,17 @@ import AdminHeader from "./AdminHeader";
 import { Switch, Redirect, useRouteMatch } from "react-router-dom";
 import PrivateRoute from "../../components/PrivateRoute";
 import Loading from "../../components/Loading";
-import Layout from "../../components/Layout";
+import { LayoutAdmin } from "../../components/Layout";
 import loadable from "@loadable/component";
 
 const EventsComponent = loadable(() => import("./events"), {
-  fallback: <Loading />
+  fallback: <Loading />,
 });
 const AnalyticsComponent = loadable(() => import("./analytics"), {
-  fallback: <Loading />
+  fallback: <Loading />,
 });
 const AdminEventComponent = loadable(() => import("./event"), {
-  fallback: <Loading />
+  fallback: <Loading />,
 });
 
 const Admin: React.FC = () => {
@@ -27,7 +27,7 @@ const Admin: React.FC = () => {
         <AdminEventComponent />
       </PrivateRoute>
 
-      <Layout
+      <LayoutAdmin
         header={
           <AdminHeader
             searchString={searchString}

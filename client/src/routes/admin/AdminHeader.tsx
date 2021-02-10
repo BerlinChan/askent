@@ -3,7 +3,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  fade
+  fade,
 } from "@material-ui/core/styles";
 import {
   Container,
@@ -12,7 +12,7 @@ import {
   Toolbar,
   Paper,
   TextField,
-  InputAdornment
+  InputAdornment,
 } from "@material-ui/core";
 import { useRouteMatch } from "react-router-dom";
 import { RouteTabs } from "../../components/Tabs";
@@ -24,24 +24,24 @@ import Logo from "../../components/Logo";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     toolbar: {
-      justifyContent: "space-between"
+      justifyContent: "space-between",
     },
     actions: {
       display: "flex",
       alignItems: "center",
       flexWrap: "nowrap",
-      "& > *": { margin: theme.spacing(1) }
+      "& > *": { margin: theme.spacing(1) },
     },
     searchInput: {
       padding: theme.spacing(0.2, 0.4),
       borderRadius: theme.shape.borderRadius,
       backgroundColor: fade(theme.palette.common.white, 0.15),
       "&:hover": {
-        backgroundColor: fade(theme.palette.common.white, 0.25)
-      }
+        backgroundColor: fade(theme.palette.common.white, 0.25),
+      },
     },
     searchInputRoot: {
-      color: "inherit"
+      color: "inherit",
     },
     searchInputInput: {
       transition: theme.transitions.create("width"),
@@ -49,10 +49,10 @@ const useStyles = makeStyles((theme: Theme) =>
       [theme.breakpoints.up("sm")]: {
         width: 120,
         "&:focus": {
-          width: 200
-        }
-      }
-    }
+          width: 200,
+        },
+      },
+    },
   })
 );
 
@@ -76,22 +76,22 @@ const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
               className={classes.searchInput}
               placeholder={formatMessage({
                 id: "SEARCH_EVENTS",
-                defaultMessage: "Search events"
+                defaultMessage: "Search events",
               })}
               InputProps={{
                 disableUnderline: true,
                 classes: {
                   root: classes.searchInputRoot,
-                  input: classes.searchInputInput
+                  input: classes.searchInputInput,
                 },
                 startAdornment: (
                   <InputAdornment position="start">
                     <SearchIcon color="inherit" />
                   </InputAdornment>
-                )
+                ),
               }}
               value={searchString}
-              onChange={e => setSearchString(e.target.value)}
+              onChange={(e) => setSearchString(e.target.value)}
             />
             <HeaderAction />
           </Box>
@@ -104,17 +104,17 @@ const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
               {
                 label: formatMessage({
                   id: "Events",
-                  defaultMessage: "Events"
+                  defaultMessage: "Events",
                 }),
-                to: `${url}/events`
+                to: `${url}/events`,
               },
               {
                 label: formatMessage({
                   id: "Analitics",
-                  defaultMessage: "Analitics"
+                  defaultMessage: "Analitics",
                 }),
-                to: `${url}/analytics`
-              }
+                to: `${url}/analytics`,
+              },
             ]}
             indicatorColor="primary"
             textColor="primary"

@@ -4,7 +4,7 @@ import PrivateRoute from "../../../components/PrivateRoute";
 import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
 import AdminEventHeader from "./AdminEventHeader";
-import Layout from "../../../components/Layout";
+import {LayoutAdmin} from "../../../components/Layout";
 import {
   useEventByIdQuery,
   useEventUpdatedSubscription,
@@ -29,7 +29,7 @@ const AdminEvent: React.FC = () => {
   });
 
   return (
-    <Layout
+    <LayoutAdmin
       header={<AdminEventHeader eventQueryResult={eventQueryResult} />}
       body={
         <Switch>

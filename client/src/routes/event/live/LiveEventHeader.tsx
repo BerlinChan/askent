@@ -89,7 +89,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
   const classes = useStyles();
   let { url } = useRouteMatch();
   const theme = useTheme();
-  const matcheMdUp = useMediaQuery(theme.breakpoints.up("md"));
+  const matchMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const { data } = eventQueryResult;
   const [open, setOpen] = React.useState(false);
 
@@ -146,7 +146,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
   return (
     <React.Fragment>
       <AppBar
-        position={matcheMdUp ? "static" : "sticky"}
+        position={matchMdUp ? "static" : "sticky"}
         elevation={2}
         className={classes.appBar}
       >
@@ -174,7 +174,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
 
       <Drawer
         className={classes.drawer}
-        variant={matcheMdUp ? "persistent" : "temporary"}
+        variant={matchMdUp ? "persistent" : "temporary"}
         anchor="left"
         classes={{ paper: classes.drawerPaper }}
         open={open}
