@@ -7,12 +7,16 @@ const useStyles = makeStyles((theme: Theme) =>
     layoutBox: {
       display: "flex",
       flexDirection: "column",
-      height: "100vh",
+      [theme.breakpoints.up("md")]: {
+        height: "100vh",
+      },
     },
     scrollBox: {
-      overflowX: "hidden",
-      overflowY: "auto",
-      height: "100%",
+      [theme.breakpoints.up("md")]: {
+        overflowX: "hidden",
+        overflowY: "auto",
+        height: "100%",
+      },
     },
     bodyContainer: {
       paddingTop: theme.spacing(2),
@@ -27,7 +31,7 @@ interface Props {
   disableContainer?: boolean;
 }
 
-export const LayoutAdmin: React.FC<Props> = ({
+export const LayoutWindowScroll: React.FC<Props> = ({
   header,
   body,
   disableContainer = false,

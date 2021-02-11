@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     listItem: {
       flexWrap: "wrap",
       position: "relative",
-      maxWidth: theme.breakpoints.values.sm - 48,
+      maxWidth: theme.breakpoints.values.sm,
       marginLeft: "auto",
       marginRight: "auto",
       borderBottom: `1px solid ${theme.palette.divider}`,

@@ -21,7 +21,6 @@ import {
   FormattedMessage,
   FormattedDate,
   FormattedTime,
-  FormattedPlural,
 } from "react-intl";
 import { QueryResult } from "@apollo/client";
 import {
@@ -299,11 +298,10 @@ const QuestionListItem: React.FC<Props> = ({
                 color="textSecondary"
                 onClick={handleOpenReply}
               >
-                {question.replyCount}{" "}
-                <FormattedPlural
-                  value={question.replyCount}
-                  one="reply"
-                  other="replies"
+                <FormattedMessage
+                  id="replyCount"
+                  defaultMessage="{num, plural, one {# reply} other {# replies}}"
+                  values={{ num: question.replyCount }}
                 />
               </Typography>
             )}

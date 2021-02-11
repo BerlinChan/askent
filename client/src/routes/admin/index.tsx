@@ -3,7 +3,7 @@ import AdminHeader from "./AdminHeader";
 import { Switch, Redirect, useRouteMatch } from "react-router-dom";
 import PrivateRoute from "../../components/PrivateRoute";
 import Loading from "../../components/Loading";
-import { LayoutAdmin } from "../../components/Layout";
+import { Layout } from "../../components/Layout";
 import loadable from "@loadable/component";
 
 const EventsComponent = loadable(() => import("./events"), {
@@ -27,7 +27,7 @@ const Admin: React.FC = () => {
         <AdminEventComponent />
       </PrivateRoute>
 
-      <LayoutAdmin
+      <Layout
         header={
           <AdminHeader
             searchString={searchString}

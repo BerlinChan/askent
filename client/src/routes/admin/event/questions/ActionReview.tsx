@@ -75,7 +75,7 @@ const ActionReview: React.FC<Props> = ({ eventQueryResult }) => {
   return (
     <React.Fragment>
       <Typography color="textSecondary">
-        <FormattedMessage id="ForReview" defaultMessage="For view" />
+        <FormattedMessage id="ForReview" defaultMessage="For review" />
       </Typography>
       <FormControlLabel
         labelPlacement="start"

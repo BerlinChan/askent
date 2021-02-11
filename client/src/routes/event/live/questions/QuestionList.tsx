@@ -1,6 +1,4 @@
 import React from "react";
-import { Container, useMediaQuery } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/client";
 import {
   MeQuery,
@@ -33,8 +31,6 @@ const QuestionList: React.FC<Props> = ({
   eventQueryResult,
   questionQueryInput,
 }) => {
-  const theme = useTheme();
-  const matchMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -154,7 +150,6 @@ const QuestionList: React.FC<Props> = ({
     <React.Fragment>
       <Virtuoso
         style={{ height: "100%", width: "100%" }}
-        useWindowScroll={!matchMdUp}
         totalCount={orderedList.length}
         isScrolling={(scrolling) => {
           setIsScrolling(scrolling);
@@ -162,12 +157,7 @@ const QuestionList: React.FC<Props> = ({
         endReached={loadMore}
         itemContent={renderListItem}
         components={{
-          Header: () =>
-            matchMdUp ? (
-              <Container maxWidth="sm">
-                <QuestionListHeader />
-              </Container>
-            ) : null,
+          Header: () => <QuestionListHeader questionsQueryResult={questionsQueryResult}/>,
           Footer: () => (
             <ListFooter
               loading={loading}

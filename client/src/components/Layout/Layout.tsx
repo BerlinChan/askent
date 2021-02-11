@@ -7,16 +7,12 @@ const useStyles = makeStyles((theme: Theme) =>
     layoutBox: {
       display: "flex",
       flexDirection: "column",
-      [theme.breakpoints.up("md")]: {
-        height: "100vh",
-      },
+      height: "100vh",
     },
     scrollBox: {
-      [theme.breakpoints.up("md")]: {
-        overflowX: "hidden",
-        overflowY: "auto",
-        height: "100%",
-      },
+      overflowX: "hidden",
+      overflowY: "auto",
+      height: "100%",
     },
     bodyContainer: {
       paddingTop: theme.spacing(2),
