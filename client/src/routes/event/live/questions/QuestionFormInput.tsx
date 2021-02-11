@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Paper, InputBase } from "@material-ui/core";
+import { Box, InputBase } from "@material-ui/core";
 import { useIntl } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme: Theme) =>
       opacity: 1,
       width: 32,
       overflow: "hidden",
-      transition: theme.transitions.create(["width", "opacity"]),
     },
     questionInput: {
       flex: 1,
@@ -61,7 +60,7 @@ const QuestionFormInput: React.FC<Props> = ({
         disabled={disabled}
         autoFocus={autoFocus}
         multiline
-        rows={1}
+        rows={2}
         rowsMax={3}
         className={classes.questionInput}
         placeholder={formatMessage({

@@ -1,7 +1,6 @@
 import React from "react";
 import { QueryResult } from "@apollo/client";
 import {
-  Box,
   Tabs,
   Tab,
   Typography,
@@ -18,10 +17,10 @@ import { FormattedMessage } from "react-intl";
 import QuestionForm from "./QuestionForm";
 import QuestionFormInput from "./QuestionFormInput";
 import {
-  Exact,
   QuestionOrder,
-  QuestionsByEventAudienceQuery,
   QuestionQueryInput,
+  QuestionsByEventAudienceQuery,
+  QuestionsByEventAudienceQueryVariables,
 } from "../../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     questionForm: { marginBottom: theme.spacing(2) },
-    sortAndCount: {
+    orderAndCount: {
       display: "flex",
       justifyContent: "space-between",
     },
@@ -49,28 +48,31 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  questionOrderState: [
+    QuestionOrder,
+    React.Dispatch<React.SetStateAction<QuestionOrder>>
+  ];
   questionsQueryResult: QueryResult<
     QuestionsByEventAudienceQuery,
-    Exact<{
-      input: QuestionQueryInput;
-    }>
+    QuestionsByEventAudienceQueryVariables
   >;
 }
 
-const QuestionListHeader: React.FC<Props> = ({ questionsQueryResult }) => {
+const QuestionListHeader: React.FC<Props> = ({
+  questionOrderState,
+  questionsQueryResult,
+}) => {
   const classes = useStyles();
   const theme = useTheme();
   const matchMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const { data } = questionsQueryResult;
-  const [sortTabValue, setSortTabValue] = React.useState<QuestionOrder>(
-    QuestionOrder.Popular
-  );
+  const [questionOrder, setQuestionOrder] = questionOrderState;
 
-  const handleSortTabChange = (
+  const handleOrderTabChange = (
     event: React.ChangeEvent<{}>,
     newValue: QuestionOrder
   ) => {
-    setSortTabValue(newValue);
+    setQuestionOrder(newValue);
   };
 
   return (
@@ -99,8 +101,8 @@ const QuestionListHeader: React.FC<Props> = ({ questionsQueryResult }) => {
           <QuestionFormInput />
         )}
       </Container>
-      <Container maxWidth="sm" className={classes.sortAndCount}>
-        <Tabs value={sortTabValue} onChange={handleSortTabChange}>
+      <Container maxWidth="sm" className={classes.orderAndCount}>
+        <Tabs value={questionOrder} onChange={handleOrderTabChange}>
           <Tab
             value={QuestionOrder.Popular}
             label={<FormattedMessage id="Popular" defaultMessage="Popular" />}
@@ -117,8 +119,8 @@ const QuestionListHeader: React.FC<Props> = ({ questionsQueryResult }) => {
         >
           <FormattedMessage
             id="questionCount"
-            defaultMessage="{num, plural, one {# question} other {# questions}}"
-            values={{ num: data?.questionsByEventAudience.totalCount }}
+            defaultMessage="{num, plural, =0 {no questions} one {# question} other {# questions}}"
+            values={{ num: data?.questionsByEventAudience.totalCount || 0 }}
           />
         </Typography>
       </Container>

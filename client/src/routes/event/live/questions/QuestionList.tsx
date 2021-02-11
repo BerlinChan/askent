@@ -23,12 +23,17 @@ import ListFooter from "../../../../components/ListFooter";
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  questionOrderState: [
+    QuestionOrder,
+    React.Dispatch<React.SetStateAction<QuestionOrder>>
+  ];
   questionQueryInput: QuestionQueryInput;
 }
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
   eventQueryResult,
+  questionOrderState,
   questionQueryInput,
 }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
@@ -157,7 +162,12 @@ const QuestionList: React.FC<Props> = ({
         endReached={loadMore}
         itemContent={renderListItem}
         components={{
-          Header: () => <QuestionListHeader questionsQueryResult={questionsQueryResult}/>,
+          Header: () => (
+            <QuestionListHeader
+              questionOrderState={questionOrderState}
+              questionsQueryResult={questionsQueryResult}
+            />
+          ),
           Footer: () => (
             <ListFooter
               loading={loading}

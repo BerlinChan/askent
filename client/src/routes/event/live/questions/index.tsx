@@ -22,9 +22,12 @@ const LiveQuestions: React.FC<Props> = ({
   eventQueryResult,
 }) => {
   const { id } = useParams<{ id: string }>();
+  const questionOrderState = React.useState<QuestionOrder>(
+    QuestionOrder.Popular
+  );
   const questionQueryInput = {
     eventId: id,
-    order: QuestionOrder.Popular,
+    order: questionOrderState[0],
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
   };
 
@@ -33,6 +36,7 @@ const LiveQuestions: React.FC<Props> = ({
       <QuestionList
         userQueryResult={userQueryResult}
         eventQueryResult={eventQueryResult}
+        questionOrderState={questionOrderState}
         questionQueryInput={questionQueryInput}
       />
 
