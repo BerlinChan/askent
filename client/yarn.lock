@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@apollo/client@3.4.0-beta.8":
-  version "3.4.0-beta.8"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.4.0-beta.8.tgz#ec85a20396feafacde7605bbd1e94b14dd921291"
-  integrity sha512-5aIuZDBDtXicJ+CmdLltNITgiAxSfnv+colxC4zaiKLYCZSzoi3+W6zUMbyOAwhZHlckMc+V6OTWwUqpydGAjQ==
+"@apollo/client@3.4.0-beta.11":
+  version "3.4.0-beta.11"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.4.0-beta.11.tgz#a1f01da76705983cb9ffdb54249e4008edbdf870"
+  integrity sha512-tiH/461MeYIwgTUDdCK1Q7qQAPylDH9W6ijH6fXApTeCJsFqjy6dq+ONLXrcTCSD9Q4kqjJxMKMxCgqlDJISEg==
   dependencies:
     "@graphql-typed-document-node/core" "^3.0.0"
     "@wry/context" "^0.5.2"
@@ -1229,10 +1229,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@fingerprintjs/fingerprintjs@3.0.5":
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/@fingerprintjs/fingerprintjs/-/fingerprintjs-3.0.5.tgz#c7a35e57c6c50b493c4db9f69106d5a3f4850c7f"
-  integrity sha512-VCC7S3ExuScyIfRS8X5pmHj8Nb+GCKssD7DqXjMwgQdlijVKHG8Yo/tvShwdjwz3L7yL2iWF/bq7z6mEwQ8vQQ==
+"@fingerprintjs/fingerprintjs@3.0.6":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@fingerprintjs/fingerprintjs/-/fingerprintjs-3.0.6.tgz#17caaa5082416c20e7f7c20436b403bfcc566bae"
+  integrity sha512-lewmx3nHNGupyCnwq/k9/rimgfN7+FC6/tmoEQ4oWd27zMpiGx83fFs24Mxgdj0D1l3JkdmqhHdq3jyWk9/fAQ==
   dependencies:
     tslib "^2.0.1"
 
@@ -2261,10 +2261,10 @@
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^7.28.1"
 
-"@testing-library/user-event@12.6.3":
-  version "12.6.3"
-  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-12.6.3.tgz#4a77c56a48823cf8adebd0f57670e4a89c24d058"
-  integrity sha512-PCmbUKofE4SXA7l8jphZAbvv5H3c4ix34xPZ/GNe99fASX//msJRgiMbHIBP+GwRfgVG9c7zmkODSPu2X2vNRw==
+"@testing-library/user-event@12.7.3":
+  version "12.7.3"
+  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-12.7.3.tgz#ef674ccb91794e52123b3532c336485d16f453b3"
+  integrity sha512-IdSHkWfbeSSJRFlldvHDWfVX0U18TbXIvLSGII+JbqkJrsflFr4OWlQIua0TvcVVJNna3BNrNvRSvpQ0yvSXlA==
   dependencies:
     "@babel/runtime" "^7.12.5"
 
