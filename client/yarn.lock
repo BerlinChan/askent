@@ -2428,10 +2428,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/loadable__component@5.13.2":
-  version "5.13.2"
-  resolved "https://registry.yarnpkg.com/@types/loadable__component/-/loadable__component-5.13.2.tgz#7e5b2da45929280bbe79ed1fb5f79740643db0f9"
-  integrity sha512-VRM+p2uqzPtkI5GrqVIvndJEvU343TFzuX4alQu5VSm0S5wEe7CnRXf0/Tn5UdchZfIJ1EmwEWK7HynpTHXvIQ==
+"@types/loadable__component@5.13.3":
+  version "5.13.3"
+  resolved "https://registry.yarnpkg.com/@types/loadable__component/-/loadable__component-5.13.3.tgz#ea620b218fb2b6744ce5b2efd9a6a5c1a525a021"
+  integrity sha512-nkRRYpKxspH9yiYGSvyfM7GX1m57B9AVMrVEWY7Hlv9ueK2XCu39M5QyBTDHXcj5qixdD+MyAmNgoy2dEDxGLQ==
   dependencies:
     "@types/react" "*"
 

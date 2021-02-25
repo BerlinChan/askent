@@ -65,7 +65,7 @@
     "@testing-library/react": "11.2.5",
     "@testing-library/user-event": "12.7.3",
     "@types/jest": "26.0.20",
-    "@types/loadable__component": "5.13.2",
+    "@types/loadable__component": "5.13.3",
     "@types/qrcode.react": "1.0.1",
     "@types/ramda": "types/npm-ramda#dist",
     "@types/react": "17.0.1",
