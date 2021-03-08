@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@apollo/client@3.4.0-beta.11":
-  version "3.4.0-beta.11"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.4.0-beta.11.tgz#a1f01da76705983cb9ffdb54249e4008edbdf870"
-  integrity sha512-tiH/461MeYIwgTUDdCK1Q7qQAPylDH9W6ijH6fXApTeCJsFqjy6dq+ONLXrcTCSD9Q4kqjJxMKMxCgqlDJISEg==
+"@apollo/client@3.4.0-beta.12":
+  version "3.4.0-beta.12"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.4.0-beta.12.tgz#17823e052a98209258d04d70c07d260adf34ffe0"
+  integrity sha512-apvvEx+IU9cMt0c2LKOsPBAeZbSYbHBY3V8Ppxm3TRL919h9jN6goAW/5F0a3l96CKcA3pdQVtleXVx3fY5shA==
   dependencies:
     "@graphql-typed-document-node/core" "^3.0.0"
     "@wry/context" "^0.5.2"
@@ -17,9 +17,9 @@
     optimism "^0.14.0"
     prop-types "^15.7.2"
     symbol-observable "^2.0.0"
-    ts-invariant "^0.6.0"
+    ts-invariant "^0.6.1"
     tslib "^1.10.0"
-    zen-observable-ts "^1.0.0-beta.5"
+    zen-observable-ts "^1.0.0"
 
 "@ardatan/aggregate-error@0.0.6":
   version "0.0.6"
@@ -13037,10 +13037,10 @@ tryer@^1.0.1:
   resolved "https://registry.yarnpkg.com/tryer/-/tryer-1.0.1.tgz#f2c85406800b9b0f74c9f7465b81eaad241252f8"
   integrity sha512-c3zayb8/kWWpycWYg87P71E1S1ZL6b6IJxfb5fvsUgsf0S2MVGaDhDXXjDMpdCpfWXqptc+4mXwmiy1ypXqRAA==
 
-ts-invariant@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/ts-invariant/-/ts-invariant-0.6.0.tgz#44066ecfeb7a806ff1c3b0b283408a337a885412"
-  integrity sha512-caoafsfgb8QxdrKzFfjKt627m4i8KTtfAiji0DYJfWI4A/S9ORNNpzYuD9br64kyKFgxn9UNaLLbSupam84mCA==
+ts-invariant@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/ts-invariant/-/ts-invariant-0.6.1.tgz#eb4c52b45daaca8367abbfd6cff998ea871d592d"
+  integrity sha512-QQgN33g8E8yrdDuH29HASveLtbzMnRRgWh0i/JNTW4+zcLsdIOnfsgEDi/NKx4UckQyuMFt9Ujm6TWLWQ58Kvg==
   dependencies:
     "@types/ungap__global-this" "^0.3.1"
     "@ungap/global-this" "^0.4.2"
@@ -14094,10 +14094,10 @@ yup@0.32.8:
     property-expr "^2.0.4"
     toposort "^2.0.2"
 
-zen-observable-ts@^1.0.0-beta.5:
-  version "1.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/zen-observable-ts/-/zen-observable-ts-1.0.0-beta.5.tgz#f55d8e4cfe5f40a0d13beeca3248213436ce40c7"
-  integrity sha512-8EJmjjv0yIsPXta/jn0nFLWfHa0hOqO+6dMqqmHR+Lo5pcrjRFhhOe8sKvzHZDPhCh52R0GMN/4HlaM/ShMRoA==
+zen-observable-ts@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/zen-observable-ts/-/zen-observable-ts-1.0.0.tgz#30d1202b81d8ba4c489e3781e8ca09abf0075e70"
+  integrity sha512-KmWcbz+9kKUeAQ8btY8m1SsEFgBcp7h/Uf3V5quhan7ZWdjGsf0JcGLULQiwOZibbFWnHkYq8Nn2AZbJabovQg==
   dependencies:
     "@types/zen-observable" "^0.8.2"
     zen-observable "^0.8.15"
