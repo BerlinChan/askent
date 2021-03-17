@@ -1,4 +1,4 @@
-{
+export default {
   "type": "postgres",
   "host": "localhost",
   "port": 5432,
