@@ -12,7 +12,7 @@ export const FInputWithLabel: React.FC<Props> = ({
 }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and also replace ErrorMessage entirely.
-  const [field, meta] = useField(props);
+  const [field] = useField(props);
 
   return (
     <React.Fragment>

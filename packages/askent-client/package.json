@@ -3,11 +3,19 @@
   "version": "0.1.0",
   "license": "MIT",
   "description": "A simple presentation tool",
-  "homepage": "https://github.com/BerlinChan/askent",
   "repository": {
     "type": "git",
     "url": "https://github.com/BerlinChan/askent.git",
     "directory": "packages/askent-client"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "codegen": "ts-node --skip-project tools/codegen.ts",
+    "intl:extract": "formatjs extract 'src/**/*.tsx' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "intl:compile": "formatjs compile-folder lang src/generated/lang"
   },
   "dependencies": {
     "@apollo/client": "3.4.0-beta.13",
@@ -37,15 +45,6 @@
     "react-virtuoso": "1.5.14",
     "subscriptions-transport-ws": "0.9.18",
     "yup": "0.32.8"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "codegen": "ts-node --skip-project tools/codegen.ts",
-    "intl:extract": "formatjs extract 'src/**/*.tsx' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
-    "intl:compile": "formatjs compile-folder lang src/generated/lang"
   },
   "eslintConfig": {
     "extends": "react-app"

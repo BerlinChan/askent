@@ -18,7 +18,6 @@ import QuestionForm from "./QuestionForm";
 import QuestionFormInput from "./QuestionFormInput";
 import {
   QuestionOrder,
-  QuestionQueryInput,
   QuestionsByEventAudienceQuery,
   QuestionsByEventAudienceQueryVariables,
 } from "../../../../generated/graphqlHooks";
