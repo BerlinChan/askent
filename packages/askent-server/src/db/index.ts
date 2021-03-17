@@ -1,8 +1,9 @@
 import { createConnection } from 'typeorm'
 import dotenv from 'dotenv'
 import path from 'path'
+import ormconfig from '../../ormconfig'
 
-// TODO https://github.com/Webtomizer/typeorm-loader
+// TODO https://github.com/Mando75/typeorm-graphql-loader
 
 const dotenvResult = dotenv.config({ path: path.join(__dirname, '../../.env') })
 if (dotenvResult.error) {
@@ -10,7 +11,7 @@ if (dotenvResult.error) {
 }
 export async function connectPostgres() {
   try {
-    await createConnection()
+    await createConnection(ormconfig)
   } catch (error) {
     console.error(error)
   }
