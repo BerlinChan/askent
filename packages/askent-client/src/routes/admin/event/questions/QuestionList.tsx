@@ -10,6 +10,7 @@ import {
   QuestionQueryInput,
   useQuestionRealtimeSearchSubscription,
 } from "../../../../generated/graphqlHooks";
+import {useQuestionRealtimeQuerySubscription} from '../../../../generated/hasuraHooks'
 import { Virtuoso } from "react-virtuoso";
 import QuestionItem from "./QuestionItem";
 import QuestionItemMenu from "./QuestionItemMenu";
@@ -47,6 +48,11 @@ const QuestionList: React.FC<Props> = ({
       ),
     [data, moreMenuState]
   );
+
+  useQuestionRealtimeQuerySubscription({
+    variables:{where: {eventId: {_eq: "e5126d8f-5b4f-43fc-9c49-dd741d315060"}}},
+    // context: { clientName: "hasura" },
+  })
 
   useQuestionRealtimeSearchSubscription({
     skip: !Boolean(data?.questionsByEvent.hash),

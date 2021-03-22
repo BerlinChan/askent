@@ -1,0 +1,34 @@
+fragment QuestionRealtimeQueryFields on question {
+  id
+  createdAt
+  updatedAt
+  voteUpCount
+  replyCount
+  content
+  reviewStatus
+  star
+  top
+  user {
+    id
+    name
+    email
+  }
+}
+
+subscription QuestionRealtimeQuery(
+  $distinct_on: [question_select_column!]
+  $limit: Int
+  $offset: Int
+  $order_by: [question_order_by!]
+  $where: question_bool_exp
+) {
+  question(
+    distinct_on: $distinct_on
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+    where: $where
+  ) {
+    ...QuestionRealtimeQueryFields
+  }
+}

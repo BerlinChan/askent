@@ -32,10 +32,18 @@ const wsLink = new WebSocketLink({
     } as ConnectionParamsType,
   },
 });
-
-const httpLink = new HttpLink({
+const apiLink = new HttpLink({
   uri: config.apiUri,
 });
+const hasuraLink = new HttpLink({
+  uri: config.hasuraUri,
+});
+const httpLinks = split(
+  (operation) => operation.getContext().clientName === "hasura",
+  hasuraLink,
+  apiLink
+);
+
 const link = from([
   // TODO: apollo error handling, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
   onError(({ graphQLErrors, networkError }) => {
@@ -67,7 +75,7 @@ const link = from([
       );
     },
     wsLink,
-    httpLink
+    httpLinks
   ),
 ]);
 
