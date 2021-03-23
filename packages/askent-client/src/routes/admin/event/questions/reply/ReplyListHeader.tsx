@@ -6,6 +6,7 @@ import {
   EventByIdQueryVariables,
   QuestionFieldsFragment,
 } from "../../../../../generated/graphqlHooks";
+import { QuestionLiveQueryFieldsFragment } from "../../../../../generated/hasuraHooks";
 import QuestionItem from "../QuestionItem";
 import { QueryResult } from "@apollo/client";
 import QuestionItemMenu from "../QuestionItemMenu";
@@ -13,7 +14,7 @@ import QuestionItemMenu from "../QuestionItemMenu";
 interface Props {
   loading: boolean;
   isScrolling?: boolean;
-  question?: QuestionFieldsFragment;
+  question?: QuestionLiveQueryFieldsFragment;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
@@ -57,16 +58,17 @@ const ReplyListHeader: React.FC<Props> = ({
       {loading ? (
         <CircularProgress />
       ) : question ? (
-        <QuestionItem
-          question={question}
-          eventQueryResult={eventQueryResult}
-          handleMoreClick={handleMoreOpen}
-          editContent={editContentIdsState[0].includes(question.id)}
-          handleEditContentToggle={handleEditContentToggle}
-          editContentInputRef={editContentInputRef}
-          isScrolling={isScrolling}
-          showReplyCount={false}
-        />
+        // <QuestionItem
+        //   question={question}
+        //   eventQueryResult={eventQueryResult}
+        //   handleMoreClick={handleMoreOpen}
+        //   editContent={editContentIdsState[0].includes(question.id)}
+        //   handleEditContentToggle={handleEditContentToggle}
+        //   editContentInputRef={editContentInputRef}
+        //   isScrolling={isScrolling}
+        //   showReplyCount={false}
+        // />
+        null
       ) : null}
 
       <QuestionItemMenu

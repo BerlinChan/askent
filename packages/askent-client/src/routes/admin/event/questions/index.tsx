@@ -9,6 +9,10 @@ import {
   QuestionFilter,
   QuestionOrder,
 } from "../../../../generated/graphqlHooks";
+import {
+  QuestionLiveQuerySubscriptionVariables,
+  Order_By,
+} from "../../../../generated/hasuraHooks";
 import { QueryResult } from "@apollo/client";
 import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
@@ -74,6 +78,12 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: QuestionOrder.Oldest,
   };
+  const questionLiveQueryInputState = React.useState<QuestionLiveQuerySubscriptionVariables>({
+    where: { eventId: { _eq: id } },
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
+    order_by: { voteUpCount: Order_By.Desc, createdAt: Order_By.Desc },
+  });
 
   return (
     <Grid container spacing={3} className={classes.questionsGrid}>
@@ -86,6 +96,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
             <QuestionList
               eventQueryResult={eventQueryResult}
               questionQueryInput={questionQueryInputReview}
+              questionLiveQueryInputState={questionLiveQueryInputState}
             />
           ) : (
             <Box className={classes.moderationOffTips}>
@@ -116,6 +127,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
           <QuestionList
             eventQueryResult={eventQueryResult}
             questionQueryInput={questionQueryInput}
+            questionLiveQueryInputState={questionLiveQueryInputState}
           />
         </Paper>
       </Grid>

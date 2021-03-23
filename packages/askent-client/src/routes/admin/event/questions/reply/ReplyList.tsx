@@ -9,6 +9,7 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
 } from "../../../../../generated/graphqlHooks";
+import { QuestionLiveQueryFieldsFragment } from "../../../../../generated/hasuraHooks";
 import { Virtuoso } from "react-virtuoso";
 import ReplyItem from "./ReplyItem";
 import ReplyListHeader from "./ReplyListHeader";
@@ -21,11 +22,12 @@ import {
 import { QueryResult } from "@apollo/client";
 
 interface Props {
+  question?: QuestionLiveQueryFieldsFragment;
   questionId: string;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
-const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
+const ReplyList: React.FC<Props> = ({ question,questionId, eventQueryResult }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -154,7 +156,7 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
             <ReplyListHeader
               loading={questionLoading}
               isScrolling={isScrolling}
-              question={questionData?.questionById}
+              question={question}
               eventQueryResult={eventQueryResult}
             />
           ),

@@ -24,7 +24,6 @@ import {
 } from "react-intl";
 import { QueryResult } from "@apollo/client";
 import {
-  QuestionFieldsFragment,
   EventByIdQuery,
   EventByIdQueryVariables,
   useUpdateQuestionReviewStatusMutation,
@@ -33,6 +32,7 @@ import {
   useUpdateQuestionContentMutation,
   ReviewStatus,
 } from "../../../../generated/graphqlHooks";
+import { QuestionLiveQueryFieldsFragment } from "../../../../generated/hasuraHooks";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  question: QuestionFieldsFragment;
+  question: QuestionLiveQueryFieldsFragment;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
   handleMoreClick?: (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -181,221 +181,219 @@ const QuestionListItem: React.FC<Props> = ({
       alignItems="flex-start"
       divider
     >
-      <React.Fragment>
-        <ListItemAvatar>
-          <Avatar
-            alt={question.author?.name as string}
-            src={isScrolling ? "" : question.author?.avatar}
-          />
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            <Typography component="span" variant="body2" color="textPrimary">
-              {question.author?.name ? (
-                question.author?.name
-              ) : (
-                <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
-              )}
-            </Typography>
-          }
-          secondary={
-            <React.Fragment>
-              <ThumbUpIcon style={{ fontSize: 12 }} />
-              <Typography
-                className={classes.questionMeta}
-                component="span"
-                variant="body2"
-                color="inherit"
-              >
-                {question.voteUpCount}
-              </Typography>
-              <AccessTimeIcon style={{ fontSize: 12 }} />
-              <Typography
-                className={classes.questionMeta}
-                component="span"
-                variant="body2"
-                color="inherit"
-              >
-                <FormattedDate value={question.createdAt} />
-                {", "}
-                <FormattedTime value={question.createdAt} />
-              </Typography>
-            </React.Fragment>
-          }
+      <ListItemAvatar>
+        <Avatar
+          alt={question.user?.name as string}
+          src={isScrolling ? "" : question.user?.email || ""}
         />
-        {editContent ? (
-          <Formik
-            initialValues={{ content: question.content }}
-            validationSchema={Yup.object({
-              content: Yup.string().max(QUESTION_CONTENT_MAX_LENGTH).required(),
-            })}
-            onSubmit={async (values) => {
-              await updateQuestionContentMutation({
-                variables: {
-                  questionId: question.id,
-                  content: values.content,
-                },
-              });
-              handleEditContentToggle(question.id);
-            }}
-          >
-            {(formProps) => (
-              <Form className={classes.editContentForm}>
-                <Field
-                  component={TextField}
-                  inputRef={editContentInputRef}
-                  fullWidth
-                  id="content"
-                  name="content"
-                  margin="normal"
-                  size="small"
-                  disabled={updateQuestionContentLoading}
-                />
-                <Box className={classes.editContentAction}>
-                  <Typography
-                    variant="body2"
-                    color={
-                      QUESTION_CONTENT_MAX_LENGTH -
-                        formProps.values.content.length <
-                      0
-                        ? "error"
-                        : "textSecondary"
-                    }
-                  >
-                    {QUESTION_CONTENT_MAX_LENGTH -
-                      formProps.values.content.length}
-                  </Typography>
-                  <Box className={classes.editContentFormButtons}>
-                    <Button
-                      size="small"
-                      onClick={() => handleEditContentToggle(question.id)}
-                    >
-                      <FormattedMessage id="Cancel" defaultMessage="Cancel" />
-                    </Button>
-                    <ButtonLoading
-                      size="small"
-                      type="submit"
-                      color="primary"
-                      loading={updateQuestionContentLoading}
-                      disabled={updateQuestionContentLoading}
-                    >
-                      <FormattedMessage id="Save" defaultMessage="Save" />
-                    </ButtonLoading>
-                  </Box>
-                </Box>
-              </Form>
+      </ListItemAvatar>
+      <ListItemText
+        primary={
+          <Typography component="span" variant="body2" color="textPrimary">
+            {question.user?.name ? (
+              question.user?.name
+            ) : (
+              <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
             )}
-          </Formik>
-        ) : (
+          </Typography>
+        }
+        secondary={
           <React.Fragment>
-            <Typography className={classes.questionContent} variant="body1">
-              {question.content}
+            <ThumbUpIcon style={{ fontSize: 12 }} />
+            <Typography
+              className={classes.questionMeta}
+              component="span"
+              variant="body2"
+              color="inherit"
+            >
+              {question.voteUpCount}
             </Typography>
-            {showReplyCount && Boolean(question.replyCount) && (
-              <Typography
-                className={classes.reply}
-                variant="body2"
-                color="textSecondary"
-                onClick={handleOpenReply}
-              >
-                <FormattedMessage
-                  id="replyCount"
-                  defaultMessage="{num, plural, one {# reply} other {# replies}}"
-                  values={{ num: question.replyCount }}
-                />
-              </Typography>
-            )}
-            <Box className={classes.questionActionBox}>
-              {(question.reviewStatus === ReviewStatus.Publish ||
-                question.reviewStatus === ReviewStatus.Archive) && (
-                <QuestionToggleButton
-                  className="questionHover"
-                  id={question.id}
-                  status={question.star}
-                  onTitle={formatMessage({
-                    id: "Unstar",
-                    defaultMessage: "Unstar",
-                  })}
-                  offTitle={formatMessage({
-                    id: "Star",
-                    defaultMessage: "Star",
-                  })}
-                  onIcon={<StarIcon fontSize="inherit" color="secondary" />}
-                  offIcon={<StarIcon fontSize="inherit" color="inherit" />}
-                  disabled={updateQuestionStarLoading}
-                  handleToggle={handleStarClick}
-                />
-              )}
-              {question.reviewStatus === ReviewStatus.Publish && (
-                <QuestionToggleButton
-                  className="questionHover"
-                  id={question.id}
-                  status={question.top}
-                  onTitle={formatMessage({
-                    id: "Untop",
-                    defaultMessage: "Untop",
-                  })}
-                  offTitle={formatMessage({ id: "Top", defaultMessage: "Top" })}
-                  onIcon={<TopIcon fontSize="inherit" color="secondary" />}
-                  offIcon={<TopIcon fontSize="inherit" color="inherit" />}
-                  disabled={updateQuestionTopLoading}
-                  handleToggle={handleTopClick}
-                />
-              )}
-              {data?.eventById.moderation &&
-                (question.reviewStatus === ReviewStatus.Publish ||
-                  question.reviewStatus === ReviewStatus.Review) && (
-                  <QuestionToggleButton
-                    className="questionHover"
-                    id={question.id}
-                    status={question.reviewStatus === ReviewStatus.Publish}
-                    onTitle={formatMessage({
-                      id: "Unpublish",
-                      defaultMessage: "Unpublish",
-                    })}
-                    offTitle={formatMessage({
-                      id: "Publish",
-                      defaultMessage: "Publish",
-                    })}
-                    onIcon={<ClearIcon fontSize="inherit" />}
-                    offIcon={<CheckIcon fontSize="inherit" />}
-                    disabled={updateQuestionReviewStatusLoading}
-                    handleToggle={handlePublishClick}
-                  />
-                )}
-              {(question.reviewStatus === ReviewStatus.Publish ||
-                question.reviewStatus === ReviewStatus.Archive) && (
-                <QuestionToggleButton
-                  className="questionHover"
-                  id={question.id}
-                  status={question.reviewStatus === ReviewStatus.Archive}
-                  onTitle={formatMessage({
-                    id: "Unarchive",
-                    defaultMessage: "Unarchive",
-                  })}
-                  offTitle={formatMessage({
-                    id: "Archive",
-                    defaultMessage: "Archive",
-                  })}
-                  onIcon={<UnarchiveIcon fontSize="inherit" />}
-                  offIcon={<ArchiveIcon fontSize="inherit" />}
-                  disabled={updateQuestionReviewStatusLoading}
-                  handleToggle={handleArchiveClick}
-                />
-              )}
-
-              {handleMoreClick ? (
-                <IconButton
-                  size="small"
-                  onClick={(e) => handleMoreClick(e, question.id)}
-                >
-                  <MoreHorizIcon fontSize="inherit" />
-                </IconButton>
-              ) : null}
-            </Box>
+            <AccessTimeIcon style={{ fontSize: 12 }} />
+            <Typography
+              className={classes.questionMeta}
+              component="span"
+              variant="body2"
+              color="inherit"
+            >
+              <FormattedDate value={question.createdAt} />
+              {", "}
+              <FormattedTime value={question.createdAt} />
+            </Typography>
           </React.Fragment>
-        )}
-      </React.Fragment>
+        }
+      />
+      {editContent ? (
+        <Formik
+          initialValues={{ content: question.content }}
+          validationSchema={Yup.object({
+            content: Yup.string().max(QUESTION_CONTENT_MAX_LENGTH).required(),
+          })}
+          onSubmit={async (values) => {
+            await updateQuestionContentMutation({
+              variables: {
+                questionId: question.id,
+                content: values.content,
+              },
+            });
+            handleEditContentToggle(question.id);
+          }}
+        >
+          {(formProps) => (
+            <Form className={classes.editContentForm}>
+              <Field
+                component={TextField}
+                inputRef={editContentInputRef}
+                fullWidth
+                id="content"
+                name="content"
+                margin="normal"
+                size="small"
+                disabled={updateQuestionContentLoading}
+              />
+              <Box className={classes.editContentAction}>
+                <Typography
+                  variant="body2"
+                  color={
+                    QUESTION_CONTENT_MAX_LENGTH -
+                      formProps.values.content.length <
+                    0
+                      ? "error"
+                      : "textSecondary"
+                  }
+                >
+                  {QUESTION_CONTENT_MAX_LENGTH -
+                    formProps.values.content.length}
+                </Typography>
+                <Box className={classes.editContentFormButtons}>
+                  <Button
+                    size="small"
+                    onClick={() => handleEditContentToggle(question.id)}
+                  >
+                    <FormattedMessage id="Cancel" defaultMessage="Cancel" />
+                  </Button>
+                  <ButtonLoading
+                    size="small"
+                    type="submit"
+                    color="primary"
+                    loading={updateQuestionContentLoading}
+                    disabled={updateQuestionContentLoading}
+                  >
+                    <FormattedMessage id="Save" defaultMessage="Save" />
+                  </ButtonLoading>
+                </Box>
+              </Box>
+            </Form>
+          )}
+        </Formik>
+      ) : (
+        <React.Fragment>
+          <Typography className={classes.questionContent} variant="body1">
+            {question.content}
+          </Typography>
+          {showReplyCount && Boolean(question.replyCount) && (
+            <Typography
+              className={classes.reply}
+              variant="body2"
+              color="textSecondary"
+              onClick={handleOpenReply}
+            >
+              <FormattedMessage
+                id="replyCount"
+                defaultMessage="{num, plural, one {# reply} other {# replies}}"
+                values={{ num: question.replyCount }}
+              />
+            </Typography>
+          )}
+          <Box className={classes.questionActionBox}>
+            {(question.reviewStatus === ReviewStatus.Publish ||
+              question.reviewStatus === ReviewStatus.Archive) && (
+              <QuestionToggleButton
+                className="questionHover"
+                id={question.id}
+                status={question.star}
+                onTitle={formatMessage({
+                  id: "Unstar",
+                  defaultMessage: "Unstar",
+                })}
+                offTitle={formatMessage({
+                  id: "Star",
+                  defaultMessage: "Star",
+                })}
+                onIcon={<StarIcon fontSize="inherit" color="secondary" />}
+                offIcon={<StarIcon fontSize="inherit" color="inherit" />}
+                disabled={updateQuestionStarLoading}
+                handleToggle={handleStarClick}
+              />
+            )}
+            {question.reviewStatus === ReviewStatus.Publish && (
+              <QuestionToggleButton
+                className="questionHover"
+                id={question.id}
+                status={question.top}
+                onTitle={formatMessage({
+                  id: "Untop",
+                  defaultMessage: "Untop",
+                })}
+                offTitle={formatMessage({ id: "Top", defaultMessage: "Top" })}
+                onIcon={<TopIcon fontSize="inherit" color="secondary" />}
+                offIcon={<TopIcon fontSize="inherit" color="inherit" />}
+                disabled={updateQuestionTopLoading}
+                handleToggle={handleTopClick}
+              />
+            )}
+            {data?.eventById.moderation &&
+              (question.reviewStatus === ReviewStatus.Publish ||
+                question.reviewStatus === ReviewStatus.Review) && (
+                <QuestionToggleButton
+                  className="questionHover"
+                  id={question.id}
+                  status={question.reviewStatus === ReviewStatus.Publish}
+                  onTitle={formatMessage({
+                    id: "Unpublish",
+                    defaultMessage: "Unpublish",
+                  })}
+                  offTitle={formatMessage({
+                    id: "Publish",
+                    defaultMessage: "Publish",
+                  })}
+                  onIcon={<ClearIcon fontSize="inherit" />}
+                  offIcon={<CheckIcon fontSize="inherit" />}
+                  disabled={updateQuestionReviewStatusLoading}
+                  handleToggle={handlePublishClick}
+                />
+              )}
+            {(question.reviewStatus === ReviewStatus.Publish ||
+              question.reviewStatus === ReviewStatus.Archive) && (
+              <QuestionToggleButton
+                className="questionHover"
+                id={question.id}
+                status={question.reviewStatus === ReviewStatus.Archive}
+                onTitle={formatMessage({
+                  id: "Unarchive",
+                  defaultMessage: "Unarchive",
+                })}
+                offTitle={formatMessage({
+                  id: "Archive",
+                  defaultMessage: "Archive",
+                })}
+                onIcon={<UnarchiveIcon fontSize="inherit" />}
+                offIcon={<ArchiveIcon fontSize="inherit" />}
+                disabled={updateQuestionReviewStatusLoading}
+                handleToggle={handleArchiveClick}
+              />
+            )}
+
+            {handleMoreClick ? (
+              <IconButton
+                size="small"
+                onClick={(e) => handleMoreClick(e, question.id)}
+              >
+                <MoreHorizIcon fontSize="inherit" />
+              </IconButton>
+            ) : null}
+          </Box>
+        </React.Fragment>
+      )}
     </ListItem>
   );
 };

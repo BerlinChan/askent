@@ -10,7 +10,12 @@ import {
   QuestionQueryInput,
   useQuestionRealtimeSearchSubscription,
 } from "../../../../generated/graphqlHooks";
-import {useQuestionRealtimeQuerySubscription} from '../../../../generated/hasuraHooks'
+import {
+  useQuestionLiveQuerySubscription,
+  QuestionLiveQueryFieldsFragment,
+  QuestionLiveQuerySubscriptionVariables,
+  useQuestionCountLiveQuerySubscription,
+} from "../../../../generated/hasuraHooks";
 import { Virtuoso } from "react-virtuoso";
 import QuestionItem from "./QuestionItem";
 import QuestionItemMenu from "./QuestionItemMenu";
@@ -22,11 +27,16 @@ import { sortQuestionBy } from "../../../../utils";
 interface Props {
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
   questionQueryInput: QuestionQueryInput;
+  questionLiveQueryInputState: [
+    QuestionLiveQuerySubscriptionVariables,
+    React.Dispatch<React.SetStateAction<QuestionLiveQuerySubscriptionVariables>>
+  ];
 }
 
 const QuestionList: React.FC<Props> = ({
   eventQueryResult,
   questionQueryInput,
+  questionLiveQueryInputState,
 }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
@@ -39,61 +49,39 @@ const QuestionList: React.FC<Props> = ({
   const questionsQueryResult = useQuestionsByEventQuery({
     variables: { input: questionQueryInput },
   });
-  const { data, loading, fetchMore } = questionsQueryResult;
+  const { data,  fetchMore } = questionsQueryResult;
+  const [loading,setLoading]=React.useState(false)
+  const [questionLiveQueryData, setQuestionLiveQueryDataData] = React.useState<
+    Array<QuestionLiveQueryFieldsFragment>
+  >([]);
+  const [
+    questionCountLiveQueryData,
+    setQuestionCountLiveQueryData,
+  ] = React.useState(0);
 
   const moreMenuContextQuestion = React.useMemo(
     () =>
-      data?.questionsByEvent.list.find(
+    questionLiveQueryData.find(
         (item) => item.id === moreMenuState[0].id
       ),
-    [data, moreMenuState]
+    [questionLiveQueryData, moreMenuState]
   );
 
-  useQuestionRealtimeQuerySubscription({
-    variables:{where: {eventId: {_eq: "e5126d8f-5b4f-43fc-9c49-dd741d315060"}}},
-    // context: { clientName: "hasura" },
-  })
-
-  useQuestionRealtimeSearchSubscription({
-    skip: !Boolean(data?.questionsByEvent.hash),
-    variables: {
-      eventId: questionQueryInput.eventId,
-      hash: data?.questionsByEvent.hash as string,
-    },
+  useQuestionLiveQuerySubscription({
+    variables: questionLiveQueryInputState[0],
     onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionRealtimeSearch) {
-        if (data) {
-          const questionRealtimeSearch =
-            subscriptionData.data.questionRealtimeSearch;
-
-          // BUG: should not trigger a field merge
-          // https://github.com/apollographql/apollo-client/issues/7491#ref-commit-b62d097
-          client.writeQuery({
-            query: QuestionsByEventDocument,
-            variables: { input: questionQueryInput },
-            data: {
-              questionsByEvent: {
-                ...data.questionsByEvent,
-                totalCount: questionRealtimeSearch.totalCount,
-                list: data.questionsByEvent.list
-                  // remove
-                  .filter(
-                    (preQuestion) =>
-                      !questionRealtimeSearch.deleteList.includes(
-                        preQuestion.id
-                      ) &&
-                      !questionRealtimeSearch.updateList
-                        .map((item) => item.id)
-                        .includes(preQuestion.id)
-                  )
-                  // add
-                  .concat(questionRealtimeSearch.insertList)
-                  .concat(questionRealtimeSearch.updateList),
-              },
-            },
-          });
-        }
+      if (subscriptionData.data?.question) {
+        setQuestionLiveQueryDataData(subscriptionData.data?.question);
+        setLoading(false)
       }
+    },
+  });
+  useQuestionCountLiveQuerySubscription({
+    variables: { where: questionLiveQueryInputState[0].where },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      setQuestionCountLiveQueryData(
+        subscriptionData.data?.question_aggregate.aggregate?.count || 0
+      );
     },
   });
 
@@ -118,26 +106,18 @@ const QuestionList: React.FC<Props> = ({
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
 
-  const orderedList = React.useMemo(() => {
-    const orderedList = sortQuestionBy<QuestionFieldsFragment>(
-      questionQueryInput.order || QuestionOrder.Popular
-    )(data?.questionsByEvent.list || []);
-
-    return orderedList;
-  }, [data, questionQueryInput]);
   const loadMore = () => {
-    if (data?.questionsByEvent.hasNextPage) {
-      fetchMore({
-        variables: {
-          input: {
-            ...questionQueryInput,
-            pagination: {
-              offset: data?.questionsByEvent.list.length || DEFAULT_PAGE_OFFSET,
-              limit: data?.questionsByEvent.limit || DEFAULT_PAGE_LIMIT,
-            },
-          },
-        },
-      });
+    if (
+      questionLiveQueryInputState[0].offset +
+        questionLiveQueryInputState[0].limit <
+      questionCountLiveQueryData
+    ) {
+      setLoading(true)
+      questionLiveQueryInputState[1](
+        Object.assign({}, questionLiveQueryInputState[0], {
+          limit: questionLiveQueryInputState[0].limit * 2,
+        })
+      );
     }
   };
 
@@ -145,13 +125,14 @@ const QuestionList: React.FC<Props> = ({
     <React.Fragment>
       <Virtuoso
         style={{ height: "100%", width: "100%" }}
-        totalCount={orderedList.length}
+        totalCount={questionLiveQueryData.length}
         isScrolling={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}
         itemContent={(index) => {
-          const question: QuestionFieldsFragment = orderedList[index];
+          const question: QuestionLiveQueryFieldsFragment =
+            questionLiveQueryData[index];
 
           return (
             <QuestionItem
@@ -170,7 +151,11 @@ const QuestionList: React.FC<Props> = ({
           Footer: () => (
             <ListFooter
               loading={loading}
-              hasNextPage={data?.questionsByEvent.hasNextPage}
+              hasNextPage={
+                questionLiveQueryInputState[0].offset +
+                  questionLiveQueryInputState[0].limit <
+                questionCountLiveQueryData
+              }
             />
           ),
         }}

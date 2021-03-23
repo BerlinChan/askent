@@ -3,8 +3,8 @@ import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { useIntl, FormattedMessage } from "react-intl";
 import {
   useDeleteQuestionMutation,
-  QuestionFieldsFragment,
 } from "../../../../generated/graphqlHooks";
+import { QuestionLiveQueryFieldsFragment } from "../../../../generated/hasuraHooks";
 import Confirm from "../../../../components/Confirm";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
@@ -17,7 +17,7 @@ type MoreMenuStateType = {
 };
 
 interface Props {
-  question?: QuestionFieldsFragment;
+  question?: QuestionLiveQueryFieldsFragment;
   moreMenuState: [
     MoreMenuStateType,
     React.Dispatch<React.SetStateAction<MoreMenuStateType>>
