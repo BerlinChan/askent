@@ -8,7 +8,6 @@ import {
   QuestionFieldsFragment,
   QuestionOrder,
   QuestionQueryInput,
-  useQuestionRealtimeSearchSubscription,
 } from "../../../../generated/graphqlHooks";
 import {
   useQuestionLiveQuerySubscription,

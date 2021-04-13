@@ -183,15 +183,15 @@ const QuestionListItem: React.FC<Props> = ({
     >
       <ListItemAvatar>
         <Avatar
-          alt={question.user?.name as string}
-          src={isScrolling ? "" : question.user?.email || ""}
+          alt={question.author?.name as string}
+          src={isScrolling ? "" : question.author?.email || ""}
         />
       </ListItemAvatar>
       <ListItemText
         primary={
           <Typography component="span" variant="body2" color="textPrimary">
-            {question.user?.name ? (
-              question.user?.name
+            {question.author?.name ? (
+              question.author?.name
             ) : (
               <FormattedMessage id="Anonymous" defaultMessage="Anonymous" />
             )}
