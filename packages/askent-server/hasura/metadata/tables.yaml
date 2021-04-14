@@ -1,0 +1,203 @@
+- table:
+    schema: public
+    name: event
+  object_relationships:
+  - name: owner
+    using:
+      foreign_key_constraint_on: ownerId
+  array_relationships:
+  - name: audiences
+    using:
+      foreign_key_constraint_on:
+        column: eventId
+        table:
+          schema: public
+          name: eventAudiences
+  - name: guestes
+    using:
+      foreign_key_constraint_on:
+        column: eventId
+        table:
+          schema: public
+          name: eventGuestes
+  - name: questions
+    using:
+      foreign_key_constraint_on:
+        column: eventId
+        table:
+          schema: public
+          name: question
+- table:
+    schema: public
+    name: eventAudiences
+  object_relationships:
+  - name: event
+    using:
+      foreign_key_constraint_on: eventId
+  - name: user
+    using:
+      foreign_key_constraint_on: userId
+- table:
+    schema: public
+    name: eventGuestes
+  object_relationships:
+  - name: event
+    using:
+      foreign_key_constraint_on: eventId
+  - name: user
+    using:
+      foreign_key_constraint_on: userId
+- table:
+    schema: public
+    name: question
+  object_relationships:
+  - name: author
+    using:
+      foreign_key_constraint_on: authorId
+  - name: event
+    using:
+      foreign_key_constraint_on: eventId
+  array_relationships:
+  - name: replies
+    using:
+      foreign_key_constraint_on:
+        column: questionId
+        table:
+          schema: public
+          name: reply
+  - name: voteUpUsers
+    using:
+      foreign_key_constraint_on:
+        column: questionId
+        table:
+          schema: public
+          name: usersVoteUpQuestions
+  insert_permissions:
+  - role: guest
+    permission:
+      check: {}
+      columns:
+      - anonymous
+      - star
+      - top
+      - replyCount
+      - voteUpCount
+      - reviewStatus
+      - createdAt
+      - deletedAt
+      - updatedAt
+      - authorId
+      - eventId
+      - id
+      - content
+      backend_only: false
+- table:
+    schema: public
+    name: question_query_meta
+- table:
+    schema: public
+    name: reply
+  object_relationships:
+  - name: author
+    using:
+      foreign_key_constraint_on: authorId
+  - name: question
+    using:
+      foreign_key_constraint_on: questionId
+- table:
+    schema: public
+    name: reply_query_meta
+- table:
+    schema: public
+    name: role
+  array_relationships:
+  - name: users
+    using:
+      foreign_key_constraint_on:
+        column: roleId
+        table:
+          schema: public
+          name: userRoles
+- table:
+    schema: public
+    name: test
+- table:
+    schema: public
+    name: user
+  array_relationships:
+  - name: attendedEvents
+    using:
+      foreign_key_constraint_on:
+        column: userId
+        table:
+          schema: public
+          name: eventAudiences
+  - name: events
+    using:
+      foreign_key_constraint_on:
+        column: ownerId
+        table:
+          schema: public
+          name: event
+  - name: guestEvents
+    using:
+      foreign_key_constraint_on:
+        column: userId
+        table:
+          schema: public
+          name: eventGuestes
+  - name: questions
+    using:
+      foreign_key_constraint_on:
+        column: authorId
+        table:
+          schema: public
+          name: question
+  - name: replies
+    using:
+      foreign_key_constraint_on:
+        column: authorId
+        table:
+          schema: public
+          name: reply
+  - name: roles
+    using:
+      foreign_key_constraint_on:
+        column: userId
+        table:
+          schema: public
+          name: userRoles
+  - name: voteUpQuestions
+    using:
+      foreign_key_constraint_on:
+        column: userId
+        table:
+          schema: public
+          name: usersVoteUpQuestions
+  computed_fields:
+  - name: avatar
+    definition:
+      function:
+        schema: public
+        name: user_avatar
+    comment: ""
+- table:
+    schema: public
+    name: userRoles
+  object_relationships:
+  - name: role
+    using:
+      foreign_key_constraint_on: roleId
+  - name: user
+    using:
+      foreign_key_constraint_on: userId
+- table:
+    schema: public
+    name: usersVoteUpQuestions
+  object_relationships:
+  - name: question
+    using:
+      foreign_key_constraint_on: questionId
+  - name: user
+    using:
+      foreign_key_constraint_on: userId
