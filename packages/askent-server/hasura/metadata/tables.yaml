@@ -120,9 +120,6 @@
           name: userRoles
 - table:
     schema: public
-    name: test
-- table:
-    schema: public
     name: user
   array_relationships:
   - name: attendedEvents
@@ -174,13 +171,6 @@
         table:
           schema: public
           name: usersVoteUpQuestions
-  computed_fields:
-  - name: avatar
-    definition:
-      function:
-        schema: public
-        name: user_avatar
-    comment: ""
 - table:
     schema: public
     name: userRoles
