@@ -24,6 +24,9 @@ export class User {
   @Column({ nullable: true, unique: true })
   public email?: string
 
+  @Column({ nullable: true, unique: true })
+  public avatar?: string
+
   @Column({ nullable: true })
   public password?: string
 

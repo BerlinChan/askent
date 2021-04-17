@@ -184,7 +184,7 @@ const QuestionListItem: React.FC<Props> = ({
       <ListItemAvatar>
         <Avatar
           alt={question.author?.name as string}
-          src={isScrolling ? "" : question.author?.email || ""}
+          src={isScrolling ? "" : question.author?.avatar || ""}
         />
       </ListItemAvatar>
       <ListItemText

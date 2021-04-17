@@ -127,7 +127,7 @@ const ReplyListItem: React.FC<Props> = ({
         <ListItemAvatar>
           <Avatar
             alt={reply.author?.name as string}
-            src={isScrolling ? "" : reply.author?.avatar}
+            src={isScrolling ? "" : (reply.author?.avatar || "")}
           />
         </ListItemAvatar>
         <ListItemText

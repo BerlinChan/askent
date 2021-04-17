@@ -15,7 +15,8 @@
     "clean": "rm -rf dist",
     "build": "npm -s run clean && tsc",
     "hausra:export": "hasura metadata export --project ./hasura",
-    "hasura:apply": "hasura metadata apply --project ./hasura"
+    "hasura:apply": "hasura metadata apply --project ./hasura",
+    "hasura:reload": "hasura metadata reload --project ./hasura"
   },
   "dependencies": {
     "apollo-server": "2.22.2",

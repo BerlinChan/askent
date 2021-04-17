@@ -5,7 +5,7 @@ import {
   Typography,
   ListItem,
   ListItemText,
-  Avatar
+  Avatar,
 } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useIntl, FormattedMessage } from "react-intl";
@@ -13,14 +13,14 @@ import {
   QuestionWallFieldsFragment,
   useUpdateQuestionReviewStatusMutation,
   useUpdateQuestionTopMutation,
-  ReviewStatus
+  ReviewStatus,
 } from "../../../generated/graphqlHooks";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import UnarchiveIcon from "@material-ui/icons/Unarchive";
 import TopIcon from "@material-ui/icons/Publish";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import QuestionToggleButton, {
-  handleToggleType
+  handleToggleType,
 } from "../../../components/QuestionToggleButton";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,46 +34,46 @@ const useStyles = makeStyles((theme: Theme) =>
       "&:hover .questionHover": { opacity: 1 },
       "& .questionHover": {
         opacity: 0,
-        transition: theme.transitions.create("opacity")
-      }
+        transition: theme.transitions.create("opacity"),
+      },
     },
     topQuestion: {
-      backgroundColor: `${theme.palette.success[theme.palette.type]}90`
+      backgroundColor: `${theme.palette.success[theme.palette.type]}90`,
     },
     itemPrimary: {
       display: "flex",
-      alignItems: "center"
+      alignItems: "center",
     },
     avatar: {
       width: theme.typography.pxToRem(28),
       height: theme.typography.pxToRem(28),
-      marginRight: theme.typography.pxToRem(12)
+      marginRight: theme.typography.pxToRem(12),
     },
     questionContent: {
       width: "100%",
       fontSize: theme.typography.pxToRem(28),
       marginTop: theme.typography.pxToRem(12),
-      marginBottom: theme.typography.pxToRem(4)
+      marginBottom: theme.typography.pxToRem(4),
     },
     questionActionBox: {
       position: "absolute",
       display: "flex",
       alignItems: "center",
       top: 0,
-      right: theme.typography.pxToRem(16)
+      right: theme.typography.pxToRem(16),
     },
     thumbUpBox: {
       display: "inline-flex",
       alignItems: "center",
-      marginLeft: theme.typography.pxToRem(16)
+      marginLeft: theme.typography.pxToRem(16),
     },
     voteCount: {
-      fontSize: theme.typography.pxToRem(14)
+      fontSize: theme.typography.pxToRem(14),
     },
     thumbUpIcon: {
       fontSize: theme.typography.pxToRem(14),
-      marginLeft: theme.typography.pxToRem(8)
-    }
+      marginLeft: theme.typography.pxToRem(8),
+    },
   })
 );
 
@@ -84,32 +84,36 @@ interface Props {
 
 const QuestionListItem: React.FC<Props> = ({
   question,
-  isScrolling = false
+  isScrolling = false,
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [
     updateQuestionReviewStatusMutation,
-    { loading: updateQuestionReviewStatusLoading }
+    { loading: updateQuestionReviewStatusLoading },
   ] = useUpdateQuestionReviewStatusMutation();
   const [
     updateQuestionTopMutation,
-    { loading: updateQuestionTopLoading }
+    { loading: updateQuestionTopLoading },
   ] = useUpdateQuestionTopMutation();
 
-  const handleArchiveClick: handleToggleType = async (e, questionId, currentStatus) => {
+  const handleArchiveClick: handleToggleType = async (
+    e,
+    questionId,
+    currentStatus
+  ) => {
     await updateQuestionReviewStatusMutation({
       variables: {
         questionId,
         reviewStatus: currentStatus
           ? ReviewStatus.Publish
-          : ReviewStatus.Archive
-      }
+          : ReviewStatus.Archive,
+      },
     });
   };
   const handleTopClick: handleToggleType = async (e, questionId, top) => {
     await updateQuestionTopMutation({
-      variables: { questionId, top: !top }
+      variables: { questionId, top: !top },
     });
   };
 
@@ -127,7 +131,7 @@ const QuestionListItem: React.FC<Props> = ({
               <Avatar
                 className={classes.avatar}
                 alt={question.author?.name as string}
-                src={isScrolling ? "" : question.author?.avatar}
+                src={isScrolling ? "" : question.author?.avatar || ""}
               />
               <Typography component="span" variant="body1">
                 {question.author?.name ? (
@@ -153,7 +157,7 @@ const QuestionListItem: React.FC<Props> = ({
             disabled={updateQuestionTopLoading}
             onTitle={formatMessage({
               id: "Untop",
-              defaultMessage: "Untop"
+              defaultMessage: "Untop",
             })}
             offTitle={formatMessage({ id: "Top", defaultMessage: "Top" })}
             onIcon={<TopIcon fontSize="inherit" color="secondary" />}
@@ -167,11 +171,11 @@ const QuestionListItem: React.FC<Props> = ({
             disabled={updateQuestionReviewStatusLoading}
             onTitle={formatMessage({
               id: "Unarchive",
-              defaultMessage: "Unarchive"
+              defaultMessage: "Unarchive",
             })}
             offTitle={formatMessage({
               id: "Archive",
-              defaultMessage: "Archive"
+              defaultMessage: "Archive",
             })}
             onIcon={<UnarchiveIcon fontSize="inherit" />}
             offIcon={<ArchiveIcon fontSize="inherit" />}

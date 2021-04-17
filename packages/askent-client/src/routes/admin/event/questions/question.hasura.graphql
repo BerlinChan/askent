@@ -11,7 +11,7 @@ fragment QuestionLiveQueryFields on question {
   author {
     id
     name
-    email
+    avatar
   }
 }
 

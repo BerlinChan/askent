@@ -138,7 +138,7 @@ const QuestionItem: React.FC<Props> = ({
       <ListItemAvatar>
         <Avatar
           alt={question.author?.name as string}
-          src={isScrolling ? "" : question.author?.avatar}
+          src={isScrolling ? "" : question.author?.avatar ||""}
         />
       </ListItemAvatar>
       <ListItemText
