@@ -1,13 +1,8 @@
 import React from "react";
 import { QueryResult } from "@apollo/client";
 import {
-  QuestionsByEventDocument,
-  useQuestionsByEventQuery,
   EventByIdQuery,
   EventByIdQueryVariables,
-  QuestionFieldsFragment,
-  QuestionOrder,
-  QuestionQueryInput,
 } from "../../../../generated/graphqlHooks";
 import {
   useQuestionLiveQuerySubscription,
@@ -20,12 +15,9 @@ import QuestionItem from "./QuestionItem";
 import QuestionItemMenu from "./QuestionItemMenu";
 import ReplyDialog from "./reply/ReplyDialog";
 import ListFooter from "../../../../components/ListFooter";
-import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../../constant";
-import { sortQuestionBy } from "../../../../utils";
 
 interface Props {
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  questionQueryInput: QuestionQueryInput;
   questionLiveQueryInputState: [
     QuestionLiveQuerySubscriptionVariables,
     React.Dispatch<React.SetStateAction<QuestionLiveQuerySubscriptionVariables>>
@@ -34,7 +26,6 @@ interface Props {
 
 const QuestionList: React.FC<Props> = ({
   eventQueryResult,
-  questionQueryInput,
   questionLiveQueryInputState,
 }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
@@ -45,11 +36,7 @@ const QuestionList: React.FC<Props> = ({
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
   const replyDialogState = React.useState({ open: false, questionId: "" });
-  const questionsQueryResult = useQuestionsByEventQuery({
-    variables: { input: questionQueryInput },
-  });
-  const { data,  fetchMore } = questionsQueryResult;
-  const [loading,setLoading]=React.useState(false)
+  const [loading, setLoading] = React.useState(false);
   const [questionLiveQueryData, setQuestionLiveQueryDataData] = React.useState<
     Array<QuestionLiveQueryFieldsFragment>
   >([]);
@@ -59,10 +46,7 @@ const QuestionList: React.FC<Props> = ({
   ] = React.useState(0);
 
   const moreMenuContextQuestion = React.useMemo(
-    () =>
-    questionLiveQueryData.find(
-        (item) => item.id === moreMenuState[0].id
-      ),
+    () => questionLiveQueryData.find((item) => item.id === moreMenuState[0].id),
     [questionLiveQueryData, moreMenuState]
   );
 
@@ -71,7 +55,7 @@ const QuestionList: React.FC<Props> = ({
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.question) {
         setQuestionLiveQueryDataData(subscriptionData.data?.question);
-        setLoading(false)
+        setLoading(false);
       }
     },
   });
@@ -111,12 +95,11 @@ const QuestionList: React.FC<Props> = ({
         questionLiveQueryInputState[0].limit <
       questionCountLiveQueryData
     ) {
-      setLoading(true)
-      questionLiveQueryInputState[1](
-        Object.assign({}, questionLiveQueryInputState[0], {
-          limit: questionLiveQueryInputState[0].limit * 2,
-        })
-      );
+      setLoading(true);
+      questionLiveQueryInputState[1]({
+        ...questionLiveQueryInputState[0],
+        limit: questionLiveQueryInputState[0].limit * 2,
+      });
     }
   };
 

@@ -78,12 +78,26 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: QuestionOrder.Oldest,
   };
-  const questionLiveQueryInputState = React.useState<QuestionLiveQuerySubscriptionVariables>({
-    where: { eventId: { _eq: id } },
-    limit: DEFAULT_PAGE_LIMIT,
-    offset: DEFAULT_PAGE_OFFSET,
-    order_by: { voteUpCount: Order_By.Desc, createdAt: Order_By.Desc },
-  });
+  
+  const questionLiveQueryInputState = React.useState<QuestionLiveQuerySubscriptionVariables>(
+    {
+      where: { eventId: { _eq: id } },
+      limit: DEFAULT_PAGE_LIMIT,
+      offset: DEFAULT_PAGE_OFFSET,
+      order_by: { voteUpCount: Order_By.Desc, createdAt: Order_By.Desc },
+    }
+  );
+  const questionReviewLiveQueryInputState = React.useState<QuestionLiveQuerySubscriptionVariables>(
+    {
+      where: {
+        eventId: { _eq: id },
+        reviewStatus: { _eq: QuestionFilter.Review },
+      },
+      limit: DEFAULT_PAGE_LIMIT,
+      offset: DEFAULT_PAGE_OFFSET,
+      order_by: { voteUpCount: Order_By.Desc, createdAt: Order_By.Desc },
+    }
+  );
 
   return (
     <Grid container spacing={3} className={classes.questionsGrid}>
@@ -95,8 +109,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
           {eventData?.eventById.moderation ? (
             <QuestionList
               eventQueryResult={eventQueryResult}
-              questionQueryInput={questionQueryInputReview}
-              questionLiveQueryInputState={questionLiveQueryInputState}
+              questionLiveQueryInputState={questionReviewLiveQueryInputState}
             />
           ) : (
             <Box className={classes.moderationOffTips}>
@@ -126,7 +139,6 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
         <Paper className={classes.gridItemPaper + " " + classes.rightPaper}>
           <QuestionList
             eventQueryResult={eventQueryResult}
-            questionQueryInput={questionQueryInput}
             questionLiveQueryInputState={questionLiveQueryInputState}
           />
         </Paper>
