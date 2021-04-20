@@ -1,15 +1,15 @@
 import React from "react";
 import {
-  ReplyQueryInput,
-  RepliesByQuestionDocument,
-  useRepliesByQuestionQuery,
-  ReplyFieldsFragment,
-  useReplyRealtimeSearchSubscription,
-  useQuestionByIdQuery,
   EventByIdQuery,
   EventByIdQueryVariables,
 } from "../../../../../generated/graphqlHooks";
-import { QuestionLiveQueryFieldsFragment } from "../../../../../generated/hasuraHooks";
+import {
+  useReplyLiveQuerySubscription,
+  ReplyLiveQuerySubscriptionResult,
+  ReplyLiveQueryFieldsFragment,
+  ReplyLiveQuerySubscriptionVariables,
+  Order_By,
+} from "../../../../../generated/hasuraHooks";
 import { Virtuoso } from "react-virtuoso";
 import ReplyItem from "./ReplyItem";
 import ReplyListHeader from "./ReplyListHeader";
@@ -22,12 +22,11 @@ import {
 import { QueryResult } from "@apollo/client";
 
 interface Props {
-  question?: QuestionLiveQueryFieldsFragment;
   questionId: string;
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
 }
 
-const ReplyList: React.FC<Props> = ({ question,questionId, eventQueryResult }) => {
+const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -35,56 +34,24 @@ const ReplyList: React.FC<Props> = ({ question,questionId, eventQueryResult }) =
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
-  const replyQueryInput: ReplyQueryInput = {
+  const [
+    replyLiveQueryInput,
+    setReplyLiveQueryInput,
+  ] = React.useState<ReplyLiveQuerySubscriptionVariables>({
     questionId,
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-  };
-  const repliesQueryResult = useRepliesByQuestionQuery({
-    variables: { input: replyQueryInput },
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
+    order_by: { createdAt: Order_By.Desc },
   });
-  const { data, loading, fetchMore } = repliesQueryResult;
-  const {
-    data: questionData,
-    loading: questionLoading,
-  } = useQuestionByIdQuery({ variables: { id: questionId } });
+  const [
+    replyLiveQueryData,
+    setReplyLiveQueryData,
+  ] = React.useState<ReplyLiveQuerySubscriptionResult>();
 
-  useReplyRealtimeSearchSubscription({
-    skip: !Boolean(data?.repliesByQuestion.hash),
-    variables: {
-      questionId: replyQueryInput.questionId,
-      hash: data?.repliesByQuestion.hash as string,
-    },
+  useReplyLiveQuerySubscription({
+    variables: replyLiveQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.replyRealtimeSearch) {
-        if (data) {
-          const replyRealtimeSearch = subscriptionData.data.replyRealtimeSearch;
-
-          client.writeQuery({
-            query: RepliesByQuestionDocument,
-            variables: { input: replyQueryInput },
-            data: {
-              repliesByQuestion: {
-                ...data.repliesByQuestion,
-                totalCount: replyRealtimeSearch.totalCount,
-                list: data.repliesByQuestion.list
-                  // remove
-                  .filter(
-                    (preQuestion) =>
-                      !replyRealtimeSearch.deleteList.includes(
-                        preQuestion.id
-                      ) &&
-                      !replyRealtimeSearch.updateList
-                        .map((item) => item.id)
-                        .includes(preQuestion.id)
-                  )
-                  // add
-                  .concat(replyRealtimeSearch.insertList)
-                  .concat(replyRealtimeSearch.updateList),
-              },
-            },
-          });
-        }
-      }
+      setReplyLiveQueryData(subscriptionData);
     },
   });
 
@@ -110,18 +77,13 @@ const ReplyList: React.FC<Props> = ({ question,questionId, eventQueryResult }) =
   };
 
   const loadMore = () => {
-    if (data?.repliesByQuestion.hasNextPage) {
-      fetchMore({
-        variables: {
-          input: {
-            ...replyQueryInput,
-            pagination: {
-              offset:
-                data?.repliesByQuestion.list.length || DEFAULT_PAGE_OFFSET,
-              limit: data?.repliesByQuestion.limit || DEFAULT_PAGE_LIMIT,
-            },
-          },
-        },
+    if (
+      replyLiveQueryInput.offset + replyLiveQueryInput.limit <
+      (replyLiveQueryData?.data?.question[0].replyCount || 0)
+    ) {
+      setReplyLiveQueryInput({
+        ...replyLiveQueryInput,
+        limit: replyLiveQueryInput.limit * 2,
       });
     }
   };
@@ -130,14 +92,14 @@ const ReplyList: React.FC<Props> = ({ question,questionId, eventQueryResult }) =
     <React.Fragment>
       <Virtuoso
         style={{ height: "100%", width: "100%", minHeight: 300 }}
-        totalCount={data?.repliesByQuestion.list.length || 0}
+        totalCount={replyLiveQueryData?.data?.question[0].replies.length || 0}
         isScrolling={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}
         itemContent={(index) => {
-          const reply: ReplyFieldsFragment | undefined =
-            data?.repliesByQuestion.list[index];
+          const reply: ReplyLiveQueryFieldsFragment | undefined =
+            replyLiveQueryData?.data?.question[0].replies[index];
           if (!reply) return <div />;
 
           return (
@@ -154,16 +116,19 @@ const ReplyList: React.FC<Props> = ({ question,questionId, eventQueryResult }) =
         components={{
           Header: () => (
             <ReplyListHeader
-              loading={questionLoading}
+              loading={Boolean(replyLiveQueryData?.loading)}
               isScrolling={isScrolling}
-              question={question}
+              question={replyLiveQueryData?.data?.question[0]}
               eventQueryResult={eventQueryResult}
             />
           ),
           Footer: () => (
             <ListFooter
-              loading={loading}
-              hasNextPage={data?.repliesByQuestion.hasNextPage}
+              loading={replyLiveQueryData?.loading}
+              hasNextPage={
+                replyLiveQueryInput.offset + replyLiveQueryInput.limit <
+                (replyLiveQueryData?.data?.question[0].replyCount || 0)
+              }
             />
           ),
         }}

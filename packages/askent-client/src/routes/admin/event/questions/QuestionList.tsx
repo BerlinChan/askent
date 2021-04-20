@@ -37,7 +37,7 @@ const QuestionList: React.FC<Props> = ({
   const editContentIdsState = React.useState<Array<string>>([]);
   const replyDialogState = React.useState({ open: false, questionId: "" });
   const [loading, setLoading] = React.useState(false);
-  const [questionLiveQueryData, setQuestionLiveQueryDataData] = React.useState<
+  const [questionLiveQueryData, setQuestionLiveQueryData] = React.useState<
     Array<QuestionLiveQueryFieldsFragment>
   >([]);
   const [
@@ -53,8 +53,9 @@ const QuestionList: React.FC<Props> = ({
   useQuestionLiveQuerySubscription({
     variables: questionLiveQueryInputState[0],
     onSubscriptionData: ({ client, subscriptionData }) => {
+    console.log("🚀 ~ file: QuestionList.tsx ~ line 56 ~ subscriptionData", subscriptionData)
       if (subscriptionData.data?.question) {
-        setQuestionLiveQueryDataData(subscriptionData.data?.question);
+        setQuestionLiveQueryData(subscriptionData.data?.question);
         setLoading(false);
       }
     },

@@ -72,16 +72,12 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: questionOrderSelectedState[0],
   };
-  const questionQueryInputReview = {
-    eventId: id,
-    questionFilter: QuestionFilter.Review,
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: QuestionOrder.Oldest,
-  };
-  
   const questionLiveQueryInputState = React.useState<QuestionLiveQuerySubscriptionVariables>(
     {
-      where: { eventId: { _eq: id } },
+      where: {
+        eventId: { _eq: id },
+        content: { _ilike: `%${questionQueryState[0].searchString}%` },
+      },
       limit: DEFAULT_PAGE_LIMIT,
       offset: DEFAULT_PAGE_OFFSET,
       order_by: { voteUpCount: Order_By.Desc, createdAt: Order_By.Desc },

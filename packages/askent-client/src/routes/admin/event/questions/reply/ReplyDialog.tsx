@@ -10,7 +10,6 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
 } from "../../../../../generated/graphqlHooks";
-import { QuestionLiveQueryFieldsFragment } from "../../../../../generated/hasuraHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,13 +29,11 @@ export interface Props {
     React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
   ];
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  question?: QuestionLiveQueryFieldsFragment;
 }
 
 const ReplyDialog: React.FC<Props> = ({
   replyDialogState,
   eventQueryResult,
-  question
 }) => {
   const classes = useStyles();
   const [replyDialog, setReplyDialog] = replyDialogState;
@@ -61,7 +58,6 @@ const ReplyDialog: React.FC<Props> = ({
       />
       <DialogContent className={classes.content}>
         <ReplyList
-        question={question}
           questionId={replyDialog.questionId}
           eventQueryResult={eventQueryResult}
         />

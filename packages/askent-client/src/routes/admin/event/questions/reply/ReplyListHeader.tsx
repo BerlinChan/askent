@@ -4,7 +4,6 @@ import { CircularProgress } from "@material-ui/core";
 import {
   EventByIdQuery,
   EventByIdQueryVariables,
-  QuestionFieldsFragment,
 } from "../../../../../generated/graphqlHooks";
 import { QuestionLiveQueryFieldsFragment } from "../../../../../generated/hasuraHooks";
 import QuestionItem from "../QuestionItem";
@@ -58,17 +57,16 @@ const ReplyListHeader: React.FC<Props> = ({
       {loading ? (
         <CircularProgress />
       ) : question ? (
-        // <QuestionItem
-        //   question={question}
-        //   eventQueryResult={eventQueryResult}
-        //   handleMoreClick={handleMoreOpen}
-        //   editContent={editContentIdsState[0].includes(question.id)}
-        //   handleEditContentToggle={handleEditContentToggle}
-        //   editContentInputRef={editContentInputRef}
-        //   isScrolling={isScrolling}
-        //   showReplyCount={false}
-        // />
-        null
+        <QuestionItem
+          question={question}
+          eventQueryResult={eventQueryResult}
+          handleMoreClick={handleMoreOpen}
+          editContent={editContentIdsState[0].includes(question.id)}
+          handleEditContentToggle={handleEditContentToggle}
+          editContentInputRef={editContentInputRef}
+          isScrolling={isScrolling}
+          showReplyCount={false}
+        />
       ) : null}
 
       <QuestionItemMenu
