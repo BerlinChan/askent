@@ -1,16 +1,10 @@
-# Askent Server
+FROM node:alpine
 
-FROM node:12.22.1-alpine
+COPY . /app
+RUN npm i yarn
+RUN yarn
+RUN yarn build
 
-WORKDIR "/askent"
+COPY build /app/build
 
-COPY ./dist/ ./dist/
-COPY ./.env .
-COPY ./package.json .
-COPY ./yarn.lock .
-
-RUN yarn install --production
-
-EXPOSE 4000
-
-ENTRYPOINT [ "node", "./dist/index.js" ]
+CMD node

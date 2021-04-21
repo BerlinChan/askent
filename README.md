@@ -23,8 +23,6 @@
 
 ```sh
 yarn
-cd packages/askent-client
-yarn start
-cd packages/askent-server
-yarn dev
+yarn workspace askent-client start
+yarn workspace askent-server dev
 ```

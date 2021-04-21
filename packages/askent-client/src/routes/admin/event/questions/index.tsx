@@ -12,6 +12,7 @@ import {
 import {
   QuestionLiveQuerySubscriptionVariables,
   Order_By,
+  question_reviewstatus_enum
 } from "../../../../generated/hasuraHooks";
 import { QueryResult } from "@apollo/client";
 import QuestionList from "./QuestionList";
@@ -59,16 +60,12 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
   const { id } = useParams<{ id: string }>();
   const questionQueryState = React.useState<QuestionQueryStateType>({
     filterSelected: QuestionFilter.Publish,
-    searchString: "",
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQueryResult;
   const questionQueryInput = {
     eventId: id,
     questionFilter: questionQueryState[0].filterSelected,
-    searchString: questionQueryState[0].searchString
-      ? questionQueryState[0].searchString
-      : undefined,
     pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
     order: questionOrderSelectedState[0],
   };

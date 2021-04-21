@@ -22,21 +22,6 @@ fragment QuestionFields on Question {
   }
 }
 
-query QuestionsByEvent($input: QuestionQueryInput!) {
-  questionsByEvent(input: $input) {
-    ...QuestionPagedFields
-    list {
-      ...QuestionFields
-    }
-  }
-}
-
-query QuestionById($id: ID!) {
-  questionById(id: $id) {
-    ...QuestionFields
-  }
-}
-
 mutation DeleteQuestion($questionId: ID!) {
   deleteQuestion(questionId: $questionId) {
     id
@@ -75,18 +60,5 @@ mutation UpdateQuestionTop($questionId: ID!, $top: Boolean!) {
 mutation UpdateQuestionContent($questionId: ID!, $content: String!) {
   updateQuestionContent(questionId: $questionId, content: $content) {
     ...QuestionFields
-  }
-}
-
-subscription QuestionRealtimeSearch($eventId: String!, $hash: String!) {
-  questionRealtimeSearch(eventId: $eventId, hash: $hash) {
-    totalCount
-    insertList {
-      ...QuestionFields
-    }
-    updateList {
-      ...QuestionFields
-    }
-    deleteList
   }
 }
