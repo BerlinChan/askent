@@ -12,7 +12,6 @@ import {
 import {
   QuestionLiveQuerySubscriptionVariables,
   Order_By,
-  question_reviewstatus_enum
 } from "../../../../generated/hasuraHooks";
 import { QueryResult } from "@apollo/client";
 import QuestionList from "./QuestionList";
