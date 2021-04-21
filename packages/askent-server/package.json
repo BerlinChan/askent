@@ -19,7 +19,7 @@
     "hasura:reload": "hasura metadata reload --project ./hasura"
   },
   "dependencies": {
-    "apollo-server": "2.22.2",
+    "apollo-server": "2.23.0",
     "bcryptjs": "2.4.3",
     "class-validator": "0.13.1",
     "crypto-js": "4.0.0",

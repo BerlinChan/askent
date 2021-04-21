@@ -18,9 +18,9 @@
     "intl:compile": "formatjs compile-folder lang src/generated/lang"
   },
   "dependencies": {
-    "@apollo/client": "3.4.0-beta.22",
+    "@apollo/client": "3.4.0-beta.23",
     "@date-io/date-fns": "1.3.13",
-    "@fingerprintjs/fingerprintjs": "3.0.7",
+    "@fingerprintjs/fingerprintjs": "3.1.0",
     "@loadable/component": "5.14.1",
     "@material-ui/core": "4.11.3",
     "@material-ui/icons": "4.11.2",
