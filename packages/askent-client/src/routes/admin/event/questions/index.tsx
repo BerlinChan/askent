@@ -63,12 +63,12 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQueryResult;
-  const questionQueryInput = {
-    eventId: id,
-    questionFilter: questionQueryState[0].filterSelected,
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: questionOrderSelectedState[0],
-  };
+  // const questionQueryInput = {
+  //   eventId: id,
+  //   questionFilter: questionQueryState[0].filterSelected,
+  //   pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+  //   order: questionOrderSelectedState[0],
+  // };
   const questionLiveQueryInputState = React.useState<QuestionLiveQuerySubscriptionVariables>(
     {
       where: {
