@@ -33,8 +33,10 @@ jobs:
       - name: Install
         run: yarn
         
+      # - name: Generate hooks
+      #   run: yarn workspace askent-client codegen
+        
       - name: Build
-        run: yarn workspace askent-client codegen
         run: yarn workspace askent-client build
         
       - name: Deploy to GitHub Pages
