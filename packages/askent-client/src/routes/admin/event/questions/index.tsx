@@ -59,6 +59,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
   const { id } = useParams<{ id: string }>();
   const questionQueryState = React.useState<QuestionQueryStateType>({
     filterSelected: QuestionFilter.Publish,
+    searchString: "",
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQueryResult;
