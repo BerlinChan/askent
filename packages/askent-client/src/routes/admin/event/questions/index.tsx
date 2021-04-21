@@ -76,7 +76,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
     {
       where: {
         eventId: { _eq: id },
-        content: { _ilike: `%${questionQueryState[0].searchString}%` },
+        content: { _ilike: "%%" },
       },
       limit: DEFAULT_PAGE_LIMIT,
       offset: DEFAULT_PAGE_OFFSET,
@@ -130,6 +130,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
           <ActionRight
             questionQueryState={questionQueryState}
             orderSelectedState={questionOrderSelectedState}
+            questionLiveQueryInputState={questionLiveQueryInputState}
           />
         </Box>
         <Paper className={classes.gridItemPaper + " " + classes.rightPaper}>

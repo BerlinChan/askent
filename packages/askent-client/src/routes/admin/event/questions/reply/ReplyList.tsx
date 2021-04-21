@@ -43,6 +43,7 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
     offset: DEFAULT_PAGE_OFFSET,
     order_by: { createdAt: Order_By.Desc },
   });
+  const [loading, setLoading] = React.useState(false);
   const [
     replyLiveQueryData,
     setReplyLiveQueryData,
@@ -52,6 +53,7 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
     variables: replyLiveQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {
       setReplyLiveQueryData(subscriptionData);
+      setLoading(false);
     },
   });
 
@@ -81,6 +83,7 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
       replyLiveQueryInput.offset + replyLiveQueryInput.limit <
       (replyLiveQueryData?.data?.question[0].replyCount || 0)
     ) {
+      setLoading(true);
       setReplyLiveQueryInput({
         ...replyLiveQueryInput,
         limit: replyLiveQueryInput.limit * 2,
@@ -116,7 +119,7 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
         components={{
           Header: () => (
             <ReplyListHeader
-              loading={Boolean(replyLiveQueryData?.loading)}
+              loading={loading}
               isScrolling={isScrolling}
               question={replyLiveQueryData?.data?.question[0]}
               eventQueryResult={eventQueryResult}
@@ -124,7 +127,7 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
           ),
           Footer: () => (
             <ListFooter
-              loading={replyLiveQueryData?.loading}
+              loading={loading}
               hasNextPage={
                 replyLiveQueryInput.offset + replyLiveQueryInput.limit <
                 (replyLiveQueryData?.data?.question[0].replyCount || 0)

@@ -21,6 +21,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import SortIcon from "@material-ui/icons/Sort";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import { QuestionLiveQuerySubscriptionVariables } from "../../../../generated/hasuraHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,11 +76,16 @@ interface Props {
     QuestionOrder,
     React.Dispatch<React.SetStateAction<QuestionOrder>>
   ];
+  questionLiveQueryInputState: [
+    QuestionLiveQuerySubscriptionVariables,
+    React.Dispatch<React.SetStateAction<QuestionLiveQuerySubscriptionVariables>>
+  ];
 }
 
 const ActionRight: React.FC<Props> = ({
   questionQueryState,
   orderSelectedState,
+  questionLiveQueryInputState,
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -89,7 +95,14 @@ const ActionRight: React.FC<Props> = ({
   ] = React.useState<null | HTMLElement>(null);
   const searchRef = React.useRef<HTMLInputElement>(null);
   const orderMenuElState = React.useState<null | HTMLElement>(null);
-  const [queryState, setQueryState] = questionQueryState;
+  const [queryState] = questionQueryState;
+  const [
+    questionLiveQueryInput,
+    setQuestionLiveQueryInput,
+  ] = questionLiveQueryInputState;
+  const searchString = (
+    questionLiveQueryInput.where.content?._ilike || ""
+  ).replace(/^%|%$/g, "");
 
   const handleFilterOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setFilterAnchorEl(event.currentTarget);
@@ -98,9 +111,9 @@ const ActionRight: React.FC<Props> = ({
     setFilterAnchorEl(null);
   };
   const handleFilterOptionClick = (value: QuestionFilter) => {
-    setQueryState({
-      ...queryState,
-      filterSelected: value,
+    setQuestionLiveQueryInput({
+      ...questionLiveQueryInput,
+      where: { ...questionLiveQueryInput.where, reviewStatus: { _eq: value } },
     });
     handleFilterClose();
   };
@@ -113,10 +126,19 @@ const ActionRight: React.FC<Props> = ({
   const handleSearchClear = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setQueryState({ ...queryState, searchString: "" });
+    setQuestionLiveQueryInput({
+      ...questionLiveQueryInput,
+      where: { ...questionLiveQueryInput.where, content: { _ilike: "%%" } },
+    });
   };
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQueryState({ ...queryState, searchString: event.target.value });
+    setQuestionLiveQueryInput({
+      ...questionLiveQueryInput,
+      where: {
+        ...questionLiveQueryInput.where,
+        content: { _ilike: `%${event.target.value}%` },
+      },
+    });
   };
 
   const handleOrderMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -152,7 +174,7 @@ const ActionRight: React.FC<Props> = ({
             },
             endAdornment: (
               <InputAdornment position="end">
-                {queryState.searchString ? (
+                {searchString === "" ? (
                   <IconButton
                     className={classes.iconButton}
                     onClick={handleSearchClear}
@@ -177,7 +199,7 @@ const ActionRight: React.FC<Props> = ({
               </InputAdornment>
             ),
           }}
-          value={queryState.searchString}
+          value={searchString}
           onChange={handleSearchChange}
         />
         <Tooltip title={formatMessage({ id: "Sort", defaultMessage: "Sort" })}>

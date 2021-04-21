@@ -53,7 +53,6 @@ const QuestionList: React.FC<Props> = ({
   useQuestionLiveQuerySubscription({
     variables: questionLiveQueryInputState[0],
     onSubscriptionData: ({ client, subscriptionData }) => {
-    console.log("🚀 ~ file: QuestionList.tsx ~ line 56 ~ subscriptionData", subscriptionData)
       if (subscriptionData.data?.question) {
         setQuestionLiveQueryData(subscriptionData.data?.question);
         setLoading(false);
