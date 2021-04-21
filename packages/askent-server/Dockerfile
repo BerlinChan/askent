@@ -1,10 +1,15 @@
-FROM node:alpine
+FROM node:lts-alpine AS build
 
 COPY . /app
-RUN npm i yarn
+WORKDIR /app
+
 RUN yarn
 RUN yarn build
 
-COPY build /app/build
 
-CMD node
+FROM node:lts-alpine
+
+COPY --from=build /app/dist /app
+WORKDIR /app
+
+RUN node src/index
