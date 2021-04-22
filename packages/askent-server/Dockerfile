@@ -5,4 +5,17 @@ WORKDIR /app
 RUN yarn
 RUN yarn build
 
+
+FROM node:lts-alpine
+
+COPY --from=build /app/.env /app/.env
+COPY --from=build /app/ormconfig.js /app/ormconfig.js
+COPY --from=build /app/package.json /app/package.json
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/hasura /app/hasura
+WORKDIR /app
+RUN yarn install --production
+
+EXPOSE 4000
+
 CMD yarn start
