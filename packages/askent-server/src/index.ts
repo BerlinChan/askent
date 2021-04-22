@@ -1,16 +1,10 @@
 import 'reflect-metadata'
-import dotenv from 'dotenv'
-import path from 'path'
 import { ApolloServer } from 'apollo-server'
 import { buildSchema } from './schema'
 import { createContext } from './context'
 import { connectPostgres } from './db'
 import { getAuthedUser } from './utils'
 
-const dotenvResult = dotenv.config({ path: path.join(__dirname, '../.env') })
-if (dotenvResult.error) {
-  throw dotenvResult.error
-}
 const { PORT = 4000 } = process.env
 
 async function bootstrap() {
