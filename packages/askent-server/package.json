@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "env-cmd ts-node-dev --no-notify --respawn --transpile-only --inspect -- src/index",
-    "start": "env-cmd node dist/src/index",
+    "start": "env-cmd node src/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && tsc",
     "hausra:export": "hasura metadata export --project ./hasura",
