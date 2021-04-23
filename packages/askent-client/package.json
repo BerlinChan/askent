@@ -8,7 +8,7 @@
     "url": "https://github.com/BerlinChan/askent.git",
     "directory": "packages/askent-client"
   },
-  "homepage": "https://berlinchan.github.io/askent",
+  "homepage": "https://askent.berlinchan.com/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

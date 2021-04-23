@@ -9,15 +9,13 @@ import {
   QuestionFilter,
   QuestionOrder,
 } from "../../../../generated/graphqlHooks";
-import {
-  QuestionLiveQuerySubscriptionVariables,
-  Order_By,
-} from "../../../../generated/hasuraHooks";
+import { QuestionLiveQuerySubscriptionVariables } from "../../../../generated/hasuraHooks";
 import { QueryResult } from "@apollo/client";
 import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
 import ActionRight, { QuestionQueryStateType } from "./ActionRight";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
+import { getQuestionOrderByCondition } from "../../../../utils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,37 +58,36 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
   const questionQueryState = React.useState<QuestionQueryStateType>({
     filterSelected: QuestionFilter.Publish,
     searchString: "",
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
+  });
+  const questionReviewQueryState = React.useState<QuestionQueryStateType>({
+    filterSelected: QuestionFilter.Publish,
+    searchString: "",
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQueryResult;
-  // const questionQueryInput = {
-  //   eventId: id,
-  //   questionFilter: questionQueryState[0].filterSelected,
-  //   pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-  //   order: questionOrderSelectedState[0],
-  // };
-  const questionLiveQueryInputState = React.useState<QuestionLiveQuerySubscriptionVariables>(
-    {
-      where: {
-        eventId: { _eq: id },
-        content: { _ilike: "%%" },
-      },
-      limit: DEFAULT_PAGE_LIMIT,
-      offset: DEFAULT_PAGE_OFFSET,
-      order_by: { voteUpCount: Order_By.Desc, createdAt: Order_By.Desc },
-    }
-  );
-  const questionReviewLiveQueryInputState = React.useState<QuestionLiveQuerySubscriptionVariables>(
-    {
-      where: {
-        eventId: { _eq: id },
-        reviewStatus: { _eq: QuestionFilter.Review },
-      },
-      limit: DEFAULT_PAGE_LIMIT,
-      offset: DEFAULT_PAGE_OFFSET,
-      order_by: { voteUpCount: Order_By.Desc, createdAt: Order_By.Desc },
-    }
-  );
+  const questionLiveQueryInput: QuestionLiveQuerySubscriptionVariables = {
+    where: {
+      eventId: { _eq: id },
+      // reviewStatus:questionQueryState[0].filterSelected,
+      content: { _ilike: `%${questionQueryState[0].searchString}%` },
+    },
+    limit: questionQueryState[0].limit,
+    offset: questionQueryState[0].offset,
+    order_by: getQuestionOrderByCondition(questionOrderSelectedState[0]),
+  };
+  const questionReviewLiveQueryInput: QuestionLiveQuerySubscriptionVariables = {
+    where: {
+      eventId: { _eq: id },
+      reviewStatus: { _eq: QuestionFilter.Review },
+    },
+    limit: questionReviewQueryState[0].limit,
+    offset: questionReviewQueryState[0].offset,
+    order_by: getQuestionOrderByCondition(QuestionOrder.Oldest),
+  };
 
   return (
     <Grid container spacing={3} className={classes.questionsGrid}>
@@ -102,7 +99,8 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
           {eventData?.eventById.moderation ? (
             <QuestionList
               eventQueryResult={eventQueryResult}
-              questionLiveQueryInputState={questionReviewLiveQueryInputState}
+              questionQueryState={questionReviewQueryState}
+              questionLiveQueryInput={questionReviewLiveQueryInput}
             />
           ) : (
             <Box className={classes.moderationOffTips}>
@@ -127,13 +125,13 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
           <ActionRight
             questionQueryState={questionQueryState}
             orderSelectedState={questionOrderSelectedState}
-            questionLiveQueryInputState={questionLiveQueryInputState}
           />
         </Box>
         <Paper className={classes.gridItemPaper + " " + classes.rightPaper}>
           <QuestionList
             eventQueryResult={eventQueryResult}
-            questionLiveQueryInputState={questionLiveQueryInputState}
+            questionQueryState={questionQueryState}
+            questionLiveQueryInput={questionLiveQueryInput}
           />
         </Paper>
       </Grid>

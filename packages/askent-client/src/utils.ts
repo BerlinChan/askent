@@ -10,30 +10,31 @@ export function getQuestionOrderByCondition(
 ): Maybe<Array<Question_Order_By> | Question_Order_By> {
   switch (questionOrder) {
     case QuestionOrder.Recent:
-      return {
-        top: Order_By.Desc,
-        createdAt: Order_By.Desc,
-        voteUpCount: Order_By.Desc,
-      };
+      return [
+        { top: Order_By.Desc },
+        { createdAt: Order_By.Desc },
+        { voteUpCount: Order_By.Desc },
+      ];
     case QuestionOrder.Oldest:
-      return {
-        top: Order_By.Desc,
-        createdAt: Order_By.Asc,
-        voteUpCount: Order_By.Desc,
-      };
+      return [
+        { top: Order_By.Desc },
+        { createdAt: Order_By.Asc },
+        { voteUpCount: Order_By.Desc },
+      ];
     case QuestionOrder.Starred:
-      return {
-        top: Order_By.Desc,
-        star: Order_By.Desc,
-        createdAt: Order_By.Desc,
-      };
+      return [
+        { top: Order_By.Desc },
+        { star: Order_By.Desc },
+        { voteUpCount: Order_By.Desc },
+        { createdAt: Order_By.Desc },
+      ];
     default:
       // QuestionOrder.Popular:
-      return {
-        top: Order_By.Desc,
-        voteUpCount: Order_By.Desc,
-        createdAt: Order_By.Desc,
-      };
+      return [
+        { top: Order_By.Desc },
+        { voteUpCount: Order_By.Desc },
+        { createdAt: Order_By.Desc },
+      ];
   }
 }
 
