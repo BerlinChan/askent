@@ -57,5 +57,6 @@ jobs:
         with:
           target_branch: gh-pages
           build_dir: packages/askent-client/build
+          fqdn: askent.berlinchan.com
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

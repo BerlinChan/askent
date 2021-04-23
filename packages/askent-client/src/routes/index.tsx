@@ -1,7 +1,7 @@
 import React from "react";
 import loadable from "@loadable/component";
 import PrivateRoute from "../components/PrivateRoute";
-import { HashRouter, Switch, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../components/Loading";
 import { MasterProvider } from "../components/Providers";
 
@@ -36,7 +36,7 @@ const Error404Component = loadable(() => import("./error/404"), {
 const Router = () => {
   return (
     <MasterProvider>
-      <HashRouter>
+      <BrowserRouter>
         <Switch>
           <Route exact path="/" component={HomeComponent} />
           <Route path="/login" component={LoginComponent} />
@@ -56,7 +56,7 @@ const Router = () => {
           <Route path="/unauthorized" component={Error401Component} />
           <Route path="*" component={Error404Component} />
         </Switch>
-      </HashRouter>
+      </BrowserRouter>
     </MasterProvider>
   );
 };
