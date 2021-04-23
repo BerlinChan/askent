@@ -1,6 +1,6 @@
 export default {
   "type": "postgres",
-  "host": "postgres",
+  "host": "localhost",
   "port": 5432,
   "username": "postgres",
   "password": "postgres",
