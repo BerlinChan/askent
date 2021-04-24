@@ -16,6 +16,7 @@ import QuestionItemMenu from "./QuestionItemMenu";
 import ReplyDialog from "./reply/ReplyDialog";
 import ListFooter from "../../../../components/ListFooter";
 import { QuestionQueryStateType } from "./ActionRight";
+import { getHasNextPage } from "../../../../utils";
 
 interface Props {
   eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
@@ -23,13 +24,13 @@ interface Props {
     QuestionQueryStateType,
     React.Dispatch<React.SetStateAction<QuestionQueryStateType>>
   ];
-  questionLiveQueryInput: QuestionLiveQuerySubscriptionVariables;
+  questionQueryInput: QuestionLiveQuerySubscriptionVariables;
 }
 
 const QuestionList: React.FC<Props> = ({
   eventQueryResult,
   questionQueryState,
-  questionLiveQueryInput,
+  questionQueryInput,
 }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
@@ -47,6 +48,11 @@ const QuestionList: React.FC<Props> = ({
     questionCountLiveQueryData,
     setQuestionCountLiveQueryData,
   ] = React.useState(0);
+  const hasNextPage = getHasNextPage(
+    questionQueryInput.offset,
+    questionQueryInput.limit,
+    questionCountLiveQueryData
+  );
 
   const moreMenuContextQuestion = React.useMemo(
     () => questionLiveQueryData.find((item) => item.id === moreMenuState[0].id),
@@ -54,7 +60,7 @@ const QuestionList: React.FC<Props> = ({
   );
 
   useQuestionLiveQuerySubscription({
-    variables: questionLiveQueryInput,
+    variables: questionQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {
       if (subscriptionData.data?.question) {
         setQuestionLiveQueryData(subscriptionData.data?.question);
@@ -63,7 +69,7 @@ const QuestionList: React.FC<Props> = ({
     },
   });
   useQuestionCountLiveQuerySubscription({
-    variables: { where: questionLiveQueryInput.where },
+    variables: { where: questionQueryInput.where },
     onSubscriptionData: ({ client, subscriptionData }) => {
       setQuestionCountLiveQueryData(
         subscriptionData.data?.question_aggregate.aggregate?.count || 0
@@ -93,10 +99,7 @@ const QuestionList: React.FC<Props> = ({
   };
 
   const loadMore = () => {
-    if (
-      questionLiveQueryInput.offset + questionLiveQueryInput.limit <
-      questionCountLiveQueryData
-    ) {
+    if (hasNextPage) {
       setLoading(true);
       questionQueryState[1]({
         ...questionQueryState[0],
@@ -133,13 +136,7 @@ const QuestionList: React.FC<Props> = ({
         }}
         components={{
           Footer: () => (
-            <ListFooter
-              loading={loading}
-              hasNextPage={
-                questionLiveQueryInput.offset + questionLiveQueryInput.limit <
-                questionCountLiveQueryData
-              }
-            />
+            <ListFooter loading={loading} hasNextPage={hasNextPage} />
           ),
         }}
       />

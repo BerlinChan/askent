@@ -7,10 +7,14 @@ import {
   EventByIdQuery,
   EventByIdQueryVariables,
   QuestionOrder,
+  QuestionFilter,
 } from "../../../../generated/graphqlHooks";
 import QuestionList from "./QuestionList";
 import AskFabDialog from "./AskFabDialog";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
+import { QuestionLiveQueryAudienceSubscriptionVariables } from "../../../../generated/hasuraHooks";
+import { getQuestionOrderByCondition } from "../../../../utils";
+import { QuestionQueryStateType } from "../../../admin/event/questions/ActionRight";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
@@ -22,13 +26,20 @@ const LiveQuestions: React.FC<Props> = ({
   eventQueryResult,
 }) => {
   const { id } = useParams<{ id: string }>();
+  const questionQueryState = React.useState<QuestionQueryStateType>({
+    filter:QuestionFilter.Publish,
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
+  });
   const questionOrderState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
-  const questionQueryInput = {
-    eventId: id,
-    order: questionOrderState[0],
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+  const questionQueryInput: QuestionLiveQueryAudienceSubscriptionVariables = {
+    userId: userQueryResult.data?.me.id,
+    where: { eventId: { _eq: id } },
+    order_by: getQuestionOrderByCondition(questionOrderState[0]),
+    limit: questionQueryState[0].limit,
+    offset: questionQueryState[0].offset,
   };
 
   return (
@@ -37,6 +48,7 @@ const LiveQuestions: React.FC<Props> = ({
         userQueryResult={userQueryResult}
         eventQueryResult={eventQueryResult}
         questionOrderState={questionOrderState}
+        questionQueryState={questionQueryState}
         questionQueryInput={questionQueryInput}
       />
 

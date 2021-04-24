@@ -5,17 +5,17 @@ import { LazyQueryResult } from "@apollo/client";
 import {
   EventByIdQuery,
   EventByIdQueryVariables,
-  QuestionAudienceFieldsFragment,
   useDeleteQuestionMutation,
   ReviewStatus,
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
 import EditIcon from "@material-ui/icons/Edit";
+import { QuestionLiveQueryAudienceFieldsFragment } from "../../../../generated/hasuraHooks";
 
 interface Props {
   eventQueryResult: LazyQueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  questionList: QuestionAudienceFieldsFragment[] | undefined;
+  questionList: QuestionLiveQueryAudienceFieldsFragment[];
   moreMenuState: [
     {
       anchorEl: HTMLElement | null;

@@ -4195,6 +4195,51 @@ export type ReplyLiveQuerySubscription = (
   )> }
 );
 
+export type QuestionLiveQueryAudienceFieldsFragment = (
+  { __typename?: 'question' }
+  & Pick<Question, 'id' | 'createdAt' | 'updatedAt' | 'content' | 'reviewStatus' | 'top' | 'star' | 'voteUpCount' | 'replyCount'>
+  & { author?: Maybe<(
+    { __typename?: 'user' }
+    & Pick<User, 'id' | 'name' | 'avatar'>
+  )>, voteUpUsers: Array<(
+    { __typename?: 'usersVoteUpQuestions' }
+    & Pick<UsersVoteUpQuestions, 'userId'>
+  )> }
+);
+
+export type QuestionLiveQueryAudienceSubscriptionVariables = Exact<{
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+  where?: Maybe<Question_Bool_Exp>;
+  order_by?: Maybe<Array<Question_Order_By> | Question_Order_By>;
+  userId: Scalars['uuid'];
+}>;
+
+
+export type QuestionLiveQueryAudienceSubscription = (
+  { __typename?: 'subscription_root' }
+  & { question: Array<(
+    { __typename?: 'question' }
+    & QuestionLiveQueryAudienceFieldsFragment
+  )> }
+);
+
+export type QuestionCountLiveQueryAudienceSubscriptionVariables = Exact<{
+  where?: Maybe<Question_Bool_Exp>;
+}>;
+
+
+export type QuestionCountLiveQueryAudienceSubscription = (
+  { __typename?: 'subscription_root' }
+  & { question_aggregate: (
+    { __typename?: 'question_aggregate' }
+    & { aggregate?: Maybe<(
+      { __typename?: 'question_aggregate_fields' }
+      & Pick<Question_Aggregate_Fields, 'count'>
+    )> }
+  ) }
+);
+
 export const QuestionLiveQueryFieldsFragmentDoc = gql`
     fragment QuestionLiveQueryFields on question {
   id
@@ -4225,6 +4270,27 @@ export const ReplyLiveQueryFieldsFragmentDoc = gql`
     id
     name
     avatar
+  }
+}
+    `;
+export const QuestionLiveQueryAudienceFieldsFragmentDoc = gql`
+    fragment QuestionLiveQueryAudienceFields on question {
+  id
+  createdAt
+  updatedAt
+  content
+  reviewStatus
+  top
+  star
+  voteUpCount
+  replyCount
+  author {
+    id
+    name
+    avatar
+  }
+  voteUpUsers(where: {userId: {_eq: $userId}}) {
+    userId
   }
 }
     `;
@@ -4338,3 +4404,69 @@ export function useReplyLiveQuerySubscription(baseOptions: Apollo.SubscriptionHo
       }
 export type ReplyLiveQuerySubscriptionHookResult = ReturnType<typeof useReplyLiveQuerySubscription>;
 export type ReplyLiveQuerySubscriptionResult = Apollo.SubscriptionResult<ReplyLiveQuerySubscription>;
+export const QuestionLiveQueryAudienceDocument = gql`
+    subscription QuestionLiveQueryAudience($limit: Int!, $offset: Int!, $where: question_bool_exp, $order_by: [question_order_by!], $userId: uuid!) {
+  question(limit: $limit, offset: $offset, where: $where, order_by: $order_by) {
+    ...QuestionLiveQueryAudienceFields
+  }
+}
+    ${QuestionLiveQueryAudienceFieldsFragmentDoc}`;
+
+/**
+ * __useQuestionLiveQueryAudienceSubscription__
+ *
+ * To run a query within a React component, call `useQuestionLiveQueryAudienceSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useQuestionLiveQueryAudienceSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useQuestionLiveQueryAudienceSubscription({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      where: // value for 'where'
+ *      order_by: // value for 'order_by'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useQuestionLiveQueryAudienceSubscription(baseOptions: Apollo.SubscriptionHookOptions<QuestionLiveQueryAudienceSubscription, QuestionLiveQueryAudienceSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<QuestionLiveQueryAudienceSubscription, QuestionLiveQueryAudienceSubscriptionVariables>(QuestionLiveQueryAudienceDocument, options);
+      }
+export type QuestionLiveQueryAudienceSubscriptionHookResult = ReturnType<typeof useQuestionLiveQueryAudienceSubscription>;
+export type QuestionLiveQueryAudienceSubscriptionResult = Apollo.SubscriptionResult<QuestionLiveQueryAudienceSubscription>;
+export const QuestionCountLiveQueryAudienceDocument = gql`
+    subscription QuestionCountLiveQueryAudience($where: question_bool_exp) {
+  question_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+    `;
+
+/**
+ * __useQuestionCountLiveQueryAudienceSubscription__
+ *
+ * To run a query within a React component, call `useQuestionCountLiveQueryAudienceSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useQuestionCountLiveQueryAudienceSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useQuestionCountLiveQueryAudienceSubscription({
+ *   variables: {
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useQuestionCountLiveQueryAudienceSubscription(baseOptions?: Apollo.SubscriptionHookOptions<QuestionCountLiveQueryAudienceSubscription, QuestionCountLiveQueryAudienceSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<QuestionCountLiveQueryAudienceSubscription, QuestionCountLiveQueryAudienceSubscriptionVariables>(QuestionCountLiveQueryAudienceDocument, options);
+      }
+export type QuestionCountLiveQueryAudienceSubscriptionHookResult = ReturnType<typeof useQuestionCountLiveQueryAudienceSubscription>;
+export type QuestionCountLiveQueryAudienceSubscriptionResult = Apollo.SubscriptionResult<QuestionCountLiveQueryAudienceSubscription>;

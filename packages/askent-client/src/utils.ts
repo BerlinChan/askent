@@ -1,9 +1,15 @@
 import * as R from "ramda";
 import {
   QuestionFieldsFragment,
+  QuestionFilter,
   QuestionOrder,
 } from "./generated/graphqlHooks";
-import { Order_By, Question_Order_By, Maybe } from "./generated/hasuraHooks";
+import {
+  Order_By,
+  Question_Order_By,
+  Maybe,
+  Question_Bool_Exp,
+} from "./generated/hasuraHooks";
 
 export function getQuestionOrderByCondition(
   questionOrder: QuestionOrder
@@ -14,12 +20,14 @@ export function getQuestionOrderByCondition(
         { top: Order_By.Desc },
         { createdAt: Order_By.Desc },
         { voteUpCount: Order_By.Desc },
+        { content: Order_By.Desc },
       ];
     case QuestionOrder.Oldest:
       return [
         { top: Order_By.Desc },
         { createdAt: Order_By.Asc },
         { voteUpCount: Order_By.Desc },
+        { content: Order_By.Desc },
       ];
     case QuestionOrder.Starred:
       return [
@@ -27,6 +35,7 @@ export function getQuestionOrderByCondition(
         { star: Order_By.Desc },
         { voteUpCount: Order_By.Desc },
         { createdAt: Order_By.Desc },
+        { content: Order_By.Desc },
       ];
     default:
       // QuestionOrder.Popular:
@@ -34,7 +43,24 @@ export function getQuestionOrderByCondition(
         { top: Order_By.Desc },
         { voteUpCount: Order_By.Desc },
         { createdAt: Order_By.Desc },
+        { content: Order_By.Desc },
       ];
+  }
+}
+
+export function getQuestionWhereByFilter(
+  filter: QuestionFilter
+): Question_Bool_Exp {
+  switch (filter) {
+    case QuestionFilter.Archive:
+      return { reviewStatus: { _eq: QuestionFilter.Archive } };
+    case QuestionFilter.Review:
+      return { reviewStatus: { _eq: QuestionFilter.Review } };
+    case QuestionFilter.Starred:
+      return { star: { _eq: true } };
+    default:
+      // QuestionFilter.Publih
+      return { reviewStatus: { _eq: QuestionFilter.Publish } };
   }
 }
 
@@ -68,4 +94,12 @@ export function sortQuestionBy<TQuestion extends QuestionFieldsFragment>(
           R.descend<TQuestion>(R.prop("createdAt")),
         ]
   );
+}
+
+export function getHasNextPage(
+  offset: number,
+  limit: number,
+  total: number
+): boolean {
+  return offset + limit < total;
 }

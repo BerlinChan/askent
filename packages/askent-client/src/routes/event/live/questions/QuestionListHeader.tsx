@@ -1,5 +1,4 @@
 import React from "react";
-import { QueryResult } from "@apollo/client";
 import {
   Tabs,
   Tab,
@@ -16,11 +15,7 @@ import {
 import { FormattedMessage } from "react-intl";
 import QuestionForm from "./QuestionForm";
 import QuestionFormInput from "./QuestionFormInput";
-import {
-  QuestionOrder,
-  QuestionsByEventAudienceQuery,
-  QuestionsByEventAudienceQueryVariables,
-} from "../../../../generated/graphqlHooks";
+import { QuestionOrder } from "../../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,20 +46,16 @@ interface Props {
     QuestionOrder,
     React.Dispatch<React.SetStateAction<QuestionOrder>>
   ];
-  questionsQueryResult: QueryResult<
-    QuestionsByEventAudienceQuery,
-    QuestionsByEventAudienceQueryVariables
-  >;
+  questionLiveQueryCount: number;
 }
 
 const QuestionListHeader: React.FC<Props> = ({
   questionOrderState,
-  questionsQueryResult,
+  questionLiveQueryCount,
 }) => {
   const classes = useStyles();
   const theme = useTheme();
   const matchMdUp = useMediaQuery(theme.breakpoints.up("md"));
-  const { data } = questionsQueryResult;
   const [questionOrder, setQuestionOrder] = questionOrderState;
 
   const handleOrderTabChange = (
@@ -119,7 +110,7 @@ const QuestionListHeader: React.FC<Props> = ({
           <FormattedMessage
             id="questionCount"
             defaultMessage="{num, plural, =0 {no questions} one {# question} other {# questions}}"
-            values={{ num: data?.questionsByEventAudience.totalCount || 0 }}
+            values={{ num: questionLiveQueryCount }}
           />
         </Typography>
       </Container>

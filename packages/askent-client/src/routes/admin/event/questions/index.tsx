@@ -15,7 +15,10 @@ import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
 import ActionRight, { QuestionQueryStateType } from "./ActionRight";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
-import { getQuestionOrderByCondition } from "../../../../utils";
+import {
+  getQuestionOrderByCondition,
+  getQuestionWhereByFilter,
+} from "../../../../utils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,30 +59,31 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
   const classes = useStyles();
   const { id } = useParams<{ id: string }>();
   const questionQueryState = React.useState<QuestionQueryStateType>({
-    filterSelected: QuestionFilter.Publish,
+    filter: QuestionFilter.Publish,
     searchString: "",
     limit: DEFAULT_PAGE_LIMIT,
     offset: DEFAULT_PAGE_OFFSET,
   });
   const questionReviewQueryState = React.useState<QuestionQueryStateType>({
-    filterSelected: QuestionFilter.Publish,
+    filter: QuestionFilter.Publish,
     searchString: "",
     limit: DEFAULT_PAGE_LIMIT,
     offset: DEFAULT_PAGE_OFFSET,
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
   const { data: eventData } = eventQueryResult;
-  const questionLiveQueryInput: QuestionLiveQuerySubscriptionVariables = {
+
+  const questionQueryInput: QuestionLiveQuerySubscriptionVariables = {
     where: {
       eventId: { _eq: id },
-      // reviewStatus:questionQueryState[0].filterSelected,
       content: { _ilike: `%${questionQueryState[0].searchString}%` },
+      ...getQuestionWhereByFilter(questionQueryState[0].filter),
     },
     limit: questionQueryState[0].limit,
     offset: questionQueryState[0].offset,
     order_by: getQuestionOrderByCondition(questionOrderSelectedState[0]),
   };
-  const questionReviewLiveQueryInput: QuestionLiveQuerySubscriptionVariables = {
+  const questionReviewQueryInput: QuestionLiveQuerySubscriptionVariables = {
     where: {
       eventId: { _eq: id },
       reviewStatus: { _eq: QuestionFilter.Review },
@@ -100,7 +104,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
             <QuestionList
               eventQueryResult={eventQueryResult}
               questionQueryState={questionReviewQueryState}
-              questionLiveQueryInput={questionReviewLiveQueryInput}
+              questionQueryInput={questionReviewQueryInput}
             />
           ) : (
             <Box className={classes.moderationOffTips}>
@@ -131,7 +135,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
           <QuestionList
             eventQueryResult={eventQueryResult}
             questionQueryState={questionQueryState}
-            questionLiveQueryInput={questionLiveQueryInput}
+            questionQueryInput={questionQueryInput}
           />
         </Paper>
       </Grid>
