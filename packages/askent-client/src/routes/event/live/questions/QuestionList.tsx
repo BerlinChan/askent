@@ -130,7 +130,7 @@ const QuestionList: React.FC<Props> = ({
     <React.Fragment>
       <Virtuoso
         style={{ height: "100%", width: "100%" }}
-        totalCount={questionCount}
+        totalCount={questionLiveQueryData.length}
         isScrolling={(scrolling) => {
           setIsScrolling(scrolling);
         }}

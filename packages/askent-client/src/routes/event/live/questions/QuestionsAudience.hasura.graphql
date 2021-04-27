@@ -1,18 +1,5 @@
 fragment QuestionLiveQueryAudienceFields on question {
-  id
-  createdAt
-  updatedAt
-  content
-  reviewStatus
-  top
-  star
-  voteUpCount
-  replyCount
-  author {
-    id
-    name
-    avatar
-  }
+  ...QuestionLiveQueryFields
   voteUpUsers(where: { userId: { _eq: $userId } }) {
     userId
   }

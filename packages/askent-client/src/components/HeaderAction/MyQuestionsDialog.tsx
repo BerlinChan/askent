@@ -146,14 +146,13 @@ const MyQuestionsDialog: React.FC<Props> = ({
           <Virtuoso
             className="scrollContainer"
             style={{ height: "100%", width: "100%" }}
-            totalCount={questionLiveQueryCount}
+            totalCount={questionLiveQueryData.length}
             isScrolling={(scrolling) => {
               setIsScrolling(scrolling);
             }}
             endReached={loadMore}
             itemContent={(index) => {
               const question = questionLiveQueryData[index];
-              if (!question) return <div />;
 
               return (
                 <QuestionItem

@@ -4219,14 +4219,11 @@ export type EventDetailLiveQuerySubscription = (
 
 export type QuestionLiveQueryAudienceFieldsFragment = (
   { __typename?: 'question' }
-  & Pick<Question, 'id' | 'createdAt' | 'updatedAt' | 'content' | 'reviewStatus' | 'top' | 'star' | 'voteUpCount' | 'replyCount'>
-  & { author?: Maybe<(
-    { __typename?: 'user' }
-    & Pick<User, 'id' | 'name' | 'avatar'>
-  )>, voteUpUsers: Array<(
+  & { voteUpUsers: Array<(
     { __typename?: 'usersVoteUpQuestions' }
     & Pick<UsersVoteUpQuestions, 'userId'>
   )> }
+  & QuestionLiveQueryFieldsFragment
 );
 
 export type QuestionLiveQueryAudienceSubscriptionVariables = Exact<{
@@ -4262,24 +4259,6 @@ export type QuestionCountLiveQueryAudienceSubscription = (
   ) }
 );
 
-export const QuestionLiveQueryFieldsFragmentDoc = gql`
-    fragment QuestionLiveQueryFields on question {
-  id
-  createdAt
-  updatedAt
-  voteUpCount
-  replyCount
-  content
-  reviewStatus
-  star
-  top
-  author {
-    id
-    name
-    avatar
-  }
-}
-    `;
 export const ReplyLiveQueryFieldsFragmentDoc = gql`
     fragment ReplyLiveQueryFields on reply {
   id
@@ -4305,27 +4284,32 @@ export const EventDetailLiveQueryFieldsFragmentDoc = gql`
   moderation
 }
     `;
-export const QuestionLiveQueryAudienceFieldsFragmentDoc = gql`
-    fragment QuestionLiveQueryAudienceFields on question {
+export const QuestionLiveQueryFieldsFragmentDoc = gql`
+    fragment QuestionLiveQueryFields on question {
   id
   createdAt
   updatedAt
-  content
-  reviewStatus
-  top
-  star
   voteUpCount
   replyCount
+  content
+  reviewStatus
+  star
+  top
   author {
     id
     name
     avatar
   }
+}
+    `;
+export const QuestionLiveQueryAudienceFieldsFragmentDoc = gql`
+    fragment QuestionLiveQueryAudienceFields on question {
+  ...QuestionLiveQueryFields
   voteUpUsers(where: {userId: {_eq: $userId}}) {
     userId
   }
 }
-    `;
+    ${QuestionLiveQueryFieldsFragmentDoc}`;
 export const QuestionLiveQueryDocument = gql`
     subscription QuestionLiveQuery($distinct_on: [question_select_column!], $limit: Int!, $offset: Int!, $order_by: [question_order_by!], $where: question_bool_exp!) {
   question(

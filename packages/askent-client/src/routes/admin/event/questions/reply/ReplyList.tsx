@@ -1,11 +1,11 @@
 import React from "react";
 import {
   useReplyLiveQuerySubscription,
-  ReplyLiveQuerySubscriptionResult,
   ReplyLiveQueryFieldsFragment,
   ReplyLiveQuerySubscriptionVariables,
   Order_By,
   EventDetailLiveQueryFieldsFragment,
+  QuestionLiveQueryFieldsFragment,
 } from "../../../../../generated/hasuraHooks";
 import { Virtuoso } from "react-virtuoso";
 import ReplyItem from "./ReplyItem";
@@ -16,13 +16,14 @@ import {
   DEFAULT_PAGE_OFFSET,
   DEFAULT_PAGE_LIMIT,
 } from "../../../../../constant";
+import { getHasNextPage } from "../../../../../utils";
 
 interface Props {
   questionId: string;
-  eventDetailData:EventDetailLiveQueryFieldsFragment|undefined;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }
 
-const ReplyList: React.FC<Props> = ({ questionId,eventDetailData,  }) => {
+const ReplyList: React.FC<Props> = ({ questionId, eventDetailData }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -39,16 +40,22 @@ const ReplyList: React.FC<Props> = ({ questionId,eventDetailData,  }) => {
     offset: DEFAULT_PAGE_OFFSET,
     order_by: { createdAt: Order_By.Desc },
   });
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [
-    replyLiveQueryData,
-    setReplyLiveQueryData,
-  ] = React.useState<ReplyLiveQuerySubscriptionResult>();
+    questionLiveQueryData,
+    setQuestionLiveQueryData,
+  ] = React.useState<QuestionLiveQueryFieldsFragment>();
+  const [replyLiveQueryData, setReplyLiveQueryData] = React.useState<
+    ReplyLiveQueryFieldsFragment[]
+  >([]);
 
   useReplyLiveQuerySubscription({
     variables: replyLiveQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {
-      setReplyLiveQueryData(subscriptionData);
+      if (subscriptionData.data?.question.length) {
+        setQuestionLiveQueryData(subscriptionData.data?.question[0]);
+        setReplyLiveQueryData(subscriptionData.data?.question[0].replies);
+      }
       setLoading(false);
     },
   });
@@ -77,7 +84,7 @@ const ReplyList: React.FC<Props> = ({ questionId,eventDetailData,  }) => {
   const loadMore = () => {
     if (
       replyLiveQueryInput.offset + replyLiveQueryInput.limit <
-      (replyLiveQueryData?.data?.question[0].replyCount || 0)
+      (questionLiveQueryData?.replyCount || 0)
     ) {
       setLoading(true);
       setReplyLiveQueryInput({
@@ -91,15 +98,13 @@ const ReplyList: React.FC<Props> = ({ questionId,eventDetailData,  }) => {
     <React.Fragment>
       <Virtuoso
         style={{ height: "100%", width: "100%", minHeight: 300 }}
-        totalCount={replyLiveQueryData?.data?.question[0].replies.length || 0}
+        totalCount={replyLiveQueryData.length}
         isScrolling={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}
         itemContent={(index) => {
-          const reply: ReplyLiveQueryFieldsFragment | undefined =
-            replyLiveQueryData?.data?.question[0].replies[index];
-          if (!reply) return <div />;
+          const reply: ReplyLiveQueryFieldsFragment = replyLiveQueryData[index];
 
           return (
             <ReplyItem
@@ -117,17 +122,18 @@ const ReplyList: React.FC<Props> = ({ questionId,eventDetailData,  }) => {
             <ReplyListHeader
               loading={loading}
               isScrolling={isScrolling}
-              question={replyLiveQueryData?.data?.question[0]}
+              question={questionLiveQueryData}
               eventDetailData={eventDetailData}
             />
           ),
           Footer: () => (
             <ListFooter
               loading={loading}
-              hasNextPage={
-                replyLiveQueryInput.offset + replyLiveQueryInput.limit <
-                (replyLiveQueryData?.data?.question[0].replyCount || 0)
-              }
+              hasNextPage={getHasNextPage(
+                replyLiveQueryInput.offset,
+                replyLiveQueryInput.limit,
+                questionLiveQueryData?.replyCount || 0
+              )}
             />
           ),
         }}
