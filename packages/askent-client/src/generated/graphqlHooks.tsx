@@ -974,27 +974,6 @@ export type VoteUpQuestionMutation = (
   ) }
 );
 
-export type QuestionRealtimeSearchAudienceSubscriptionVariables = Exact<{
-  eventId: Scalars['String'];
-  hash: Scalars['String'];
-}>;
-
-
-export type QuestionRealtimeSearchAudienceSubscription = (
-  { __typename?: 'Subscription' }
-  & { questionRealtimeSearch: (
-    { __typename?: 'QuestionRealtimeSearchResult' }
-    & Pick<QuestionRealtimeSearchResult, 'totalCount' | 'deleteList'>
-    & { insertList: Array<(
-      { __typename?: 'Question' }
-      & QuestionAudienceFieldsFragment
-    )>, updateList: Array<(
-      { __typename?: 'Question' }
-      & QuestionAudienceFieldsFragment
-    )> }
-  ) }
-);
-
 export type LoginAudienceMutationVariables = Exact<{
   fingerprint: Scalars['String'];
 }>;
@@ -1055,27 +1034,6 @@ export type QuestionsByEventWallQuery = (
       & QuestionWallFieldsFragment
     )> }
     & QuestionPagedFieldsFragment
-  ) }
-);
-
-export type QuestionRealtimeSearchWallSubscriptionVariables = Exact<{
-  eventId: Scalars['String'];
-  hash: Scalars['String'];
-}>;
-
-
-export type QuestionRealtimeSearchWallSubscription = (
-  { __typename?: 'Subscription' }
-  & { questionRealtimeSearch: (
-    { __typename?: 'QuestionRealtimeSearchResult' }
-    & Pick<QuestionRealtimeSearchResult, 'totalCount' | 'deleteList'>
-    & { insertList: Array<(
-      { __typename?: 'Question' }
-      & QuestionWallFieldsFragment
-    )>, updateList: Array<(
-      { __typename?: 'Question' }
-      & QuestionWallFieldsFragment
-    )> }
   ) }
 );
 
@@ -2237,44 +2195,6 @@ export function useVoteUpQuestionMutation(baseOptions?: Apollo.MutationHookOptio
 export type VoteUpQuestionMutationHookResult = ReturnType<typeof useVoteUpQuestionMutation>;
 export type VoteUpQuestionMutationResult = Apollo.MutationResult<VoteUpQuestionMutation>;
 export type VoteUpQuestionMutationOptions = Apollo.BaseMutationOptions<VoteUpQuestionMutation, VoteUpQuestionMutationVariables>;
-export const QuestionRealtimeSearchAudienceDocument = gql`
-    subscription QuestionRealtimeSearchAudience($eventId: String!, $hash: String!) {
-  questionRealtimeSearch(eventId: $eventId, hash: $hash) {
-    totalCount
-    insertList {
-      ...QuestionAudienceFields
-    }
-    updateList {
-      ...QuestionAudienceFields
-    }
-    deleteList
-  }
-}
-    ${QuestionAudienceFieldsFragmentDoc}`;
-
-/**
- * __useQuestionRealtimeSearchAudienceSubscription__
- *
- * To run a query within a React component, call `useQuestionRealtimeSearchAudienceSubscription` and pass it any options that fit your needs.
- * When your component renders, `useQuestionRealtimeSearchAudienceSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useQuestionRealtimeSearchAudienceSubscription({
- *   variables: {
- *      eventId: // value for 'eventId'
- *      hash: // value for 'hash'
- *   },
- * });
- */
-export function useQuestionRealtimeSearchAudienceSubscription(baseOptions: Apollo.SubscriptionHookOptions<QuestionRealtimeSearchAudienceSubscription, QuestionRealtimeSearchAudienceSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<QuestionRealtimeSearchAudienceSubscription, QuestionRealtimeSearchAudienceSubscriptionVariables>(QuestionRealtimeSearchAudienceDocument, options);
-      }
-export type QuestionRealtimeSearchAudienceSubscriptionHookResult = ReturnType<typeof useQuestionRealtimeSearchAudienceSubscription>;
-export type QuestionRealtimeSearchAudienceSubscriptionResult = Apollo.SubscriptionResult<QuestionRealtimeSearchAudienceSubscription>;
 export const LoginAudienceDocument = gql`
     mutation LoginAudience($fingerprint: String!) {
   loginAudience(fingerprint: $fingerprint) {
@@ -2414,44 +2334,6 @@ export function useQuestionsByEventWallLazyQuery(baseOptions?: Apollo.LazyQueryH
 export type QuestionsByEventWallQueryHookResult = ReturnType<typeof useQuestionsByEventWallQuery>;
 export type QuestionsByEventWallLazyQueryHookResult = ReturnType<typeof useQuestionsByEventWallLazyQuery>;
 export type QuestionsByEventWallQueryResult = Apollo.QueryResult<QuestionsByEventWallQuery, QuestionsByEventWallQueryVariables>;
-export const QuestionRealtimeSearchWallDocument = gql`
-    subscription QuestionRealtimeSearchWall($eventId: String!, $hash: String!) {
-  questionRealtimeSearch(eventId: $eventId, hash: $hash) {
-    totalCount
-    insertList {
-      ...QuestionWallFields
-    }
-    updateList {
-      ...QuestionWallFields
-    }
-    deleteList
-  }
-}
-    ${QuestionWallFieldsFragmentDoc}`;
-
-/**
- * __useQuestionRealtimeSearchWallSubscription__
- *
- * To run a query within a React component, call `useQuestionRealtimeSearchWallSubscription` and pass it any options that fit your needs.
- * When your component renders, `useQuestionRealtimeSearchWallSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useQuestionRealtimeSearchWallSubscription({
- *   variables: {
- *      eventId: // value for 'eventId'
- *      hash: // value for 'hash'
- *   },
- * });
- */
-export function useQuestionRealtimeSearchWallSubscription(baseOptions: Apollo.SubscriptionHookOptions<QuestionRealtimeSearchWallSubscription, QuestionRealtimeSearchWallSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<QuestionRealtimeSearchWallSubscription, QuestionRealtimeSearchWallSubscriptionVariables>(QuestionRealtimeSearchWallDocument, options);
-      }
-export type QuestionRealtimeSearchWallSubscriptionHookResult = ReturnType<typeof useQuestionRealtimeSearchWallSubscription>;
-export type QuestionRealtimeSearchWallSubscriptionResult = Apollo.SubscriptionResult<QuestionRealtimeSearchWallSubscription>;
 export const EventCodeOptionsDocument = gql`
     query EventCodeOptions($code: String) {
   eventsByCode(code: $code) {
