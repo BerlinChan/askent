@@ -59,7 +59,7 @@ const MyQuestionsDialog: React.FC<Props> = ({
   const [questionLiveQueryData, setQuestionLiveQueryData] = React.useState<
     QuestionLiveQueryAudienceFieldsFragment[]
   >([]);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [questionLiveQueryCount, setQuestionLiveQueryCount] = React.useState(0);
   const hasNextPage = getHasNextPage(
     questionQueryState.offset,

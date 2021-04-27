@@ -24,7 +24,7 @@ const QuestionList: React.FC<Props> = ({
   questionQueryInput,
 }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [questionLiveQueryData, setQuestionLiveQueryData] = React.useState<
     Array<QuestionLiveQueryFieldsFragment>
   >([]);
@@ -38,7 +38,6 @@ const QuestionList: React.FC<Props> = ({
     questionCountLiveQueryData
   );
 
-  setLoading(true);
   useQuestionLiveQuerySubscription({
     variables: questionQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {

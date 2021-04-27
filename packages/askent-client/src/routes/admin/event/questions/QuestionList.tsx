@@ -36,7 +36,7 @@ const QuestionList: React.FC<Props> = ({
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
   const replyDialogState = React.useState({ open: false, questionId: "" });
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [questionLiveQueryData, setQuestionLiveQueryData] = React.useState<
     Array<QuestionLiveQueryFieldsFragment>
   >([]);
@@ -55,7 +55,6 @@ const QuestionList: React.FC<Props> = ({
     [questionLiveQueryData, moreMenuState]
   );
 
-  setLoading(true);
   useQuestionLiveQuerySubscription({
     variables: questionQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {

@@ -24,9 +24,8 @@ const AdminEvent: React.FC = () => {
     eventDetailData,
     setEventDetailData,
   ] = React.useState<EventDetailLiveQueryFieldsFragment>();
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
-  setLoading(true);
   useEventDetailLiveQuerySubscription({
     variables: { where: { id: { _eq: id } } },
     onSubscriptionData: ({ client, subscriptionData }) => {

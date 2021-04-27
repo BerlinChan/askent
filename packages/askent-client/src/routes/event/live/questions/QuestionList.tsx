@@ -51,7 +51,7 @@ const QuestionList: React.FC<Props> = ({
   const [questionLiveQueryData, setQuestionLiveQueryData] = React.useState<
     QuestionLiveQueryAudienceFieldsFragment[]
   >([]);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [questionCount, setQuestionCount] = React.useState(0);
   const hasNextPage = getHasNextPage(
     questionQueryInput.offset,
