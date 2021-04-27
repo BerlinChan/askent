@@ -10,7 +10,6 @@ import {
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useIntl, FormattedMessage } from "react-intl";
 import {
-  QuestionWallFieldsFragment,
   useUpdateQuestionReviewStatusMutation,
   useUpdateQuestionTopMutation,
   ReviewStatus,
@@ -22,6 +21,7 @@ import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import QuestionToggleButton, {
   handleToggleType,
 } from "../../../components/QuestionToggleButton";
+import { QuestionLiveQueryFieldsFragment } from "../../../generated/hasuraHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  question: QuestionWallFieldsFragment;
+  question: QuestionLiveQueryFieldsFragment;
   isScrolling?: boolean;
 }
 

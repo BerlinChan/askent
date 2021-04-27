@@ -4195,6 +4195,28 @@ export type ReplyLiveQuerySubscription = (
   )> }
 );
 
+export type EventDetailLiveQueryFieldsFragment = (
+  { __typename?: 'event' }
+  & Pick<Event, 'id' | 'name' | 'code' | 'startAt' | 'endAt' | 'moderation'>
+);
+
+export type EventDetailLiveQuerySubscriptionVariables = Exact<{
+  distinct_on?: Maybe<Array<Event_Select_Column> | Event_Select_Column>;
+  where?: Maybe<Event_Bool_Exp>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Event_Order_By> | Event_Order_By>;
+}>;
+
+
+export type EventDetailLiveQuerySubscription = (
+  { __typename?: 'subscription_root' }
+  & { event: Array<(
+    { __typename?: 'event' }
+    & EventDetailLiveQueryFieldsFragment
+  )> }
+);
+
 export type QuestionLiveQueryAudienceFieldsFragment = (
   { __typename?: 'question' }
   & Pick<Question, 'id' | 'createdAt' | 'updatedAt' | 'content' | 'reviewStatus' | 'top' | 'star' | 'voteUpCount' | 'replyCount'>
@@ -4271,6 +4293,16 @@ export const ReplyLiveQueryFieldsFragmentDoc = gql`
     name
     avatar
   }
+}
+    `;
+export const EventDetailLiveQueryFieldsFragmentDoc = gql`
+    fragment EventDetailLiveQueryFields on event {
+  id
+  name
+  code
+  startAt
+  endAt
+  moderation
 }
     `;
 export const QuestionLiveQueryAudienceFieldsFragmentDoc = gql`
@@ -4404,6 +4436,46 @@ export function useReplyLiveQuerySubscription(baseOptions: Apollo.SubscriptionHo
       }
 export type ReplyLiveQuerySubscriptionHookResult = ReturnType<typeof useReplyLiveQuerySubscription>;
 export type ReplyLiveQuerySubscriptionResult = Apollo.SubscriptionResult<ReplyLiveQuerySubscription>;
+export const EventDetailLiveQueryDocument = gql`
+    subscription EventDetailLiveQuery($distinct_on: [event_select_column!], $where: event_bool_exp, $limit: Int, $offset: Int, $order_by: [event_order_by!]) {
+  event(
+    distinct_on: $distinct_on
+    where: $where
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    ...EventDetailLiveQueryFields
+  }
+}
+    ${EventDetailLiveQueryFieldsFragmentDoc}`;
+
+/**
+ * __useEventDetailLiveQuerySubscription__
+ *
+ * To run a query within a React component, call `useEventDetailLiveQuerySubscription` and pass it any options that fit your needs.
+ * When your component renders, `useEventDetailLiveQuerySubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useEventDetailLiveQuerySubscription({
+ *   variables: {
+ *      distinct_on: // value for 'distinct_on'
+ *      where: // value for 'where'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      order_by: // value for 'order_by'
+ *   },
+ * });
+ */
+export function useEventDetailLiveQuerySubscription(baseOptions?: Apollo.SubscriptionHookOptions<EventDetailLiveQuerySubscription, EventDetailLiveQuerySubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<EventDetailLiveQuerySubscription, EventDetailLiveQuerySubscriptionVariables>(EventDetailLiveQueryDocument, options);
+      }
+export type EventDetailLiveQuerySubscriptionHookResult = ReturnType<typeof useEventDetailLiveQuerySubscription>;
+export type EventDetailLiveQuerySubscriptionResult = Apollo.SubscriptionResult<EventDetailLiveQuerySubscription>;
 export const QuestionLiveQueryAudienceDocument = gql`
     subscription QuestionLiveQueryAudience($limit: Int!, $offset: Int!, $where: question_bool_exp, $order_by: [question_order_by!], $userId: uuid!) {
   question(limit: $limit, offset: $offset, where: $where, order_by: $order_by) {

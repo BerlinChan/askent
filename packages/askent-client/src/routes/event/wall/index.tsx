@@ -9,9 +9,13 @@ import {
   useEventByIdQuery,
   useEventUpdatedSubscription,
   QuestionOrder,
+  QuestionFilter,
 } from "../../../generated/graphqlHooks";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
 import QuestionList from "./QuestionList";
+import { QuestionQueryStateType } from "../../admin/event/questions/ActionRight";
+import { QuestionLiveQuerySubscriptionVariables } from "../../../generated/hasuraHooks";
+import { getQuestionWhereByFilter,getQuestionOrderByCondition } from "../../../utils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,10 +63,22 @@ const EventWall: React.FC<Props> = () => {
   const orderSelectedState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
-  const questionQueryInput = {
-    eventId: id,
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: orderSelectedState[0],
+  const questionQueryState = React.useState<QuestionQueryStateType>({
+    filter: QuestionFilter.Publish,
+    searchString: "",
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
+  });
+  const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
+  const questionQueryInput: QuestionLiveQuerySubscriptionVariables = {
+    where: {
+      eventId: { _eq: id },
+      content: { _ilike: `%${questionQueryState[0].searchString}%` },
+      ...getQuestionWhereByFilter(questionQueryState[0].filter),
+    },
+    limit: questionQueryState[0].limit,
+    offset: questionQueryState[0].offset,
+    order_by: getQuestionOrderByCondition(questionOrderSelectedState[0]),
   };
 
   // subscription
@@ -107,7 +123,10 @@ const EventWall: React.FC<Props> = () => {
           <OrderSelect orderSelectedState={orderSelectedState} />
         </Box>
         <Box className={classes.listBox}>
-          <QuestionList questionQueryInput={questionQueryInput} />
+          <QuestionList
+           questionQueryState={questionQueryState}
+           questionQueryInput={questionQueryInput}
+            />
         </Box>
         {0 ? (
           <Typography variant="h6" color="inherit">
