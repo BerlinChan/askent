@@ -38,6 +38,7 @@ const QuestionList: React.FC<Props> = ({
     questionCountLiveQueryData
   );
 
+  setLoading(true);
   useQuestionLiveQuerySubscription({
     variables: questionQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {

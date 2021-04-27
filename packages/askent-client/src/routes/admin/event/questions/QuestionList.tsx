@@ -1,14 +1,10 @@
 import React from "react";
-import { QueryResult } from "@apollo/client";
-import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
-} from "../../../../generated/graphqlHooks";
 import {
   useQuestionLiveQuerySubscription,
   QuestionLiveQueryFieldsFragment,
   QuestionLiveQuerySubscriptionVariables,
   useQuestionCountLiveQuerySubscription,
+  EventDetailLiveQueryFieldsFragment,
 } from "../../../../generated/hasuraHooks";
 import { Virtuoso } from "react-virtuoso";
 import QuestionItem from "./QuestionItem";
@@ -19,7 +15,7 @@ import { QuestionQueryStateType } from "./ActionRight";
 import { getHasNextPage } from "../../../../utils";
 
 interface Props {
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData:EventDetailLiveQueryFieldsFragment|undefined;
   questionQueryState: [
     QuestionQueryStateType,
     React.Dispatch<React.SetStateAction<QuestionQueryStateType>>
@@ -28,7 +24,7 @@ interface Props {
 }
 
 const QuestionList: React.FC<Props> = ({
-  eventQueryResult,
+  eventDetailData,
   questionQueryState,
   questionQueryInput,
 }) => {
@@ -59,6 +55,7 @@ const QuestionList: React.FC<Props> = ({
     [questionLiveQueryData, moreMenuState]
   );
 
+  setLoading(true);
   useQuestionLiveQuerySubscription({
     variables: questionQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {
@@ -124,7 +121,7 @@ const QuestionList: React.FC<Props> = ({
           return (
             <QuestionItem
               question={question}
-              eventQueryResult={eventQueryResult}
+              eventDetailData={eventDetailData}
               handleMoreClick={handleMoreOpen}
               editContent={editContentIdsState[0].includes(question.id)}
               handleEditContentToggle={handleEditContentToggle}
@@ -150,7 +147,7 @@ const QuestionList: React.FC<Props> = ({
       />
       <ReplyDialog
         replyDialogState={replyDialogState}
-        eventQueryResult={eventQueryResult}
+        eventDetailData={eventDetailData}
       />
     </React.Fragment>
   );

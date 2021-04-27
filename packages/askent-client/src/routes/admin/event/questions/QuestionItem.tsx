@@ -22,17 +22,17 @@ import {
   FormattedDate,
   FormattedTime,
 } from "react-intl";
-import { QueryResult } from "@apollo/client";
 import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
   useUpdateQuestionReviewStatusMutation,
   useUpdateQuestionStarMutation,
   useUpdateQuestionTopMutation,
   useUpdateQuestionContentMutation,
   ReviewStatus,
 } from "../../../../generated/graphqlHooks";
-import { QuestionLiveQueryFieldsFragment } from "../../../../generated/hasuraHooks";
+import {
+  EventDetailLiveQueryFieldsFragment,
+  QuestionLiveQueryFieldsFragment,
+} from "../../../../generated/hasuraHooks";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   question: QuestionLiveQueryFieldsFragment;
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
   handleMoreClick?: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
@@ -107,7 +107,7 @@ interface Props {
 const QuestionListItem: React.FC<Props> = ({
   question,
   handleMoreClick,
-  eventQueryResult,
+  eventDetailData,
   editContent = false,
   handleEditContentToggle = () => {},
   editContentInputRef,
@@ -116,7 +116,6 @@ const QuestionListItem: React.FC<Props> = ({
   replyDialogState,
 }) => {
   const classes = useStyles();
-  const { data } = eventQueryResult;
   const { formatMessage } = useIntl();
   const [
     updateQuestionReviewStatusMutation,
@@ -341,7 +340,7 @@ const QuestionListItem: React.FC<Props> = ({
                 handleToggle={handleTopClick}
               />
             )}
-            {data?.eventById.moderation &&
+            {eventDetailData?.moderation &&
               (question.reviewStatus === ReviewStatus.Publish ||
                 question.reviewStatus === ReviewStatus.Review) && (
                 <QuestionToggleButton

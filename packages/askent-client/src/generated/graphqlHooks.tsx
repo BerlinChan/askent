@@ -866,19 +866,6 @@ export type DeleteEventMutation = (
   ) }
 );
 
-export type EventUpdatedSubscriptionVariables = Exact<{
-  eventId: Scalars['ID'];
-}>;
-
-
-export type EventUpdatedSubscription = (
-  { __typename?: 'Subscription' }
-  & { eventUpdated: (
-    { __typename?: 'Event' }
-    & EventDetailFieldsFragment
-  ) }
-);
-
 export type PgpQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1997,36 +1984,6 @@ export function useDeleteEventMutation(baseOptions?: Apollo.MutationHookOptions<
 export type DeleteEventMutationHookResult = ReturnType<typeof useDeleteEventMutation>;
 export type DeleteEventMutationResult = Apollo.MutationResult<DeleteEventMutation>;
 export type DeleteEventMutationOptions = Apollo.BaseMutationOptions<DeleteEventMutation, DeleteEventMutationVariables>;
-export const EventUpdatedDocument = gql`
-    subscription EventUpdated($eventId: ID!) {
-  eventUpdated(eventId: $eventId) {
-    ...EventDetailFields
-  }
-}
-    ${EventDetailFieldsFragmentDoc}`;
-
-/**
- * __useEventUpdatedSubscription__
- *
- * To run a query within a React component, call `useEventUpdatedSubscription` and pass it any options that fit your needs.
- * When your component renders, `useEventUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useEventUpdatedSubscription({
- *   variables: {
- *      eventId: // value for 'eventId'
- *   },
- * });
- */
-export function useEventUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<EventUpdatedSubscription, EventUpdatedSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<EventUpdatedSubscription, EventUpdatedSubscriptionVariables>(EventUpdatedDocument, options);
-      }
-export type EventUpdatedSubscriptionHookResult = ReturnType<typeof useEventUpdatedSubscription>;
-export type EventUpdatedSubscriptionResult = Apollo.SubscriptionResult<EventUpdatedSubscription>;
 export const PgpDocument = gql`
     query PGP {
   pgp {

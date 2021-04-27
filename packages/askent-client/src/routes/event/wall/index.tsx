@@ -5,17 +5,19 @@ import { useParams } from "react-router-dom";
 import QRCode from "qrcode.react";
 import { FormattedMessage } from "react-intl";
 import OrderSelect from "./OrderSelect";
-import {
-  useEventByIdQuery,
-  useEventUpdatedSubscription,
-  QuestionOrder,
-  QuestionFilter,
-} from "../../../generated/graphqlHooks";
+import { QuestionOrder, QuestionFilter } from "../../../generated/graphqlHooks";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
 import QuestionList from "./QuestionList";
 import { QuestionQueryStateType } from "../../admin/event/questions/ActionRight";
-import { QuestionLiveQuerySubscriptionVariables } from "../../../generated/hasuraHooks";
-import { getQuestionWhereByFilter,getQuestionOrderByCondition } from "../../../utils";
+import {
+  EventDetailLiveQueryFieldsFragment,
+  QuestionLiveQuerySubscriptionVariables,
+  useEventDetailLiveQuerySubscription,
+} from "../../../generated/hasuraHooks";
+import {
+  getQuestionWhereByFilter,
+  getQuestionOrderByCondition,
+} from "../../../utils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,9 +59,10 @@ const EventWall: React.FC<Props> = () => {
   const { id } = useParams<{ id: string }>();
   const qrcodeCardRef = React.useRef<HTMLElement>(null);
   const [qrcodeCardWidth, setQrcodeCardWidth] = React.useState(0);
-  const eventByIdQueryResult = useEventByIdQuery({
-    variables: { eventId: id },
-  });
+  const [
+    eventDetailData,
+    setEventDetailData,
+  ] = React.useState<EventDetailLiveQueryFieldsFragment>();
   const orderSelectedState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
@@ -81,9 +84,13 @@ const EventWall: React.FC<Props> = () => {
     order_by: getQuestionOrderByCondition(questionOrderSelectedState[0]),
   };
 
-  // subscription
-  useEventUpdatedSubscription({
-    variables: { eventId: id },
+  useEventDetailLiveQuerySubscription({
+    variables: { where: { id: { _eq: id } } },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.event.length) {
+        setEventDetailData(subscriptionData.data?.event[0]);
+      }
+    },
   });
 
   const onResize = () => {
@@ -114,7 +121,7 @@ const EventWall: React.FC<Props> = () => {
             Askent
           </Typography>
           <Typography variant="h4" color="textPrimary">
-            # {eventByIdQueryResult.data?.eventById.code}
+            # {eventDetailData?.code}
           </Typography>
         </Box>
       </Grid>
@@ -124,9 +131,9 @@ const EventWall: React.FC<Props> = () => {
         </Box>
         <Box className={classes.listBox}>
           <QuestionList
-           questionQueryState={questionQueryState}
-           questionQueryInput={questionQueryInput}
-            />
+            questionQueryState={questionQueryState}
+            questionQueryInput={questionQueryInput}
+          />
         </Box>
         {0 ? (
           <Typography variant="h6" color="inherit">

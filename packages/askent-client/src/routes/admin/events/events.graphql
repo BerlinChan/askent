@@ -68,9 +68,3 @@ mutation DeleteEvent($eventId: ID!) {
     id
   }
 }
-
-subscription EventUpdated($eventId: ID!) {
-  eventUpdated(eventId: $eventId) {
-    ...EventDetailFields
-  }
-}

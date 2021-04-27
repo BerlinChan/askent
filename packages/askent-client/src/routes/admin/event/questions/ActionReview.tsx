@@ -6,20 +6,17 @@ import {
   useUpdateEventMutation,
   useDeleteAllReviewQuestionsMutation,
   usePublishAllReviewQuestionsMutation,
-  EventByIdQuery,
-  EventByIdQueryVariables,
 } from "../../../../generated/graphqlHooks";
-import { QueryResult } from "@apollo/client";
 import Confirm from "../../../../components/Confirm";
+import { EventDetailLiveQueryFieldsFragment } from "../../../../generated/hasuraHooks";
 
 interface Props {
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }
 
-const ActionReview: React.FC<Props> = ({ eventQueryResult }) => {
+const ActionReview: React.FC<Props> = ({ eventDetailData }) => {
   const { formatMessage } = useIntl();
   const { id } = useParams<{ id: string }>();
-  const { data } = eventQueryResult;
   const [updateEventMutation] = useUpdateEventMutation();
   const [
     deleteAllReviewQuestionsMutation,
@@ -30,7 +27,7 @@ const ActionReview: React.FC<Props> = ({ eventQueryResult }) => {
   const [confirmModeration, setConfirmModeration] = React.useState(false);
 
   const handleModerationChange = async () => {
-    if (data?.eventById.moderation) {
+    if (eventDetailData?.moderation) {
       setConfirmModeration(true);
     } else {
       await updateEventMutation({
@@ -81,7 +78,7 @@ const ActionReview: React.FC<Props> = ({ eventQueryResult }) => {
         labelPlacement="start"
         control={
           <Switch
-            checked={Boolean(data?.eventById.moderation)}
+            checked={Boolean(eventDetailData?.moderation)}
             onChange={handleModerationChange}
           />
         }

@@ -1,14 +1,11 @@
 import React from "react";
 import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
-} from "../../../../../generated/graphqlHooks";
-import {
   useReplyLiveQuerySubscription,
   ReplyLiveQuerySubscriptionResult,
   ReplyLiveQueryFieldsFragment,
   ReplyLiveQuerySubscriptionVariables,
   Order_By,
+  EventDetailLiveQueryFieldsFragment,
 } from "../../../../../generated/hasuraHooks";
 import { Virtuoso } from "react-virtuoso";
 import ReplyItem from "./ReplyItem";
@@ -19,14 +16,13 @@ import {
   DEFAULT_PAGE_OFFSET,
   DEFAULT_PAGE_LIMIT,
 } from "../../../../../constant";
-import { QueryResult } from "@apollo/client";
 
 interface Props {
   questionId: string;
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData:EventDetailLiveQueryFieldsFragment|undefined;
 }
 
-const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
+const ReplyList: React.FC<Props> = ({ questionId,eventDetailData,  }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -122,7 +118,7 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
               loading={loading}
               isScrolling={isScrolling}
               question={replyLiveQueryData?.data?.question[0]}
-              eventQueryResult={eventQueryResult}
+              eventDetailData={eventDetailData}
             />
           ),
           Footer: () => (

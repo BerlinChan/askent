@@ -3,13 +3,13 @@ import { Switch, Redirect, useRouteMatch, useParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
 import PrivateRoute from "../../../components/PrivateRoute";
-import {Layout} from "../../../components/Layout";
+import { Layout } from "../../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
+import { useMeQuery } from "../../../generated/graphqlHooks";
 import {
-  useEventByIdQuery,
-  useMeQuery,
-  useEventUpdatedSubscription,
-} from "../../../generated/graphqlHooks";
+  EventDetailLiveQueryFieldsFragment,
+  useEventDetailLiveQuerySubscription,
+} from "../../../generated/hasuraHooks";
 
 const LiveQuestionsComponent = loadable(() => import("./questions"), {
   fallback: <Loading />,
@@ -19,12 +19,18 @@ const Live: React.FC = () => {
   let { path } = useRouteMatch();
   let { id } = useParams<{ id: string }>();
   const meQueryResult = useMeQuery();
-  const eventByIdQueryResult = useEventByIdQuery({
-    variables: { eventId: id },
-  });
+  const [
+    eventDetailData,
+    setEventDetailData,
+  ] = React.useState<EventDetailLiveQueryFieldsFragment>();
 
-  useEventUpdatedSubscription({
-    variables: { eventId: id },
+  useEventDetailLiveQuerySubscription({
+    variables: { where: { id: { _eq: id } } },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.event.length) {
+        setEventDetailData(subscriptionData.data?.event[0]);
+      }
+    },
   });
 
   return (
@@ -33,13 +39,13 @@ const Live: React.FC = () => {
 
       <Layout
         disableContainer
-        header={<LiveEventHeader eventQueryResult={eventByIdQueryResult} />}
+        header={<LiveEventHeader eventDetailData={eventDetailData} />}
         body={
           <Switch>
             <PrivateRoute path={`${path}/questions`}>
               <LiveQuestionsComponent
                 userQueryResult={meQueryResult}
-                eventQueryResult={eventByIdQueryResult}
+                eventDetailData={eventDetailData}
               />
             </PrivateRoute>
           </Switch>

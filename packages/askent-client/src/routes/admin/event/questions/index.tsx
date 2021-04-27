@@ -4,13 +4,13 @@ import { Grid, Paper, Box, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
   QuestionFilter,
   QuestionOrder,
 } from "../../../../generated/graphqlHooks";
-import { QuestionLiveQuerySubscriptionVariables } from "../../../../generated/hasuraHooks";
-import { QueryResult } from "@apollo/client";
+import {
+  EventDetailLiveQueryFieldsFragment,
+  QuestionLiveQuerySubscriptionVariables,
+} from "../../../../generated/hasuraHooks";
 import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
 import ActionRight, { QuestionQueryStateType } from "./ActionRight";
@@ -52,10 +52,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }
 
-const Questions: React.FC<Props> = ({ eventQueryResult }) => {
+const Questions: React.FC<Props> = ({ eventDetailData }) => {
   const classes = useStyles();
   const { id } = useParams<{ id: string }>();
   const questionQueryState = React.useState<QuestionQueryStateType>({
@@ -71,7 +71,6 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
     offset: DEFAULT_PAGE_OFFSET,
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
-  const { data: eventData } = eventQueryResult;
 
   const questionQueryInput: QuestionLiveQuerySubscriptionVariables = {
     where: {
@@ -97,12 +96,12 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
     <Grid container spacing={3} className={classes.questionsGrid}>
       <Grid item sm={6} className={classes.gridItem}>
         <Box className={classes.listActions}>
-          <ActionReview eventQueryResult={eventQueryResult} />
+          <ActionReview eventDetailData={eventDetailData} />
         </Box>
         <Paper className={classes.gridItemPaper}>
-          {eventData?.eventById.moderation ? (
+          {eventDetailData?.moderation ? (
             <QuestionList
-              eventQueryResult={eventQueryResult}
+              eventDetailData={eventDetailData}
               questionQueryState={questionReviewQueryState}
               questionQueryInput={questionReviewQueryInput}
             />
@@ -133,7 +132,7 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
         </Box>
         <Paper className={classes.gridItemPaper + " " + classes.rightPaper}>
           <QuestionList
-            eventQueryResult={eventQueryResult}
+            eventDetailData={eventDetailData}
             questionQueryState={questionQueryState}
             questionQueryInput={questionQueryInput}
           />

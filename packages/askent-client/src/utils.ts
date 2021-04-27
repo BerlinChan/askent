@@ -1,5 +1,7 @@
 import * as R from "ramda";
+import { isAfter, isBefore, isEqual } from "date-fns";
 import {
+  EventDateStatus,
   QuestionFieldsFragment,
   QuestionFilter,
   QuestionOrder,
@@ -102,4 +104,25 @@ export function getHasNextPage(
   total: number
 ): boolean {
   return offset + limit < total;
+}
+
+export function getEventDateStatus(
+  startAt: Date,
+  endAt: Date,
+  now: Date
+): EventDateStatus {
+  if (isAfter(now, new Date(startAt)) && isBefore(now, new Date(endAt))) {
+    return EventDateStatus.Active;
+  } else if (
+    isBefore(now, new Date(startAt)) ||
+    isEqual(now, new Date(startAt))
+  ) {
+    return EventDateStatus.Upcoming;
+  } else {
+    // if (
+    // isAfter(now, new Date(root.endAt)) ||
+    // isEqual(NOW, new Date(root.endAt))
+    // )now
+    return EventDateStatus.Past;
+  }
 }

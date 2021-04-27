@@ -4,11 +4,11 @@ import PrivateRoute from "../../../components/PrivateRoute";
 import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
 import AdminEventHeader from "./AdminEventHeader";
-import {Layout} from "../../../components/Layout";
+import { Layout } from "../../../components/Layout";
 import {
-  useEventByIdQuery,
-  useEventUpdatedSubscription,
-} from "../../../generated/graphqlHooks";
+  useEventDetailLiveQuerySubscription,
+  EventDetailLiveQueryFieldsFragment,
+} from "../../../generated/hasuraHooks";
 
 const QuestionsComponent = loadable(() => import("./questions"), {
   fallback: <Loading />,
@@ -20,22 +20,38 @@ const PollsComponent = loadable(() => import("./polls"), {
 const AdminEvent: React.FC = () => {
   const { path } = useRouteMatch();
   const { id } = useParams<{ id: string }>();
-  const eventQueryResult = useEventByIdQuery({
-    variables: { eventId: id },
-  });
+  const [
+    eventDetailData,
+    setEventDetailData,
+  ] = React.useState<EventDetailLiveQueryFieldsFragment>();
+  const [loading, setLoading] = React.useState(false);
 
-  useEventUpdatedSubscription({
-    variables: { eventId: id },
+  setLoading(true);
+  useEventDetailLiveQuerySubscription({
+    variables: { where: { id: { _eq: id } } },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.event.length) {
+        setEventDetailData(subscriptionData.data?.event[0]);
+        setLoading(false);
+      }
+    },
   });
 
   return (
     <Layout
-      header={<AdminEventHeader eventQueryResult={eventQueryResult} />}
+      header={
+        <AdminEventHeader
+          eventDetailData={eventDetailData}
+          loading={loading}
+        />
+      }
       body={
         <Switch>
           <Redirect exact path={`${path}`} to={`${path}/questions`} />
           <PrivateRoute path={`${path}/questions`}>
-            <QuestionsComponent eventQueryResult={eventQueryResult} />
+            <QuestionsComponent
+              eventDetailData={eventDetailData}
+            />
           </PrivateRoute>
           <PrivateRoute path={`${path}/polls`}>
             <PollsComponent />

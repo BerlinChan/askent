@@ -3,8 +3,6 @@ import { QueryResult } from "@apollo/client";
 import {
   MeQuery,
   MeQueryVariables,
-  EventByIdQuery,
-  EventByIdQueryVariables,
   QuestionOrder,
 } from "../../../../generated/graphqlHooks";
 import QuestionItem from "./QuestionItem";
@@ -14,6 +12,7 @@ import { Virtuoso } from "react-virtuoso";
 import { getHasNextPage } from "../../../../utils";
 import ListFooter from "../../../../components/ListFooter";
 import {
+  EventDetailLiveQueryFieldsFragment,
   QuestionLiveQueryAudienceFieldsFragment,
   QuestionLiveQueryAudienceSubscriptionVariables,
   useQuestionCountLiveQueryAudienceSubscription,
@@ -23,7 +22,7 @@ import { QuestionQueryStateType } from "../../../admin/event/questions/ActionRig
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData:EventDetailLiveQueryFieldsFragment|undefined;
   questionOrderState: [
     QuestionOrder,
     React.Dispatch<React.SetStateAction<QuestionOrder>>
@@ -37,7 +36,7 @@ interface Props {
 
 const QuestionList: React.FC<Props> = ({
   userQueryResult,
-  eventQueryResult,
+  eventDetailData,
   questionOrderState,
   questionQueryState,
   questionQueryInput,
@@ -150,7 +149,7 @@ const QuestionList: React.FC<Props> = ({
       />
 
       <QuestionItemMenu
-        eventQueryResult={eventQueryResult}
+        eventDetailData={eventDetailData}
         questionList={questionLiveQueryData}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}

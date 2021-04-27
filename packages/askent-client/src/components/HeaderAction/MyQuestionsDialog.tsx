@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import { QueryResult } from "@apollo/client";
 import {
-  useEventByIdLazyQuery,
   MeQuery,
   MeQueryVariables,
   QuestionFilter,
@@ -21,9 +20,11 @@ import ListFooter from "../ListFooter";
 import QuestionItem from "../../routes/event/live/questions/QuestionItem";
 import QuestionItemMenu from "../../routes/event/live/questions/QuestionItemMenu";
 import {
+  EventDetailLiveQueryFieldsFragment,
   QuestionLiveQueryAudienceFieldsFragment,
   useQuestionCountLiveQueryAudienceSubscription,
   useQuestionLiveQueryAudienceSubscription,
+  useEventDetailLiveQuerySubscription,
 } from "../../generated/hasuraHooks";
 import { getHasNextPage } from "../../utils";
 
@@ -46,9 +47,10 @@ const MyQuestionsDialog: React.FC<Props> = ({
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
-  const [eventByIdLazyQuery, eventByIdQueryResult] = useEventByIdLazyQuery({
-    variables: { eventId: id },
-  });
+  const [
+    eventDetailData,
+    setEventDetailData,
+  ] = React.useState<EventDetailLiveQueryFieldsFragment>();
 
   const [questionQueryState, setQuestionQueryState] = React.useState({
     limit: DEFAULT_PAGE_LIMIT,
@@ -83,7 +85,6 @@ const MyQuestionsDialog: React.FC<Props> = ({
       }
     },
   });
-
   useQuestionCountLiveQueryAudienceSubscription({
     skip: !open,
     variables: { where: { eventId: { _eq: id } } },
@@ -94,13 +95,15 @@ const MyQuestionsDialog: React.FC<Props> = ({
     },
   });
 
-  React.useEffect(() => {
-    if (open) {
-      eventByIdLazyQuery();
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  useEventDetailLiveQuerySubscription({
+    skip: !open,
+    variables: { where: { id: { _eq: id } } },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.event.length) {
+        setEventDetailData(subscriptionData.data?.event[0]);
+      }
+    },
+  });
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -181,7 +184,7 @@ const MyQuestionsDialog: React.FC<Props> = ({
       </Dialog>
 
       <QuestionItemMenu
-        eventQueryResult={eventByIdQueryResult}
+        eventDetailData={eventDetailData}
         questionList={questionLiveQueryData}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
