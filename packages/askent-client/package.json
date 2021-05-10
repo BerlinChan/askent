@@ -55,7 +55,7 @@
     "@testing-library/jest-dom": "5.11.10",
     "@testing-library/react": "11.2.6",
     "@testing-library/user-event": "13.1.8",
-    "@types/jest": "26.0.22",
+    "@types/jest": "26.0.23",
     "@types/loadable__component": "5.13.3",
     "@types/node": "13.13.51",
     "@types/qrcode.react": "1.0.1",
