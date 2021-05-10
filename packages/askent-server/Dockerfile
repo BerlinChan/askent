@@ -1,16 +1,20 @@
-# Askent Server
+FROM node:lts-alpine AS build
 
-FROM node:12.22.1-alpine
+COPY . /app
+WORKDIR /app
+RUN yarn
+RUN yarn build
 
-WORKDIR "/askent"
 
-COPY ./dist/ ./dist/
-COPY ./.env .
-COPY ./package.json .
-COPY ./yarn.lock .
+FROM node:lts-alpine
 
+COPY --from=build /app/dist /app
+COPY --from=build /app/.env /app/.env
+COPY --from=build /app/package.json /app/package.json
+COPY --from=build /app/hasura /app/hasura
+WORKDIR /app
 RUN yarn install --production
 
 EXPOSE 4000
 
-ENTRYPOINT [ "node", "./dist/index.js" ]
+CMD yarn start

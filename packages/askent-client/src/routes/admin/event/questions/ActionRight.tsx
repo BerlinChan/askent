@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import {
-  ReviewStatus,
   QuestionFilter,
   QuestionOrder,
 } from "../../../../generated/graphqlHooks";
@@ -52,19 +51,21 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const getQuestionFilterLabel = (value: ReviewStatus | QuestionFilter) => {
+const getQuestionFilterLabel = (value: QuestionFilter) => {
   switch (value) {
-    case ReviewStatus.Publish:
+    case QuestionFilter.Publish:
       return <FormattedMessage id="Published" defaultMessage="Published" />;
-    case ReviewStatus.Archive:
+    case QuestionFilter.Archive:
       return <FormattedMessage id="Archived" defaultMessage="Archived" />;
     case QuestionFilter.Starred:
       return <FormattedMessage id="Starred" defaultMessage="Starred" />;
   }
 };
 export type QuestionQueryStateType = {
-  filterSelected: QuestionFilter;
-  searchString: string;
+  filter: QuestionFilter;
+  searchString?: string;
+  limit:number;
+  offset:number;
 };
 interface Props {
   questionQueryState: [
@@ -100,7 +101,7 @@ const ActionRight: React.FC<Props> = ({
   const handleFilterOptionClick = (value: QuestionFilter) => {
     setQueryState({
       ...queryState,
-      filterSelected: value,
+      filter: value,
     });
     handleFilterClose();
   };
@@ -133,7 +134,7 @@ const ActionRight: React.FC<Props> = ({
         <Box className={classes.filterBox} onClick={handleFilterOpen}>
           <ArrowDropDownIcon className="arrowDown" />
           <Typography variant="body1">
-            {getQuestionFilterLabel(queryState.filterSelected)}
+            {getQuestionFilterLabel(queryState.filter)}
           </Typography>
         </Box>
       </Tooltip>
@@ -211,7 +212,7 @@ const ActionRight: React.FC<Props> = ({
           .map((filterItem, index) => (
             <MenuItem
               key={index}
-              selected={filterItem === queryState.filterSelected}
+              selected={filterItem === queryState.filter}
               onClick={(e) => handleFilterOptionClick(filterItem)}
             >
               {getQuestionFilterLabel(filterItem)}

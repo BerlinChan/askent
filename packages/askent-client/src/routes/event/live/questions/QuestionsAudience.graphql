@@ -45,16 +45,3 @@ mutation VoteUpQuestion($questionId: ID!) {
     ...QuestionAudienceFields
   }
 }
-
-subscription QuestionRealtimeSearchAudience($eventId: String!, $hash: String!) {
-  questionRealtimeSearch(eventId: $eventId, hash: $hash) {
-    totalCount
-    insertList {
-      ...QuestionAudienceFields
-    }
-    updateList {
-      ...QuestionAudienceFields
-    }
-    deleteList
-  }
-}

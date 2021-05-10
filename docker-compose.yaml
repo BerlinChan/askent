@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - askent
+    ports:
+      - 5432:5432
+    volumes:
+      - /Users/berlin/workspace/askent/tools/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - askent-db:/var/lib/postgresql/data
+      # - /Users/berlin/Downloads/postgresData:/var/lib/postgresql/data/pgdata
+
+  askent-server:
+    image: askent-server
+    restart: always
+    ports:
+      - 4000:4000
+    networks:
+      - askent
+    depends_on:
+      - postgres
+
+  hasura:
+    image: hasura/graphql-engine
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgres@postgres:5432/askent
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true'
+      HASURA_GRAPHQL_DEV_MODE: 'true'
+    networks:
+      - askent
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+
+volumes:
+  askent-db:
+
+networks:
+  askent: {}

@@ -2,26 +2,24 @@ import React from "react";
 import * as R from "ramda";
 import { CircularProgress } from "@material-ui/core";
 import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
-  QuestionFieldsFragment,
-} from "../../../../../generated/graphqlHooks";
+  EventDetailLiveQueryFieldsFragment,
+  QuestionLiveQueryFieldsFragment,
+} from "../../../../../generated/hasuraHooks";
 import QuestionItem from "../QuestionItem";
-import { QueryResult } from "@apollo/client";
 import QuestionItemMenu from "../QuestionItemMenu";
 
 interface Props {
   loading: boolean;
   isScrolling?: boolean;
-  question?: QuestionFieldsFragment;
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  question?: QuestionLiveQueryFieldsFragment;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }
 
 const ReplyListHeader: React.FC<Props> = ({
   loading,
   isScrolling = false,
   question,
-  eventQueryResult,
+  eventDetailData,
 }) => {
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -59,7 +57,7 @@ const ReplyListHeader: React.FC<Props> = ({
       ) : question ? (
         <QuestionItem
           question={question}
-          eventQueryResult={eventQueryResult}
+          eventDetailData={eventDetailData}
           handleMoreClick={handleMoreOpen}
           editContent={editContentIdsState[0].includes(question.id)}
           handleEditContentToggle={handleEditContentToggle}

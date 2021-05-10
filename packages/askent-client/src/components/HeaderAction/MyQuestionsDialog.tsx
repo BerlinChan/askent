@@ -8,10 +8,9 @@ import {
 } from "@material-ui/core";
 import { QueryResult } from "@apollo/client";
 import {
-  useEventByIdLazyQuery,
-  useQuestionsByMeLazyQuery,
   MeQuery,
   MeQueryVariables,
+  QuestionFilter,
 } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../constant";
@@ -20,6 +19,14 @@ import { Virtuoso } from "react-virtuoso";
 import ListFooter from "../ListFooter";
 import QuestionItem from "../../routes/event/live/questions/QuestionItem";
 import QuestionItemMenu from "../../routes/event/live/questions/QuestionItemMenu";
+import {
+  EventDetailLiveQueryFieldsFragment,
+  QuestionLiveQueryAudienceFieldsFragment,
+  useQuestionCountLiveQueryAudienceSubscription,
+  useQuestionLiveQueryAudienceSubscription,
+  useEventDetailLiveQuerySubscription,
+} from "../../generated/hasuraHooks";
+import { getHasNextPage } from "../../utils";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
@@ -40,25 +47,63 @@ const MyQuestionsDialog: React.FC<Props> = ({
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
-  const [eventByIdLazyQuery, eventByIdQueryResult] = useEventByIdLazyQuery({
-    variables: { eventId: id },
+  const [
+    eventDetailData,
+    setEventDetailData,
+  ] = React.useState<EventDetailLiveQueryFieldsFragment>();
+
+  const [questionQueryState, setQuestionQueryState] = React.useState({
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
   });
-  const [questionsByMeLazyQuery, questionsResult] = useQuestionsByMeLazyQuery({
+  const [questionLiveQueryData, setQuestionLiveQueryData] = React.useState<
+    QuestionLiveQueryAudienceFieldsFragment[]
+  >([]);
+  const [loading, setLoading] = React.useState(true);
+  const [questionLiveQueryCount, setQuestionLiveQueryCount] = React.useState(0);
+  const hasNextPage = getHasNextPage(
+    questionQueryState.offset,
+    questionQueryState.limit,
+    questionLiveQueryCount
+  );
+
+  useQuestionLiveQueryAudienceSubscription({
+    skip: !open,
     variables: {
-      eventId: id,
-      pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
+      userId: userQueryResult.data?.me.id,
+      where: {
+        eventId: { _eq: id },
+        reviewStatus: { _eq: QuestionFilter.Publish },
+      },
+      limit: questionQueryState.limit,
+      offset: questionQueryState.offset,
+    },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.question) {
+        setQuestionLiveQueryData(subscriptionData.data?.question);
+        setLoading(false);
+      }
     },
   });
-  const { data, loading, fetchMore } = questionsResult;
+  useQuestionCountLiveQueryAudienceSubscription({
+    skip: !open,
+    variables: { where: { eventId: { _eq: id } } },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      setQuestionLiveQueryCount(
+        subscriptionData.data?.question_aggregate.aggregate?.count || 0
+      );
+    },
+  });
 
-  React.useEffect(() => {
-    if (open) {
-      questionsByMeLazyQuery();
-      eventByIdLazyQuery();
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  useEventDetailLiveQuerySubscription({
+    skip: !open,
+    variables: { where: { id: { _eq: id } } },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      if (subscriptionData.data?.event.length) {
+        setEventDetailData(subscriptionData.data?.event[0]);
+      }
+    },
+  });
 
   const handleMoreClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -82,16 +127,12 @@ const MyQuestionsDialog: React.FC<Props> = ({
   };
 
   const loadMore = () => {
-    if (data?.questionsByMe.hasNextPage) {
-      fetchMore &&
-        fetchMore({
-          variables: {
-            pagination: {
-              offset: data?.questionsByMe.list.length || DEFAULT_PAGE_OFFSET,
-              limit: data?.questionsByMe.limit || DEFAULT_PAGE_LIMIT,
-            },
-          },
-        });
+    if (hasNextPage) {
+      setLoading(true);
+      setQuestionQueryState({
+        ...questionQueryState,
+        limit: questionQueryState.limit * 2,
+      });
     }
   };
 
@@ -105,14 +146,13 @@ const MyQuestionsDialog: React.FC<Props> = ({
           <Virtuoso
             className="scrollContainer"
             style={{ height: "100%", width: "100%" }}
-            totalCount={data?.questionsByMe.list.length || 0}
+            totalCount={questionLiveQueryData.length}
             isScrolling={(scrolling) => {
               setIsScrolling(scrolling);
             }}
             endReached={loadMore}
             itemContent={(index) => {
-              const question = data?.questionsByMe.list[index];
-              if (!question) return <div />;
+              const question = questionLiveQueryData[index];
 
               return (
                 <QuestionItem
@@ -130,10 +170,7 @@ const MyQuestionsDialog: React.FC<Props> = ({
             }}
             components={{
               Footer: () => (
-                <ListFooter
-                  loading={loading}
-                  hasNextPage={data?.questionsByMe.hasNextPage}
-                />
+                <ListFooter loading={loading} hasNextPage={hasNextPage} />
               ),
             }}
           />
@@ -146,8 +183,8 @@ const MyQuestionsDialog: React.FC<Props> = ({
       </Dialog>
 
       <QuestionItemMenu
-        eventQueryResult={eventByIdQueryResult}
-        questionList={questionsResult.data?.questionsByMe.list}
+        eventDetailData={eventDetailData}
+        questionList={questionLiveQueryData}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}

@@ -23,11 +23,11 @@ import {
   FormattedTime,
 } from "react-intl";
 import {
-  ReplyFieldsFragment,
   ReviewStatus,
   useUpdateReplyContentMutation,
   useUpdateReplyReviewStatusMutation,
 } from "../../../../../generated/graphqlHooks";
+import { ReplyLiveQueryFieldsFragment } from "../../../../../generated/hasuraHooks";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import ArchiveIcon from "@material-ui/icons/Archive";
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  reply: ReplyFieldsFragment;
+  reply: ReplyLiveQueryFieldsFragment;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
@@ -127,7 +127,7 @@ const ReplyListItem: React.FC<Props> = ({
         <ListItemAvatar>
           <Avatar
             alt={reply.author?.name as string}
-            src={isScrolling ? "" : reply.author?.avatar}
+            src={isScrolling ? "" : reply.author?.avatar || ""}
           />
         </ListItemAvatar>
         <ListItemText

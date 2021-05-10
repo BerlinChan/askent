@@ -5,7 +5,7 @@ import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { resolvers, typeDefs } from "./resolvers";
 import config from "../config";
-import { AUTH_TOKEN } from "../constant";
+import { AUTH_TOKEN, HASURA_LIVE_QUERY } from "../constant";
 import createCache from "./createCache";
 
 // Restore cache defaults to make the same one in server.js. Ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
@@ -32,10 +32,35 @@ const wsLink = new WebSocketLink({
     } as ConnectionParamsType,
   },
 });
-
-const httpLink = new HttpLink({
+const apiLink = new HttpLink({
   uri: config.apiUri,
 });
+const hasuraLink = new HttpLink({
+  uri: config.hasuraUri,
+});
+const hasuraWsLink = new WebSocketLink({
+  uri: config.hasuraWsUri,
+  options: {
+    reconnect: true,
+    connectionParams: {
+      Authorization: localStorage.getItem(AUTH_TOKEN) || "",
+    } as ConnectionParamsType,
+  },
+});
+
+const wsLinks = split(
+  (operation) => {
+    return new RegExp(HASURA_LIVE_QUERY).test(operation.operationName);
+  },
+  hasuraWsLink,
+  wsLink
+);
+const httpLinks = split(
+  (operation) => operation.getContext().clientName === "hasura",
+  hasuraLink,
+  apiLink
+);
+
 const link = from([
   // TODO: apollo error handling, ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
   onError(({ graphQLErrors, networkError }) => {
@@ -66,8 +91,8 @@ const link = from([
         definition.operation === "subscription"
       );
     },
-    wsLink,
-    httpLink
+    wsLinks,
+    httpLinks
   ),
 ]);
 

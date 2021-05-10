@@ -1,14 +1,12 @@
 import React from "react";
 import {
-  ReplyQueryInput,
-  RepliesByQuestionDocument,
-  useRepliesByQuestionQuery,
-  ReplyFieldsFragment,
-  useReplyRealtimeSearchSubscription,
-  useQuestionByIdQuery,
-  EventByIdQuery,
-  EventByIdQueryVariables,
-} from "../../../../../generated/graphqlHooks";
+  useReplyLiveQuerySubscription,
+  ReplyLiveQueryFieldsFragment,
+  ReplyLiveQuerySubscriptionVariables,
+  Order_By,
+  EventDetailLiveQueryFieldsFragment,
+  QuestionLiveQueryFieldsFragment,
+} from "../../../../../generated/hasuraHooks";
 import { Virtuoso } from "react-virtuoso";
 import ReplyItem from "./ReplyItem";
 import ReplyListHeader from "./ReplyListHeader";
@@ -18,14 +16,14 @@ import {
   DEFAULT_PAGE_OFFSET,
   DEFAULT_PAGE_LIMIT,
 } from "../../../../../constant";
-import { QueryResult } from "@apollo/client";
+import { getHasNextPage } from "../../../../../utils";
 
 interface Props {
   questionId: string;
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }
 
-const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
+const ReplyList: React.FC<Props> = ({ questionId, eventDetailData }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -33,56 +31,32 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
-  const replyQueryInput: ReplyQueryInput = {
+  const [
+    replyLiveQueryInput,
+    setReplyLiveQueryInput,
+  ] = React.useState<ReplyLiveQuerySubscriptionVariables>({
     questionId,
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-  };
-  const repliesQueryResult = useRepliesByQuestionQuery({
-    variables: { input: replyQueryInput },
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
+    order_by: { createdAt: Order_By.Desc },
   });
-  const { data, loading, fetchMore } = repliesQueryResult;
-  const {
-    data: questionData,
-    loading: questionLoading,
-  } = useQuestionByIdQuery({ variables: { id: questionId } });
+  const [loading, setLoading] = React.useState(true);
+  const [
+    questionLiveQueryData,
+    setQuestionLiveQueryData,
+  ] = React.useState<QuestionLiveQueryFieldsFragment>();
+  const [replyLiveQueryData, setReplyLiveQueryData] = React.useState<
+    ReplyLiveQueryFieldsFragment[]
+  >([]);
 
-  useReplyRealtimeSearchSubscription({
-    skip: !Boolean(data?.repliesByQuestion.hash),
-    variables: {
-      questionId: replyQueryInput.questionId,
-      hash: data?.repliesByQuestion.hash as string,
-    },
+  useReplyLiveQuerySubscription({
+    variables: replyLiveQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.replyRealtimeSearch) {
-        if (data) {
-          const replyRealtimeSearch = subscriptionData.data.replyRealtimeSearch;
-
-          client.writeQuery({
-            query: RepliesByQuestionDocument,
-            variables: { input: replyQueryInput },
-            data: {
-              repliesByQuestion: {
-                ...data.repliesByQuestion,
-                totalCount: replyRealtimeSearch.totalCount,
-                list: data.repliesByQuestion.list
-                  // remove
-                  .filter(
-                    (preQuestion) =>
-                      !replyRealtimeSearch.deleteList.includes(
-                        preQuestion.id
-                      ) &&
-                      !replyRealtimeSearch.updateList
-                        .map((item) => item.id)
-                        .includes(preQuestion.id)
-                  )
-                  // add
-                  .concat(replyRealtimeSearch.insertList)
-                  .concat(replyRealtimeSearch.updateList),
-              },
-            },
-          });
-        }
+      if (subscriptionData.data?.question.length) {
+        setQuestionLiveQueryData(subscriptionData.data?.question[0]);
+        setReplyLiveQueryData(subscriptionData.data?.question[0].replies);
       }
+      setLoading(false);
     },
   });
 
@@ -108,18 +82,14 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
   };
 
   const loadMore = () => {
-    if (data?.repliesByQuestion.hasNextPage) {
-      fetchMore({
-        variables: {
-          input: {
-            ...replyQueryInput,
-            pagination: {
-              offset:
-                data?.repliesByQuestion.list.length || DEFAULT_PAGE_OFFSET,
-              limit: data?.repliesByQuestion.limit || DEFAULT_PAGE_LIMIT,
-            },
-          },
-        },
+    if (
+      replyLiveQueryInput.offset + replyLiveQueryInput.limit <
+      (questionLiveQueryData?.replyCount || 0)
+    ) {
+      setLoading(true);
+      setReplyLiveQueryInput({
+        ...replyLiveQueryInput,
+        limit: replyLiveQueryInput.limit * 2,
       });
     }
   };
@@ -128,15 +98,13 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
     <React.Fragment>
       <Virtuoso
         style={{ height: "100%", width: "100%", minHeight: 300 }}
-        totalCount={data?.repliesByQuestion.list.length || 0}
+        totalCount={replyLiveQueryData.length}
         isScrolling={(scrolling) => {
           setIsScrolling(scrolling);
         }}
         endReached={loadMore}
         itemContent={(index) => {
-          const reply: ReplyFieldsFragment | undefined =
-            data?.repliesByQuestion.list[index];
-          if (!reply) return <div />;
+          const reply: ReplyLiveQueryFieldsFragment = replyLiveQueryData[index];
 
           return (
             <ReplyItem
@@ -152,16 +120,20 @@ const ReplyList: React.FC<Props> = ({ questionId, eventQueryResult }) => {
         components={{
           Header: () => (
             <ReplyListHeader
-              loading={questionLoading}
+              loading={loading}
               isScrolling={isScrolling}
-              question={questionData?.questionById}
-              eventQueryResult={eventQueryResult}
+              question={questionLiveQueryData}
+              eventDetailData={eventDetailData}
             />
           ),
           Footer: () => (
             <ListFooter
               loading={loading}
-              hasNextPage={data?.repliesByQuestion.hasNextPage}
+              hasNextPage={getHasNextPage(
+                replyLiveQueryInput.offset,
+                replyLiveQueryInput.limit,
+                questionLiveQueryData?.replyCount || 0
+              )}
             />
           ),
         }}

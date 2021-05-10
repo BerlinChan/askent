@@ -27,7 +27,6 @@ import {
   MeQuery,
   MeQueryVariables,
   useVoteUpQuestionMutation,
-  QuestionAudienceFieldsFragment,
   useUpdateQuestionContentMutation,
   ReviewStatus,
 } from "../../../../generated/graphqlHooks";
@@ -40,6 +39,7 @@ import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
 import { TextField } from "formik-material-ui";
+import { QuestionLiveQueryAudienceFieldsFragment } from "../../../../generated/hasuraHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  question: QuestionAudienceFieldsFragment;
+  question: QuestionLiveQueryAudienceFieldsFragment;
   handleMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
@@ -138,7 +138,7 @@ const QuestionItem: React.FC<Props> = ({
       <ListItemAvatar>
         <Avatar
           alt={question.author?.name as string}
-          src={isScrolling ? "" : question.author?.avatar}
+          src={isScrolling ? "" : question.author?.avatar || ""}
         />
       </ListItemAvatar>
       <ListItemText
@@ -257,7 +257,12 @@ const QuestionItem: React.FC<Props> = ({
             {!disableVote && (
               <Button
                 variant="outlined"
-                color={question.voted ? "primary" : "default"}
+                color={
+                  question.voteUpUsers.length &&
+                  question.voteUpUsers[0].userId === userQueryResult.data?.me.id
+                    ? "primary"
+                    : "default"
+                }
                 classes={{ root: classes.thumbUpButton }}
                 disabled={voteLoading}
                 onClick={() => handleThumbUpClick(question.id)}

@@ -7,9 +7,9 @@ export default {
   "database": "askent",
   "synchronize": true,
   "logging": true,
-  "entities": ["src/entity/**/*.ts"],
-  "migrations": ["src/db/migration/**/*.ts"],
-  "subscribers": ["src/db/subscriber/**/*.ts"],
+  "entities": ["src/entity/**"],
+  "migrations": ["src/db/migration/**"],
+  "subscribers": ["src/db/subscriber/**"],
   "cli": {
     "entitiesDir": "src/entity",
     "migrationsDir": "src/db/migration",

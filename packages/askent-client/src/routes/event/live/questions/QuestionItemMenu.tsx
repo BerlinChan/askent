@@ -1,21 +1,21 @@
 import React from "react";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
-import { LazyQueryResult } from "@apollo/client";
 import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
-  QuestionAudienceFieldsFragment,
   useDeleteQuestionMutation,
   ReviewStatus,
 } from "../../../../generated/graphqlHooks";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
 import EditIcon from "@material-ui/icons/Edit";
+import {
+  EventDetailLiveQueryFieldsFragment,
+  QuestionLiveQueryAudienceFieldsFragment,
+} from "../../../../generated/hasuraHooks";
 
 interface Props {
-  eventQueryResult: LazyQueryResult<EventByIdQuery, EventByIdQueryVariables>;
-  questionList: QuestionAudienceFieldsFragment[] | undefined;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
+  questionList: QuestionLiveQueryAudienceFieldsFragment[];
   moreMenuState: [
     {
       anchorEl: HTMLElement | null;
@@ -36,7 +36,7 @@ interface Props {
 }
 
 const QuestionItemMenu: React.FC<Props> = ({
-  eventQueryResult,
+  eventDetailData,
   questionList = [],
   moreMenuState,
   editContentInputRef,
@@ -103,7 +103,7 @@ const QuestionItemMenu: React.FC<Props> = ({
         <MenuItem
           disabled={Boolean(
             questionMoreTarget?.top ||
-              (eventQueryResult.data?.eventById.moderation &&
+              (eventDetailData?.moderation &&
                 questionMoreTarget?.reviewStatus === ReviewStatus.Publish)
           )}
           onClick={() => handleEditContentToggle(moreMenu.id)}

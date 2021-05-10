@@ -200,7 +200,7 @@ const QuestionForm: React.FC<Props> = ({
         <Avatar
           className={classes.avatar}
           alt={formProps.values.name}
-          src={userMeData?.me.avatar}
+          src={userMeData?.me.avatar || ""}
         />
         <Field
           component={InputBase}

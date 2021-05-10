@@ -5,11 +5,7 @@ import { FormattedMessage } from "react-intl";
 import DialogTitleWithClose from "../../../../../components/DialogTitleWithClose";
 import ReplyList from "./ReplyList";
 import ReplyForm from "./ReplyForm";
-import { QueryResult } from "@apollo/client";
-import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
-} from "../../../../../generated/graphqlHooks";
+import { EventDetailLiveQueryFieldsFragment } from "../../../../../generated/hasuraHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,12 +24,12 @@ export interface Props {
     ReplyDialogStateType,
     React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
   ];
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData:EventDetailLiveQueryFieldsFragment|undefined;
 }
 
 const ReplyDialog: React.FC<Props> = ({
   replyDialogState,
-  eventQueryResult,
+  eventDetailData,
 }) => {
   const classes = useStyles();
   const [replyDialog, setReplyDialog] = replyDialogState;
@@ -59,7 +55,7 @@ const ReplyDialog: React.FC<Props> = ({
       <DialogContent className={classes.content}>
         <ReplyList
           questionId={replyDialog.questionId}
-          eventQueryResult={eventQueryResult}
+          eventDetailData={eventDetailData}
         />
         <ReplyForm
           className={classes.form}

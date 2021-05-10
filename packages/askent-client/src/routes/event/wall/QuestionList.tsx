@@ -1,90 +1,67 @@
 import React from "react";
-import {
-  QuestionWallFieldsFragment,
-  useQuestionsByEventWallQuery,
-  QuestionOrder,
-  QuestionQueryInput,
-  useQuestionRealtimeSearchWallSubscription,
-  QuestionsByEventWallDocument,
-} from "../../../generated/graphqlHooks";
 import QuestionItem from "./QuestionItem";
 import { Virtuoso } from "react-virtuoso";
-import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
-import { sortQuestionBy } from "../../../utils";
+import { getHasNextPage } from "../../../utils";
 import ListFooter from "../../../components/ListFooter";
+import { QuestionQueryStateType } from "../../admin/event/questions/ActionRight";
+import {
+  QuestionLiveQuerySubscriptionVariables,
+  useQuestionCountLiveQuerySubscription,
+  useQuestionLiveQuerySubscription,
+  QuestionLiveQueryFieldsFragment,
+} from "../../../generated/hasuraHooks";
 
 interface Props {
-  questionQueryInput: QuestionQueryInput;
+  questionQueryState: [
+    QuestionQueryStateType,
+    React.Dispatch<React.SetStateAction<QuestionQueryStateType>>
+  ];
+  questionQueryInput: QuestionLiveQuerySubscriptionVariables;
 }
 
-const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
+const QuestionList: React.FC<Props> = ({
+  questionQueryState,
+  questionQueryInput,
+}) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
-  const questionsQueryResult = useQuestionsByEventWallQuery({
-    variables: { input: questionQueryInput },
-  });
-  const { data, loading, fetchMore } = questionsQueryResult;
+  const [loading, setLoading] = React.useState(true);
+  const [questionLiveQueryData, setQuestionLiveQueryData] = React.useState<
+    Array<QuestionLiveQueryFieldsFragment>
+  >([]);
+  const [
+    questionCountLiveQueryData,
+    setQuestionCountLiveQueryData,
+  ] = React.useState(0);
+  const hasNextPage = getHasNextPage(
+    questionQueryInput.offset,
+    questionQueryInput.limit,
+    questionCountLiveQueryData
+  );
 
-  useQuestionRealtimeSearchWallSubscription({
-    skip: !Boolean(data?.questionsByEventWall.hash),
-    variables: {
-      eventId: questionQueryInput.eventId,
-      hash: data?.questionsByEventWall.hash as string,
-    },
+  useQuestionLiveQuerySubscription({
+    variables: questionQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {
-      if (subscriptionData.data?.questionRealtimeSearch) {
-        const questionRealtimeSearch =
-          subscriptionData.data.questionRealtimeSearch;
-
-        if (data) {
-          client.writeQuery({
-            query: QuestionsByEventWallDocument,
-            variables: { input: questionQueryInput },
-            data: {
-              questionsByEventWall: {
-                ...data.questionsByEventWall,
-                totalCount: questionRealtimeSearch.totalCount,
-                list: data.questionsByEventWall.list
-                  // remove
-                  .filter(
-                    (preQuestion) =>
-                      !questionRealtimeSearch.deleteList.includes(
-                        preQuestion.id
-                      ) &&
-                      !questionRealtimeSearch.updateList
-                        .map((item) => item.id)
-                        .includes(preQuestion.id)
-                  )
-                  // add
-                  .concat(questionRealtimeSearch.insertList)
-                  .concat(questionRealtimeSearch.updateList),
-              },
-            },
-          });
-        }
+      if (subscriptionData.data?.question) {
+        setQuestionLiveQueryData(subscriptionData.data?.question);
+        setLoading(false);
       }
     },
   });
+  useQuestionCountLiveQuerySubscription({
+    variables: { where: questionQueryInput.where },
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      setQuestionCountLiveQueryData(
+        subscriptionData.data?.question_aggregate.aggregate?.count || 0
+      );
+    },
+  });
 
-  const orderedList = React.useMemo(() => {
-    const list = sortQuestionBy<QuestionWallFieldsFragment>(
-      questionQueryInput.order || QuestionOrder.Popular
-    )(data?.questionsByEventWall.list || []);
-
-    return list;
-  }, [data, questionQueryInput]);
   const loadMore = () => {
-    if (data?.questionsByEventWall.hasNextPage) {
-      fetchMore({
-        variables: {
-          input: {
-            ...questionQueryInput,
-            pagination: {
-              offset:
-                data?.questionsByEventWall.list.length || DEFAULT_PAGE_OFFSET,
-              limit: data?.questionsByEventWall.limit || DEFAULT_PAGE_LIMIT,
-            },
-          },
-        },
+    if (hasNextPage) {
+      setLoading(true);
+      questionQueryState[1]({
+        ...questionQueryState[0],
+        limit: questionQueryState[0].limit * 2,
       });
     }
   };
@@ -92,26 +69,22 @@ const QuestionList: React.FC<Props> = ({ questionQueryInput }) => {
   return (
     <Virtuoso
       style={{ height: "100%", width: "100%" }}
-      totalCount={orderedList.length}
+      totalCount={questionLiveQueryData.length}
       isScrolling={(scrolling) => {
         setIsScrolling(scrolling);
       }}
       endReached={loadMore}
       itemContent={(index) => {
-        if (!orderedList[index]) return <div />;
         return (
           <QuestionItem
-            question={orderedList[index]}
+            question={questionLiveQueryData[index]}
             isScrolling={isScrolling}
           />
         );
       }}
       components={{
         Footer: () => (
-          <ListFooter
-            loading={loading}
-            hasNextPage={data?.questionsByEventWall.hasNextPage}
-          />
+          <ListFooter loading={loading} hasNextPage={hasNextPage} />
         ),
       }}
     />

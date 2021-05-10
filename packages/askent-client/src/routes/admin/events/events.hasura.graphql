@@ -1,0 +1,26 @@
+fragment EventDetailLiveQueryFields on event {
+  id
+  name
+  code
+  startAt
+  endAt
+  moderation
+}
+
+subscription EventDetailLiveQuery(
+  $distinct_on: [event_select_column!]
+  $where: event_bool_exp
+  $limit: Int
+  $offset: Int
+  $order_by: [event_order_by!]
+) {
+  event(
+    distinct_on: $distinct_on
+    where: $where
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    ...EventDetailLiveQueryFields
+  }
+}

@@ -9,179 +9,170 @@ import {
   Arg,
   Ctx,
   ID,
-} from 'type-graphql'
-import { getRepository, In, Repository } from 'typeorm'
-import { hash, compare } from 'bcryptjs'
-import MD5 from 'crypto-js/md5'
-import { Context } from '../context'
-import { signToken } from '../utils'
-import { Role as RoleEntity } from '../entity/Role'
-import { RoleName } from '../constant'
-import { User as UserEntity } from '../entity/User'
-import { Role } from './Role'
+} from "type-graphql";
+import { getRepository, In, Repository } from "typeorm";
+import { hash, compare } from "bcryptjs";
+import MD5 from "crypto-js/md5";
+import { Context } from "../context";
+import { signToken } from "../utils";
+import { Role as RoleEntity } from "../entity/Role";
+import { RoleName } from "../constant";
+import { User as UserEntity } from "../entity/User";
+import { Role } from "./Role";
 
 @ObjectType()
 export class User {
-  private userRepository: Repository<UserEntity>
+  private userRepository: Repository<UserEntity>;
 
   constructor() {
-    this.userRepository = getRepository(UserEntity)
+    this.userRepository = getRepository(UserEntity);
   }
 
   @Field((returns) => ID)
-  public id!: string
+  public id!: string;
 
-  @Field({ nullable: true, defaultValue: '' })
-  public email?: string
+  @Field({ nullable: true, defaultValue: "" })
+  public email?: string;
 
-  @Field({ nullable: true, defaultValue: '' })
-  public name?: string
+  @Field({ nullable: true, defaultValue: "" })
+  public name?: string;
 
   @Field({ nullable: true, defaultValue: false })
-  public anonymous?: boolean
+  public anonymous?: boolean;
 
-  @Field({
-    description:
-      'gravatar img, see https://en.gravatar.com/site/implement/images/',
-  })
-  get avatar(): string {
-    if (this.email) {
-      const emailMD5Hash = MD5(this.email.trim().toLowerCase()).toString()
-      return (
-        'https://www.gravatar.com/avatar/' + `${emailMD5Hash}?s=${40}&d=retro`
-      )
-    } else {
-      return ''
-    }
-  }
+  @Field({ nullable: true, defaultValue: "" })
+  public avatar?: string;
 
   @Field((returns) => [Role])
   async roles(@Root() root: User): Promise<RoleEntity[]> {
     const roles = await this.userRepository
       .createQueryBuilder()
-      .relation(UserEntity, 'roles')
+      .relation(UserEntity, "roles")
       .of(root.id)
-      .loadMany()
+      .loadMany();
 
-    return roles
+    return roles;
   }
 
   @Field()
-  public createdAt!: Date
+  public createdAt!: Date;
 
   @Field()
-  public updatedAt!: Date
+  public updatedAt!: Date;
 
   @Field({ nullable: true })
-  public deletedAt?: Date
+  public deletedAt?: Date;
 }
 
 @ObjectType()
 export class AuthPayload {
   @Field()
-  public token!: string
+  public token!: string;
 
   @Field((returns) => User)
-  public user!: UserEntity
+  public user!: UserEntity;
 }
 
 @ObjectType()
 export class PGP {
   @Field()
-  public pubKey!: string
+  public pubKey!: string;
 }
 
 @InputType()
 export class UpdateUserInput implements Partial<User> {
   @Field({ nullable: true })
-  public name?: string
+  public name?: string;
 
   @Field({ nullable: true })
-  public email?: string
+  public email?: string;
 
   @Field({ nullable: true })
-  public anonymous?: boolean
+  public anonymous?: boolean;
 }
 
 @Resolver((of) => User)
 export class UserResolver {
-  private userRepository: Repository<UserEntity>
+  private userRepository: Repository<UserEntity>;
 
   constructor() {
-    this.userRepository = getRepository(UserEntity)
+    this.userRepository = getRepository(UserEntity);
   }
 
   @Query((returns) => User)
   async me(@Ctx() ctx: Context): Promise<UserEntity> {
-    const user = await this.userRepository.findOneOrFail(ctx.user?.id as string)
+    const user = await this.userRepository.findOneOrFail(
+      ctx.user?.id as string
+    );
     if (!user) {
-      throw new Error()
+      throw new Error();
     }
 
-    return user
+    return user;
   }
 
   @Query((returns) => Boolean, {
-    description: 'Check if a email has already exist.',
+    description: "Check if a email has already exist.",
   })
   checkEmailExist(
-    @Arg('email') email: string,
-    @Ctx() ctx: Context,
+    @Arg("email") email: string,
+    @Ctx() ctx: Context
   ): Promise<boolean> {
-    return checkEmailExist(ctx, email)
+    return checkEmailExist(ctx, email);
   }
 
-  @Query((returns) => PGP, { description: 'For demo use' })
+  @Query((returns) => PGP, { description: "For demo use" })
   pgp(): PGP {
-    return { pubKey: process.env.JWT_PUB_KEY as string }
+    return { pubKey: process.env.JWT_PUB_KEY as string };
   }
 
-  @Mutation((returns) => AuthPayload, { description: 'Signup a new user.' })
+  @Mutation((returns) => AuthPayload, { description: "Signup a new user." })
   async signup(
-    @Arg('name', { description: 'User name' }) name: string,
-    @Arg('email', { description: 'User Email' }) email: string,
-    @Arg('password') password: string,
+    @Arg("name", { description: "User name" }) name: string,
+    @Arg("email", { description: "User Email" }) email: string,
+    @Arg("password") password: string
   ): Promise<AuthPayload> {
-    const hashedPassword = await hash(password, 10)
+    const hashedPassword = await hash(password, 10);
     const roleNames: Array<RoleName> = [
       RoleName.Admin,
       RoleName.Guest,
       RoleName.Audience,
       RoleName.Wall,
-    ]
+    ];
     const roles = await getRepository(RoleEntity).find({
       where: { name: In(roleNames) },
-    })
+    });
     const user = this.userRepository.create({
       name,
       email,
+      avatar: getGravatar(email),
       password: hashedPassword,
       roles,
-    })
-    await this.userRepository.save(user)
+    });
+    await this.userRepository.save(user);
 
     return {
       token: signToken({ id: user.id as string, roles: roleNames }),
       user: user,
-    }
+    };
   }
 
   @Mutation((returns) => AuthPayload)
   async login(
-    @Arg('email', { description: 'User Email' }) email: string,
-    @Arg('password') password: string,
+    @Arg("email", { description: "User Email" }) email: string,
+    @Arg("password") password: string
   ): Promise<AuthPayload> {
     const user = await this.userRepository.findOne({
       where: { email },
-      relations: ['roles'],
-    })
+      relations: ["roles"],
+    });
 
     if (!user) {
-      throw new Error(`No user found for email: ${email}`)
+      throw new Error(`No user found for email: ${email}`);
     }
-    const passwordValid = await compare(password, user.password as string)
+    const passwordValid = await compare(password, user.password as string);
     if (!passwordValid) {
-      throw new Error('Invalid password')
+      throw new Error("Invalid password");
     }
 
     return {
@@ -190,7 +181,7 @@ export class UserResolver {
         roles: user.roles.map((role) => role.name),
       }),
       user: user,
-    }
+    };
   }
 
   @Mutation((returns) => AuthPayload, {
@@ -199,49 +190,62 @@ export class UserResolver {
   若 fingerprint 的 User 不存在则 create 并返回 token`,
   })
   async loginAudience(
-    @Arg('fingerprint') fingerprint: string,
+    @Arg("fingerprint") fingerprint: string
   ): Promise<AuthPayload> {
-    let user = await this.userRepository.findOne({ fingerprint })
-    const roleNames: Array<RoleName> = [RoleName.Audience]
+    let user = await this.userRepository.findOne({ fingerprint });
+    const roleNames: Array<RoleName> = [RoleName.Audience];
     if (!user) {
       const roles = await getRepository(RoleEntity).find({
         where: { name: In(roleNames) },
-      })
-      user = this.userRepository.create({ fingerprint, roles })
-      await this.userRepository.save(user)
+      });
+      user = this.userRepository.create({ fingerprint, roles });
+      await this.userRepository.save(user);
     }
 
     return {
       token: signToken({ id: user.id as string, roles: roleNames }),
       user: user,
-    }
+    };
   }
 
   @Mutation((returns) => User)
   async updateUser(
-    @Arg('input') input: UpdateUserInput,
-    @Ctx() ctx: Context,
+    @Arg("input") input: UpdateUserInput,
+    @Ctx() ctx: Context
   ): Promise<UserEntity> {
-    const userId = ctx.user?.id as string
-    let user = await this.userRepository.findOneOrFail(userId)
-    if (input.name === '' && input.anonymous) {
-      user.anonymous = input.anonymous
+    const userId = ctx.user?.id as string;
+    let user = await this.userRepository.findOneOrFail(userId);
+    if (input.name === "" && input.anonymous) {
+      user.anonymous = input.anonymous;
     } else {
       user = Object.assign(
         user,
-        typeof input.name === 'string' ? { name: input.name } : {},
-        typeof input.email === 'string' ? { email: input.email } : {},
-        typeof input.anonymous === 'boolean'
-          ? { anonymous: input.anonymous }
+        typeof input.name === "string" ? { name: input.name } : {},
+        typeof input.email === "string"
+          ? { email: input.email, avatar: getGravatar(input.email) }
           : {},
-      )
+        typeof input.anonymous === "boolean"
+          ? { anonymous: input.anonymous }
+          : {}
+      );
     }
-    await this.userRepository.save(user)
+    await this.userRepository.save(user);
 
-    return user
+    return user;
   }
 }
 
 async function checkEmailExist(ctx: Context, email: string): Promise<boolean> {
-  return Boolean(await getRepository(UserEntity).count({ where: { email } }))
+  return Boolean(await getRepository(UserEntity).count({ where: { email } }));
+}
+
+function getGravatar(email: string): string {
+  if (email) {
+    const emailMD5Hash = MD5(email.trim().toLowerCase()).toString();
+    return (
+      "https://www.gravatar.com/avatar/" + `${emailMD5Hash}?s=${40}&d=retro`
+    );
+  } else {
+    return "";
+  }
 }

@@ -1,0 +1,33 @@
+fragment ReplyLiveQueryFields on reply {
+  id
+  createdAt
+  updatedAt
+  content
+  reviewStatus
+  isModerator
+  author {
+    id
+    name
+    avatar
+  }
+}
+
+subscription ReplyLiveQuery(
+  $questionId: uuid!
+  $limit: Int!
+  $offset: Int!
+  $order_by: [reply_order_by!]
+  $where: reply_bool_exp
+) {
+  question(where: { id: { _eq: $questionId } }) {
+    ...QuestionLiveQueryFields
+    replies(
+      limit: $limit
+      offset: $offset
+      order_by: $order_by
+      where: $where
+    ) {
+      ...ReplyLiveQueryFields
+    }
+  }
+}

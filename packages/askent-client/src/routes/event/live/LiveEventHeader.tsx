@@ -24,16 +24,12 @@ import {
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import MenuIcon from "@material-ui/icons/Menu";
-import { QueryResult } from "@apollo/client";
-import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
-} from "../../../generated/graphqlHooks";
 import HeaderAction from "../../../components/HeaderAction";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import { FormattedMessage, FormattedDate, FormattedTime } from "react-intl";
+import { EventDetailLiveQueryFieldsFragment } from "../../../generated/hasuraHooks";
 
 const drawerWidth = 240;
 
@@ -82,15 +78,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }
 
-const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
+const LiveEventHeader: React.FC<Props> = ({ eventDetailData }) => {
   const classes = useStyles();
   let { url } = useRouteMatch();
   const theme = useTheme();
   const matchMdUp = useMediaQuery(theme.breakpoints.up("md"));
-  const { data } = eventQueryResult;
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
@@ -99,7 +94,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
 
   const renderEventName = (
     <Typography variant="h6" color="inherit" noWrap>
-      {data?.eventById.name}
+      {eventDetailData?.name}
     </Typography>
   );
   const renderRouteTabs = (
@@ -181,18 +176,18 @@ const LiveEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
         onClose={handleDrawerToggle}
       >
         <Box className={classes.drawerInfo}>
-          <Typography>{data?.eventById.name}</Typography>
+          <Typography>{eventDetailData?.name}</Typography>
           <Typography variant="body2">
-            <FormattedDate value={data?.eventById.startAt} />
+            <FormattedDate value={eventDetailData?.startAt} />
             {", "}
-            <FormattedTime value={data?.eventById.startAt} />
+            <FormattedTime value={eventDetailData?.startAt} />
             {" ~ "}
-            <FormattedDate value={data?.eventById.endAt} />
+            <FormattedDate value={eventDetailData?.endAt} />
             {", "}
-            <FormattedTime value={data?.eventById.endAt} />
+            <FormattedTime value={eventDetailData?.endAt} />
           </Typography>
           <Typography variant="body2" color="textSecondary">
-            # {data?.eventById.code}
+            # {eventDetailData?.code}
           </Typography>
         </Box>
         <Divider />

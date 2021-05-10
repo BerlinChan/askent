@@ -4,16 +4,21 @@ import { Grid, Paper, Box, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
   QuestionFilter,
   QuestionOrder,
 } from "../../../../generated/graphqlHooks";
-import { QueryResult } from "@apollo/client";
+import {
+  EventDetailLiveQueryFieldsFragment,
+  QuestionLiveQuerySubscriptionVariables,
+} from "../../../../generated/hasuraHooks";
 import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
 import ActionRight, { QuestionQueryStateType } from "./ActionRight";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
+import {
+  getQuestionOrderByCondition,
+  getQuestionWhereByFilter,
+} from "../../../../utils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,45 +52,58 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }
 
-const Questions: React.FC<Props> = ({ eventQueryResult }) => {
+const Questions: React.FC<Props> = ({ eventDetailData }) => {
   const classes = useStyles();
   const { id } = useParams<{ id: string }>();
   const questionQueryState = React.useState<QuestionQueryStateType>({
-    filterSelected: QuestionFilter.Publish,
+    filter: QuestionFilter.Publish,
     searchString: "",
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
+  });
+  const questionReviewQueryState = React.useState<QuestionQueryStateType>({
+    filter: QuestionFilter.Publish,
+    searchString: "",
+    limit: DEFAULT_PAGE_LIMIT,
+    offset: DEFAULT_PAGE_OFFSET,
   });
   const questionOrderSelectedState = React.useState(QuestionOrder.Popular);
-  const { data: eventData } = eventQueryResult;
-  const questionQueryInput = {
-    eventId: id,
-    questionFilter: questionQueryState[0].filterSelected,
-    searchString: questionQueryState[0].searchString
-      ? questionQueryState[0].searchString
-      : undefined,
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: questionOrderSelectedState[0],
+
+  const questionQueryInput: QuestionLiveQuerySubscriptionVariables = {
+    where: {
+      eventId: { _eq: id },
+      content: { _ilike: `%${questionQueryState[0].searchString}%` },
+      ...getQuestionWhereByFilter(questionQueryState[0].filter),
+    },
+    limit: questionQueryState[0].limit,
+    offset: questionQueryState[0].offset,
+    order_by: getQuestionOrderByCondition(questionOrderSelectedState[0]),
   };
-  const questionQueryInputReview = {
-    eventId: id,
-    questionFilter: QuestionFilter.Review,
-    pagination: { limit: DEFAULT_PAGE_LIMIT, offset: DEFAULT_PAGE_OFFSET },
-    order: QuestionOrder.Oldest,
+  const questionReviewQueryInput: QuestionLiveQuerySubscriptionVariables = {
+    where: {
+      eventId: { _eq: id },
+      reviewStatus: { _eq: QuestionFilter.Review },
+    },
+    limit: questionReviewQueryState[0].limit,
+    offset: questionReviewQueryState[0].offset,
+    order_by: getQuestionOrderByCondition(QuestionOrder.Oldest),
   };
 
   return (
     <Grid container spacing={3} className={classes.questionsGrid}>
       <Grid item sm={6} className={classes.gridItem}>
         <Box className={classes.listActions}>
-          <ActionReview eventQueryResult={eventQueryResult} />
+          <ActionReview eventDetailData={eventDetailData} />
         </Box>
         <Paper className={classes.gridItemPaper}>
-          {eventData?.eventById.moderation ? (
+          {eventDetailData?.moderation ? (
             <QuestionList
-              eventQueryResult={eventQueryResult}
-              questionQueryInput={questionQueryInputReview}
+              eventDetailData={eventDetailData}
+              questionQueryState={questionReviewQueryState}
+              questionQueryInput={questionReviewQueryInput}
             />
           ) : (
             <Box className={classes.moderationOffTips}>
@@ -114,7 +132,8 @@ const Questions: React.FC<Props> = ({ eventQueryResult }) => {
         </Box>
         <Paper className={classes.gridItemPaper + " " + classes.rightPaper}>
           <QuestionList
-            eventQueryResult={eventQueryResult}
+            eventDetailData={eventDetailData}
+            questionQueryState={questionQueryState}
             questionQueryInput={questionQueryInput}
           />
         </Paper>

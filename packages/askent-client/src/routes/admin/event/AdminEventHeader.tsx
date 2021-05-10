@@ -15,11 +15,6 @@ import {
 } from "@material-ui/core";
 import { RouteTabs } from "../../../components/Tabs";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
-import {
-  EventByIdQuery,
-  EventByIdQueryVariables,
-} from "../../../generated/graphqlHooks";
-import { QueryResult } from "@apollo/client";
 import { FormattedDate, FormattedTime, useIntl } from "react-intl";
 import HeaderAction from "../../../components/HeaderAction";
 import SettingsIcon from "@material-ui/icons/Settings";
@@ -28,6 +23,8 @@ import EventSettingDialog, {
   EventSettingValues,
 } from "../../../components/EventSettingDialog";
 import PresentModeButton from "./PresentModeButton";
+import { EventDetailLiveQueryFieldsFragment } from "../../../generated/hasuraHooks";
+import { getEventDateStatus } from "../../../utils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,10 +55,11 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  eventQueryResult: QueryResult<EventByIdQuery, EventByIdQueryVariables>;
+  loading: boolean;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }
 
-const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
+const AdminEventHeader: React.FC<Props> = ({ loading, eventDetailData }) => {
   const classes = useStyles();
   const history = useHistory();
   let { url } = useRouteMatch();
@@ -71,7 +69,6 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
     setEventSettingDefaultFocus,
   ] = React.useState<keyof EventSettingValues>("name");
   const { formatMessage } = useIntl();
-  const { data, loading } = eventQueryResult;
 
   const handleOpenSetting = (
     id: string,
@@ -113,13 +110,10 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
                         color="inherit"
                         className={classes.openSettingText}
                         onClick={() =>
-                          handleOpenSetting(
-                            data?.eventById.id as string,
-                            "name"
-                          )
+                          handleOpenSetting(eventDetailData?.id, "name")
                         }
                       >
-                        {data?.eventById.name}
+                        {eventDetailData?.name}
                       </Typography>
                     </Tooltip>
                     <Box>
@@ -136,19 +130,16 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
                           color="inherit"
                           className={classes.openSettingText}
                           onClick={() =>
-                            handleOpenSetting(
-                              data?.eventById.id as string,
-                              "startAt"
-                            )
+                            handleOpenSetting(eventDetailData?.id, "startAt")
                           }
                         >
-                          <FormattedDate value={data?.eventById.startAt} />
+                          <FormattedDate value={eventDetailData?.startAt} />
                           {", "}
-                          <FormattedTime value={data?.eventById.startAt} />
+                          <FormattedTime value={eventDetailData?.startAt} />
                           {" ~ "}
-                          <FormattedDate value={data?.eventById.endAt} />
+                          <FormattedDate value={eventDetailData?.endAt} />
                           {", "}
-                          <FormattedTime value={data?.eventById.endAt} />
+                          <FormattedTime value={eventDetailData?.endAt} />
                         </Typography>
                       </Tooltip>
                     </Box>
@@ -167,14 +158,18 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
                       color="inherit"
                       className={classes.openSettingText}
                       onClick={() =>
-                        handleOpenSetting(data?.eventById.id as string, "code")
+                        handleOpenSetting(eventDetailData?.id, "code")
                       }
                     >
-                      #{data?.eventById.code}
+                      #{eventDetailData?.code}
                     </Typography>
                   </Tooltip>
                   <Typography color="inherit">
-                    {data?.eventById.dateStatus}
+                    {getEventDateStatus(
+                      eventDetailData?.startAt,
+                      eventDetailData?.endAt,
+                      new Date()
+                    )}
                   </Typography>
                 </Grid>
                 <Grid item xs={4} className={classes.toolbarRight}>
@@ -224,7 +219,7 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
                 <IconButton
                   size="small"
                   onClick={(e) => {
-                    window.open(`/event/${data?.eventById.id}`);
+                    window.open(`/event/${eventDetailData?.id}`);
                   }}
                 >
                   <PhoneAndroidIcon fontSize="inherit" color="inherit" />
@@ -239,10 +234,8 @@ const AdminEventHeader: React.FC<Props> = ({ eventQueryResult }) => {
                 <Box display="inline-block">
                   <IconButton
                     size="small"
-                    disabled={loading && !data}
-                    onClick={(e) =>
-                      handleOpenSetting(data?.eventById.id as string)
-                    }
+                    disabled={loading && !eventDetailData}
+                    onClick={(e) => handleOpenSetting(eventDetailData?.id)}
                   >
                     <SettingsIcon fontSize="inherit" color="inherit" />
                   </IconButton>
