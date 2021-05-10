@@ -4,11 +4,11 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ hasura ]
+    branches: [ release ]
     paths:
       - packages/askent-client/**
   pull_request:
-    branches: [ hasura ]
+    branches: [ release ]
     paths:
       - packages/askent-client/**
 
