@@ -1,62 +1,62 @@
-import { registerEnumType } from 'type-graphql'
+import { registerEnumType } from "type-graphql";
 
-export const DEFAULT_PAGE_OFFSET = 0
-export const DEFAULT_PAGE_LIMIT = 50
+export const DEFAULT_PAGE_OFFSET = 0;
+export const DEFAULT_PAGE_LIMIT = 50;
+
+export const CLAIMS_NAMESPACE = "https://hasura.io/jwt/claims";
 
 export const SubscriptionTopics = {
-  QUESTION_REALTIME_SEARCH: 'QUESTION_REALTIME_SEARCH',
-  EVENT_UPDATED: 'EVENT_UPDATED',
-  REPLY_REALTIME_SEARCH: 'REPLY_REALTIME_SEARCH',
-  QUESTION_BY_ID: 'QUESTION_BY_ID',
-}
+  QUESTION_REALTIME_SEARCH: "QUESTION_REALTIME_SEARCH",
+  EVENT_UPDATED: "EVENT_UPDATED",
+  REPLY_REALTIME_SEARCH: "REPLY_REALTIME_SEARCH",
+  QUESTION_BY_ID: "QUESTION_BY_ID",
+};
 
 export enum ReviewStatus {
-  Review = 'Review',
-  Publish = 'Publish',
-  Archive = 'Archive',
+  Review = "Review",
+  Publish = "Publish",
+  Archive = "Archive",
 }
 registerEnumType(ReviewStatus, {
-  name: 'ReviewStatus',
+  name: "ReviewStatus",
   description: "Question's or Reply's review status",
-})
+});
 
 export enum RoleName {
-  Admin = 'Admin',
-  Guest = 'Guest',
-  Audience = 'Audience',
-  Wall = 'Wall',
+  User = "User",
+  Guest = "Guest",
 }
-registerEnumType(RoleName, { name: 'RoleName' })
+registerEnumType(RoleName, { name: "RoleName" });
 
 export enum EventDateStatus {
-  Active = 'Active',
-  Upcoming = 'Upcoming',
-  Past = 'Past',
+  Active = "Active",
+  Upcoming = "Upcoming",
+  Past = "Past",
 }
-registerEnumType(EventDateStatus, { name: 'EventDateStatus' })
+registerEnumType(EventDateStatus, { name: "EventDateStatus" });
 
 export enum OrderByArg {
-  Asc = 'Asc',
-  Desc = 'Desc',
+  Asc = "Asc",
+  Desc = "Desc",
 }
-registerEnumType(OrderByArg, { name: 'OrderByArg' })
+registerEnumType(OrderByArg, { name: "OrderByArg" });
 
 enum QuestionFilterExtend {
-  Starred = 'Starred',
+  Starred = "Starred",
   // Anwsered = 'Anwsered',
   // Dismissed = 'Dismissed',
 }
 export const QuestionFilter = {
   ...ReviewStatus,
   ...QuestionFilterExtend,
-}
-export type QuestionFilter = ReviewStatus | QuestionFilterExtend
-registerEnumType(QuestionFilter, { name: 'QuestionFilter' })
+};
+export type QuestionFilter = ReviewStatus | QuestionFilterExtend;
+registerEnumType(QuestionFilter, { name: "QuestionFilter" });
 
 export enum QuestionOrder {
-  Popular = 'Popular',
-  Recent = 'Recent',
-  Oldest = 'Oldest',
-  Starred = 'Starred',
+  Popular = "Popular",
+  Recent = "Recent",
+  Oldest = "Oldest",
+  Starred = "Starred",
 }
-registerEnumType(QuestionOrder, { name: 'QuestionOrder' })
+registerEnumType(QuestionOrder, { name: "QuestionOrder" });

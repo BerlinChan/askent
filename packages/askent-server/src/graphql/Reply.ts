@@ -135,11 +135,11 @@ export class ReplyResolver {
     const { offset, limit } = pagination
     const { totalCount, list } = await findReplyAndCountAll(
       input,
-      RoleName.Admin,
+      RoleName.User,
       userId,
     )
     const hash = await getReplyQueryHash(
-      { ...input, userId, asRole: RoleName.Admin },
+      { ...input, userId, asRole: RoleName.User },
       list,
     )
 
@@ -285,7 +285,7 @@ export async function findReplyAndCountAll(
   const { questionId, pagination } = queryInput
   const { offset, limit } = pagination
 
-  if (asRole === RoleName.Admin) {
+  if (asRole === RoleName.User) {
     const totalCount = await replyRepository
       .createQueryBuilder('reply')
       .innerJoin('reply.question', 'question', 'question.id = :questionId', {

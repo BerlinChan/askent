@@ -16,7 +16,7 @@ import MD5 from "crypto-js/md5";
 import { Context } from "../context";
 import { signToken } from "../utils";
 import { Role as RoleEntity } from "../entity/Role";
-import { RoleName } from "../constant";
+import { CLAIMS_NAMESPACE, RoleName } from "../constant";
 import { User as UserEntity } from "../entity/User";
 import { Role } from "./Role";
 
@@ -126,37 +126,6 @@ export class UserResolver {
     return { pubKey: process.env.JWT_PUB_KEY as string };
   }
 
-  @Mutation((returns) => AuthPayload, { description: "Signup a new user." })
-  async signup(
-    @Arg("name", { description: "User name" }) name: string,
-    @Arg("email", { description: "User Email" }) email: string,
-    @Arg("password") password: string
-  ): Promise<AuthPayload> {
-    const hashedPassword = await hash(password, 10);
-    const roleNames: Array<RoleName> = [
-      RoleName.Admin,
-      RoleName.Guest,
-      RoleName.Audience,
-      RoleName.Wall,
-    ];
-    const roles = await getRepository(RoleEntity).find({
-      where: { name: In(roleNames) },
-    });
-    const user = this.userRepository.create({
-      name,
-      email,
-      avatar: getGravatar(email),
-      password: hashedPassword,
-      roles,
-    });
-    await this.userRepository.save(user);
-
-    return {
-      token: signToken({ id: user.id as string, roles: roleNames }),
-      user: user,
-    };
-  }
-
   @Mutation((returns) => AuthPayload)
   async login(
     @Arg("email", { description: "User Email" }) email: string,
@@ -177,8 +146,13 @@ export class UserResolver {
 
     return {
       token: signToken({
-        id: user.id as string,
+        id: user.id,
         roles: user.roles.map((role) => role.name),
+        [CLAIMS_NAMESPACE]: {
+          "x-hasura-user-id": user.id,
+          "x-hasura-default-role": user.roles.map((role) => role.name)[0],
+          "x-hasura-allowed-roles": user.roles.map((role) => role.name),
+        },
       }),
       user: user,
     };
@@ -193,7 +167,7 @@ export class UserResolver {
     @Arg("fingerprint") fingerprint: string
   ): Promise<AuthPayload> {
     let user = await this.userRepository.findOne({ fingerprint });
-    const roleNames: Array<RoleName> = [RoleName.Audience];
+    const roleNames: Array<RoleName> = [RoleName.Guest];
     if (!user) {
       const roles = await getRepository(RoleEntity).find({
         where: { name: In(roleNames) },
@@ -203,7 +177,49 @@ export class UserResolver {
     }
 
     return {
-      token: signToken({ id: user.id as string, roles: roleNames }),
+      token: signToken({
+        id: user.id as string,
+        roles: roleNames,
+        [CLAIMS_NAMESPACE]: {
+          "x-hasura-user-id": user.id,
+          "x-hasura-default-role": roleNames[0],
+          "x-hasura-allowed-roles": roleNames,
+        },
+      }),
+      user: user,
+    };
+  }
+
+  @Mutation((returns) => AuthPayload, { description: "Signup a new user." })
+  async signup(
+    @Arg("name", { description: "User name" }) name: string,
+    @Arg("email", { description: "User Email" }) email: string,
+    @Arg("password") password: string
+  ): Promise<AuthPayload> {
+    const hashedPassword = await hash(password, 10);
+    const roleNames: Array<RoleName> = [RoleName.User, RoleName.Guest];
+    const roles = await getRepository(RoleEntity).find({
+      where: { name: In(roleNames) },
+    });
+    const user = this.userRepository.create({
+      name,
+      email,
+      avatar: getGravatar(email),
+      password: hashedPassword,
+      roles,
+    });
+    await this.userRepository.save(user);
+
+    return {
+      token: signToken({
+        id: user.id as string,
+        roles: roleNames,
+        [CLAIMS_NAMESPACE]: {
+          "x-hasura-user-id": user.id,
+          "x-hasura-default-role": roleNames[0],
+          "x-hasura-allowed-roles": roleNames,
+        },
+      }),
       user: user,
     };
   }

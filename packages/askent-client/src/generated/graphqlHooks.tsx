@@ -468,10 +468,8 @@ export type MutationVoteUpQuestionArgs = {
 };
 
 export enum RoleName {
-  Admin = 'Admin',
-  Guest = 'Guest',
-  Audience = 'Audience',
-  Wall = 'Wall'
+  User = 'User',
+  Guest = 'Guest'
 }
 
 export type AuthPayload = {
