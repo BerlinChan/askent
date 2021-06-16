@@ -14,7 +14,7 @@
     "start": "env-cmd node src/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && tsc",
-    "hausra:export": "hasura metadata export --project ./hasura",
+    "hausra:export": "hasura metadata export --project ./hasura --envfile ../.env",
     "hasura:apply": "hasura metadata apply --project ./hasura",
     "hasura:reload": "hasura metadata reload --project ./hasura",
     "docker:build": "docker build --pull --rm -f Dockerfile -t askent-server:latest ."

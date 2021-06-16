@@ -72,25 +72,56 @@
         table:
           schema: public
           name: usersVoteUpQuestions
-  insert_permissions:
-  - role: guest
+  select_permissions:
+  - role: Guest
     permission:
-      check: {}
       columns:
       - anonymous
-      - star
-      - top
-      - replyCount
-      - voteUpCount
-      - reviewStatus
-      - createdAt
-      - deletedAt
-      - updatedAt
       - authorId
+      - content
+      - createdAt
       - eventId
       - id
+      - replyCount
+      - reviewStatus
+      - star
+      - top
+      - updatedAt
+      - voteUpCount
+      filter:
+        _and:
+        - deletedAt:
+            _is_null: true
+        - reviewStatus:
+            _eq: Publish
+      allow_aggregations: true
+  - role: User
+    permission:
+      columns:
+      - anonymous
+      - authorId
       - content
-      backend_only: false
+      - createdAt
+      - eventId
+      - id
+      - replyCount
+      - reviewStatus
+      - star
+      - top
+      - updatedAt
+      - voteUpCount
+      filter:
+        _and:
+        - _or:
+          - event:
+              owner:
+                id:
+                  _eq: x-hasura-user-id
+          - authorId:
+              _eq: x-hasura-user-id
+        - deletedAt:
+            _is_null: true
+      allow_aggregations: true
 - table:
     schema: public
     name: question_query_meta
@@ -171,6 +202,42 @@
         table:
           schema: public
           name: usersVoteUpQuestions
+  select_permissions:
+  - role: Guest
+    permission:
+      columns:
+      - anonymous
+      - avatar
+      - createdAt
+      - email
+      - fingerprint
+      - id
+      - name
+      - updatedAt
+      filter:
+        _and:
+        - id:
+            _eq: x-hasura-user-id
+        - deletedAt:
+            _is_null: true
+  - role: User
+    permission:
+      columns:
+      - anonymous
+      - avatar
+      - createdAt
+      - email
+      - fingerprint
+      - id
+      - name
+      - updatedAt
+      filter:
+        _and:
+        - id:
+            _eq: x-hasura-user-id
+        - deletedAt:
+            _is_null: true
+      allow_aggregations: true
 - table:
     schema: public
     name: userRoles
@@ -191,3 +258,12 @@
   - name: user
     using:
       foreign_key_constraint_on: userId
+  select_permissions:
+  - role: Guest
+    permission:
+      columns:
+      - questionId
+      - userId
+      filter:
+        userId:
+          _eq: x-hasura-user-id
