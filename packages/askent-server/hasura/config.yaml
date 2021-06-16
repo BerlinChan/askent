@@ -1,5 +1,5 @@
 version: 2
-endpoint: http://localhost:8080/
+endpoint: http://routerwh.berlinchan.com:49104/
 metadata_directory: metadata
 actions:
   kind: synchronous
