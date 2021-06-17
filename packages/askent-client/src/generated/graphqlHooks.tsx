@@ -469,7 +469,7 @@ export type MutationVoteUpQuestionArgs = {
 
 export enum RoleName {
   User = 'User',
-  Guest = 'Guest'
+  Audience = 'Audience'
 }
 
 export type AuthPayload = {

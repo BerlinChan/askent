@@ -73,6 +73,7 @@ export type Event = {
   audiences_aggregate: EventAudiences_Aggregate;
   code: Scalars['String'];
   createdAt: Scalars['timestamp'];
+  deletedAt?: Maybe<Scalars['timestamp']>;
   endAt: Scalars['timestamp'];
   /** An array relationship */
   guestes: Array<EventGuestes>;
@@ -192,12 +193,6 @@ export type EventAudiences_Aggregate_Order_By = {
   min?: Maybe<EventAudiences_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "eventAudiences" */
-export type EventAudiences_Arr_Rel_Insert_Input = {
-  data: Array<EventAudiences_Insert_Input>;
-  on_conflict?: Maybe<EventAudiences_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "eventAudiences". All fields are combined with a logical 'AND'. */
 export type EventAudiences_Bool_Exp = {
   _and?: Maybe<Array<Maybe<EventAudiences_Bool_Exp>>>;
@@ -207,20 +202,6 @@ export type EventAudiences_Bool_Exp = {
   eventId?: Maybe<Uuid_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   userId?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "eventAudiences" */
-export enum EventAudiences_Constraint {
-  /** unique or primary key constraint */
-  PkDc9339c2c2f8cea2cb31c3c2134 = 'PK_dc9339c2c2f8cea2cb31c3c2134'
-}
-
-/** input type for inserting data into table "eventAudiences" */
-export type EventAudiences_Insert_Input = {
-  event?: Maybe<Event_Obj_Rel_Insert_Input>;
-  eventId?: Maybe<Scalars['uuid']>;
-  user?: Maybe<User_Obj_Rel_Insert_Input>;
-  userId?: Maybe<Scalars['uuid']>;
 };
 
 /** aggregate max on columns */
@@ -249,28 +230,6 @@ export type EventAudiences_Min_Order_By = {
   userId?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "eventAudiences" */
-export type EventAudiences_Mutation_Response = {
-  __typename?: 'eventAudiences_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<EventAudiences>;
-};
-
-/** input type for inserting object relation for remote table "eventAudiences" */
-export type EventAudiences_Obj_Rel_Insert_Input = {
-  data: EventAudiences_Insert_Input;
-  on_conflict?: Maybe<EventAudiences_On_Conflict>;
-};
-
-/** on conflict condition type for table "eventAudiences" */
-export type EventAudiences_On_Conflict = {
-  constraint: EventAudiences_Constraint;
-  update_columns: Array<EventAudiences_Update_Column>;
-  where?: Maybe<EventAudiences_Bool_Exp>;
-};
-
 /** ordering options when selecting data from "eventAudiences" */
 export type EventAudiences_Order_By = {
   event?: Maybe<Event_Order_By>;
@@ -287,20 +246,6 @@ export type EventAudiences_Pk_Columns_Input = {
 
 /** select columns of table "eventAudiences" */
 export enum EventAudiences_Select_Column {
-  /** column name */
-  EventId = 'eventId',
-  /** column name */
-  UserId = 'userId'
-}
-
-/** input type for updating data in table "eventAudiences" */
-export type EventAudiences_Set_Input = {
-  eventId?: Maybe<Scalars['uuid']>;
-  userId?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "eventAudiences" */
-export enum EventAudiences_Update_Column {
   /** column name */
   EventId = 'eventId',
   /** column name */
@@ -347,12 +292,6 @@ export type EventGuestes_Aggregate_Order_By = {
   min?: Maybe<EventGuestes_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "eventGuestes" */
-export type EventGuestes_Arr_Rel_Insert_Input = {
-  data: Array<EventGuestes_Insert_Input>;
-  on_conflict?: Maybe<EventGuestes_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "eventGuestes". All fields are combined with a logical 'AND'. */
 export type EventGuestes_Bool_Exp = {
   _and?: Maybe<Array<Maybe<EventGuestes_Bool_Exp>>>;
@@ -362,20 +301,6 @@ export type EventGuestes_Bool_Exp = {
   eventId?: Maybe<Uuid_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   userId?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "eventGuestes" */
-export enum EventGuestes_Constraint {
-  /** unique or primary key constraint */
-  Pk_3a6dc9b0d12bf4cc96fec9c0bbf = 'PK_3a6dc9b0d12bf4cc96fec9c0bbf'
-}
-
-/** input type for inserting data into table "eventGuestes" */
-export type EventGuestes_Insert_Input = {
-  event?: Maybe<Event_Obj_Rel_Insert_Input>;
-  eventId?: Maybe<Scalars['uuid']>;
-  user?: Maybe<User_Obj_Rel_Insert_Input>;
-  userId?: Maybe<Scalars['uuid']>;
 };
 
 /** aggregate max on columns */
@@ -404,28 +329,6 @@ export type EventGuestes_Min_Order_By = {
   userId?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "eventGuestes" */
-export type EventGuestes_Mutation_Response = {
-  __typename?: 'eventGuestes_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<EventGuestes>;
-};
-
-/** input type for inserting object relation for remote table "eventGuestes" */
-export type EventGuestes_Obj_Rel_Insert_Input = {
-  data: EventGuestes_Insert_Input;
-  on_conflict?: Maybe<EventGuestes_On_Conflict>;
-};
-
-/** on conflict condition type for table "eventGuestes" */
-export type EventGuestes_On_Conflict = {
-  constraint: EventGuestes_Constraint;
-  update_columns: Array<EventGuestes_Update_Column>;
-  where?: Maybe<EventGuestes_Bool_Exp>;
-};
-
 /** ordering options when selecting data from "eventGuestes" */
 export type EventGuestes_Order_By = {
   event?: Maybe<Event_Order_By>;
@@ -442,20 +345,6 @@ export type EventGuestes_Pk_Columns_Input = {
 
 /** select columns of table "eventGuestes" */
 export enum EventGuestes_Select_Column {
-  /** column name */
-  EventId = 'eventId',
-  /** column name */
-  UserId = 'userId'
-}
-
-/** input type for updating data in table "eventGuestes" */
-export type EventGuestes_Set_Input = {
-  eventId?: Maybe<Scalars['uuid']>;
-  userId?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "eventGuestes" */
-export enum EventGuestes_Update_Column {
   /** column name */
   EventId = 'eventId',
   /** column name */
@@ -491,12 +380,6 @@ export type Event_Aggregate_Order_By = {
   min?: Maybe<Event_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "event" */
-export type Event_Arr_Rel_Insert_Input = {
-  data: Array<Event_Insert_Input>;
-  on_conflict?: Maybe<Event_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "event". All fields are combined with a logical 'AND'. */
 export type Event_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Event_Bool_Exp>>>;
@@ -505,6 +388,7 @@ export type Event_Bool_Exp = {
   audiences?: Maybe<EventAudiences_Bool_Exp>;
   code?: Maybe<String_Comparison_Exp>;
   createdAt?: Maybe<Timestamp_Comparison_Exp>;
+  deletedAt?: Maybe<Timestamp_Comparison_Exp>;
   endAt?: Maybe<Timestamp_Comparison_Exp>;
   guestes?: Maybe<EventGuestes_Bool_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
@@ -517,36 +401,12 @@ export type Event_Bool_Exp = {
   updatedAt?: Maybe<Timestamp_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "event" */
-export enum Event_Constraint {
-  /** unique or primary key constraint */
-  Pk_30c2f3bbaf6d34a55f8ae6e4614 = 'PK_30c2f3bbaf6d34a55f8ae6e4614',
-  /** unique or primary key constraint */
-  Uq_58f788de12432757f10c683bbd6 = 'UQ_58f788de12432757f10c683bbd6'
-}
-
-/** input type for inserting data into table "event" */
-export type Event_Insert_Input = {
-  audiences?: Maybe<EventAudiences_Arr_Rel_Insert_Input>;
-  code?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamp']>;
-  endAt?: Maybe<Scalars['timestamp']>;
-  guestes?: Maybe<EventGuestes_Arr_Rel_Insert_Input>;
-  id?: Maybe<Scalars['uuid']>;
-  moderation?: Maybe<Scalars['Boolean']>;
-  name?: Maybe<Scalars['String']>;
-  owner?: Maybe<User_Obj_Rel_Insert_Input>;
-  ownerId?: Maybe<Scalars['uuid']>;
-  questions?: Maybe<Question_Arr_Rel_Insert_Input>;
-  startAt?: Maybe<Scalars['timestamp']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-};
-
 /** aggregate max on columns */
 export type Event_Max_Fields = {
   __typename?: 'event_max_fields';
   code?: Maybe<Scalars['String']>;
   createdAt?: Maybe<Scalars['timestamp']>;
+  deletedAt?: Maybe<Scalars['timestamp']>;
   endAt?: Maybe<Scalars['timestamp']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
@@ -559,6 +419,7 @@ export type Event_Max_Fields = {
 export type Event_Max_Order_By = {
   code?: Maybe<Order_By>;
   createdAt?: Maybe<Order_By>;
+  deletedAt?: Maybe<Order_By>;
   endAt?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
@@ -572,6 +433,7 @@ export type Event_Min_Fields = {
   __typename?: 'event_min_fields';
   code?: Maybe<Scalars['String']>;
   createdAt?: Maybe<Scalars['timestamp']>;
+  deletedAt?: Maybe<Scalars['timestamp']>;
   endAt?: Maybe<Scalars['timestamp']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
@@ -584,6 +446,7 @@ export type Event_Min_Fields = {
 export type Event_Min_Order_By = {
   code?: Maybe<Order_By>;
   createdAt?: Maybe<Order_By>;
+  deletedAt?: Maybe<Order_By>;
   endAt?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
@@ -592,33 +455,12 @@ export type Event_Min_Order_By = {
   updatedAt?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "event" */
-export type Event_Mutation_Response = {
-  __typename?: 'event_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<Event>;
-};
-
-/** input type for inserting object relation for remote table "event" */
-export type Event_Obj_Rel_Insert_Input = {
-  data: Event_Insert_Input;
-  on_conflict?: Maybe<Event_On_Conflict>;
-};
-
-/** on conflict condition type for table "event" */
-export type Event_On_Conflict = {
-  constraint: Event_Constraint;
-  update_columns: Array<Event_Update_Column>;
-  where?: Maybe<Event_Bool_Exp>;
-};
-
 /** ordering options when selecting data from "event" */
 export type Event_Order_By = {
   audiences_aggregate?: Maybe<EventAudiences_Aggregate_Order_By>;
   code?: Maybe<Order_By>;
   createdAt?: Maybe<Order_By>;
+  deletedAt?: Maybe<Order_By>;
   endAt?: Maybe<Order_By>;
   guestes_aggregate?: Maybe<EventGuestes_Aggregate_Order_By>;
   id?: Maybe<Order_By>;
@@ -643,40 +485,7 @@ export enum Event_Select_Column {
   /** column name */
   CreatedAt = 'createdAt',
   /** column name */
-  EndAt = 'endAt',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Moderation = 'moderation',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  OwnerId = 'ownerId',
-  /** column name */
-  StartAt = 'startAt',
-  /** column name */
-  UpdatedAt = 'updatedAt'
-}
-
-/** input type for updating data in table "event" */
-export type Event_Set_Input = {
-  code?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamp']>;
-  endAt?: Maybe<Scalars['timestamp']>;
-  id?: Maybe<Scalars['uuid']>;
-  moderation?: Maybe<Scalars['Boolean']>;
-  name?: Maybe<Scalars['String']>;
-  ownerId?: Maybe<Scalars['uuid']>;
-  startAt?: Maybe<Scalars['timestamp']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-};
-
-/** update columns of table "event" */
-export enum Event_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'createdAt',
+  DeletedAt = 'deletedAt',
   /** column name */
   EndAt = 'endAt',
   /** column name */
@@ -692,589 +501,6 @@ export enum Event_Update_Column {
   /** column name */
   UpdatedAt = 'updatedAt'
 }
-
-/** mutation root */
-export type Mutation_Root = {
-  __typename?: 'mutation_root';
-  /** delete data from the table: "event" */
-  delete_event?: Maybe<Event_Mutation_Response>;
-  /** delete data from the table: "eventAudiences" */
-  delete_eventAudiences?: Maybe<EventAudiences_Mutation_Response>;
-  /** delete single row from the table: "eventAudiences" */
-  delete_eventAudiences_by_pk?: Maybe<EventAudiences>;
-  /** delete data from the table: "eventGuestes" */
-  delete_eventGuestes?: Maybe<EventGuestes_Mutation_Response>;
-  /** delete single row from the table: "eventGuestes" */
-  delete_eventGuestes_by_pk?: Maybe<EventGuestes>;
-  /** delete single row from the table: "event" */
-  delete_event_by_pk?: Maybe<Event>;
-  /** delete data from the table: "question" */
-  delete_question?: Maybe<Question_Mutation_Response>;
-  /** delete single row from the table: "question" */
-  delete_question_by_pk?: Maybe<Question>;
-  /** delete data from the table: "question_query_meta" */
-  delete_question_query_meta?: Maybe<Question_Query_Meta_Mutation_Response>;
-  /** delete single row from the table: "question_query_meta" */
-  delete_question_query_meta_by_pk?: Maybe<Question_Query_Meta>;
-  /** delete data from the table: "reply" */
-  delete_reply?: Maybe<Reply_Mutation_Response>;
-  /** delete single row from the table: "reply" */
-  delete_reply_by_pk?: Maybe<Reply>;
-  /** delete data from the table: "reply_query_meta" */
-  delete_reply_query_meta?: Maybe<Reply_Query_Meta_Mutation_Response>;
-  /** delete single row from the table: "reply_query_meta" */
-  delete_reply_query_meta_by_pk?: Maybe<Reply_Query_Meta>;
-  /** delete data from the table: "role" */
-  delete_role?: Maybe<Role_Mutation_Response>;
-  /** delete single row from the table: "role" */
-  delete_role_by_pk?: Maybe<Role>;
-  /** delete data from the table: "user" */
-  delete_user?: Maybe<User_Mutation_Response>;
-  /** delete data from the table: "userRoles" */
-  delete_userRoles?: Maybe<UserRoles_Mutation_Response>;
-  /** delete single row from the table: "userRoles" */
-  delete_userRoles_by_pk?: Maybe<UserRoles>;
-  /** delete single row from the table: "user" */
-  delete_user_by_pk?: Maybe<User>;
-  /** delete data from the table: "usersVoteUpQuestions" */
-  delete_usersVoteUpQuestions?: Maybe<UsersVoteUpQuestions_Mutation_Response>;
-  /** delete single row from the table: "usersVoteUpQuestions" */
-  delete_usersVoteUpQuestions_by_pk?: Maybe<UsersVoteUpQuestions>;
-  /** insert data into the table: "event" */
-  insert_event?: Maybe<Event_Mutation_Response>;
-  /** insert data into the table: "eventAudiences" */
-  insert_eventAudiences?: Maybe<EventAudiences_Mutation_Response>;
-  /** insert a single row into the table: "eventAudiences" */
-  insert_eventAudiences_one?: Maybe<EventAudiences>;
-  /** insert data into the table: "eventGuestes" */
-  insert_eventGuestes?: Maybe<EventGuestes_Mutation_Response>;
-  /** insert a single row into the table: "eventGuestes" */
-  insert_eventGuestes_one?: Maybe<EventGuestes>;
-  /** insert a single row into the table: "event" */
-  insert_event_one?: Maybe<Event>;
-  /** insert data into the table: "question" */
-  insert_question?: Maybe<Question_Mutation_Response>;
-  /** insert a single row into the table: "question" */
-  insert_question_one?: Maybe<Question>;
-  /** insert data into the table: "question_query_meta" */
-  insert_question_query_meta?: Maybe<Question_Query_Meta_Mutation_Response>;
-  /** insert a single row into the table: "question_query_meta" */
-  insert_question_query_meta_one?: Maybe<Question_Query_Meta>;
-  /** insert data into the table: "reply" */
-  insert_reply?: Maybe<Reply_Mutation_Response>;
-  /** insert a single row into the table: "reply" */
-  insert_reply_one?: Maybe<Reply>;
-  /** insert data into the table: "reply_query_meta" */
-  insert_reply_query_meta?: Maybe<Reply_Query_Meta_Mutation_Response>;
-  /** insert a single row into the table: "reply_query_meta" */
-  insert_reply_query_meta_one?: Maybe<Reply_Query_Meta>;
-  /** insert data into the table: "role" */
-  insert_role?: Maybe<Role_Mutation_Response>;
-  /** insert a single row into the table: "role" */
-  insert_role_one?: Maybe<Role>;
-  /** insert data into the table: "user" */
-  insert_user?: Maybe<User_Mutation_Response>;
-  /** insert data into the table: "userRoles" */
-  insert_userRoles?: Maybe<UserRoles_Mutation_Response>;
-  /** insert a single row into the table: "userRoles" */
-  insert_userRoles_one?: Maybe<UserRoles>;
-  /** insert a single row into the table: "user" */
-  insert_user_one?: Maybe<User>;
-  /** insert data into the table: "usersVoteUpQuestions" */
-  insert_usersVoteUpQuestions?: Maybe<UsersVoteUpQuestions_Mutation_Response>;
-  /** insert a single row into the table: "usersVoteUpQuestions" */
-  insert_usersVoteUpQuestions_one?: Maybe<UsersVoteUpQuestions>;
-  /** update data of the table: "event" */
-  update_event?: Maybe<Event_Mutation_Response>;
-  /** update data of the table: "eventAudiences" */
-  update_eventAudiences?: Maybe<EventAudiences_Mutation_Response>;
-  /** update single row of the table: "eventAudiences" */
-  update_eventAudiences_by_pk?: Maybe<EventAudiences>;
-  /** update data of the table: "eventGuestes" */
-  update_eventGuestes?: Maybe<EventGuestes_Mutation_Response>;
-  /** update single row of the table: "eventGuestes" */
-  update_eventGuestes_by_pk?: Maybe<EventGuestes>;
-  /** update single row of the table: "event" */
-  update_event_by_pk?: Maybe<Event>;
-  /** update data of the table: "question" */
-  update_question?: Maybe<Question_Mutation_Response>;
-  /** update single row of the table: "question" */
-  update_question_by_pk?: Maybe<Question>;
-  /** update data of the table: "question_query_meta" */
-  update_question_query_meta?: Maybe<Question_Query_Meta_Mutation_Response>;
-  /** update single row of the table: "question_query_meta" */
-  update_question_query_meta_by_pk?: Maybe<Question_Query_Meta>;
-  /** update data of the table: "reply" */
-  update_reply?: Maybe<Reply_Mutation_Response>;
-  /** update single row of the table: "reply" */
-  update_reply_by_pk?: Maybe<Reply>;
-  /** update data of the table: "reply_query_meta" */
-  update_reply_query_meta?: Maybe<Reply_Query_Meta_Mutation_Response>;
-  /** update single row of the table: "reply_query_meta" */
-  update_reply_query_meta_by_pk?: Maybe<Reply_Query_Meta>;
-  /** update data of the table: "role" */
-  update_role?: Maybe<Role_Mutation_Response>;
-  /** update single row of the table: "role" */
-  update_role_by_pk?: Maybe<Role>;
-  /** update data of the table: "user" */
-  update_user?: Maybe<User_Mutation_Response>;
-  /** update data of the table: "userRoles" */
-  update_userRoles?: Maybe<UserRoles_Mutation_Response>;
-  /** update single row of the table: "userRoles" */
-  update_userRoles_by_pk?: Maybe<UserRoles>;
-  /** update single row of the table: "user" */
-  update_user_by_pk?: Maybe<User>;
-  /** update data of the table: "usersVoteUpQuestions" */
-  update_usersVoteUpQuestions?: Maybe<UsersVoteUpQuestions_Mutation_Response>;
-  /** update single row of the table: "usersVoteUpQuestions" */
-  update_usersVoteUpQuestions_by_pk?: Maybe<UsersVoteUpQuestions>;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_EventArgs = {
-  where: Event_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_EventAudiencesArgs = {
-  where: EventAudiences_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_EventAudiences_By_PkArgs = {
-  eventId: Scalars['uuid'];
-  userId: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_EventGuestesArgs = {
-  where: EventGuestes_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_EventGuestes_By_PkArgs = {
-  eventId: Scalars['uuid'];
-  userId: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_Event_By_PkArgs = {
-  id: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_QuestionArgs = {
-  where: Question_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_Question_By_PkArgs = {
-  id: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_Question_Query_MetaArgs = {
-  where: Question_Query_Meta_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_Question_Query_Meta_By_PkArgs = {
-  id: Scalars['String'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_ReplyArgs = {
-  where: Reply_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_Reply_By_PkArgs = {
-  id: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_Reply_Query_MetaArgs = {
-  where: Reply_Query_Meta_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_Reply_Query_Meta_By_PkArgs = {
-  id: Scalars['String'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_RoleArgs = {
-  where: Role_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_Role_By_PkArgs = {
-  id: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_UserArgs = {
-  where: User_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_UserRolesArgs = {
-  where: UserRoles_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_UserRoles_By_PkArgs = {
-  roleId: Scalars['uuid'];
-  userId: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_User_By_PkArgs = {
-  id: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_UsersVoteUpQuestionsArgs = {
-  where: UsersVoteUpQuestions_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootDelete_UsersVoteUpQuestions_By_PkArgs = {
-  questionId: Scalars['uuid'];
-  userId: Scalars['uuid'];
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_EventArgs = {
-  objects: Array<Event_Insert_Input>;
-  on_conflict?: Maybe<Event_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_EventAudiencesArgs = {
-  objects: Array<EventAudiences_Insert_Input>;
-  on_conflict?: Maybe<EventAudiences_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_EventAudiences_OneArgs = {
-  object: EventAudiences_Insert_Input;
-  on_conflict?: Maybe<EventAudiences_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_EventGuestesArgs = {
-  objects: Array<EventGuestes_Insert_Input>;
-  on_conflict?: Maybe<EventGuestes_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_EventGuestes_OneArgs = {
-  object: EventGuestes_Insert_Input;
-  on_conflict?: Maybe<EventGuestes_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Event_OneArgs = {
-  object: Event_Insert_Input;
-  on_conflict?: Maybe<Event_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_QuestionArgs = {
-  objects: Array<Question_Insert_Input>;
-  on_conflict?: Maybe<Question_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Question_OneArgs = {
-  object: Question_Insert_Input;
-  on_conflict?: Maybe<Question_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Question_Query_MetaArgs = {
-  objects: Array<Question_Query_Meta_Insert_Input>;
-  on_conflict?: Maybe<Question_Query_Meta_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Question_Query_Meta_OneArgs = {
-  object: Question_Query_Meta_Insert_Input;
-  on_conflict?: Maybe<Question_Query_Meta_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_ReplyArgs = {
-  objects: Array<Reply_Insert_Input>;
-  on_conflict?: Maybe<Reply_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Reply_OneArgs = {
-  object: Reply_Insert_Input;
-  on_conflict?: Maybe<Reply_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Reply_Query_MetaArgs = {
-  objects: Array<Reply_Query_Meta_Insert_Input>;
-  on_conflict?: Maybe<Reply_Query_Meta_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Reply_Query_Meta_OneArgs = {
-  object: Reply_Query_Meta_Insert_Input;
-  on_conflict?: Maybe<Reply_Query_Meta_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_RoleArgs = {
-  objects: Array<Role_Insert_Input>;
-  on_conflict?: Maybe<Role_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Role_OneArgs = {
-  object: Role_Insert_Input;
-  on_conflict?: Maybe<Role_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_UserArgs = {
-  objects: Array<User_Insert_Input>;
-  on_conflict?: Maybe<User_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_UserRolesArgs = {
-  objects: Array<UserRoles_Insert_Input>;
-  on_conflict?: Maybe<UserRoles_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_UserRoles_OneArgs = {
-  object: UserRoles_Insert_Input;
-  on_conflict?: Maybe<UserRoles_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_User_OneArgs = {
-  object: User_Insert_Input;
-  on_conflict?: Maybe<User_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_UsersVoteUpQuestionsArgs = {
-  objects: Array<UsersVoteUpQuestions_Insert_Input>;
-  on_conflict?: Maybe<UsersVoteUpQuestions_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_UsersVoteUpQuestions_OneArgs = {
-  object: UsersVoteUpQuestions_Insert_Input;
-  on_conflict?: Maybe<UsersVoteUpQuestions_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_EventArgs = {
-  _set?: Maybe<Event_Set_Input>;
-  where: Event_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_EventAudiencesArgs = {
-  _set?: Maybe<EventAudiences_Set_Input>;
-  where: EventAudiences_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_EventAudiences_By_PkArgs = {
-  _set?: Maybe<EventAudiences_Set_Input>;
-  pk_columns: EventAudiences_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_EventGuestesArgs = {
-  _set?: Maybe<EventGuestes_Set_Input>;
-  where: EventGuestes_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_EventGuestes_By_PkArgs = {
-  _set?: Maybe<EventGuestes_Set_Input>;
-  pk_columns: EventGuestes_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Event_By_PkArgs = {
-  _set?: Maybe<Event_Set_Input>;
-  pk_columns: Event_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_QuestionArgs = {
-  _inc?: Maybe<Question_Inc_Input>;
-  _set?: Maybe<Question_Set_Input>;
-  where: Question_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Question_By_PkArgs = {
-  _inc?: Maybe<Question_Inc_Input>;
-  _set?: Maybe<Question_Set_Input>;
-  pk_columns: Question_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Question_Query_MetaArgs = {
-  _set?: Maybe<Question_Query_Meta_Set_Input>;
-  where: Question_Query_Meta_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Question_Query_Meta_By_PkArgs = {
-  _set?: Maybe<Question_Query_Meta_Set_Input>;
-  pk_columns: Question_Query_Meta_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_ReplyArgs = {
-  _set?: Maybe<Reply_Set_Input>;
-  where: Reply_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Reply_By_PkArgs = {
-  _set?: Maybe<Reply_Set_Input>;
-  pk_columns: Reply_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Reply_Query_MetaArgs = {
-  _set?: Maybe<Reply_Query_Meta_Set_Input>;
-  where: Reply_Query_Meta_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Reply_Query_Meta_By_PkArgs = {
-  _set?: Maybe<Reply_Query_Meta_Set_Input>;
-  pk_columns: Reply_Query_Meta_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_RoleArgs = {
-  _set?: Maybe<Role_Set_Input>;
-  where: Role_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Role_By_PkArgs = {
-  _set?: Maybe<Role_Set_Input>;
-  pk_columns: Role_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_UserArgs = {
-  _set?: Maybe<User_Set_Input>;
-  where: User_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_UserRolesArgs = {
-  _set?: Maybe<UserRoles_Set_Input>;
-  where: UserRoles_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_UserRoles_By_PkArgs = {
-  _set?: Maybe<UserRoles_Set_Input>;
-  pk_columns: UserRoles_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_User_By_PkArgs = {
-  _set?: Maybe<User_Set_Input>;
-  pk_columns: User_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_UsersVoteUpQuestionsArgs = {
-  _set?: Maybe<UsersVoteUpQuestions_Set_Input>;
-  where: UsersVoteUpQuestions_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_UsersVoteUpQuestions_By_PkArgs = {
-  _set?: Maybe<UsersVoteUpQuestions_Set_Input>;
-  pk_columns: UsersVoteUpQuestions_Pk_Columns_Input;
-};
 
 /** column ordering options */
 export enum Order_By {
@@ -1768,12 +994,6 @@ export type Question_Aggregate_Order_By = {
   variance?: Maybe<Question_Variance_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "question" */
-export type Question_Arr_Rel_Insert_Input = {
-  data: Array<Question_Insert_Input>;
-  on_conflict?: Maybe<Question_On_Conflict>;
-};
-
 /** aggregate avg on columns */
 export type Question_Avg_Fields = {
   __typename?: 'question_avg_fields';
@@ -1809,39 +1029,6 @@ export type Question_Bool_Exp = {
   updatedAt?: Maybe<Timestamp_Comparison_Exp>;
   voteUpCount?: Maybe<Int_Comparison_Exp>;
   voteUpUsers?: Maybe<UsersVoteUpQuestions_Bool_Exp>;
-};
-
-/** unique or primary key constraints on table "question" */
-export enum Question_Constraint {
-  /** unique or primary key constraint */
-  Pk_21e5786aa0ea704ae185a79b2d5 = 'PK_21e5786aa0ea704ae185a79b2d5'
-}
-
-/** input type for incrementing integer column in table "question" */
-export type Question_Inc_Input = {
-  replyCount?: Maybe<Scalars['Int']>;
-  voteUpCount?: Maybe<Scalars['Int']>;
-};
-
-/** input type for inserting data into table "question" */
-export type Question_Insert_Input = {
-  anonymous?: Maybe<Scalars['Boolean']>;
-  author?: Maybe<User_Obj_Rel_Insert_Input>;
-  authorId?: Maybe<Scalars['uuid']>;
-  content?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamp']>;
-  deletedAt?: Maybe<Scalars['timestamp']>;
-  event?: Maybe<Event_Obj_Rel_Insert_Input>;
-  eventId?: Maybe<Scalars['uuid']>;
-  id?: Maybe<Scalars['uuid']>;
-  replies?: Maybe<Reply_Arr_Rel_Insert_Input>;
-  replyCount?: Maybe<Scalars['Int']>;
-  reviewStatus?: Maybe<Scalars['question_reviewstatus_enum']>;
-  star?: Maybe<Scalars['Boolean']>;
-  top?: Maybe<Scalars['Boolean']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-  voteUpCount?: Maybe<Scalars['Int']>;
-  voteUpUsers?: Maybe<UsersVoteUpQuestions_Arr_Rel_Insert_Input>;
 };
 
 /** aggregate max on columns */
@@ -1896,28 +1083,6 @@ export type Question_Min_Order_By = {
   replyCount?: Maybe<Order_By>;
   updatedAt?: Maybe<Order_By>;
   voteUpCount?: Maybe<Order_By>;
-};
-
-/** response of any mutation on the table "question" */
-export type Question_Mutation_Response = {
-  __typename?: 'question_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<Question>;
-};
-
-/** input type for inserting object relation for remote table "question" */
-export type Question_Obj_Rel_Insert_Input = {
-  data: Question_Insert_Input;
-  on_conflict?: Maybe<Question_On_Conflict>;
-};
-
-/** on conflict condition type for table "question" */
-export type Question_On_Conflict = {
-  constraint: Question_Constraint;
-  update_columns: Array<Question_Update_Column>;
-  where?: Maybe<Question_Bool_Exp>;
 };
 
 /** ordering options when selecting data from "question" */
@@ -1986,12 +1151,6 @@ export type Question_Query_Meta_Aggregate_Order_By = {
   min?: Maybe<Question_Query_Meta_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "question_query_meta" */
-export type Question_Query_Meta_Arr_Rel_Insert_Input = {
-  data: Array<Question_Query_Meta_Insert_Input>;
-  on_conflict?: Maybe<Question_Query_Meta_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "question_query_meta". All fields are combined with a logical 'AND'. */
 export type Question_Query_Meta_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Question_Query_Meta_Bool_Exp>>>;
@@ -2002,23 +1161,6 @@ export type Question_Query_Meta_Bool_Exp = {
   list?: Maybe<String_Comparison_Exp>;
   query?: Maybe<String_Comparison_Exp>;
   updatedAt?: Maybe<Timestamp_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "question_query_meta" */
-export enum Question_Query_Meta_Constraint {
-  /** unique or primary key constraint */
-  Pk_0ba2b6c86bad7d65fb76bef56eb = 'PK_0ba2b6c86bad7d65fb76bef56eb',
-  /** unique or primary key constraint */
-  Uq_30cd2629510869b04743ec1e5b4 = 'UQ_30cd2629510869b04743ec1e5b4'
-}
-
-/** input type for inserting data into table "question_query_meta" */
-export type Question_Query_Meta_Insert_Input = {
-  createdAt?: Maybe<Scalars['timestamp']>;
-  id?: Maybe<Scalars['String']>;
-  list?: Maybe<Scalars['String']>;
-  query?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
 };
 
 /** aggregate max on columns */
@@ -2059,28 +1201,6 @@ export type Question_Query_Meta_Min_Order_By = {
   updatedAt?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "question_query_meta" */
-export type Question_Query_Meta_Mutation_Response = {
-  __typename?: 'question_query_meta_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<Question_Query_Meta>;
-};
-
-/** input type for inserting object relation for remote table "question_query_meta" */
-export type Question_Query_Meta_Obj_Rel_Insert_Input = {
-  data: Question_Query_Meta_Insert_Input;
-  on_conflict?: Maybe<Question_Query_Meta_On_Conflict>;
-};
-
-/** on conflict condition type for table "question_query_meta" */
-export type Question_Query_Meta_On_Conflict = {
-  constraint: Question_Query_Meta_Constraint;
-  update_columns: Array<Question_Query_Meta_Update_Column>;
-  where?: Maybe<Question_Query_Meta_Bool_Exp>;
-};
-
 /** ordering options when selecting data from "question_query_meta" */
 export type Question_Query_Meta_Order_By = {
   createdAt?: Maybe<Order_By>;
@@ -2098,29 +1218,6 @@ export type Question_Query_Meta_Pk_Columns_Input = {
 
 /** select columns of table "question_query_meta" */
 export enum Question_Query_Meta_Select_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  List = 'list',
-  /** column name */
-  Query = 'query',
-  /** column name */
-  UpdatedAt = 'updatedAt'
-}
-
-/** input type for updating data in table "question_query_meta" */
-export type Question_Query_Meta_Set_Input = {
-  createdAt?: Maybe<Scalars['timestamp']>;
-  id?: Maybe<Scalars['String']>;
-  list?: Maybe<Scalars['String']>;
-  query?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-};
-
-/** update columns of table "question_query_meta" */
-export enum Question_Query_Meta_Update_Column {
   /** column name */
   CreatedAt = 'createdAt',
   /** column name */
@@ -2177,23 +1274,6 @@ export enum Question_Select_Column {
   VoteUpCount = 'voteUpCount'
 }
 
-/** input type for updating data in table "question" */
-export type Question_Set_Input = {
-  anonymous?: Maybe<Scalars['Boolean']>;
-  authorId?: Maybe<Scalars['uuid']>;
-  content?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamp']>;
-  deletedAt?: Maybe<Scalars['timestamp']>;
-  eventId?: Maybe<Scalars['uuid']>;
-  id?: Maybe<Scalars['uuid']>;
-  replyCount?: Maybe<Scalars['Int']>;
-  reviewStatus?: Maybe<Scalars['question_reviewstatus_enum']>;
-  star?: Maybe<Scalars['Boolean']>;
-  top?: Maybe<Scalars['Boolean']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-  voteUpCount?: Maybe<Scalars['Int']>;
-};
-
 /** aggregate stddev on columns */
 export type Question_Stddev_Fields = {
   __typename?: 'question_stddev_fields';
@@ -2245,36 +1325,6 @@ export type Question_Sum_Order_By = {
   replyCount?: Maybe<Order_By>;
   voteUpCount?: Maybe<Order_By>;
 };
-
-/** update columns of table "question" */
-export enum Question_Update_Column {
-  /** column name */
-  Anonymous = 'anonymous',
-  /** column name */
-  AuthorId = 'authorId',
-  /** column name */
-  Content = 'content',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  EventId = 'eventId',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  ReplyCount = 'replyCount',
-  /** column name */
-  ReviewStatus = 'reviewStatus',
-  /** column name */
-  Star = 'star',
-  /** column name */
-  Top = 'top',
-  /** column name */
-  UpdatedAt = 'updatedAt',
-  /** column name */
-  VoteUpCount = 'voteUpCount'
-}
 
 /** aggregate var_pop on columns */
 export type Question_Var_Pop_Fields = {
@@ -2364,12 +1414,6 @@ export type Reply_Aggregate_Order_By = {
   min?: Maybe<Reply_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "reply" */
-export type Reply_Arr_Rel_Insert_Input = {
-  data: Array<Reply_Insert_Input>;
-  on_conflict?: Maybe<Reply_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "reply". All fields are combined with a logical 'AND'. */
 export type Reply_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Reply_Bool_Exp>>>;
@@ -2387,28 +1431,6 @@ export type Reply_Bool_Exp = {
   questionId?: Maybe<Uuid_Comparison_Exp>;
   reviewStatus?: Maybe<Reply_Reviewstatus_Enum_Comparison_Exp>;
   updatedAt?: Maybe<Timestamp_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "reply" */
-export enum Reply_Constraint {
-  /** unique or primary key constraint */
-  Pk_94fa9017051b40a71e000a2aff9 = 'PK_94fa9017051b40a71e000a2aff9'
-}
-
-/** input type for inserting data into table "reply" */
-export type Reply_Insert_Input = {
-  anonymous?: Maybe<Scalars['Boolean']>;
-  author?: Maybe<User_Obj_Rel_Insert_Input>;
-  authorId?: Maybe<Scalars['uuid']>;
-  content?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamp']>;
-  deletedAt?: Maybe<Scalars['timestamp']>;
-  id?: Maybe<Scalars['uuid']>;
-  isModerator?: Maybe<Scalars['Boolean']>;
-  question?: Maybe<Question_Obj_Rel_Insert_Input>;
-  questionId?: Maybe<Scalars['uuid']>;
-  reviewStatus?: Maybe<Scalars['reply_reviewstatus_enum']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
 };
 
 /** aggregate max on columns */
@@ -2455,28 +1477,6 @@ export type Reply_Min_Order_By = {
   id?: Maybe<Order_By>;
   questionId?: Maybe<Order_By>;
   updatedAt?: Maybe<Order_By>;
-};
-
-/** response of any mutation on the table "reply" */
-export type Reply_Mutation_Response = {
-  __typename?: 'reply_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<Reply>;
-};
-
-/** input type for inserting object relation for remote table "reply" */
-export type Reply_Obj_Rel_Insert_Input = {
-  data: Reply_Insert_Input;
-  on_conflict?: Maybe<Reply_On_Conflict>;
-};
-
-/** on conflict condition type for table "reply" */
-export type Reply_On_Conflict = {
-  constraint: Reply_Constraint;
-  update_columns: Array<Reply_Update_Column>;
-  where?: Maybe<Reply_Bool_Exp>;
 };
 
 /** ordering options when selecting data from "reply" */
@@ -2540,12 +1540,6 @@ export type Reply_Query_Meta_Aggregate_Order_By = {
   min?: Maybe<Reply_Query_Meta_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "reply_query_meta" */
-export type Reply_Query_Meta_Arr_Rel_Insert_Input = {
-  data: Array<Reply_Query_Meta_Insert_Input>;
-  on_conflict?: Maybe<Reply_Query_Meta_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "reply_query_meta". All fields are combined with a logical 'AND'. */
 export type Reply_Query_Meta_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Reply_Query_Meta_Bool_Exp>>>;
@@ -2556,23 +1550,6 @@ export type Reply_Query_Meta_Bool_Exp = {
   list?: Maybe<String_Comparison_Exp>;
   query?: Maybe<String_Comparison_Exp>;
   updatedAt?: Maybe<Timestamp_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "reply_query_meta" */
-export enum Reply_Query_Meta_Constraint {
-  /** unique or primary key constraint */
-  PkBcfa2d1d32c5552149c34b3be5a = 'PK_bcfa2d1d32c5552149c34b3be5a',
-  /** unique or primary key constraint */
-  Uq_57e5079ec587690d2b27262b2cc = 'UQ_57e5079ec587690d2b27262b2cc'
-}
-
-/** input type for inserting data into table "reply_query_meta" */
-export type Reply_Query_Meta_Insert_Input = {
-  createdAt?: Maybe<Scalars['timestamp']>;
-  id?: Maybe<Scalars['String']>;
-  list?: Maybe<Scalars['String']>;
-  query?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
 };
 
 /** aggregate max on columns */
@@ -2613,28 +1590,6 @@ export type Reply_Query_Meta_Min_Order_By = {
   updatedAt?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "reply_query_meta" */
-export type Reply_Query_Meta_Mutation_Response = {
-  __typename?: 'reply_query_meta_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<Reply_Query_Meta>;
-};
-
-/** input type for inserting object relation for remote table "reply_query_meta" */
-export type Reply_Query_Meta_Obj_Rel_Insert_Input = {
-  data: Reply_Query_Meta_Insert_Input;
-  on_conflict?: Maybe<Reply_Query_Meta_On_Conflict>;
-};
-
-/** on conflict condition type for table "reply_query_meta" */
-export type Reply_Query_Meta_On_Conflict = {
-  constraint: Reply_Query_Meta_Constraint;
-  update_columns: Array<Reply_Query_Meta_Update_Column>;
-  where?: Maybe<Reply_Query_Meta_Bool_Exp>;
-};
-
 /** ordering options when selecting data from "reply_query_meta" */
 export type Reply_Query_Meta_Order_By = {
   createdAt?: Maybe<Order_By>;
@@ -2664,29 +1619,6 @@ export enum Reply_Query_Meta_Select_Column {
   UpdatedAt = 'updatedAt'
 }
 
-/** input type for updating data in table "reply_query_meta" */
-export type Reply_Query_Meta_Set_Input = {
-  createdAt?: Maybe<Scalars['timestamp']>;
-  id?: Maybe<Scalars['String']>;
-  list?: Maybe<Scalars['String']>;
-  query?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-};
-
-/** update columns of table "reply_query_meta" */
-export enum Reply_Query_Meta_Update_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  List = 'list',
-  /** column name */
-  Query = 'query',
-  /** column name */
-  UpdatedAt = 'updatedAt'
-}
-
 
 /** expression to compare columns of type reply_reviewstatus_enum. All fields are combined with logical 'AND'. */
 export type Reply_Reviewstatus_Enum_Comparison_Exp = {
@@ -2703,44 +1635,6 @@ export type Reply_Reviewstatus_Enum_Comparison_Exp = {
 
 /** select columns of table "reply" */
 export enum Reply_Select_Column {
-  /** column name */
-  Anonymous = 'anonymous',
-  /** column name */
-  AuthorId = 'authorId',
-  /** column name */
-  Content = 'content',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  IsModerator = 'isModerator',
-  /** column name */
-  QuestionId = 'questionId',
-  /** column name */
-  ReviewStatus = 'reviewStatus',
-  /** column name */
-  UpdatedAt = 'updatedAt'
-}
-
-/** input type for updating data in table "reply" */
-export type Reply_Set_Input = {
-  anonymous?: Maybe<Scalars['Boolean']>;
-  authorId?: Maybe<Scalars['uuid']>;
-  content?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamp']>;
-  deletedAt?: Maybe<Scalars['timestamp']>;
-  id?: Maybe<Scalars['uuid']>;
-  isModerator?: Maybe<Scalars['Boolean']>;
-  questionId?: Maybe<Scalars['uuid']>;
-  reviewStatus?: Maybe<Scalars['reply_reviewstatus_enum']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-};
-
-/** update columns of table "reply" */
-export enum Reply_Update_Column {
   /** column name */
   Anonymous = 'anonymous',
   /** column name */
@@ -2826,12 +1720,6 @@ export type Role_Aggregate_Order_By = {
   min?: Maybe<Role_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "role" */
-export type Role_Arr_Rel_Insert_Input = {
-  data: Array<Role_Insert_Input>;
-  on_conflict?: Maybe<Role_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "role". All fields are combined with a logical 'AND'. */
 export type Role_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Role_Bool_Exp>>>;
@@ -2843,24 +1731,6 @@ export type Role_Bool_Exp = {
   name?: Maybe<Role_Name_Enum_Comparison_Exp>;
   updatedAt?: Maybe<Timestamp_Comparison_Exp>;
   users?: Maybe<UserRoles_Bool_Exp>;
-};
-
-/** unique or primary key constraints on table "role" */
-export enum Role_Constraint {
-  /** unique or primary key constraint */
-  PkB36bcfe02fc8de3c57a8b2391c2 = 'PK_b36bcfe02fc8de3c57a8b2391c2',
-  /** unique or primary key constraint */
-  UqAe4578dcaed5adff96595e61660 = 'UQ_ae4578dcaed5adff96595e61660'
-}
-
-/** input type for inserting data into table "role" */
-export type Role_Insert_Input = {
-  createdAt?: Maybe<Scalars['timestamp']>;
-  deletedAt?: Maybe<Scalars['timestamp']>;
-  id?: Maybe<Scalars['uuid']>;
-  name?: Maybe<Scalars['role_name_enum']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-  users?: Maybe<UserRoles_Arr_Rel_Insert_Input>;
 };
 
 /** aggregate max on columns */
@@ -2897,15 +1767,6 @@ export type Role_Min_Order_By = {
   updatedAt?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "role" */
-export type Role_Mutation_Response = {
-  __typename?: 'role_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<Role>;
-};
-
 
 /** expression to compare columns of type role_name_enum. All fields are combined with logical 'AND'. */
 export type Role_Name_Enum_Comparison_Exp = {
@@ -2918,19 +1779,6 @@ export type Role_Name_Enum_Comparison_Exp = {
   _lte?: Maybe<Scalars['role_name_enum']>;
   _neq?: Maybe<Scalars['role_name_enum']>;
   _nin?: Maybe<Array<Scalars['role_name_enum']>>;
-};
-
-/** input type for inserting object relation for remote table "role" */
-export type Role_Obj_Rel_Insert_Input = {
-  data: Role_Insert_Input;
-  on_conflict?: Maybe<Role_On_Conflict>;
-};
-
-/** on conflict condition type for table "role" */
-export type Role_On_Conflict = {
-  constraint: Role_Constraint;
-  update_columns: Array<Role_Update_Column>;
-  where?: Maybe<Role_Bool_Exp>;
 };
 
 /** ordering options when selecting data from "role" */
@@ -2950,29 +1798,6 @@ export type Role_Pk_Columns_Input = {
 
 /** select columns of table "role" */
 export enum Role_Select_Column {
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  UpdatedAt = 'updatedAt'
-}
-
-/** input type for updating data in table "role" */
-export type Role_Set_Input = {
-  createdAt?: Maybe<Scalars['timestamp']>;
-  deletedAt?: Maybe<Scalars['timestamp']>;
-  id?: Maybe<Scalars['uuid']>;
-  name?: Maybe<Scalars['role_name_enum']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-};
-
-/** update columns of table "role" */
-export enum Role_Update_Column {
   /** column name */
   CreatedAt = 'createdAt',
   /** column name */
@@ -3583,12 +2408,6 @@ export type UserRoles_Aggregate_Order_By = {
   min?: Maybe<UserRoles_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "userRoles" */
-export type UserRoles_Arr_Rel_Insert_Input = {
-  data: Array<UserRoles_Insert_Input>;
-  on_conflict?: Maybe<UserRoles_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "userRoles". All fields are combined with a logical 'AND'. */
 export type UserRoles_Bool_Exp = {
   _and?: Maybe<Array<Maybe<UserRoles_Bool_Exp>>>;
@@ -3598,20 +2417,6 @@ export type UserRoles_Bool_Exp = {
   roleId?: Maybe<Uuid_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   userId?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "userRoles" */
-export enum UserRoles_Constraint {
-  /** unique or primary key constraint */
-  Pk_046d21329e72c0aedd207bbcdb1 = 'PK_046d21329e72c0aedd207bbcdb1'
-}
-
-/** input type for inserting data into table "userRoles" */
-export type UserRoles_Insert_Input = {
-  role?: Maybe<Role_Obj_Rel_Insert_Input>;
-  roleId?: Maybe<Scalars['uuid']>;
-  user?: Maybe<User_Obj_Rel_Insert_Input>;
-  userId?: Maybe<Scalars['uuid']>;
 };
 
 /** aggregate max on columns */
@@ -3640,28 +2445,6 @@ export type UserRoles_Min_Order_By = {
   userId?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "userRoles" */
-export type UserRoles_Mutation_Response = {
-  __typename?: 'userRoles_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<UserRoles>;
-};
-
-/** input type for inserting object relation for remote table "userRoles" */
-export type UserRoles_Obj_Rel_Insert_Input = {
-  data: UserRoles_Insert_Input;
-  on_conflict?: Maybe<UserRoles_On_Conflict>;
-};
-
-/** on conflict condition type for table "userRoles" */
-export type UserRoles_On_Conflict = {
-  constraint: UserRoles_Constraint;
-  update_columns: Array<UserRoles_Update_Column>;
-  where?: Maybe<UserRoles_Bool_Exp>;
-};
-
 /** ordering options when selecting data from "userRoles" */
 export type UserRoles_Order_By = {
   role?: Maybe<Role_Order_By>;
@@ -3678,20 +2461,6 @@ export type UserRoles_Pk_Columns_Input = {
 
 /** select columns of table "userRoles" */
 export enum UserRoles_Select_Column {
-  /** column name */
-  RoleId = 'roleId',
-  /** column name */
-  UserId = 'userId'
-}
-
-/** input type for updating data in table "userRoles" */
-export type UserRoles_Set_Input = {
-  roleId?: Maybe<Scalars['uuid']>;
-  userId?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "userRoles" */
-export enum UserRoles_Update_Column {
   /** column name */
   RoleId = 'roleId',
   /** column name */
@@ -3727,12 +2496,6 @@ export type User_Aggregate_Order_By = {
   min?: Maybe<User_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "user" */
-export type User_Arr_Rel_Insert_Input = {
-  data: Array<User_Insert_Input>;
-  on_conflict?: Maybe<User_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "user". All fields are combined with a logical 'AND'. */
 export type User_Bool_Exp = {
   _and?: Maybe<Array<Maybe<User_Bool_Exp>>>;
@@ -3755,39 +2518,6 @@ export type User_Bool_Exp = {
   roles?: Maybe<UserRoles_Bool_Exp>;
   updatedAt?: Maybe<Timestamp_Comparison_Exp>;
   voteUpQuestions?: Maybe<UsersVoteUpQuestions_Bool_Exp>;
-};
-
-/** unique or primary key constraints on table "user" */
-export enum User_Constraint {
-  /** unique or primary key constraint */
-  PkCace4a159ff9f2512dd42373760 = 'PK_cace4a159ff9f2512dd42373760',
-  /** unique or primary key constraint */
-  UqB4036ca1a59b8e19708db3c0e68 = 'UQ_b4036ca1a59b8e19708db3c0e68',
-  /** unique or primary key constraint */
-  UqB613f025993be2d1e51ba4c2b5f = 'UQ_b613f025993be2d1e51ba4c2b5f',
-  /** unique or primary key constraint */
-  UqE12875dfb3b1d92d7d7c5377e22 = 'UQ_e12875dfb3b1d92d7d7c5377e22'
-}
-
-/** input type for inserting data into table "user" */
-export type User_Insert_Input = {
-  anonymous?: Maybe<Scalars['Boolean']>;
-  attendedEvents?: Maybe<EventAudiences_Arr_Rel_Insert_Input>;
-  avatar?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamp']>;
-  deletedAt?: Maybe<Scalars['timestamp']>;
-  email?: Maybe<Scalars['String']>;
-  events?: Maybe<Event_Arr_Rel_Insert_Input>;
-  fingerprint?: Maybe<Scalars['String']>;
-  guestEvents?: Maybe<EventGuestes_Arr_Rel_Insert_Input>;
-  id?: Maybe<Scalars['uuid']>;
-  name?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-  questions?: Maybe<Question_Arr_Rel_Insert_Input>;
-  replies?: Maybe<Reply_Arr_Rel_Insert_Input>;
-  roles?: Maybe<UserRoles_Arr_Rel_Insert_Input>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-  voteUpQuestions?: Maybe<UsersVoteUpQuestions_Arr_Rel_Insert_Input>;
 };
 
 /** aggregate max on columns */
@@ -3844,28 +2574,6 @@ export type User_Min_Order_By = {
   updatedAt?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "user" */
-export type User_Mutation_Response = {
-  __typename?: 'user_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<User>;
-};
-
-/** input type for inserting object relation for remote table "user" */
-export type User_Obj_Rel_Insert_Input = {
-  data: User_Insert_Input;
-  on_conflict?: Maybe<User_On_Conflict>;
-};
-
-/** on conflict condition type for table "user" */
-export type User_On_Conflict = {
-  constraint: User_Constraint;
-  update_columns: Array<User_Update_Column>;
-  where?: Maybe<User_Bool_Exp>;
-};
-
 /** ordering options when selecting data from "user" */
 export type User_Order_By = {
   anonymous?: Maybe<Order_By>;
@@ -3894,44 +2602,6 @@ export type User_Pk_Columns_Input = {
 
 /** select columns of table "user" */
 export enum User_Select_Column {
-  /** column name */
-  Anonymous = 'anonymous',
-  /** column name */
-  Avatar = 'avatar',
-  /** column name */
-  CreatedAt = 'createdAt',
-  /** column name */
-  DeletedAt = 'deletedAt',
-  /** column name */
-  Email = 'email',
-  /** column name */
-  Fingerprint = 'fingerprint',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  Password = 'password',
-  /** column name */
-  UpdatedAt = 'updatedAt'
-}
-
-/** input type for updating data in table "user" */
-export type User_Set_Input = {
-  anonymous?: Maybe<Scalars['Boolean']>;
-  avatar?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['timestamp']>;
-  deletedAt?: Maybe<Scalars['timestamp']>;
-  email?: Maybe<Scalars['String']>;
-  fingerprint?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['uuid']>;
-  name?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['timestamp']>;
-};
-
-/** update columns of table "user" */
-export enum User_Update_Column {
   /** column name */
   Anonymous = 'anonymous',
   /** column name */
@@ -3994,12 +2664,6 @@ export type UsersVoteUpQuestions_Aggregate_Order_By = {
   min?: Maybe<UsersVoteUpQuestions_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "usersVoteUpQuestions" */
-export type UsersVoteUpQuestions_Arr_Rel_Insert_Input = {
-  data: Array<UsersVoteUpQuestions_Insert_Input>;
-  on_conflict?: Maybe<UsersVoteUpQuestions_On_Conflict>;
-};
-
 /** Boolean expression to filter rows from the table "usersVoteUpQuestions". All fields are combined with a logical 'AND'. */
 export type UsersVoteUpQuestions_Bool_Exp = {
   _and?: Maybe<Array<Maybe<UsersVoteUpQuestions_Bool_Exp>>>;
@@ -4009,20 +2673,6 @@ export type UsersVoteUpQuestions_Bool_Exp = {
   questionId?: Maybe<Uuid_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   userId?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "usersVoteUpQuestions" */
-export enum UsersVoteUpQuestions_Constraint {
-  /** unique or primary key constraint */
-  Pk_81f8ce9de43c942f2e40405b245 = 'PK_81f8ce9de43c942f2e40405b245'
-}
-
-/** input type for inserting data into table "usersVoteUpQuestions" */
-export type UsersVoteUpQuestions_Insert_Input = {
-  question?: Maybe<Question_Obj_Rel_Insert_Input>;
-  questionId?: Maybe<Scalars['uuid']>;
-  user?: Maybe<User_Obj_Rel_Insert_Input>;
-  userId?: Maybe<Scalars['uuid']>;
 };
 
 /** aggregate max on columns */
@@ -4051,28 +2701,6 @@ export type UsersVoteUpQuestions_Min_Order_By = {
   userId?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "usersVoteUpQuestions" */
-export type UsersVoteUpQuestions_Mutation_Response = {
-  __typename?: 'usersVoteUpQuestions_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<UsersVoteUpQuestions>;
-};
-
-/** input type for inserting object relation for remote table "usersVoteUpQuestions" */
-export type UsersVoteUpQuestions_Obj_Rel_Insert_Input = {
-  data: UsersVoteUpQuestions_Insert_Input;
-  on_conflict?: Maybe<UsersVoteUpQuestions_On_Conflict>;
-};
-
-/** on conflict condition type for table "usersVoteUpQuestions" */
-export type UsersVoteUpQuestions_On_Conflict = {
-  constraint: UsersVoteUpQuestions_Constraint;
-  update_columns: Array<UsersVoteUpQuestions_Update_Column>;
-  where?: Maybe<UsersVoteUpQuestions_Bool_Exp>;
-};
-
 /** ordering options when selecting data from "usersVoteUpQuestions" */
 export type UsersVoteUpQuestions_Order_By = {
   question?: Maybe<Question_Order_By>;
@@ -4089,20 +2717,6 @@ export type UsersVoteUpQuestions_Pk_Columns_Input = {
 
 /** select columns of table "usersVoteUpQuestions" */
 export enum UsersVoteUpQuestions_Select_Column {
-  /** column name */
-  QuestionId = 'questionId',
-  /** column name */
-  UserId = 'userId'
-}
-
-/** input type for updating data in table "usersVoteUpQuestions" */
-export type UsersVoteUpQuestions_Set_Input = {
-  questionId?: Maybe<Scalars['uuid']>;
-  userId?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "usersVoteUpQuestions" */
-export enum UsersVoteUpQuestions_Update_Column {
   /** column name */
   QuestionId = 'questionId',
   /** column name */
