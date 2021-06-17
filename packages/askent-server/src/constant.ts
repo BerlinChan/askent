@@ -24,7 +24,7 @@ registerEnumType(ReviewStatus, {
 
 export enum RoleName {
   User = "User",
-  Guest = "Guest",
+  Audience = "Audience",
 }
 registerEnumType(RoleName, { name: "RoleName" });
 

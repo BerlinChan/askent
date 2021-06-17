@@ -27,6 +27,42 @@
         table:
           schema: public
           name: question
+  select_permissions:
+  - role: developer
+    permission:
+      columns:
+      - code
+      - createdAt
+      - deletedAt
+      - endAt
+      - id
+      - moderation
+      - name
+      - ownerId
+      - startAt
+      - updatedAt
+      filter: {}
+      allow_aggregations: true
+  - role: User
+    permission:
+      columns:
+      - id
+      - code
+      - name
+      - startAt
+      - endAt
+      - moderation
+      - createdAt
+      - updatedAt
+      - ownerId
+      filter:
+        _and:
+        - owner:
+            id:
+              _eq: x-hasura-user-id
+        - deletedAt:
+            _is_null: true
+      allow_aggregations: true
 - table:
     schema: public
     name: eventAudiences
@@ -37,6 +73,14 @@
   - name: user
     using:
       foreign_key_constraint_on: userId
+  select_permissions:
+  - role: developer
+    permission:
+      columns:
+      - eventId
+      - userId
+      filter: {}
+      allow_aggregations: true
 - table:
     schema: public
     name: eventGuestes
@@ -47,6 +91,14 @@
   - name: user
     using:
       foreign_key_constraint_on: userId
+  select_permissions:
+  - role: developer
+    permission:
+      columns:
+      - eventId
+      - userId
+      filter: {}
+      allow_aggregations: true
 - table:
     schema: public
     name: question
@@ -73,7 +125,7 @@
           schema: public
           name: usersVoteUpQuestions
   select_permissions:
-  - role: Guest
+  - role: Audience
     permission:
       columns:
       - anonymous
@@ -94,6 +146,24 @@
             _is_null: true
         - reviewStatus:
             _eq: Publish
+      allow_aggregations: true
+  - role: developer
+    permission:
+      columns:
+      - id
+      - content
+      - anonymous
+      - reviewStatus
+      - star
+      - top
+      - voteUpCount
+      - replyCount
+      - createdAt
+      - updatedAt
+      - deletedAt
+      - eventId
+      - authorId
+      filter: {}
       allow_aggregations: true
   - role: User
     permission:
@@ -125,6 +195,17 @@
 - table:
     schema: public
     name: question_query_meta
+  select_permissions:
+  - role: developer
+    permission:
+      columns:
+      - id
+      - query
+      - list
+      - createdAt
+      - updatedAt
+      filter: {}
+      allow_aggregations: true
 - table:
     schema: public
     name: reply
@@ -135,9 +216,58 @@
   - name: question
     using:
       foreign_key_constraint_on: questionId
+  select_permissions:
+  - role: developer
+    permission:
+      columns:
+      - id
+      - content
+      - reviewStatus
+      - isModerator
+      - anonymous
+      - createdAt
+      - updatedAt
+      - deletedAt
+      - questionId
+      - authorId
+      filter: {}
+      allow_aggregations: true
+  - role: User
+    permission:
+      columns:
+      - anonymous
+      - authorId
+      - content
+      - createdAt
+      - id
+      - isModerator
+      - questionId
+      - reviewStatus
+      - updatedAt
+      filter:
+        _and:
+        - question:
+            event:
+              owner:
+                id:
+                  _eq: x-hasura-user-id
+        - deletedAt:
+            _is_null: true
+      allow_aggregations: true
 - table:
     schema: public
     name: reply_query_meta
+  select_permissions:
+  - role: developer
+    permission:
+      columns:
+      - id
+      - query
+      - list
+      - createdAt
+      - updatedAt
+      filter: {}
+      allow_aggregations: true
 - table:
     schema: public
     name: role
@@ -149,6 +279,17 @@
         table:
           schema: public
           name: userRoles
+  select_permissions:
+  - role: developer
+    permission:
+      columns:
+      - id
+      - name
+      - createdAt
+      - updatedAt
+      - deletedAt
+      filter: {}
+      allow_aggregations: true
 - table:
     schema: public
     name: user
@@ -203,7 +344,7 @@
           schema: public
           name: usersVoteUpQuestions
   select_permissions:
-  - role: Guest
+  - role: Audience
     permission:
       columns:
       - anonymous
@@ -220,6 +361,21 @@
             _eq: x-hasura-user-id
         - deletedAt:
             _is_null: true
+  - role: developer
+    permission:
+      columns:
+      - id
+      - fingerprint
+      - email
+      - avatar
+      - password
+      - name
+      - anonymous
+      - createdAt
+      - updatedAt
+      - deletedAt
+      filter: {}
+      allow_aggregations: true
   - role: User
     permission:
       columns:
@@ -248,6 +404,14 @@
   - name: user
     using:
       foreign_key_constraint_on: userId
+  select_permissions:
+  - role: developer
+    permission:
+      columns:
+      - roleId
+      - userId
+      filter: {}
+      allow_aggregations: true
 - table:
     schema: public
     name: usersVoteUpQuestions
@@ -259,7 +423,7 @@
     using:
       foreign_key_constraint_on: userId
   select_permissions:
-  - role: Guest
+  - role: Audience
     permission:
       columns:
       - questionId
@@ -267,3 +431,10 @@
       filter:
         userId:
           _eq: x-hasura-user-id
+  - role: developer
+    permission:
+      columns:
+      - questionId
+      - userId
+      filter: {}
+      allow_aggregations: true

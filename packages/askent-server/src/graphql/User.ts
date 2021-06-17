@@ -167,7 +167,7 @@ export class UserResolver {
     @Arg("fingerprint") fingerprint: string
   ): Promise<AuthPayload> {
     let user = await this.userRepository.findOne({ fingerprint });
-    const roleNames: Array<RoleName> = [RoleName.Guest];
+    const roleNames: Array<RoleName> = [RoleName.Audience];
     if (!user) {
       const roles = await getRepository(RoleEntity).find({
         where: { name: In(roleNames) },
@@ -197,7 +197,7 @@ export class UserResolver {
     @Arg("password") password: string
   ): Promise<AuthPayload> {
     const hashedPassword = await hash(password, 10);
-    const roleNames: Array<RoleName> = [RoleName.User, RoleName.Guest];
+    const roleNames: Array<RoleName> = [RoleName.User, RoleName.Audience];
     const roles = await getRepository(RoleEntity).find({
       where: { name: In(roleNames) },
     });

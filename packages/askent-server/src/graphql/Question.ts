@@ -216,11 +216,11 @@ export class QuestionResolver {
     const { offset, limit } = pagination
     const { totalCount, list } = await findQuestionAndCountAll(
       input,
-      RoleName.Guest,
+      RoleName.Audience,
       userId,
     )
     const hash = await getQuestionQueryHash(
-      { ...input, userId, asRole: RoleName.Guest },
+      { ...input, userId, asRole: RoleName.Audience },
       list,
     )
 
@@ -641,7 +641,7 @@ export async function findQuestionAndCountAll(
       .getMany()
 
     return { totalCount, list }
-  } else if (asRole === RoleName.Guest) {
+  } else if (asRole === RoleName.Audience) {
     const options = [
       { top: true },
       { reviewStatus: ReviewStatus.Publish },
