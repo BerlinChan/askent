@@ -70,7 +70,6 @@ const MyQuestionsDialog: React.FC<Props> = ({
   useQuestionLiveQueryAudienceSubscription({
     skip: !open,
     variables: {
-      userId: userQueryResult.data?.me.id,
       where: {
         eventId: { _eq: id },
         reviewStatus: { _eq: QuestionFilter.Publish },

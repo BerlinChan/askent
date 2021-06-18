@@ -36,7 +36,6 @@ const LiveQuestions: React.FC<Props> = ({
     QuestionOrder.Popular
   );
   const questionQueryInput: QuestionLiveQueryAudienceSubscriptionVariables = {
-    userId: userQueryResult.data?.me.id,
     where: { eventId: { _eq: id } },
     order_by: getQuestionOrderByCondition(questionOrderState[0]),
     limit: questionQueryState[0].limit,

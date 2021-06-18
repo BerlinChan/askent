@@ -2845,7 +2845,6 @@ export type QuestionLiveQueryAudienceSubscriptionVariables = Exact<{
   offset: Scalars['Int'];
   where?: Maybe<Question_Bool_Exp>;
   order_by?: Maybe<Array<Question_Order_By> | Question_Order_By>;
-  userId: Scalars['uuid'];
 }>;
 
 
@@ -2919,7 +2918,7 @@ export const QuestionLiveQueryFieldsFragmentDoc = gql`
 export const QuestionLiveQueryAudienceFieldsFragmentDoc = gql`
     fragment QuestionLiveQueryAudienceFields on question {
   ...QuestionLiveQueryFields
-  voteUpUsers(where: {userId: {_eq: $userId}}) {
+  voteUpUsers {
     userId
   }
 }
@@ -3075,7 +3074,7 @@ export function useEventDetailLiveQuerySubscription(baseOptions?: Apollo.Subscri
 export type EventDetailLiveQuerySubscriptionHookResult = ReturnType<typeof useEventDetailLiveQuerySubscription>;
 export type EventDetailLiveQuerySubscriptionResult = Apollo.SubscriptionResult<EventDetailLiveQuerySubscription>;
 export const QuestionLiveQueryAudienceDocument = gql`
-    subscription QuestionLiveQueryAudience($limit: Int!, $offset: Int!, $where: question_bool_exp, $order_by: [question_order_by!], $userId: uuid!) {
+    subscription QuestionLiveQueryAudience($limit: Int!, $offset: Int!, $where: question_bool_exp, $order_by: [question_order_by!]) {
   question(limit: $limit, offset: $offset, where: $where, order_by: $order_by) {
     ...QuestionLiveQueryAudienceFields
   }
@@ -3098,7 +3097,6 @@ export const QuestionLiveQueryAudienceDocument = gql`
  *      offset: // value for 'offset'
  *      where: // value for 'where'
  *      order_by: // value for 'order_by'
- *      userId: // value for 'userId'
  *   },
  * });
  */
