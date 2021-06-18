@@ -99,6 +99,7 @@ interface Props {
   isScrolling?: boolean;
   disableItemShadow?: boolean;
   disableVote?: boolean;
+  showReplyCount?: boolean;
 }
 
 const QuestionItem: React.FC<Props> = ({
@@ -111,13 +112,12 @@ const QuestionItem: React.FC<Props> = ({
   isScrolling = false,
   disableItemShadow = false,
   disableVote = false,
+  showReplyCount = true,
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const [
-    voteUpQuestionMutation,
-    { loading: voteLoading },
-  ] = useVoteUpQuestionMutation();
+  const [voteUpQuestionMutation, { loading: voteLoading }] =
+    useVoteUpQuestionMutation();
   const [
     updateQuestionContentMutation,
     { loading: updateQuestionContentLoading },
@@ -267,9 +267,11 @@ const QuestionItem: React.FC<Props> = ({
                 disabled={voteLoading}
                 onClick={() => handleThumbUpClick(question.id)}
               >
-                <Typography color="inherit" className={classes.voteCount}>
-                  {question.voteUpCount}
-                </Typography>
+                {showReplyCount && Boolean(question.voteUpCount) && (
+                  <Typography color="inherit" className={classes.voteCount}>
+                    {question.voteUpCount}
+                  </Typography>
+                )}
                 <ThumbUpIcon color="inherit" className={classes.thumbUpIcon} />
               </Button>
             )}

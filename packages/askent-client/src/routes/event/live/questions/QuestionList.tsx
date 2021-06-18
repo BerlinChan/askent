@@ -59,6 +59,10 @@ const QuestionList: React.FC<Props> = ({
     questionCount
   );
 
+  const questionMoreTarget = questionLiveQueryData.find(
+    (question) => question.id === moreMenuState[0].id
+  );
+
   useQuestionLiveQueryAudienceSubscription({
     variables: questionQueryInput,
     onSubscriptionData: ({ client, subscriptionData }) => {
@@ -150,7 +154,7 @@ const QuestionList: React.FC<Props> = ({
 
       <QuestionItemMenu
         eventDetailData={eventDetailData}
-        questionList={questionLiveQueryData}
+        question={questionMoreTarget}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}

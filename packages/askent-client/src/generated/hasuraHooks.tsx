@@ -2872,6 +2872,27 @@ export type QuestionCountLiveQueryAudienceSubscription = (
   ) }
 );
 
+export type ReplyLiveQueryAudienceSubscriptionVariables = Exact<{
+  questionId: Scalars['uuid'];
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+  order_by?: Maybe<Array<Reply_Order_By> | Reply_Order_By>;
+  where?: Maybe<Reply_Bool_Exp>;
+}>;
+
+
+export type ReplyLiveQueryAudienceSubscription = (
+  { __typename?: 'subscription_root' }
+  & { question: Array<(
+    { __typename?: 'question' }
+    & { replies: Array<(
+      { __typename?: 'reply' }
+      & ReplyLiveQueryFieldsFragment
+    )> }
+    & QuestionLiveQueryAudienceFieldsFragment
+  )> }
+);
+
 export const ReplyLiveQueryFieldsFragmentDoc = gql`
     fragment ReplyLiveQueryFields on reply {
   id
@@ -3138,3 +3159,41 @@ export function useQuestionCountLiveQueryAudienceSubscription(baseOptions?: Apol
       }
 export type QuestionCountLiveQueryAudienceSubscriptionHookResult = ReturnType<typeof useQuestionCountLiveQueryAudienceSubscription>;
 export type QuestionCountLiveQueryAudienceSubscriptionResult = Apollo.SubscriptionResult<QuestionCountLiveQueryAudienceSubscription>;
+export const ReplyLiveQueryAudienceDocument = gql`
+    subscription ReplyLiveQueryAudience($questionId: uuid!, $limit: Int!, $offset: Int!, $order_by: [reply_order_by!], $where: reply_bool_exp) {
+  question(where: {id: {_eq: $questionId}}) {
+    ...QuestionLiveQueryAudienceFields
+    replies(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
+      ...ReplyLiveQueryFields
+    }
+  }
+}
+    ${QuestionLiveQueryAudienceFieldsFragmentDoc}
+${ReplyLiveQueryFieldsFragmentDoc}`;
+
+/**
+ * __useReplyLiveQueryAudienceSubscription__
+ *
+ * To run a query within a React component, call `useReplyLiveQueryAudienceSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useReplyLiveQueryAudienceSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useReplyLiveQueryAudienceSubscription({
+ *   variables: {
+ *      questionId: // value for 'questionId'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      order_by: // value for 'order_by'
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useReplyLiveQueryAudienceSubscription(baseOptions: Apollo.SubscriptionHookOptions<ReplyLiveQueryAudienceSubscription, ReplyLiveQueryAudienceSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ReplyLiveQueryAudienceSubscription, ReplyLiveQueryAudienceSubscriptionVariables>(ReplyLiveQueryAudienceDocument, options);
+      }
+export type ReplyLiveQueryAudienceSubscriptionHookResult = ReturnType<typeof useReplyLiveQueryAudienceSubscription>;
+export type ReplyLiveQueryAudienceSubscriptionResult = Apollo.SubscriptionResult<ReplyLiveQueryAudienceSubscription>;

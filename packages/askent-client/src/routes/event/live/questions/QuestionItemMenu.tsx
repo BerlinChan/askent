@@ -5,17 +5,19 @@ import {
   useDeleteQuestionMutation,
   ReviewStatus,
 } from "../../../../generated/graphqlHooks";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Confirm from "../../../../components/Confirm";
 import EditIcon from "@material-ui/icons/Edit";
+import ReplyIcon from "@material-ui/icons/Reply";
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import {
   EventDetailLiveQueryFieldsFragment,
   QuestionLiveQueryAudienceFieldsFragment,
 } from "../../../../generated/hasuraHooks";
+import { ReplyDialogStateType } from "./reply/ReplyDialog";
 
 interface Props {
-  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
-  questionList: QuestionLiveQueryAudienceFieldsFragment[];
+  eventDetailData?: EventDetailLiveQueryFieldsFragment;
+  question?: QuestionLiveQueryAudienceFieldsFragment;
   moreMenuState: [
     {
       anchorEl: HTMLElement | null;
@@ -33,14 +35,19 @@ interface Props {
     string[],
     React.Dispatch<React.SetStateAction<string[]>>
   ];
+  replyDialogState?: [
+    ReplyDialogStateType,
+    React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
+  ];
 }
 
 const QuestionItemMenu: React.FC<Props> = ({
   eventDetailData,
-  questionList = [],
+  question,
   moreMenuState,
   editContentInputRef,
   editContentIdsState,
+  replyDialogState,
 }) => {
   const { formatMessage } = useIntl();
   const [deleteQuestionMutation] = useDeleteQuestionMutation();
@@ -49,9 +56,6 @@ const QuestionItemMenu: React.FC<Props> = ({
     open: false,
     id: "",
   });
-  const questionMoreTarget = questionList.find(
-    (question) => question.id === moreMenu.id
-  );
 
   const handleMoreClose = () => {
     setMoreMenu({ anchorEl: null, id: "" });
@@ -83,6 +87,13 @@ const QuestionItemMenu: React.FC<Props> = ({
     setTimeout(() => editContentInputRef.current?.focus(), 100);
   };
 
+  const handleOpenReply = (id: string) => {
+    if (replyDialogState) {
+      replyDialogState[1]({ open: true, questionId: id });
+      handleMoreClose();
+    }
+  };
+
   return (
     <React.Fragment>
       <Menu
@@ -102,9 +113,9 @@ const QuestionItemMenu: React.FC<Props> = ({
       >
         <MenuItem
           disabled={Boolean(
-            questionMoreTarget?.top ||
+            question?.top ||
               (eventDetailData?.moderation &&
-                questionMoreTarget?.reviewStatus === ReviewStatus.Publish)
+                question?.reviewStatus === ReviewStatus.Publish)
           )}
           onClick={() => handleEditContentToggle(moreMenu.id)}
         >
@@ -116,7 +127,21 @@ const QuestionItemMenu: React.FC<Props> = ({
           />
         </MenuItem>
         <MenuItem
-          disabled={questionMoreTarget?.top}
+          disabled={question?.top}
+          onClick={() => handleOpenReply(moreMenu.id)}
+        >
+          <ListItemIcon>
+            <ReplyIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary={formatMessage({
+              id: "Reply",
+              defaultMessage: "Reply",
+            })}
+          />
+        </MenuItem>
+        <MenuItem
+          disabled={question?.top}
           onClick={() => handleOpenDelete(moreMenu.id)}
         >
           <ListItemIcon>
@@ -130,6 +155,7 @@ const QuestionItemMenu: React.FC<Props> = ({
           />
         </MenuItem>
       </Menu>
+
       <Confirm
         open={deleteConfirm.open}
         contentText={
