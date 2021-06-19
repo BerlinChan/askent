@@ -35,11 +35,13 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-interface Props {}
+export interface Props {
+  openAskDialogState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
+}
 
-const AskFabDialog: React.FC<Props> = () => {
+const AskFabDialog: React.FC<Props> = ({ openAskDialogState }) => {
   const classes = useStyles();
-  const [openAskDialog, setOpenAskDialog] = React.useState(false);
+  const [openAskDialog, setOpenAskDialog] = openAskDialogState;
 
   const handleAskOpen = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>

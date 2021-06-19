@@ -40,6 +40,7 @@ import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
 import { TextField } from "formik-material-ui";
 import { QuestionLiveQueryAudienceFieldsFragment } from "../../../../generated/hasuraHooks";
+import { ReplyDialogStateType } from "./reply/ReplyDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,6 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: fade(theme.palette.success.light, 0.5),
     },
     questionContent: { width: "100%" },
+    reply: { cursor: "pointer" },
     moreButton: { float: "right" },
     questionActionBox: {
       position: "absolute",
@@ -100,6 +102,10 @@ interface Props {
   disableItemShadow?: boolean;
   disableVote?: boolean;
   showReplyCount?: boolean;
+  replyDialogState?: [
+    ReplyDialogStateType,
+    React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
+  ];
 }
 
 const QuestionItem: React.FC<Props> = ({
@@ -113,6 +119,7 @@ const QuestionItem: React.FC<Props> = ({
   disableItemShadow = false,
   disableVote = false,
   showReplyCount = true,
+  replyDialogState,
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
@@ -125,6 +132,12 @@ const QuestionItem: React.FC<Props> = ({
 
   const handleThumbUpClick = (questionId: string) => {
     voteUpQuestionMutation({ variables: { questionId } });
+  };
+
+  const handleOpenReply = () => {
+    if (replyDialogState) {
+      replyDialogState[1]({ open: true, questionId: question.id });
+    }
   };
 
   return (
@@ -236,6 +249,20 @@ const QuestionItem: React.FC<Props> = ({
               </IconButton>
             )}
           </Typography>
+          {showReplyCount && Boolean(question.replyCount) && (
+            <Typography
+              className={classes.reply}
+              variant="body2"
+              color="textSecondary"
+              onClick={handleOpenReply}
+            >
+              <FormattedMessage
+                id="replyCount"
+                defaultMessage="{num, plural, one {# reply} other {# replies}}"
+                values={{ num: question.replyCount }}
+              />
+            </Typography>
+          )}
           <Box className={classes.questionActionBox}>
             {question.reviewStatus === ReviewStatus.Review && (
               <Tooltip
@@ -267,11 +294,9 @@ const QuestionItem: React.FC<Props> = ({
                 disabled={voteLoading}
                 onClick={() => handleThumbUpClick(question.id)}
               >
-                {showReplyCount && Boolean(question.voteUpCount) && (
-                  <Typography color="inherit" className={classes.voteCount}>
-                    {question.voteUpCount}
-                  </Typography>
-                )}
+                <Typography color="inherit" className={classes.voteCount}>
+                  {question.voteUpCount}
+                </Typography>
                 <ThumbUpIcon color="inherit" className={classes.thumbUpIcon} />
               </Button>
             )}

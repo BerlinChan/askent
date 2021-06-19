@@ -35,6 +35,7 @@ const LiveQuestions: React.FC<Props> = ({
   const questionOrderState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
+  const openAskDialogState = React.useState(false);
   const questionQueryInput: QuestionLiveQueryAudienceSubscriptionVariables = {
     where: { eventId: { _eq: id } },
     order_by: getQuestionOrderByCondition(questionOrderState[0]),
@@ -50,9 +51,10 @@ const LiveQuestions: React.FC<Props> = ({
         questionOrderState={questionOrderState}
         questionQueryState={questionQueryState}
         questionQueryInput={questionQueryInput}
+        openAskDialogState={openAskDialogState}
       />
 
-      <AskFabDialog />
+      <AskFabDialog openAskDialogState={openAskDialogState}/>
     </React.Fragment>
   );
 };
