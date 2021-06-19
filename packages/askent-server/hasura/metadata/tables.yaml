@@ -146,6 +146,10 @@
             _is_null: true
         - reviewStatus:
             _eq: Publish
+        - event:
+            audiences:
+              userId:
+                _eq: x-hasura-user-id
       allow_aggregations: true
   - role: developer
     permission:
@@ -217,6 +221,30 @@
     using:
       foreign_key_constraint_on: questionId
   select_permissions:
+  - role: Audience
+    permission:
+      columns:
+      - anonymous
+      - authorId
+      - content
+      - createdAt
+      - id
+      - isModerator
+      - questionId
+      - reviewStatus
+      - updatedAt
+      filter:
+        _and:
+        - question:
+            event:
+              audiences:
+                userId:
+                  _eq: x-hasura-user-id
+        - deletedAt:
+            _is_null: true
+        - reviewStatus:
+            _eq: Publish
+      allow_aggregations: true
   - role: developer
     permission:
       columns:
@@ -432,6 +460,13 @@
         userId:
           _eq: x-hasura-user-id
   - role: developer
+    permission:
+      columns:
+      - questionId
+      - userId
+      filter: {}
+      allow_aggregations: true
+  - role: User
     permission:
       columns:
       - questionId

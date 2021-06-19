@@ -166,6 +166,7 @@ const QuestionList: React.FC<Props> = ({
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}
+        replyDialogState={replyDialogState}
       />
       <ReplyDialog
         replyDialogState={replyDialogState}
