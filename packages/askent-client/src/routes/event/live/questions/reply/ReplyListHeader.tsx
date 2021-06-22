@@ -75,6 +75,7 @@ const ReplyListHeader: React.FC<Props> = ({
       ) : null}
 
       <QuestionItemMenu
+        userQueryResult={userQueryResult}
         question={question}
         eventDetailData={eventDetailData}
         moreMenuState={moreMenuState}

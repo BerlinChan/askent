@@ -186,6 +186,7 @@ const MyQuestionsDialog: React.FC<Props> = ({
       </Dialog>
 
       <QuestionItemMenu
+        userQueryResult={userQueryResult}
         eventDetailData={eventDetailData}
         question={questionMoreTarget}
         moreMenuState={moreMenuState}

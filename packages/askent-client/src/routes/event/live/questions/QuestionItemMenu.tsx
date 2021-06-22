@@ -1,7 +1,10 @@
 import React from "react";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { FormattedMessage, useIntl } from "react-intl";
+import { QueryResult } from "@apollo/client";
 import {
+  MeQuery,
+  MeQueryVariables,
   useDeleteQuestionMutation,
   ReviewStatus,
 } from "../../../../generated/graphqlHooks";
@@ -16,6 +19,7 @@ import {
 import { ReplyDialogStateType } from "./reply/ReplyDialog";
 
 interface Props {
+  userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   eventDetailData?: EventDetailLiveQueryFieldsFragment;
   question?: QuestionLiveQueryAudienceFieldsFragment;
   moreMenuState: [
@@ -42,6 +46,7 @@ interface Props {
 }
 
 const QuestionItemMenu: React.FC<Props> = ({
+  userQueryResult,
   eventDetailData,
   question,
   moreMenuState,
@@ -111,49 +116,55 @@ const QuestionItemMenu: React.FC<Props> = ({
         open={Boolean(moreMenu.anchorEl)}
         onClose={handleMoreClose}
       >
-        <MenuItem
-          disabled={Boolean(
-            question?.top ||
-              (eventDetailData?.moderation &&
-                question?.reviewStatus === ReviewStatus.Publish)
-          )}
-          onClick={() => handleEditContentToggle(moreMenu.id)}
-        >
-          <ListItemIcon>
-            <EditIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatMessage({ id: "Edit", defaultMessage: "Edit" })}
-          />
-        </MenuItem>
-        <MenuItem
-          disabled={question?.top}
-          onClick={() => handleOpenReply(moreMenu.id)}
-        >
-          <ListItemIcon>
-            <ReplyIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatMessage({
-              id: "Reply",
-              defaultMessage: "Reply",
-            })}
-          />
-        </MenuItem>
-        <MenuItem
-          disabled={question?.top}
-          onClick={() => handleOpenDelete(moreMenu.id)}
-        >
-          <ListItemIcon>
-            <DeleteForeverIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary={formatMessage({
-              id: "Withdraw",
-              defaultMessage: "Withdraw",
-            })}
-          />
-        </MenuItem>
+        {question?.author?.id === userQueryResult.data?.me.id && (
+          <MenuItem
+            disabled={Boolean(
+              question?.top ||
+                (eventDetailData?.moderation &&
+                  question?.reviewStatus === ReviewStatus.Publish)
+            )}
+            onClick={() => handleEditContentToggle(moreMenu.id)}
+          >
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={formatMessage({ id: "Edit", defaultMessage: "Edit" })}
+            />
+          </MenuItem>
+        )}
+        {replyDialogState && (
+          <MenuItem
+            disabled={question?.top}
+            onClick={() => handleOpenReply(moreMenu.id)}
+          >
+            <ListItemIcon>
+              <ReplyIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={formatMessage({
+                id: "Reply",
+                defaultMessage: "Reply",
+              })}
+            />
+          </MenuItem>
+        )}
+        {question?.author?.id === userQueryResult.data?.me.id && (
+          <MenuItem
+            disabled={question?.top}
+            onClick={() => handleOpenDelete(moreMenu.id)}
+          >
+            <ListItemIcon>
+              <DeleteForeverIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={formatMessage({
+                id: "Withdraw",
+                defaultMessage: "Withdraw",
+              })}
+            />
+          </MenuItem>
+        )}
       </Menu>
 
       <Confirm

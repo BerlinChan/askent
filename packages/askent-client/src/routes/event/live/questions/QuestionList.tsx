@@ -161,6 +161,7 @@ const QuestionList: React.FC<Props> = ({
       />
 
       <QuestionItemMenu
+        userQueryResult={userQueryResult}
         eventDetailData={eventDetailData}
         question={questionMoreTarget}
         moreMenuState={moreMenuState}
