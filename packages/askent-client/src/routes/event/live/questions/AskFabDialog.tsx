@@ -4,17 +4,16 @@ import {
   Fab,
   Dialog,
   Hidden,
-  Slide,
   AppBar,
   Toolbar,
   IconButton,
 } from "@material-ui/core";
-import { TransitionProps } from "@material-ui/core/transitions";
 import { FormattedMessage } from "react-intl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionForm from "./QuestionForm";
 import DialogTitleWithClose from "../../../../components/DialogTitleWithClose";
 import CloseIcon from "@material-ui/icons/Close";
+import SlideUpFullScreen from '../../../../components/Transition/SlideUpFullScreen'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,13 +26,6 @@ const useStyles = makeStyles((theme: Theme) =>
     toolbarTitle: { marginLeft: theme.spacing(2) },
   })
 );
-
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & { children?: React.ReactElement },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 export interface Props {
   openAskDialogState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
@@ -84,7 +76,7 @@ const AskFabDialog: React.FC<Props> = ({ openAskDialogState }) => {
           fullScreen
           open={openAskDialog}
           onClose={handleAskClose}
-          TransitionComponent={Transition}
+          TransitionComponent={SlideUpFullScreen}
         >
           <AppBar position="static">
             <Toolbar>

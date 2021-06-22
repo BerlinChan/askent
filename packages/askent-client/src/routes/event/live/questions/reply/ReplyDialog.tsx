@@ -1,7 +1,16 @@
 import React from "react";
 import { QueryResult } from "@apollo/client";
-import { Dialog, DialogContent } from "@material-ui/core";
+import {
+  Dialog,
+  DialogContent,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Hidden,
+} from "@material-ui/core";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
+import { Close as CloseIcon } from "@material-ui/icons";
 import { FormattedMessage } from "react-intl";
 import DialogTitleWithClose from "../../../../../components/DialogTitleWithClose";
 import ReplyList from "./ReplyList";
@@ -11,11 +20,20 @@ import {
   MeQuery,
   MeQueryVariables,
 } from "../../../../../generated/graphqlHooks";
+import SlideUpFullScreen from "../../../../../components/Transition/SlideUpFullScreen";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {},
     form: { marginTop: theme.spacing(1) },
+
+    appBar: {
+      position: "relative",
+    },
+    appBarTitle: {
+      marginLeft: theme.spacing(2),
+      flex: 1,
+    },
   })
 );
 
@@ -29,14 +47,14 @@ export interface Props {
     ReplyDialogStateType,
     React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
   ];
-  eventDetailData:EventDetailLiveQueryFieldsFragment|undefined;
+  eventDetailData?: EventDetailLiveQueryFieldsFragment;
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
 }
 
 const ReplyDialog: React.FC<Props> = ({
   replyDialogState,
   eventDetailData,
-  userQueryResult
+  userQueryResult,
 }) => {
   const classes = useStyles();
   const [replyDialog, setReplyDialog] = replyDialogState;
@@ -48,30 +66,70 @@ const ReplyDialog: React.FC<Props> = ({
   };
 
   return (
-    <Dialog
-      scroll={"body"}
-      open={replyDialog.open}
-      onClose={handleClose}
-      onExited={onExited}
-      fullWidth
-    >
-      <DialogTitleWithClose
-        title={<FormattedMessage id="Reply" defaultMessage="Reply" />}
-        onClose={handleClose}
-      />
-      <DialogContent className={classes.content}>
-        <ReplyList
-          questionId={replyDialog.questionId}
-          eventDetailData={eventDetailData}
-          userQueryResult={userQueryResult}
+    <React.Fragment>
+      <Hidden smDown>
+        <Dialog
+          scroll={"body"}
+          open={replyDialog.open}
+          onClose={handleClose}
+          onExited={onExited}
+          fullWidth
+        >
+          <DialogTitleWithClose
+            title={<FormattedMessage id="Reply" defaultMessage="Reply" />}
+            onClose={handleClose}
           />
-        <ReplyForm
-          className={classes.form}
-          questionId={replyDialog.questionId}
-          autoFocus
-        />
-      </DialogContent>
-    </Dialog>
+          <DialogContent className={classes.content}>
+            <ReplyList
+              questionId={replyDialog.questionId}
+              eventDetailData={eventDetailData}
+              userQueryResult={userQueryResult}
+            />
+            <ReplyForm
+              className={classes.form}
+              questionId={replyDialog.questionId}
+              autoFocus
+            />
+          </DialogContent>
+        </Dialog>
+      </Hidden>
+
+      <Hidden mdUp>
+        <Dialog
+          fullScreen
+          open={replyDialog.open}
+          onClose={handleClose}
+          onExited={onExited}
+          TransitionComponent={SlideUpFullScreen}
+        >
+          <AppBar className={classes.appBar}>
+            <Toolbar>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={handleClose}
+                aria-label="close"
+              >
+                <CloseIcon />
+              </IconButton>
+              <Typography variant="h6" className={classes.appBarTitle}>
+                <FormattedMessage id="Reply" defaultMessage="Reply" />
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <ReplyList
+            questionId={replyDialog.questionId}
+            eventDetailData={eventDetailData}
+            userQueryResult={userQueryResult}
+          />
+          <ReplyForm
+            className={classes.form}
+            questionId={replyDialog.questionId}
+            autoFocus
+          />
+        </Dialog>
+      </Hidden>
+    </React.Fragment>
   );
 };
 
