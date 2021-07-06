@@ -220,11 +220,6 @@ export class QuestionResolver {
   async deleteQuestion(
     @Arg("questionId", (returns) => ID) questionId: string
   ): Promise<Pick<QuestionEntity, "id">> {
-    const event = await this.questionRepository
-      .createQueryBuilder()
-      .relation(QuestionEntity, "event")
-      .of(questionId)
-      .loadOne();
     await this.questionRepository.softDelete(questionId);
 
     return { id: questionId };
