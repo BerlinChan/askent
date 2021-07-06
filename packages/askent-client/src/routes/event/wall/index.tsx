@@ -5,8 +5,12 @@ import { useParams } from "react-router-dom";
 import QRCode from "qrcode.react";
 import { FormattedMessage } from "react-intl";
 import OrderSelect from "./OrderSelect";
-import { QuestionOrder, QuestionFilter } from "../../../generated/graphqlHooks";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../constant";
+import {
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+  QuestionOrder,
+  QuestionFilter,
+} from "../../../constant";
 import QuestionList from "./QuestionList";
 import { QuestionQueryStateType } from "../../admin/event/questions/ActionRight";
 import {
@@ -59,10 +63,8 @@ const EventWall: React.FC<Props> = () => {
   const { id } = useParams<{ id: string }>();
   const qrcodeCardRef = React.useRef<HTMLElement>(null);
   const [qrcodeCardWidth, setQrcodeCardWidth] = React.useState(0);
-  const [
-    eventDetailData,
-    setEventDetailData,
-  ] = React.useState<EventDetailLiveQueryFieldsFragment>();
+  const [eventDetailData, setEventDetailData] =
+    React.useState<EventDetailLiveQueryFieldsFragment>();
   const orderSelectedState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );

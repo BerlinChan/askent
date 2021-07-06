@@ -1,15 +1,15 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { QueryResult } from "@apollo/client";
-import {
-  MeQuery,
-  MeQueryVariables,
-  QuestionOrder,
-  QuestionFilter,
-} from "../../../../generated/graphqlHooks";
+import { MeQuery, MeQueryVariables } from "../../../../generated/graphqlHooks";
 import QuestionList from "./QuestionList";
 import AskFabDialog from "./AskFabDialog";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
+import {
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+  QuestionOrder,
+  QuestionFilter,
+} from "../../../../constant";
 import {
   EventDetailLiveQueryFieldsFragment,
   QuestionLiveQueryAudienceSubscriptionVariables,
@@ -54,7 +54,7 @@ const LiveQuestions: React.FC<Props> = ({
         openAskDialogState={openAskDialogState}
       />
 
-      <AskFabDialog openAskDialogState={openAskDialogState}/>
+      <AskFabDialog openAskDialogState={openAskDialogState} />
     </React.Fragment>
   );
 };

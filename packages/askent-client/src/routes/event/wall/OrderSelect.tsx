@@ -4,9 +4,9 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import { FormattedMessage } from "react-intl";
-import { QuestionOrder } from "../../../generated/graphqlHooks";
 import { useMouseMove } from "../../../hooks";
 import QuestionOrderMenu from "../../../components/QuestionOrderMenu";
+import { QuestionOrder } from "../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

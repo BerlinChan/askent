@@ -3,7 +3,6 @@ import { QueryResult } from "@apollo/client";
 import {
   MeQuery,
   MeQueryVariables,
-  QuestionOrder,
 } from "../../../../generated/graphqlHooks";
 import { Props as AskFabDialogProps } from "./AskFabDialog";
 import QuestionItem from "./QuestionItem";
@@ -21,6 +20,7 @@ import {
   useQuestionLiveQueryAudienceSubscription,
 } from "../../../../generated/hasuraHooks";
 import { QuestionQueryStateType } from "../../../admin/event/questions/ActionRight";
+import { QuestionOrder } from "../../../../constant";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;

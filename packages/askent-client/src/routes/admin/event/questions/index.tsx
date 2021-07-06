@@ -4,17 +4,18 @@ import { Grid, Paper, Box, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import {
-  QuestionFilter,
-  QuestionOrder,
-} from "../../../../generated/graphqlHooks";
-import {
   EventDetailLiveQueryFieldsFragment,
   QuestionLiveQuerySubscriptionVariables,
 } from "../../../../generated/hasuraHooks";
 import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
 import ActionRight, { QuestionQueryStateType } from "./ActionRight";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
+import {
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+  QuestionFilter,
+  QuestionOrder,
+} from "../../../../constant";
 import {
   getQuestionOrderByCondition,
   getQuestionWhereByFilter,

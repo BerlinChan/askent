@@ -7,13 +7,13 @@ import {
   DialogContent,
 } from "@material-ui/core";
 import { QueryResult } from "@apollo/client";
-import {
-  MeQuery,
-  MeQueryVariables,
-  QuestionFilter,
-} from "../../generated/graphqlHooks";
+import { MeQuery, MeQueryVariables } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../constant";
+import {
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+  QuestionFilter,
+} from "../../constant";
 import { useParams } from "react-router-dom";
 import { Virtuoso } from "react-virtuoso";
 import ListFooter from "../ListFooter";
@@ -47,10 +47,8 @@ const MyQuestionsDialog: React.FC<Props> = ({
   }>({ anchorEl: null, id: "" });
   const editContentInputRef = React.useRef<HTMLInputElement>(null);
   const editContentIdsState = React.useState<Array<string>>([]);
-  const [
-    eventDetailData,
-    setEventDetailData,
-  ] = React.useState<EventDetailLiveQueryFieldsFragment>();
+  const [eventDetailData, setEventDetailData] =
+    React.useState<EventDetailLiveQueryFieldsFragment>();
 
   const [questionQueryState, setQuestionQueryState] = React.useState({
     limit: DEFAULT_PAGE_LIMIT,

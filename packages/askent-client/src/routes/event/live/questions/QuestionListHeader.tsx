@@ -15,7 +15,8 @@ import {
 import { FormattedMessage } from "react-intl";
 import QuestionForm from "./QuestionForm";
 import QuestionFormInput from "./QuestionFormInput";
-import { QuestionOrder } from "../../../../generated/graphqlHooks";
+import { QuestionOrder } from "../../../../constant";
+
 import { Props as AskFabDialogProps } from "./AskFabDialog";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -91,7 +92,7 @@ const QuestionListHeader: React.FC<Props> = ({
             }}
           />
         ) : (
-          <QuestionFormInput onFocus={()=>openAskDialogState[1](true)}/>
+          <QuestionFormInput onFocus={() => openAskDialogState[1](true)} />
         )}
       </Container>
       <Container maxWidth="sm" className={classes.orderAndCount}>
