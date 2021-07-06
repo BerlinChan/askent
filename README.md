@@ -9,20 +9,17 @@
 
 ## TODO
 
-- [ ] API authrization
+- [ ] API graphql-rate-limit
 - [ ] hasura authrization
 - [ ] add guest to event
 - [ ] event edit dialog
 - [ ] question support voteDown
 - [ ] hide event from join search
 - [ ] join event with password
-- [ ] homepage - join event
 - [ ] admin event list - duplicate event
 - [ ] question list refetch after network error recovery
-- [ ] GraphQL Server permissions use graphql-shield
-- [ ] Build server for production
-- [ ] [Benchmark](https://github.com/benawad/node-graphql-benchmarks)
 - [ ] [API logout, invalid JWT](https://www.npmjs.com/package/express-jwt)
+- [ ] [Benchmark](https://github.com/benawad/node-graphql-benchmarks)
 
 ## Develop
 

@@ -28,6 +28,12 @@
           schema: public
           name: question
   select_permissions:
+  - role: Audience
+    permission:
+      columns: []
+      filter:
+        deletedAt:
+          _is_null: true
   - role: developer
     permission:
       columns:
@@ -198,20 +204,6 @@
       allow_aggregations: true
 - table:
     schema: public
-    name: question_query_meta
-  select_permissions:
-  - role: developer
-    permission:
-      columns:
-      - id
-      - query
-      - list
-      - createdAt
-      - updatedAt
-      filter: {}
-      allow_aggregations: true
-- table:
-    schema: public
     name: reply
   object_relationships:
   - name: author
@@ -281,20 +273,6 @@
                   _eq: x-hasura-user-id
         - deletedAt:
             _is_null: true
-      allow_aggregations: true
-- table:
-    schema: public
-    name: reply_query_meta
-  select_permissions:
-  - role: developer
-    permission:
-      columns:
-      - id
-      - query
-      - list
-      - createdAt
-      - updatedAt
-      filter: {}
       allow_aggregations: true
 - table:
     schema: public
