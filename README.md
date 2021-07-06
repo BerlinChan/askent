@@ -9,10 +9,9 @@
 
 ## TODO
 
-- [ ] reply question on live client
-- [ ] add guest to event
+- [ ] API authrization
 - [ ] hasura authrization
-- [ ] hasura soft delete
+- [ ] add guest to event
 - [ ] event edit dialog
 - [ ] question support voteDown
 - [ ] hide event from join search

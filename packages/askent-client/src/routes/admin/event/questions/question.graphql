@@ -1,10 +1,3 @@
-fragment QuestionPagedFields on QuestionPaged {
-  hash
-  limit
-  offset
-  totalCount
-  hasNextPage
-}
 fragment QuestionFields on Question {
   id
   createdAt

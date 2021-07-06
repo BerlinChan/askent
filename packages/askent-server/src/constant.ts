@@ -5,13 +5,6 @@ export const DEFAULT_PAGE_LIMIT = 50;
 
 export const CLAIMS_NAMESPACE = "https://hasura.io/jwt/claims";
 
-export const SubscriptionTopics = {
-  QUESTION_REALTIME_SEARCH: "QUESTION_REALTIME_SEARCH",
-  EVENT_UPDATED: "EVENT_UPDATED",
-  REPLY_REALTIME_SEARCH: "REPLY_REALTIME_SEARCH",
-  QUESTION_BY_ID: "QUESTION_BY_ID",
-};
-
 export enum ReviewStatus {
   Review = "Review",
   Publish = "Publish",

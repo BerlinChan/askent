@@ -16,24 +16,6 @@ fragment QuestionAudienceFields on Question {
   }
 }
 
-query QuestionsByEventAudience($input: QuestionQueryInput!) {
-  questionsByEventAudience(input: $input) {
-    ...QuestionPagedFields
-    list {
-      ...QuestionAudienceFields
-    }
-  }
-}
-
-query QuestionsByMe($eventId: ID!, $pagination: PaginationInput!) {
-  questionsByMe(eventId: $eventId, pagination: $pagination) {
-    ...QuestionPagedFields
-    list {
-      ...QuestionAudienceFields
-    }
-  }
-}
-
 mutation CreateQuestion($input: CreateQuestionInput!) {
   createQuestion(input: $input) {
     ...QuestionAudienceFields

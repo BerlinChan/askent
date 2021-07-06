@@ -14,12 +14,3 @@ fragment QuestionWallFields on Question {
     avatar
   }
 }
-
-query QuestionsByEventWall($input: QuestionQueryInput!) {
-  questionsByEventWall(input: $input) {
-    ...QuestionPagedFields
-    list {
-      ...QuestionWallFields
-    }
-  }
-}
