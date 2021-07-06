@@ -1,6 +1,6 @@
 const config = {
-  apiUri: "http://localhost:4000/graphql",
-  webSocketUri: "ws://localhost:4000/graphql",
+  apiUri: "http://routerwh.berlinchan.com:49105/graphql",
+  webSocketUri: "ws://routerwh.berlinchan.com:49105/graphql",
   hasuraUri: "http://routerwh.berlinchan.com:49104/v1/graphql",
   hasuraWsUri: "ws://routerwh.berlinchan.com:49104/v1/graphql",
 };
