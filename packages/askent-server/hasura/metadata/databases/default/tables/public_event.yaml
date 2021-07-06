@@ -1,0 +1,71 @@
+table:
+  name: event
+  schema: public
+object_relationships:
+- name: owner
+  using:
+    foreign_key_constraint_on: ownerId
+array_relationships:
+- name: audiences
+  using:
+    foreign_key_constraint_on:
+      column: eventId
+      table:
+        name: eventAudiences
+        schema: public
+- name: guestes
+  using:
+    foreign_key_constraint_on:
+      column: eventId
+      table:
+        name: eventGuestes
+        schema: public
+- name: questions
+  using:
+    foreign_key_constraint_on:
+      column: eventId
+      table:
+        name: question
+        schema: public
+select_permissions:
+- permission:
+    columns: []
+    filter:
+      deletedAt:
+        _is_null: true
+  role: Audience
+- permission:
+    allow_aggregations: true
+    columns:
+    - id
+    - code
+    - name
+    - startAt
+    - endAt
+    - moderation
+    - createdAt
+    - updatedAt
+    - ownerId
+    filter:
+      _and:
+      - owner:
+          id:
+            _eq: x-hasura-user-id
+      - deletedAt:
+          _is_null: true
+  role: User
+- permission:
+    allow_aggregations: true
+    columns:
+    - code
+    - createdAt
+    - deletedAt
+    - endAt
+    - id
+    - moderation
+    - name
+    - ownerId
+    - startAt
+    - updatedAt
+    filter: {}
+  role: developer

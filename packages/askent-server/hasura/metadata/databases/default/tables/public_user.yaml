@@ -1,0 +1,104 @@
+table:
+  name: user
+  schema: public
+array_relationships:
+- name: attendedEvents
+  using:
+    foreign_key_constraint_on:
+      column: userId
+      table:
+        name: eventAudiences
+        schema: public
+- name: events
+  using:
+    foreign_key_constraint_on:
+      column: ownerId
+      table:
+        name: event
+        schema: public
+- name: guestEvents
+  using:
+    foreign_key_constraint_on:
+      column: userId
+      table:
+        name: eventGuestes
+        schema: public
+- name: questions
+  using:
+    foreign_key_constraint_on:
+      column: authorId
+      table:
+        name: question
+        schema: public
+- name: replies
+  using:
+    foreign_key_constraint_on:
+      column: authorId
+      table:
+        name: reply
+        schema: public
+- name: roles
+  using:
+    foreign_key_constraint_on:
+      column: userId
+      table:
+        name: userRoles
+        schema: public
+- name: voteUpQuestions
+  using:
+    foreign_key_constraint_on:
+      column: userId
+      table:
+        name: usersVoteUpQuestions
+        schema: public
+select_permissions:
+- permission:
+    columns:
+    - anonymous
+    - avatar
+    - createdAt
+    - email
+    - fingerprint
+    - id
+    - name
+    - updatedAt
+    filter:
+      _and:
+      - id:
+          _eq: x-hasura-user-id
+      - deletedAt:
+          _is_null: true
+  role: Audience
+- permission:
+    allow_aggregations: true
+    columns:
+    - anonymous
+    - avatar
+    - createdAt
+    - email
+    - fingerprint
+    - id
+    - name
+    - updatedAt
+    filter:
+      _and:
+      - id:
+          _eq: x-hasura-user-id
+      - deletedAt:
+          _is_null: true
+  role: User
+- permission:
+    allow_aggregations: true
+    columns:
+    - id
+    - fingerprint
+    - email
+    - avatar
+    - password
+    - name
+    - anonymous
+    - createdAt
+    - updatedAt
+    - deletedAt
+    filter: {}
+  role: developer
