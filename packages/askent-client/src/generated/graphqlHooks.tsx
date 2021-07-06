@@ -32,16 +32,6 @@ export type Query = {
   packageInfo: PackageInfo;
   /** For demo use */
   pgp: Pgp;
-  questionById: Question;
-  /** Query question by event for Role.Admin. */
-  questionsByEvent: QuestionPaged;
-  /** Query question by event for Role.Audience. */
-  questionsByEventAudience: QuestionPaged;
-  /** Query question by event for Role.Wall. */
-  questionsByEventWall: QuestionPaged;
-  /** Query question by event for Role.Wall. */
-  questionsByMe: QuestionPaged;
-  repliesByQuestion: ReplyPaged;
   roles: Array<Role>;
 };
 
@@ -77,37 +67,6 @@ export type QueryIsEventAudienceArgs = {
   eventId: Scalars['ID'];
 };
 
-
-export type QueryQuestionByIdArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryQuestionsByEventArgs = {
-  input: QuestionQueryInput;
-};
-
-
-export type QueryQuestionsByEventAudienceArgs = {
-  input: QuestionQueryInput;
-};
-
-
-export type QueryQuestionsByEventWallArgs = {
-  input: QuestionQueryInput;
-};
-
-
-export type QueryQuestionsByMeArgs = {
-  eventId: Scalars['ID'];
-  pagination: PaginationInput;
-};
-
-
-export type QueryRepliesByQuestionArgs = {
-  input: ReplyQueryInput;
-};
-
 export type Role = {
   __typename?: 'Role';
   id: Scalars['ID'];
@@ -133,22 +92,28 @@ export type Pgp = {
   pubKey: Scalars['String'];
 };
 
-export type QuestionPaged = IPagedType & {
-  __typename?: 'QuestionPaged';
-  offset: Scalars['Int'];
-  limit: Scalars['Int'];
-  totalCount: Scalars['Int'];
-  hasNextPage: Scalars['Boolean'];
-  hash: Scalars['String'];
-  list: Array<Question>;
+export type Event = {
+  __typename?: 'Event';
+  id: Scalars['ID'];
+  code: Scalars['String'];
+  name: Scalars['String'];
+  startAt: Scalars['DateTime'];
+  endAt: Scalars['DateTime'];
+  moderation: Scalars['Boolean'];
+  dateStatus: EventDateStatus;
+  owner: User;
+  guestes: Array<User>;
+  audiences: Array<User>;
+  questions: Array<Question>;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
 };
 
-export type IPagedType = {
-  offset: Scalars['Int'];
-  limit: Scalars['Int'];
-  totalCount: Scalars['Int'];
-  hasNextPage: Scalars['Boolean'];
-};
+export enum EventDateStatus {
+  Active = 'Active',
+  Upcoming = 'Upcoming',
+  Past = 'Past'
+}
 
 export type Question = {
   __typename?: 'Question';
@@ -174,58 +139,6 @@ export enum ReviewStatus {
   Archive = 'Archive'
 }
 
-export type Event = {
-  __typename?: 'Event';
-  id: Scalars['ID'];
-  code: Scalars['String'];
-  name: Scalars['String'];
-  startAt: Scalars['DateTime'];
-  endAt: Scalars['DateTime'];
-  moderation: Scalars['Boolean'];
-  dateStatus: EventDateStatus;
-  owner: User;
-  guestes: Array<User>;
-  audiences: Array<User>;
-  questions: Array<Question>;
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-};
-
-export enum EventDateStatus {
-  Active = 'Active',
-  Upcoming = 'Upcoming',
-  Past = 'Past'
-}
-
-export type QuestionQueryInput = {
-  eventId: Scalars['ID'];
-  questionFilter?: Maybe<QuestionFilter>;
-  searchString?: Maybe<Scalars['String']>;
-  pagination: PaginationInput;
-  order?: Maybe<QuestionOrder>;
-};
-
-export enum QuestionFilter {
-  Review = 'Review',
-  Publish = 'Publish',
-  Archive = 'Archive',
-  Starred = 'Starred'
-}
-
-export type PaginationInput = {
-  /** Default offset 0. */
-  offset?: Maybe<Scalars['Int']>;
-  /** Default limit 50 */
-  limit?: Maybe<Scalars['Int']>;
-};
-
-export enum QuestionOrder {
-  Popular = 'Popular',
-  Recent = 'Recent',
-  Oldest = 'Oldest',
-  Starred = 'Starred'
-}
-
 export type EventPaged = IPagedType & {
   __typename?: 'EventPaged';
   offset: Scalars['Int'];
@@ -235,33 +148,18 @@ export type EventPaged = IPagedType & {
   list: Array<Event>;
 };
 
-export type ReplyPaged = IPagedType & {
-  __typename?: 'ReplyPaged';
+export type IPagedType = {
   offset: Scalars['Int'];
   limit: Scalars['Int'];
   totalCount: Scalars['Int'];
   hasNextPage: Scalars['Boolean'];
-  hash: Scalars['String'];
-  list: Array<Reply>;
 };
 
-export type Reply = {
-  __typename?: 'Reply';
-  id: Scalars['ID'];
-  content: Scalars['String'];
-  reviewStatus: ReviewStatus;
-  /** If author is a moderator of the event? */
-  isModerator: Scalars['Boolean'];
-  anonymous: Scalars['Boolean'];
-  question: Question;
-  author?: Maybe<User>;
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-};
-
-export type ReplyQueryInput = {
-  questionId: Scalars['ID'];
-  pagination: PaginationInput;
+export type PaginationInput = {
+  /** Default offset 0. */
+  offset?: Maybe<Scalars['Int']>;
+  /** Default limit 50 */
+  limit?: Maybe<Scalars['Int']>;
 };
 
 export type Mutation = {
@@ -499,56 +397,24 @@ export type UpdateEventInput = {
   moderation?: Maybe<Scalars['Boolean']>;
 };
 
+export type Reply = {
+  __typename?: 'Reply';
+  id: Scalars['ID'];
+  content: Scalars['String'];
+  reviewStatus: ReviewStatus;
+  /** If author is a moderator of the event? */
+  isModerator: Scalars['Boolean'];
+  anonymous: Scalars['Boolean'];
+  question: Question;
+  author?: Maybe<User>;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
 export type CreateReplyInput = {
   questionId: Scalars['ID'];
   content: Scalars['String'];
   anonymous: Scalars['Boolean'];
-};
-
-export type Subscription = {
-  __typename?: 'Subscription';
-  eventUpdated: Event;
-  questionRealtimeSearch: QuestionRealtimeSearchResult;
-  questionById: Question;
-  replyRealtimeSearch: ReplyRealtimeSearchResult;
-};
-
-
-export type SubscriptionEventUpdatedArgs = {
-  eventId: Scalars['ID'];
-};
-
-
-export type SubscriptionQuestionRealtimeSearchArgs = {
-  eventId: Scalars['String'];
-  hash: Scalars['String'];
-};
-
-
-export type SubscriptionQuestionByIdArgs = {
-  questionId: Scalars['String'];
-};
-
-
-export type SubscriptionReplyRealtimeSearchArgs = {
-  questionId: Scalars['String'];
-  hash: Scalars['String'];
-};
-
-export type QuestionRealtimeSearchResult = {
-  __typename?: 'QuestionRealtimeSearchResult';
-  totalCount: Scalars['Int'];
-  insertList: Array<Question>;
-  updateList: Array<Question>;
-  deleteList: Array<Scalars['ID']>;
-};
-
-export type ReplyRealtimeSearchResult = {
-  __typename?: 'ReplyRealtimeSearchResult';
-  totalCount: Scalars['Int'];
-  insertList: Array<Reply>;
-  updateList: Array<Reply>;
-  deleteList: Array<Scalars['ID']>;
 };
 
 export type PackageInfo = {
@@ -597,11 +463,6 @@ export type RemoveGuestMutationVariables = Exact<{
 export type RemoveGuestMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'removeGuest'>
-);
-
-export type QuestionPagedFieldsFragment = (
-  { __typename?: 'QuestionPaged' }
-  & Pick<QuestionPaged, 'hash' | 'limit' | 'offset' | 'totalCount' | 'hasNextPage'>
 );
 
 export type QuestionFieldsFragment = (
@@ -700,11 +561,6 @@ export type UpdateQuestionContentMutation = (
     { __typename?: 'Question' }
     & QuestionFieldsFragment
   ) }
-);
-
-export type ReplyPagedFieldsFragment = (
-  { __typename?: 'ReplyPaged' }
-  & Pick<ReplyPaged, 'hash' | 'limit' | 'offset' | 'totalCount' | 'hasNextPage'>
 );
 
 export type ReplyFieldsFragment = (
@@ -911,41 +767,6 @@ export type QuestionAudienceFieldsFragment = (
   )> }
 );
 
-export type QuestionsByEventAudienceQueryVariables = Exact<{
-  input: QuestionQueryInput;
-}>;
-
-
-export type QuestionsByEventAudienceQuery = (
-  { __typename?: 'Query' }
-  & { questionsByEventAudience: (
-    { __typename?: 'QuestionPaged' }
-    & { list: Array<(
-      { __typename?: 'Question' }
-      & QuestionAudienceFieldsFragment
-    )> }
-    & QuestionPagedFieldsFragment
-  ) }
-);
-
-export type QuestionsByMeQueryVariables = Exact<{
-  eventId: Scalars['ID'];
-  pagination: PaginationInput;
-}>;
-
-
-export type QuestionsByMeQuery = (
-  { __typename?: 'Query' }
-  & { questionsByMe: (
-    { __typename?: 'QuestionPaged' }
-    & { list: Array<(
-      { __typename?: 'Question' }
-      & QuestionAudienceFieldsFragment
-    )> }
-    & QuestionPagedFieldsFragment
-  ) }
-);
-
 export type CreateQuestionMutationVariables = Exact<{
   input: CreateQuestionInput;
 }>;
@@ -1016,23 +837,6 @@ export type QuestionWallFieldsFragment = (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'name' | 'avatar'>
   )> }
-);
-
-export type QuestionsByEventWallQueryVariables = Exact<{
-  input: QuestionQueryInput;
-}>;
-
-
-export type QuestionsByEventWallQuery = (
-  { __typename?: 'Query' }
-  & { questionsByEventWall: (
-    { __typename?: 'QuestionPaged' }
-    & { list: Array<(
-      { __typename?: 'Question' }
-      & QuestionWallFieldsFragment
-    )> }
-    & QuestionPagedFieldsFragment
-  ) }
 );
 
 export type EventCodeOptionsQueryVariables = Exact<{
@@ -1128,15 +932,6 @@ export type CheckEmailExistQuery = (
   & Pick<Query, 'checkEmailExist'>
 );
 
-export const QuestionPagedFieldsFragmentDoc = gql`
-    fragment QuestionPagedFields on QuestionPaged {
-  hash
-  limit
-  offset
-  totalCount
-  hasNextPage
-}
-    `;
 export const QuestionFieldsFragmentDoc = gql`
     fragment QuestionFields on Question {
   id
@@ -1153,15 +948,6 @@ export const QuestionFieldsFragmentDoc = gql`
     name
     avatar
   }
-}
-    `;
-export const ReplyPagedFieldsFragmentDoc = gql`
-    fragment ReplyPagedFields on ReplyPaged {
-  hash
-  limit
-  offset
-  totalCount
-  hasNextPage
 }
     `;
 export const ReplyFieldsFragmentDoc = gql`
@@ -2048,85 +1834,6 @@ export function useEventForLoginLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type EventForLoginQueryHookResult = ReturnType<typeof useEventForLoginQuery>;
 export type EventForLoginLazyQueryHookResult = ReturnType<typeof useEventForLoginLazyQuery>;
 export type EventForLoginQueryResult = Apollo.QueryResult<EventForLoginQuery, EventForLoginQueryVariables>;
-export const QuestionsByEventAudienceDocument = gql`
-    query QuestionsByEventAudience($input: QuestionQueryInput!) {
-  questionsByEventAudience(input: $input) {
-    ...QuestionPagedFields
-    list {
-      ...QuestionAudienceFields
-    }
-  }
-}
-    ${QuestionPagedFieldsFragmentDoc}
-${QuestionAudienceFieldsFragmentDoc}`;
-
-/**
- * __useQuestionsByEventAudienceQuery__
- *
- * To run a query within a React component, call `useQuestionsByEventAudienceQuery` and pass it any options that fit your needs.
- * When your component renders, `useQuestionsByEventAudienceQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useQuestionsByEventAudienceQuery({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useQuestionsByEventAudienceQuery(baseOptions: Apollo.QueryHookOptions<QuestionsByEventAudienceQuery, QuestionsByEventAudienceQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<QuestionsByEventAudienceQuery, QuestionsByEventAudienceQueryVariables>(QuestionsByEventAudienceDocument, options);
-      }
-export function useQuestionsByEventAudienceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<QuestionsByEventAudienceQuery, QuestionsByEventAudienceQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<QuestionsByEventAudienceQuery, QuestionsByEventAudienceQueryVariables>(QuestionsByEventAudienceDocument, options);
-        }
-export type QuestionsByEventAudienceQueryHookResult = ReturnType<typeof useQuestionsByEventAudienceQuery>;
-export type QuestionsByEventAudienceLazyQueryHookResult = ReturnType<typeof useQuestionsByEventAudienceLazyQuery>;
-export type QuestionsByEventAudienceQueryResult = Apollo.QueryResult<QuestionsByEventAudienceQuery, QuestionsByEventAudienceQueryVariables>;
-export const QuestionsByMeDocument = gql`
-    query QuestionsByMe($eventId: ID!, $pagination: PaginationInput!) {
-  questionsByMe(eventId: $eventId, pagination: $pagination) {
-    ...QuestionPagedFields
-    list {
-      ...QuestionAudienceFields
-    }
-  }
-}
-    ${QuestionPagedFieldsFragmentDoc}
-${QuestionAudienceFieldsFragmentDoc}`;
-
-/**
- * __useQuestionsByMeQuery__
- *
- * To run a query within a React component, call `useQuestionsByMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useQuestionsByMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useQuestionsByMeQuery({
- *   variables: {
- *      eventId: // value for 'eventId'
- *      pagination: // value for 'pagination'
- *   },
- * });
- */
-export function useQuestionsByMeQuery(baseOptions: Apollo.QueryHookOptions<QuestionsByMeQuery, QuestionsByMeQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<QuestionsByMeQuery, QuestionsByMeQueryVariables>(QuestionsByMeDocument, options);
-      }
-export function useQuestionsByMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<QuestionsByMeQuery, QuestionsByMeQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<QuestionsByMeQuery, QuestionsByMeQueryVariables>(QuestionsByMeDocument, options);
-        }
-export type QuestionsByMeQueryHookResult = ReturnType<typeof useQuestionsByMeQuery>;
-export type QuestionsByMeLazyQueryHookResult = ReturnType<typeof useQuestionsByMeLazyQuery>;
-export type QuestionsByMeQueryResult = Apollo.QueryResult<QuestionsByMeQuery, QuestionsByMeQueryVariables>;
 export const CreateQuestionDocument = gql`
     mutation CreateQuestion($input: CreateQuestionInput!) {
   createQuestion(input: $input) {
@@ -2293,45 +2000,6 @@ export function useJoinEventMutation(baseOptions?: Apollo.MutationHookOptions<Jo
 export type JoinEventMutationHookResult = ReturnType<typeof useJoinEventMutation>;
 export type JoinEventMutationResult = Apollo.MutationResult<JoinEventMutation>;
 export type JoinEventMutationOptions = Apollo.BaseMutationOptions<JoinEventMutation, JoinEventMutationVariables>;
-export const QuestionsByEventWallDocument = gql`
-    query QuestionsByEventWall($input: QuestionQueryInput!) {
-  questionsByEventWall(input: $input) {
-    ...QuestionPagedFields
-    list {
-      ...QuestionWallFields
-    }
-  }
-}
-    ${QuestionPagedFieldsFragmentDoc}
-${QuestionWallFieldsFragmentDoc}`;
-
-/**
- * __useQuestionsByEventWallQuery__
- *
- * To run a query within a React component, call `useQuestionsByEventWallQuery` and pass it any options that fit your needs.
- * When your component renders, `useQuestionsByEventWallQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useQuestionsByEventWallQuery({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useQuestionsByEventWallQuery(baseOptions: Apollo.QueryHookOptions<QuestionsByEventWallQuery, QuestionsByEventWallQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<QuestionsByEventWallQuery, QuestionsByEventWallQueryVariables>(QuestionsByEventWallDocument, options);
-      }
-export function useQuestionsByEventWallLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<QuestionsByEventWallQuery, QuestionsByEventWallQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<QuestionsByEventWallQuery, QuestionsByEventWallQueryVariables>(QuestionsByEventWallDocument, options);
-        }
-export type QuestionsByEventWallQueryHookResult = ReturnType<typeof useQuestionsByEventWallQuery>;
-export type QuestionsByEventWallLazyQueryHookResult = ReturnType<typeof useQuestionsByEventWallLazyQuery>;
-export type QuestionsByEventWallQueryResult = Apollo.QueryResult<QuestionsByEventWallQuery, QuestionsByEventWallQueryVariables>;
 export const EventCodeOptionsDocument = gql`
     query EventCodeOptions($code: String) {
   eventsByCode(code: $code) {

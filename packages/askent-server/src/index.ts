@@ -1,42 +1,44 @@
-import 'reflect-metadata'
-import { ApolloServer } from 'apollo-server'
-import { buildSchema } from './schema'
-import { createContext } from './context'
-import { connectPostgres } from './db'
-import { getAuthedUser } from './utils'
+import "reflect-metadata";
+import { ApolloServer } from "apollo-server";
+import buildSchema from "./schema";
+import { createContext } from "./context";
+import { connectPostgres } from "./db";
+import { getAuthedUser } from "./utils";
+import { applyMiddleware } from "graphql-middleware";
+import permissions from "./permissions";
 
-const { PORT = 4000 } = process.env
+const { PORT = 4000 } = process.env;
 
 async function bootstrap() {
-  await connectPostgres()
+  await connectPostgres();
 
   type ConnectionParamsType = {
-    Authorization?: string
-  }
+    Authorization?: string;
+  };
 
   const server = new ApolloServer({
-    schema: await buildSchema(),
+    schema: applyMiddleware(await buildSchema(), permissions),
     context: createContext,
     subscriptions: {
       // path: '/subscriptions',
       onConnect: (
         connectionParams: ConnectionParamsType,
         websocket,
-        context,
+        context
       ) => {
         if (connectionParams?.Authorization) {
-          return getAuthedUser(connectionParams.Authorization)
+          return getAuthedUser(connectionParams.Authorization);
         }
       },
     },
-    debug: process.env.NODE_ENV !== 'production',
-    playground: process.env.NODE_ENV !== 'production',
-  })
+    debug: process.env.NODE_ENV !== "production",
+    playground: process.env.NODE_ENV !== "production",
+  });
 
   // Start the server
-  const { url, subscriptionsUrl } = await server.listen({ port: PORT })
-  console.log(`Server is running, GraphQL Playground available at ${url}`)
-  console.log(`🚀 Subscriptions ready at ${subscriptionsUrl}`)
+  const { url, subscriptionsUrl } = await server.listen({ port: PORT });
+  console.log(`Server is running, GraphQL Playground available at ${url}`);
+  console.log(`🚀 Subscriptions ready at ${subscriptionsUrl}`);
 }
 
-bootstrap()
+bootstrap();

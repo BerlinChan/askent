@@ -5,7 +5,7 @@
     "target": "ES2019",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "esnext.asynciterable"],
     "strict": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
