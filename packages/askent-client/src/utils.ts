@@ -3,9 +3,8 @@ import { isAfter, isBefore, isEqual } from "date-fns";
 import {
   EventDateStatus,
   QuestionFieldsFragment,
-  QuestionFilter,
-  QuestionOrder,
 } from "./generated/graphqlHooks";
+import { QuestionFilter, QuestionOrder } from "./constant";
 import {
   Order_By,
   Question_Order_By,

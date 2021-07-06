@@ -1,6 +1,6 @@
 import React from "react";
 import { Menu, MenuItem, PopoverOrigin } from "@material-ui/core";
-import { QuestionOrder } from "../../generated/graphqlHooks";
+import { QuestionOrder } from "../../constant";
 import { FormattedMessage } from "react-intl";
 
 export const getQuestionOrderLabel = (value: QuestionOrder) => {

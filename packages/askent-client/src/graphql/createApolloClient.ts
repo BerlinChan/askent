@@ -10,12 +10,16 @@ import createCache from "./createCache";
 
 // Restore cache defaults to make the same one in server.js. Ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
 const cache = createCache();
+const getAuthToken = () =>
+  localStorage.getItem(AUTH_TOKEN)
+    ? `Bearer ${localStorage.getItem(AUTH_TOKEN)}`
+    : "";
 
 const authMiddleware = setContext((operation, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: localStorage.getItem(AUTH_TOKEN) || "",
+      Authorization: getAuthToken(),
     },
   };
 });
@@ -28,7 +32,7 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
     connectionParams: {
-      Authorization: localStorage.getItem(AUTH_TOKEN) || "",
+      Authorization: getAuthToken(),
     } as ConnectionParamsType,
   },
 });
@@ -43,7 +47,9 @@ const hasuraWsLink = new WebSocketLink({
   options: {
     reconnect: true,
     connectionParams: {
-      Authorization: localStorage.getItem(AUTH_TOKEN) || "",
+      headers: {
+        Authorization: getAuthToken(),
+      },
     } as ConnectionParamsType,
   },
 });

@@ -1,15 +1,15 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { QueryResult } from "@apollo/client";
-import {
-  MeQuery,
-  MeQueryVariables,
-  QuestionOrder,
-  QuestionFilter,
-} from "../../../../generated/graphqlHooks";
+import { MeQuery, MeQueryVariables } from "../../../../generated/graphqlHooks";
 import QuestionList from "./QuestionList";
 import AskFabDialog from "./AskFabDialog";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_OFFSET } from "../../../../constant";
+import {
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+  QuestionOrder,
+  QuestionFilter,
+} from "../../../../constant";
 import {
   EventDetailLiveQueryFieldsFragment,
   QuestionLiveQueryAudienceSubscriptionVariables,
@@ -35,8 +35,8 @@ const LiveQuestions: React.FC<Props> = ({
   const questionOrderState = React.useState<QuestionOrder>(
     QuestionOrder.Popular
   );
+  const openAskDialogState = React.useState(false);
   const questionQueryInput: QuestionLiveQueryAudienceSubscriptionVariables = {
-    userId: userQueryResult.data?.me.id,
     where: { eventId: { _eq: id } },
     order_by: getQuestionOrderByCondition(questionOrderState[0]),
     limit: questionQueryState[0].limit,
@@ -51,9 +51,10 @@ const LiveQuestions: React.FC<Props> = ({
         questionOrderState={questionOrderState}
         questionQueryState={questionQueryState}
         questionQueryInput={questionQueryInput}
+        openAskDialogState={openAskDialogState}
       />
 
-      <AskFabDialog />
+      <AskFabDialog openAskDialogState={openAskDialogState} />
     </React.Fragment>
   );
 };

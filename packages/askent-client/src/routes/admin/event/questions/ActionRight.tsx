@@ -11,10 +11,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
-import {
-  QuestionFilter,
-  QuestionOrder,
-} from "../../../../generated/graphqlHooks";
+import { QuestionFilter, QuestionOrder } from "../../../../constant";
 import QuestionOrderMenu from "../../../../components/QuestionOrderMenu";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -64,8 +61,8 @@ const getQuestionFilterLabel = (value: QuestionFilter) => {
 export type QuestionQueryStateType = {
   filter: QuestionFilter;
   searchString?: string;
-  limit:number;
-  offset:number;
+  limit: number;
+  offset: number;
 };
 interface Props {
   questionQueryState: [
@@ -84,10 +81,8 @@ const ActionRight: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const [
-    filterAnchorEl,
-    setFilterAnchorEl,
-  ] = React.useState<null | HTMLElement>(null);
+  const [filterAnchorEl, setFilterAnchorEl] =
+    React.useState<null | HTMLElement>(null);
   const searchRef = React.useRef<HTMLInputElement>(null);
   const orderMenuElState = React.useState<null | HTMLElement>(null);
   const [queryState, setQueryState] = questionQueryState;

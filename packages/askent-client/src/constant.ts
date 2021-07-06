@@ -1,3 +1,4 @@
+
 export const AUTH_TOKEN = "AUTH_TOKEN";
 
 export const DEFAULT_PAGE_OFFSET = 0;
@@ -11,3 +12,20 @@ export const REPLY_CONTENT_MAX_LENGTH = 1000;
 export const EVENT_CODE_MAX_LENGTH = 20;
 
 export const HASURA_LIVE_QUERY = /LiveQuery/;
+
+export enum QuestionFilter {
+  Review = "Review",
+  Publish = "Publish",
+  Archive = "Archive",
+
+  Starred = "Starred",
+  // Anwsered = 'Anwsered',
+  // Dismissed = 'Dismissed',
+}
+
+export enum QuestionOrder {
+  Popular = "Popular",
+  Recent = "Recent",
+  Oldest = "Oldest",
+  Starred = "Starred",
+}

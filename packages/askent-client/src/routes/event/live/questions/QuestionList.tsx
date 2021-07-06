@@ -3,14 +3,15 @@ import { QueryResult } from "@apollo/client";
 import {
   MeQuery,
   MeQueryVariables,
-  QuestionOrder,
 } from "../../../../generated/graphqlHooks";
+import { Props as AskFabDialogProps } from "./AskFabDialog";
 import QuestionItem from "./QuestionItem";
 import QuestionItemMenu from "./QuestionItemMenu";
 import QuestionListHeader from "./QuestionListHeader";
+import ListFooter from "../../../../components/ListFooter";
+import ReplyDialog from "./reply/ReplyDialog";
 import { Virtuoso } from "react-virtuoso";
 import { getHasNextPage } from "../../../../utils";
-import ListFooter from "../../../../components/ListFooter";
 import {
   EventDetailLiveQueryFieldsFragment,
   QuestionLiveQueryAudienceFieldsFragment,
@@ -19,10 +20,11 @@ import {
   useQuestionLiveQueryAudienceSubscription,
 } from "../../../../generated/hasuraHooks";
 import { QuestionQueryStateType } from "../../../admin/event/questions/ActionRight";
+import { QuestionOrder } from "../../../../constant";
 
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
-  eventDetailData:EventDetailLiveQueryFieldsFragment|undefined;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
   questionOrderState: [
     QuestionOrder,
     React.Dispatch<React.SetStateAction<QuestionOrder>>
@@ -32,6 +34,7 @@ interface Props {
     React.Dispatch<React.SetStateAction<QuestionQueryStateType>>
   ];
   questionQueryInput: QuestionLiveQueryAudienceSubscriptionVariables;
+  openAskDialogState: AskFabDialogProps["openAskDialogState"];
 }
 
 const QuestionList: React.FC<Props> = ({
@@ -40,6 +43,7 @@ const QuestionList: React.FC<Props> = ({
   questionOrderState,
   questionQueryState,
   questionQueryInput,
+  openAskDialogState,
 }) => {
   const [isScrolling, setIsScrolling] = React.useState(false);
   const moreMenuState = React.useState<{
@@ -57,6 +61,11 @@ const QuestionList: React.FC<Props> = ({
     questionQueryInput.offset,
     questionQueryInput.limit,
     questionCount
+  );
+  const replyDialogState = React.useState({ open: false, questionId: "" });
+
+  const questionMoreTarget = questionLiveQueryData.find(
+    (question) => question.id === moreMenuState[0].id
   );
 
   useQuestionLiveQueryAudienceSubscription({
@@ -121,6 +130,7 @@ const QuestionList: React.FC<Props> = ({
         editContent={editContentIdsState[0].includes(question.id)}
         handleEditContentToggle={handleEditContentToggle}
         editContentInputRef={editContentInputRef}
+        replyDialogState={replyDialogState}
         isScrolling={isScrolling}
       />
     );
@@ -137,11 +147,13 @@ const QuestionList: React.FC<Props> = ({
         endReached={loadMore}
         itemContent={renderListItem}
         components={{
-          Header: () =>
+          Header: () => (
             <QuestionListHeader
               questionOrderState={questionOrderState}
               questionLiveQueryCount={questionCount}
-            />,
+              openAskDialogState={openAskDialogState}
+            />
+          ),
           Footer: () => (
             <ListFooter loading={loading} hasNextPage={hasNextPage} />
           ),
@@ -149,11 +161,18 @@ const QuestionList: React.FC<Props> = ({
       />
 
       <QuestionItemMenu
+        userQueryResult={userQueryResult}
         eventDetailData={eventDetailData}
-        questionList={questionLiveQueryData}
+        question={questionMoreTarget}
         moreMenuState={moreMenuState}
         editContentInputRef={editContentInputRef}
         editContentIdsState={editContentIdsState}
+        replyDialogState={replyDialogState}
+      />
+      <ReplyDialog
+        replyDialogState={replyDialogState}
+        eventDetailData={eventDetailData}
+        userQueryResult={userQueryResult}
       />
     </React.Fragment>
   );

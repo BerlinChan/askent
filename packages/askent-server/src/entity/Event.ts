@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   ManyToMany,
   JoinTable,
   ManyToOne,
@@ -51,4 +52,7 @@ export class Event {
 
   @UpdateDateColumn()
   public readonly updatedAt!: Date
+
+  @DeleteDateColumn({ nullable: true })
+  public readonly deletedAt?: Date
 }

@@ -102,7 +102,7 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
         open={Boolean(menuAnchorEl)}
         onClose={handleMenuClose}
       >
-        {roles?.includes(RoleName.Admin) && (
+        {roles?.includes(RoleName.User) && (
           <MenuItem
             onClick={() => {
               history.replace("/admin");
