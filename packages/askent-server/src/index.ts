@@ -32,7 +32,9 @@ async function bootstrap() {
       },
     },
     cors: {
-      origin: /askent\.berlinchan\.com/,
+      origin: ["askent.berlinchan.com"].concat(
+        process.env.NODE_ENV !== "production" ? ["localhost"] : []
+      ),
     },
     debug: process.env.NODE_ENV !== "production",
     playground: process.env.NODE_ENV !== "production",
