@@ -1,60 +1,64 @@
-import { rule, shield, allow, deny } from "graphql-shield";
+import { rule, shield, and, allow } from "graphql-shield";
+import { createRateLimitRule } from "graphql-rate-limit";
 import { Context } from "./context";
 
 const isAuthenticated = rule()((parent, args, { user }: Context) => {
-  return user !== null;
+  return user !== undefined;
 });
+const rateLimitRule = createRateLimitRule({
+  identifyContext: (ctx: Context) => ctx?.user?.id || "",
+})({ window: "1s", max: 10 });
 
 const permissions = shield(
   {
     Query: {
-      "*": deny,
+      "*": rateLimitRule,
 
       // Event
-      eventById: isAuthenticated,
-      eventsByMe: isAuthenticated,
-      eventsByCode: allow,
-      checkEventCodeExist: allow,
-      isEventAudience: allow,
+      eventById: and(isAuthenticated, rateLimitRule),
+      eventsByMe: and(isAuthenticated, rateLimitRule),
+      eventsByCode: rateLimitRule,
+      checkEventCodeExist: rateLimitRule,
+      isEventAudience: rateLimitRule,
 
       // User
-      me: isAuthenticated,
-      checkEmailExist: allow,
-      pgp: allow,
+      me: and(isAuthenticated, rateLimitRule),
+      checkEmailExist: rateLimitRule,
+      pgp: rateLimitRule,
     },
     Mutation: {
-      "*": deny,
+      "*": rateLimitRule,
 
       // Event
-      createEvent: isAuthenticated,
-      updateEvent: isAuthenticated,
-      deleteEvent: isAuthenticated,
-      joinEvent: isAuthenticated,
-      addGuest: isAuthenticated,
-      removeGuest: isAuthenticated,
+      createEvent: and(isAuthenticated, rateLimitRule),
+      updateEvent: and(isAuthenticated, rateLimitRule),
+      deleteEvent: and(isAuthenticated, rateLimitRule),
+      joinEvent: and(isAuthenticated, rateLimitRule),
+      addGuest: and(isAuthenticated, rateLimitRule),
+      removeGuest: and(isAuthenticated, rateLimitRule),
 
       // Question
-      createQuestion: isAuthenticated,
-      updateQuestionReviewStatus: isAuthenticated,
-      updateQuestionContent: isAuthenticated,
-      updateQuestionStar: isAuthenticated,
-      updateQuestionTop: isAuthenticated,
-      deleteQuestion: isAuthenticated,
-      deleteAllReviewQuestions: isAuthenticated,
-      publishAllReviewQuestions: isAuthenticated,
-      voteUpQuestion: isAuthenticated,
+      createQuestion: and(isAuthenticated, rateLimitRule),
+      updateQuestionReviewStatus: and(isAuthenticated, rateLimitRule),
+      updateQuestionContent: and(isAuthenticated, rateLimitRule),
+      updateQuestionStar: and(isAuthenticated, rateLimitRule),
+      updateQuestionTop: and(isAuthenticated, rateLimitRule),
+      deleteQuestion: and(isAuthenticated, rateLimitRule),
+      deleteAllReviewQuestions: and(isAuthenticated, rateLimitRule),
+      publishAllReviewQuestions: and(isAuthenticated, rateLimitRule),
+      voteUpQuestion: and(isAuthenticated, rateLimitRule),
 
       // Reply
-      createReply: isAuthenticated,
-      updateReplyContent: isAuthenticated,
-      updateReplyReviewStatus: isAuthenticated,
-      deleteReply: isAuthenticated,
+      createReply: and(isAuthenticated, rateLimitRule),
+      updateReplyContent: and(isAuthenticated, rateLimitRule),
+      updateReplyReviewStatus: and(isAuthenticated, rateLimitRule),
+      deleteReply: and(isAuthenticated, rateLimitRule),
 
       // User
-      login: allow,
-      loginAudience: allow,
-      signup: allow,
-      updateUser: isAuthenticated,
+      login: rateLimitRule,
+      loginAudience: rateLimitRule,
+      signup: rateLimitRule,
+      updateUser: and(isAuthenticated, rateLimitRule),
     },
   },
   {
