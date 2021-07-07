@@ -31,11 +31,6 @@ async function bootstrap() {
         }
       },
     },
-    cors: {
-      origin: [process.env.SITE_URL as string].concat(
-        process.env.NODE_ENV !== "production" ? ["localhost"] : []
-      ),
-    },
     debug: process.env.NODE_ENV !== "production",
     playground: process.env.NODE_ENV !== "production",
   });
