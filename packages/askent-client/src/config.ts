@@ -1,8 +1,8 @@
 const config = {
-  apiUri: "https://routerwh.berlinchan.com:49105/graphql",
-  webSocketUri: "wss://routerwh.berlinchan.com:49105/graphql",
-  hasuraUri: "https://routerwh.berlinchan.com:49104/v1/graphql",
-  hasuraWsUri: "wss://routerwh.berlinchan.com:49104/v1/graphql",
+  apiUri: "https://askent-server.berlinchan.com:48444/graphql",
+  webSocketUri: "wss://askent-server.berlinchan.com:48444/graphql",
+  hasuraUri: "https://hasura.berlinchan.com:48444/v1/graphql",
+  hasuraWsUri: "wss://hasura.berlinchan.com:48444/v1/graphql",
 };
 
 export default config;
