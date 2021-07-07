@@ -32,7 +32,7 @@ async function bootstrap() {
       },
     },
     cors: {
-      origin: ["askent.berlinchan.com"].concat(
+      origin: [process.env.SITE_URL as string].concat(
         process.env.NODE_ENV !== "production" ? ["localhost"] : []
       ),
     },
