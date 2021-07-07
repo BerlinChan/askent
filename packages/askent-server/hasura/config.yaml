@@ -1,5 +1,5 @@
 version: 3
-endpoint: http://routerwh.berlinchan.com:49104/
+endpoint: https://hasura.berlinchan.com:48444/
 api_paths:
   v1_query: v1/query
   v2_query: v2/query

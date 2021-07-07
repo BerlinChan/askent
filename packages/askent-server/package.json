@@ -17,7 +17,7 @@
     "hausra:export": "hasura metadata export --project ./hasura --envfile ../.env",
     "hasura:apply": "hasura metadata apply --project ./hasura --envfile ../.env",
     "hasura:reload": "hasura metadata reload --project ./hasura --envfile ../.env",
-    "docker:build": "docker build --pull --rm -f Dockerfile -t askent-server:dev ."
+    "docker:build": "docker build --pull --rm -f Dockerfile -t askent-server:latest ."
   },
   "dependencies": {
     "apollo-server": "2.25.2",
