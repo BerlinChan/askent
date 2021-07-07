@@ -31,6 +31,9 @@ async function bootstrap() {
         }
       },
     },
+    cors: {
+      origin: /askent\.berlinchan\.com/,
+    },
     debug: process.env.NODE_ENV !== "production",
     playground: process.env.NODE_ENV !== "production",
   });
