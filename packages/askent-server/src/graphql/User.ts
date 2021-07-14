@@ -123,7 +123,7 @@ export class UserResolver {
 
   @Query((returns) => PGP, { description: "For demo use" })
   pgp(): PGP {
-    return { pubKey: process.env.JWT_PUB_KEY as string };
+    return { pubKey: "pgpPubKey" };
   }
 
   @Mutation((returns) => AuthPayload)
