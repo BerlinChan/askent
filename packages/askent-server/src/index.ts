@@ -7,7 +7,7 @@ import { getAuthedUser } from "./utils";
 import { applyMiddleware } from "graphql-middleware";
 import permissions from "./permissions";
 
-const { PORT = 4000 } = process.env;
+const { PORT = 4000, NODE_ENV = "production" } = process.env;
 
 async function bootstrap() {
   await connectPostgres();
@@ -31,8 +31,8 @@ async function bootstrap() {
         }
       },
     },
-    debug: process.env.NODE_ENV !== "production",
-    playground: process.env.NODE_ENV !== "production",
+    debug: NODE_ENV !== "production",
+    playground: NODE_ENV !== "production",
   });
 
   // Start the server

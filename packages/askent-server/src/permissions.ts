@@ -3,10 +3,10 @@ import { createRateLimitRule } from "graphql-rate-limit";
 import { Context } from "./context";
 
 const isAuthenticated = rule()((parent, args, { user }: Context) => {
-  return user !== undefined;
+  return Boolean(user?.id);
 });
 const rateLimitRule = createRateLimitRule({
-  identifyContext: (ctx: Context) => ctx?.user?.id || "",
+  identifyContext: ({ user }: Context) => user?.id || "",
 })({ window: "1s", max: 10 });
 
 const permissions = shield(
