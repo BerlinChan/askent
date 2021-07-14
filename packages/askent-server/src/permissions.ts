@@ -1,4 +1,4 @@
-import { rule, shield, and, allow } from "graphql-shield";
+import { rule, shield, and } from "graphql-shield";
 import { createRateLimitRule } from "graphql-rate-limit";
 import { Context } from "./context";
 
@@ -62,7 +62,7 @@ const permissions = shield(
     },
   },
   {
-    fallbackRule: allow,
+    fallbackRule: rateLimitRule,
   }
 );
 
