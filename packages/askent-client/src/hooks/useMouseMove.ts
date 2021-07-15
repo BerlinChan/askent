@@ -22,10 +22,12 @@ export function useMouseMove(timeout: number = 2000) {
     window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
+      if (timer !== null) {
+        window.clearTimeout(timer);
+      }
       window.removeEventListener("mousemove", handleMouseMove);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   return { mouseEvent, mouseStop };
 }

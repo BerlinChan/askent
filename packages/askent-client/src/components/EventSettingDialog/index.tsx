@@ -122,9 +122,7 @@ const EventSettingDialog: React.FC<Props> = ({
     if (eventId) {
       eventByIdQuery({ variables: { eventId } });
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventId]);
+  });
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);

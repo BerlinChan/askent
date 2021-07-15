@@ -71,8 +71,7 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
     } else if (isEventAudienceData?.isEventAudience) {
       history.replace(`/event/${id}/live/questions`);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isEventAudienceData]);
+  });
 
   const handleEventLogin = async () => {
     if (!token) {
