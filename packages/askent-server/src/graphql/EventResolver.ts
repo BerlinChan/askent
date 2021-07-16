@@ -246,7 +246,10 @@ export class EventResolver implements ResolverInterface<Event> {
     return eventId;
   }
 
-  @Mutation((returns) => User)
+  @Mutation((returns) => User, {
+    description:
+      "Add a user as guest administrator, who can cooperating manage the event.",
+  })
   async addGuest(
     @Arg("eventId", (returns) => ID) eventId: string,
     @Arg("email") email: string

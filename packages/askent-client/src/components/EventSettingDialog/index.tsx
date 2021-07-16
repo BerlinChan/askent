@@ -105,24 +105,22 @@ const EventSettingDialog: React.FC<Props> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [eventId, setEventId] = eventIdState;
   const [tabIndex, setTabIndex] = React.useState(0);
-  const [
-    eventByIdQuery,
-    { data: eventData, loading: eventLoading },
-  ] = useEventByIdLazyQuery();
+  const [eventByIdQuery, { data: eventData, loading: eventLoading }] =
+    useEventByIdLazyQuery();
   const [
     checkEventCodeExistLazyQuery,
     { data: checkEventCodeData, loading: checkEventCodeLoading },
   ] = useCheckEventCodeExistLazyQuery();
-  const [
-    updateEventMutation,
-    { loading: updateEventLoading },
-  ] = useUpdateEventMutation();
+  const [updateEventMutation, { loading: updateEventLoading }] =
+    useUpdateEventMutation();
 
   React.useEffect(() => {
     if (eventId) {
       eventByIdQuery({ variables: { eventId } });
     }
-  });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventId]);
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabIndex(newValue);
@@ -264,6 +262,7 @@ const EventSettingDialog: React.FC<Props> = ({
               />
             </Box>
           </DialogContent>
+
           <DialogActions>
             <Button onClick={handleClose}>
               <FormattedMessage id="Cancel" defaultMessage="Cancel" />
