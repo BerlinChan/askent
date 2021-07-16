@@ -83,7 +83,7 @@ const link = from([
       //   default:
       // }
     }
-    if (networkError) console.warn(`[Network error]: ${networkError}`);
+    if (networkError) console.warn("[Network error]:", networkError);
   }),
   authMiddleware,
   // using the ability to split links, you can send data to each link

@@ -18,8 +18,8 @@ const useStyles = makeStyles((theme: Theme) =>
     dateRange: {
       display: "flex",
       justifyContent: "space-between",
-      "& > *": { width: "47%" }
-    }
+      "& > *": { width: "47%" },
+    },
   })
 );
 
@@ -69,7 +69,7 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                 name="name"
                 label={formatMessage({
                   id: "Event_name",
-                  defaultMessage: "Event name"
+                  defaultMessage: "Event name",
                 })}
                 margin="normal"
                 size="small"
@@ -81,7 +81,7 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                   name="startAt"
                   label={formatMessage({
                     id: "Start_datetime",
-                    defaultMessage: "Start date time"
+                    defaultMessage: "Start date time",
                   })}
                   variant="inline"
                   margin="normal"
@@ -95,7 +95,7 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                   name="endAt"
                   label={formatMessage({
                     id: "End_datetime",
-                    defaultMessage: "End date time"
+                    defaultMessage: "End date time",
                   })}
                   variant="inline"
                   margin="normal"
@@ -111,7 +111,7 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                 name="code"
                 label={formatMessage({
                   id: "Event_code",
-                  defaultMessage: "Event code"
+                  defaultMessage: "Event code",
                 })}
                 margin="normal"
                 size="small"
@@ -124,7 +124,7 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                 name="eventLink"
                 label={formatMessage({
                   id: "Event_link",
-                  defaultMessage: "Event link"
+                  defaultMessage: "Event link",
                 })}
                 size="small"
                 InputProps={{
@@ -134,15 +134,16 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                       <Tooltip
                         arrow
                         placement="right"
+                        leaveDelay={3000}
                         title={
                           showCopies
                             ? formatMessage({
                                 id: "Copied!",
-                                defaultMessage: "Copied!"
+                                defaultMessage: "Copied!",
                               })
                             : formatMessage({
                                 id: "Copy to clipboard",
-                                defaultMessage: "Copy to clipboard"
+                                defaultMessage: "Copy to clipboard",
                               })
                         }
                       >
@@ -154,20 +155,20 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                         </IconButton>
                       </Tooltip>
                     </InputAdornment>
-                  )
+                  ),
                 }}
                 onFocus={handleEventLinkFocus}
               />
             </Box>
-          )
+          ),
         },
         {
           titleIcon: <SecurityIcon />,
           titleText: (
             <FormattedMessage id="Security" defaultMessage="Security" />
           ),
-          body: <Box></Box>
-        }
+          body: <Box></Box>,
+        },
       ]}
       defaultActiveKey={[0]}
     />

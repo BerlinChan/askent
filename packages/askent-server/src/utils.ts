@@ -8,8 +8,8 @@ export type TokenPayload = {
   iat?: number;
   [CLAIMS_NAMESPACE]: {
     "x-hasura-user-id": string;
-    "x-hasura-default-role": string;
-    "x-hasura-allowed-roles": string[];
+    "x-hasura-default-role": RoleName;
+    "x-hasura-allowed-roles": RoleName[];
   };
 };
 

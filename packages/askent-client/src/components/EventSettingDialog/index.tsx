@@ -105,18 +105,14 @@ const EventSettingDialog: React.FC<Props> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [eventId, setEventId] = eventIdState;
   const [tabIndex, setTabIndex] = React.useState(0);
-  const [
-    eventByIdQuery,
-    { data: eventData, loading: eventLoading },
-  ] = useEventByIdLazyQuery();
+  const [eventByIdQuery, { data: eventData, loading: eventLoading }] =
+    useEventByIdLazyQuery();
   const [
     checkEventCodeExistLazyQuery,
     { data: checkEventCodeData, loading: checkEventCodeLoading },
   ] = useCheckEventCodeExistLazyQuery();
-  const [
-    updateEventMutation,
-    { loading: updateEventLoading },
-  ] = useUpdateEventMutation();
+  const [updateEventMutation, { loading: updateEventLoading }] =
+    useUpdateEventMutation();
 
   React.useEffect(() => {
     if (eventId) {
@@ -266,6 +262,7 @@ const EventSettingDialog: React.FC<Props> = ({
               />
             </Box>
           </DialogContent>
+
           <DialogActions>
             <Button onClick={handleClose}>
               <FormattedMessage id="Cancel" defaultMessage="Cancel" />

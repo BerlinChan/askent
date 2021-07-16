@@ -5,7 +5,7 @@ import {
   Typography,
   Card,
   CardActions,
-  CardContent
+  CardContent,
 } from "@material-ui/core";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -21,16 +21,16 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     loginBox: {
       textAlign: "center",
-      marginTop: theme.spacing(4)
+      marginTop: theme.spacing(4),
     },
     form: {
       width: 475,
       marginLeft: "auto",
-      marginRight: "auto"
+      marginRight: "auto",
     },
     card: {
-      padding: theme.spacing(2)
-    }
+      padding: theme.spacing(2),
+    },
   })
 );
 
@@ -55,18 +55,16 @@ const Login: React.FC = () => {
       <Formik
         initialValues={{ email: "", password: "" }}
         validationSchema={Yup.object({
-          email: Yup.string()
-            .max(EMAIL_MAX_LENGTH)
-            .email()
-            .required(),
-          password: Yup.string()
-            .max(PASSWORD_MAX_LENGTH)
-            .required()
+          email: Yup.string().max(EMAIL_MAX_LENGTH).email().required(),
+          password: Yup.string().max(PASSWORD_MAX_LENGTH).required(),
         })}
-        onSubmit={async values => {
+        onSubmit={async (values) => {
           const { data } = await loginMutation({ variables: values });
           setToken(data?.login.token || "");
           history.replace("/admin");
+          
+          // fix Hasura subscription auth, https://github.com/apollographql/subscriptions-transport-ws/issues/171
+          window.location.reload();
         }}
       >
         <Form className={classes.form}>
@@ -80,7 +78,7 @@ const Login: React.FC = () => {
                 name="email"
                 label={formatMessage({
                   id: "Email",
-                  defaultMessage: "Email"
+                  defaultMessage: "Email",
                 })}
                 type="email"
                 margin="normal"
@@ -92,7 +90,7 @@ const Login: React.FC = () => {
                 name="password"
                 label={formatMessage({
                   id: "Password",
-                  defaultMessage: "Password"
+                  defaultMessage: "Password",
                 })}
                 type="password"
                 margin="normal"

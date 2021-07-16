@@ -12,6 +12,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  Grid,
 } from "@material-ui/core";
 import HoverMenu from "material-ui-popup-state/HoverMenu";
 import {
@@ -26,6 +27,10 @@ import FullscreenIcon from "@material-ui/icons/Fullscreen";
 import LaunchIcon from "@material-ui/icons/Launch";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 import copy from "copy-to-clipboard";
+import screenfull, { Screenfull } from "screenfull";
+import { WallThemeProvider } from "../../../components/Providers";
+import loadable from "@loadable/component";
+import Loading from "../../../components/Loading";
 
 const StyledMenuItem = withStyles({
   root: { whiteSpace: "unset", width: 280 },
@@ -61,6 +66,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const WallComponent = loadable(() => import("../../event/wall"), {
+  fallback: <Loading />,
+});
+
 interface Props {}
 
 const PresentModeButton: React.FC<Props> = () => {
@@ -72,7 +81,23 @@ const PresentModeButton: React.FC<Props> = () => {
     variant: "popover",
     popupId: "presentModeMenu",
   });
+  const _screenfull = screenfull as Screenfull;
+  const fullscreenWallRef = React.useRef<Element>();
+  const [fullscreen, setFullscreen] = React.useState(false);
 
+  React.useEffect(() => {
+    if (_screenfull.isEnabled) {
+      _screenfull.on("change", handleFullscreenChange);
+    }
+
+    return () => {
+      _screenfull.off("change", handleFullscreenChange);
+    };
+  });
+
+  const handleFullscreenChange = () => {
+    setFullscreen(_screenfull.isFullscreen);
+  };
   const handleCopyEventLink = () => {
     if (copy(`${window.location.origin}/event/${id}`)) {
       enqueueSnackbar(
@@ -99,7 +124,21 @@ const PresentModeButton: React.FC<Props> = () => {
         defaultMessage:
           "Display audience questions or poll results on a big screen",
       }),
-      handleClick: () => {},
+      handleClick: () => {
+        if (_screenfull.isEnabled) {
+          _screenfull.request(fullscreenWallRef.current);
+        } else {
+          enqueueSnackbar(
+            formatMessage({
+              id: "Your browser does not support fullscreen.",
+              defaultMessage: "Your browser does not support fullscreen.",
+            }),
+            {
+              variant: "warning",
+            }
+          );
+        }
+      },
     },
     {
       icon: <LaunchIcon color="inherit" fontSize="inherit" />,
@@ -108,8 +147,7 @@ const PresentModeButton: React.FC<Props> = () => {
         defaultMessage: "Present on another screen",
       }),
       secondary: formatMessage({
-        id:
-          "Open Present mode in a new window and display it on your extended screen",
+        id: "Open Present mode in a new window and display it on your extended screen",
         defaultMessage:
           "Open Present mode in a new window and display it on your extended screen",
       }),
@@ -182,6 +220,14 @@ const PresentModeButton: React.FC<Props> = () => {
           />
         </StyledMenuItem>
       </HoverMenu>
+
+      <Grid innerRef={fullscreenWallRef}>
+        {fullscreen ? (
+          <WallThemeProvider>
+            <WallComponent />
+          </WallThemeProvider>
+        ) : null}
+      </Grid>
     </React.Fragment>
   );
 };
