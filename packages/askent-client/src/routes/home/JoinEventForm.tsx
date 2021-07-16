@@ -4,7 +4,7 @@ import {
   InputAdornment,
   Paper,
   CircularProgress,
-  TextField
+  TextField,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -14,41 +14,37 @@ import * as Yup from "yup";
 import { EVENT_CODE_MAX_LENGTH } from "../../constant";
 import {
   useEventCodeOptionsLazyQuery,
-  Event
+  Event,
 } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     joinForm: {
-      padding: theme.spacing(6, 8)
-    }
+      padding: theme.spacing(6, 8),
+    },
   })
 );
 
-const JoinEventForm: React.FC = props => {
+const JoinEventForm: React.FC = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const [
-    eventCodeOptionsLazyQuery,
-    { data, loading }
-  ] = useEventCodeOptionsLazyQuery();
+  const [eventCodeOptionsLazyQuery, { data, loading }] =
+    useEventCodeOptionsLazyQuery();
 
   return (
     <Paper>
       <Formik
         initialValues={{ code: "", id: "" }}
         validationSchema={Yup.object({
-          code: Yup.string()
-            .max(EVENT_CODE_MAX_LENGTH)
-            .required(),
-          id: Yup.string().required()
+          code: Yup.string().max(EVENT_CODE_MAX_LENGTH).required(),
+          id: Yup.string().required(),
         })}
-        onSubmit={async values => {
+        onSubmit={async (values) => {
           history.push(`/event/${values.id}/login`);
         }}
       >
-        {formProps => (
+        {(formProps) => (
           <Form className={classes.joinForm}>
             <Autocomplete
               clearOnEscape
@@ -56,7 +52,7 @@ const JoinEventForm: React.FC = props => {
               onOpen={() => eventCodeOptionsLazyQuery()}
               onInputChange={(event, value, reason) => {
                 eventCodeOptionsLazyQuery({
-                  variables: { code: value }
+                  variables: { code: value },
                 });
               }}
               onChange={(
@@ -66,31 +62,24 @@ const JoinEventForm: React.FC = props => {
                   "id" | "code" | "name" | "startAt" | "endAt"
                 > | null
               ) => {
-                formProps.setTouched({ code: true, id: true });
                 formProps.setValues({
                   code: newValue?.code || "",
-                  id: newValue?.id || ""
+                  id: newValue?.id || "",
                 });
               }}
               getOptionSelected={(option, value) => option.id === value.id}
-              getOptionLabel={option => option.code}
+              getOptionLabel={(option) => option.code}
               options={data?.eventsByCode || []}
               loading={loading}
-              renderInput={params => (
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   fullWidth
                   label="Event Code"
                   variant="outlined"
                   margin="normal"
-                  error={Boolean(
-                    formProps.touched.code && formProps.errors.code
-                  )}
-                  helperText={
-                    formProps.touched.code && formProps.errors.code
-                      ? formProps.errors.code
-                      : " "
-                  }
+                  error={Boolean(formProps.errors.code)}
+                  helperText={formProps.errors.code}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
@@ -103,7 +92,7 @@ const JoinEventForm: React.FC = props => {
                         ) : null}
                         {params.InputProps.endAdornment}
                       </InputAdornment>
-                    )
+                    ),
                   }}
                 />
               )}
