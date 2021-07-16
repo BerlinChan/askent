@@ -1,0 +1,2 @@
+(this["webpackJsonpaskent-client"]=this["webpackJsonpaskent-client"]||[]).push([[27],{663:function(t,e,n){"use strict";n.r(e);n(0);var c=n(9);e.default=function(){return Object(c.jsx)("div",{children:Object(c.jsx)("h2",{children:"About"})})}}}]);
+//# sourceMappingURL=27.a140c5d0.chunk.js.map
