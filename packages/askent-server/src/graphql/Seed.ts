@@ -84,11 +84,11 @@ export class SeedResolver {
     const question = await this.questionRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.event', 'event')
-      .leftJoinAndSelect('event.owner', 'owner', 'owner.id = :authorId', {
-        authorId,
+      .leftJoinAndSelect('event.owner', 'owner', 'owner.id = :ownerId', {
+        ownerId: authorId,
       })
-      .leftJoinAndSelect('event.guestes', 'guest', 'guest.id = :authorId', {
-        authorId,
+      .leftJoinAndSelect('event.guestes', 'guest', 'guest.id = :guestId', {
+        guestId: authorId,
       })
       .where('question.id = :questionId', { questionId })
       .getOne()

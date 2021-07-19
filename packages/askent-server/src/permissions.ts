@@ -1,6 +1,8 @@
-import { rule, shield, and } from "graphql-shield";
+import { rule, shield, and, race } from "graphql-shield";
 import { createRateLimitRule } from "graphql-rate-limit";
 import { Context } from "./context";
+import { getRepository } from "typeorm";
+import { Event as EventEntity } from "./entity/Event";
 
 const isAuthenticated = rule()((parent, args, { user }: Context) => {
   return Boolean(user?.id);
@@ -9,13 +11,32 @@ const rateLimitRule = createRateLimitRule({
   identifyContext: ({ user }: Context) => user?.id || "",
 })({ window: "1s", max: 10 });
 
+const isEventOwner = rule()(async (parent, args, { user }: Context, info) => {
+  const event = await getRepository(EventEntity).findOneOrFail(parent.id, {
+    relations: ["owner"],
+  });
+
+  return event.owner.id === user?.id;
+});
+const isEventGuest = rule()(async (parent, args, { user }: Context, info) => {
+  const guest = await getRepository(EventEntity)
+    .createQueryBuilder("event")
+    .innerJoinAndSelect("event.guestes", "guest", "guest.id = :guestId", {
+      guestId: user?.id,
+    })
+    .where("event.id = :eventId", { eventId: parent.id })
+    .getOne();
+
+  return guest?.id === user?.id;
+});
+
 const permissions = shield(
   {
     Query: {
       "*": rateLimitRule,
 
       // Event
-      eventById: and(isAuthenticated, rateLimitRule),
+      eventById: rateLimitRule,
       eventsByMe: and(isAuthenticated, rateLimitRule),
       eventsByCode: rateLimitRule,
       checkEventCodeExist: rateLimitRule,
@@ -59,6 +80,15 @@ const permissions = shield(
       loginAudience: rateLimitRule,
       signup: rateLimitRule,
       updateUser: and(isAuthenticated, rateLimitRule),
+    },
+
+    Event: {
+      owner: race(isEventOwner, isEventGuest),
+      guestes: isEventOwner,
+      audiences: race(isEventOwner, isEventGuest),
+      questions: isAuthenticated,
+      createdAt: race(isEventOwner, isEventGuest),
+      updatedAt: race(isEventOwner, isEventGuest),
     },
   },
   {
