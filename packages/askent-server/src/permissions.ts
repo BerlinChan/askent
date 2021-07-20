@@ -3,6 +3,7 @@ import { createRateLimitRule } from "graphql-rate-limit";
 import { Context } from "./context";
 import { getRepository } from "typeorm";
 import { Event as EventEntity } from "./entity/Event";
+import { Question as QuestionEntity } from "./entity/Question";
 import { ApolloError } from "apollo-server";
 
 const isAuthenticated = rule()((parent, args, { user }: Context) => {
@@ -31,6 +32,14 @@ const isEventGuest = rule()(async (parent, args, { user }: Context, info) => {
   return event?.guestes[0]?.id === user?.id;
 });
 
+const isQuestionAuthor = rule()(async (parent, args, { user }: Context, info) => {
+  const question = await getRepository(QuestionEntity).findOneOrFail(parent.id, {
+    relations: ["author"],
+  });
+
+  return question.author.id === user?.id;
+});
+
 const permissions = shield(
   {
     Query: {
@@ -53,19 +62,19 @@ const permissions = shield(
 
       // Event
       createEvent: and(isAuthenticated, rateLimitRule),
-      updateEvent: and(isAuthenticated, rateLimitRule),
-      deleteEvent: and(isAuthenticated, rateLimitRule),
+      updateEvent: and(isEventOwner, rateLimitRule),
+      deleteEvent: and(isEventOwner, rateLimitRule),
       joinEvent: and(isAuthenticated, rateLimitRule),
-      addGuest: and(isAuthenticated, rateLimitRule),
-      removeGuest: and(isAuthenticated, rateLimitRule),
+      addGuest: and(isEventOwner, rateLimitRule),
+      removeGuest: and(isEventOwner, rateLimitRule),
 
       // Question
       createQuestion: and(isAuthenticated, rateLimitRule),
       updateQuestionReviewStatus: and(isAuthenticated, rateLimitRule),
-      updateQuestionContent: and(isAuthenticated, rateLimitRule),
+      updateQuestionContent: and(isQuestionAuthor, rateLimitRule),
       updateQuestionStar: and(isAuthenticated, rateLimitRule),
       updateQuestionTop: and(isAuthenticated, rateLimitRule),
-      deleteQuestion: and(isAuthenticated, rateLimitRule),
+      deleteQuestion: and(isQuestionAuthor, rateLimitRule),
       deleteAllReviewQuestions: and(isAuthenticated, rateLimitRule),
       publishAllReviewQuestions: and(isAuthenticated, rateLimitRule),
       voteUpQuestion: and(isAuthenticated, rateLimitRule),
