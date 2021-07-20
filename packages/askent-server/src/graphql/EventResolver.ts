@@ -91,7 +91,8 @@ export class EventResolver implements ResolverInterface<Event> {
   async eventsByMe(
     @Arg("pagination", (returns) => PaginationInput)
     pagination: PaginationInput,
-    @Arg("searchString", { nullable: true }) searchString: string,
+    @Arg("searchString", { nullable: true, defaultValue: "" })
+    searchString: string,
     @Arg("dateStatusFilter", (returns) => EventDateStatus, { nullable: true })
     dateStatusFilter: EventDateStatus,
     @Ctx() ctx: Context
@@ -109,10 +110,8 @@ export class EventResolver implements ResolverInterface<Event> {
         END`,
         "weight" // order weight
       )
-      .innerJoin("event.owner", "owner", "owner.id = :ownerId", { ownerId })
-      .leftJoin("event.guestes", "guest", "guest.id = :guestId", {
-        guestId: ownerId,
-      })
+      .innerJoin("event.owner", "owner")
+      .innerJoin("event.guestes", "guest")
       .where(
         dateStatusFilter === EventDateStatus.Active
           ? 'NOW() BETWEEN "event"."startAt" AND "event"."endAt"'
@@ -121,6 +120,13 @@ export class EventResolver implements ResolverInterface<Event> {
           : dateStatusFilter === EventDateStatus.Past
           ? 'NOW() >= "event"."endAt"'
           : ""
+      )
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            `"owner"."id" = '${ownerId}' OR "guest"."id" = '${ownerId}'`
+          );
+        })
       )
       .andWhere(
         new Brackets((qb) => {

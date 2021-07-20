@@ -20,7 +20,7 @@ const isEventOwner = rule()(async (parent, args, { user }: Context, info) => {
   return event.owner.id === user?.id;
 });
 const isEventGuest = rule()(async (parent, args, { user }: Context, info) => {
-  const guest = await getRepository(EventEntity)
+  const event = await getRepository(EventEntity)
     .createQueryBuilder("event")
     .innerJoinAndSelect("event.guestes", "guest", "guest.id = :guestId", {
       guestId: user?.id,
@@ -28,7 +28,7 @@ const isEventGuest = rule()(async (parent, args, { user }: Context, info) => {
     .where("event.id = :eventId", { eventId: parent.id })
     .getOne();
 
-  return guest?.id === user?.id;
+  return event?.guestes[0]?.id === user?.id;
 });
 
 const permissions = shield(
@@ -85,7 +85,7 @@ const permissions = shield(
 
     Event: {
       owner: race(isEventOwner, isEventGuest),
-      guestes: isEventOwner,
+      guestes: race(isEventOwner, isEventGuest),
       audiences: race(isEventOwner, isEventGuest),
       questions: isAuthenticated,
       createdAt: race(isEventOwner, isEventGuest),
