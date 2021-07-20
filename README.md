@@ -9,7 +9,8 @@
 
 ## TODO
 
-- [ ] add guest to event
+- [ ] guest event list
+- [ ] share constant between packages
 - [ ] event edit dialog
 - [ ] question support voteDown
 - [ ] hide event from join search
