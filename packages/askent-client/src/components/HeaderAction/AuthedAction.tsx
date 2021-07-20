@@ -9,7 +9,7 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  Hidden
+  Hidden,
 } from "@material-ui/core";
 import { useMeQuery, RoleName } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
@@ -27,15 +27,15 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
-      marginRight: theme.spacing(1)
+      marginRight: theme.spacing(1),
     },
     email: {
       fontSize: theme.typography.pxToRem(14),
-      fontWeight: theme.typography.fontWeightBold
+      fontWeight: theme.typography.fontWeightBold,
     },
     role: {
-      fontSize: theme.typography.pxToRem(14)
-    }
+      fontSize: theme.typography.pxToRem(14),
+    },
   })
 );
 
@@ -47,17 +47,15 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
   const classes = useStyles();
   const history = useHistory();
   const userQueryResult = useMeQuery();
-  const roles = userQueryResult.data?.me.roles.map(role => role.name);
+  const roles = userQueryResult.data?.me.roles.map((role) => role.name);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
   const { removeToken } = useToken();
-  const [myProfileDialogOpen, setMyProfileDialogOpen] = React.useState<boolean>(
-    false
-  );
-  const [myQuestionsDialogOpen, setMyQuestionsDialogOpen] = React.useState<
-    boolean
-  >(false);
+  const [myProfileDialogOpen, setMyProfileDialogOpen] =
+    React.useState<boolean>(false);
+  const [myQuestionsDialogOpen, setMyQuestionsDialogOpen] =
+    React.useState<boolean>(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(event.currentTarget);
@@ -75,7 +73,7 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
               {userQueryResult.data?.me.email}
             </Typography>
             <Typography className={classes.role}>
-              {userQueryResult.data?.me.roles.map(role => role.name).join()}
+              {userQueryResult.data?.me.roles.map((role) => role.name).join()}
             </Typography>
           </Box>
         </Hidden>
@@ -93,11 +91,11 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right"
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "right"
+          horizontal: "right",
         }}
         open={Boolean(menuAnchorEl)}
         onClose={handleMenuClose}
@@ -145,6 +143,9 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
             removeToken();
             history.replace("/");
             handleMenuClose();
+
+            // fix Hasura subscription auth, https://github.com/apollographql/subscriptions-transport-ws/issues/171
+            window.location.reload();
           }}
         >
           <ListItemIcon>

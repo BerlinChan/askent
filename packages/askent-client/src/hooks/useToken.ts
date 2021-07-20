@@ -17,9 +17,6 @@ export function useToken() {
     setTokenState("");
     localStorage.removeItem(AUTH_TOKEN);
     client.resetStore();
-
-    // fix Hasura subscription auth, https://github.com/apollographql/subscriptions-transport-ws/issues/171
-    window.location.reload();
   }
 
   return { token, setToken, removeToken };

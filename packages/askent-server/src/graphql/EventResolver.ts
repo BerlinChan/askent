@@ -98,28 +98,7 @@ export class EventResolver implements ResolverInterface<Event> {
   ): Promise<EventPaged> {
     const ownerId = ctx.user?.id as string;
     const { limit, offset } = pagination;
-    const options = [
-      dateStatusFilter === EventDateStatus.Active
-        ? 'NOW() BETWEEN "event"."startAt" AND "event"."endAt"'
-        : dateStatusFilter === EventDateStatus.Upcoming
-        ? 'NOW() <= "event"."startAt"'
-        : dateStatusFilter === EventDateStatus.Past
-        ? 'NOW() >= "event"."endAt"'
-        : "",
-      `"event"."name" LIKE '%${searchString}%' OR "event"."code" LIKE '%${searchString}%'`,
-    ];
-
-    const totalCount = await this.eventRepository
-      .createQueryBuilder("event")
-      .innerJoin("event.owner", "owner", "owner.id = :ownerId", { ownerId })
-      .where(options[0])
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where(options[1]);
-        })
-      )
-      .getCount();
-    const list = await this.eventRepository
+    const [list, totalCount] = await this.eventRepository
       .createQueryBuilder("event")
       .addSelect(
         `CASE
@@ -131,10 +110,23 @@ export class EventResolver implements ResolverInterface<Event> {
         "weight" // order weight
       )
       .innerJoin("event.owner", "owner", "owner.id = :ownerId", { ownerId })
-      .where(options[0])
+      .leftJoin("event.guestes", "guest", "guest.id = :guestId", {
+        guestId: ownerId,
+      })
+      .where(
+        dateStatusFilter === EventDateStatus.Active
+          ? 'NOW() BETWEEN "event"."startAt" AND "event"."endAt"'
+          : dateStatusFilter === EventDateStatus.Upcoming
+          ? 'NOW() <= "event"."startAt"'
+          : dateStatusFilter === EventDateStatus.Past
+          ? 'NOW() >= "event"."endAt"'
+          : ""
+      )
       .andWhere(
         new Brackets((qb) => {
-          qb.where(options[1]);
+          qb.where(
+            `"event"."name" LIKE '%${searchString}%' OR "event"."code" LIKE '%${searchString}%'`
+          );
         })
       )
       .skip(offset)
@@ -144,7 +136,7 @@ export class EventResolver implements ResolverInterface<Event> {
         "event.startAt": "DESC",
         "event.endAt": "ASC",
       })
-      .getMany();
+      .getManyAndCount();
 
     return {
       list,
