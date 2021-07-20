@@ -26,7 +26,7 @@ import {
   useUpdateEventMutation,
 } from "../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
-import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../constant";
+import { EVENT_NAME_MAX_LENGTH, EVENT_CODE_MAX_LENGTH } from "../../constant";
 import { tabList, TabPanel } from "./TabsPanels";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -151,7 +151,7 @@ const EventSettingDialog: React.FC<Props> = ({
   }) => {
     try {
       await Yup.object({
-        name: Yup.string().max(USERNAME_MAX_LENGTH).required(),
+        name: Yup.string().max(EVENT_NAME_MAX_LENGTH).required(),
         code: Yup.string().max(EVENT_CODE_MAX_LENGTH).required(),
         startAt: Yup.date(),
         endAt: Yup.date(),

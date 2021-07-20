@@ -21,7 +21,7 @@ import {
   EventsByMeQueryVariables,
 } from "../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
-import { EVENT_CODE_MAX_LENGTH, USERNAME_MAX_LENGTH } from "../../../constant";
+import { EVENT_CODE_MAX_LENGTH, EVENT_NAME_MAX_LENGTH } from "../../../constant";
 import { TextField } from "formik-material-ui";
 import { DateTimePicker } from "formik-material-ui-pickers";
 
@@ -78,7 +78,7 @@ const CreateEventDialog: React.FC<Props> = ({
         validate={async ({ name, code, startAt, endAt }) => {
           try {
             await Yup.object({
-              name: Yup.string().max(USERNAME_MAX_LENGTH).required(),
+              name: Yup.string().max(EVENT_NAME_MAX_LENGTH).required(),
               code: Yup.string().max(EVENT_CODE_MAX_LENGTH).required(),
               startAt: Yup.date(),
               endAt: Yup.date(),

@@ -14,9 +14,10 @@ import { Question as QuestionEntity } from "../entity/Question";
 import { Question } from "./Question";
 import { User } from "./User";
 import { User as UserEntity } from "../entity/User";
-import { ReviewStatus } from "../constant";
+import { ReviewStatus, REPLY_CONTENT_MAX_LENGTH } from "../constant";
 import { Reply as ReplyEntity } from "../entity/Reply";
 import { getRepository, Repository } from "typeorm";
+import { MaxLength } from "class-validator";
 
 @ObjectType()
 export class Reply {
@@ -78,6 +79,7 @@ export class CreateReplyInput implements Partial<Reply> {
   public questionId!: string;
 
   @Field()
+  @MaxLength(REPLY_CONTENT_MAX_LENGTH)
   public content!: string;
 
   @Field()

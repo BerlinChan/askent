@@ -3,6 +3,7 @@ import { createRateLimitRule } from "graphql-rate-limit";
 import { Context } from "./context";
 import { getRepository } from "typeorm";
 import { Event as EventEntity } from "./entity/Event";
+import { ApolloError } from "apollo-server";
 
 const isAuthenticated = rule()((parent, args, { user }: Context) => {
   return Boolean(user?.id);
@@ -93,6 +94,28 @@ const permissions = shield(
   },
   {
     fallbackRule: rateLimitRule,
+    fallbackError: async (thrownThing, parent, args, context, info) => {
+      if (thrownThing instanceof ApolloError) {
+        // expected errors
+        return thrownThing;
+      } else if (thrownThing instanceof Error) {
+        if (thrownThing.message === "Argument Validation Error") {
+          return thrownThing;
+        } else {
+          // unexpected errors
+          console.error(thrownThing);
+          return new ApolloError(
+            "Internal server error",
+            "ERR_INTERNAL_SERVER"
+          );
+        }
+      } else {
+        // what the hell got thrown
+        console.error("The resolver threw something that is not an error.");
+        console.error(thrownThing);
+        return new ApolloError("Internal server error", "ERR_INTERNAL_SERVER");
+      }
+    },
   }
 );
 

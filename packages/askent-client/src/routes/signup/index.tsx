@@ -19,9 +19,9 @@ import { useSnackbar } from "notistack";
 import { FormattedMessage, useIntl } from "react-intl";
 import { TextField } from "formik-material-ui";
 import {
-  USERNAME_MAX_LENGTH,
-  EMAIL_MAX_LENGTH,
-  PASSWORD_MAX_LENGTH,
+  USER_NAME_MAX_LENGTH,
+  USER_EMAIL_MAX_LENGTH,
+  USER_PASSWORD_MAX_LENGTH,
 } from "../../constant";
 import { useToken } from "../../hooks";
 
@@ -76,27 +76,27 @@ const Signup: React.FC = () => {
             await Yup.object({
               name: Yup.string()
                 .max(
-                  USERNAME_MAX_LENGTH,
-                  `Must be ${USERNAME_MAX_LENGTH} characters or less`
+                  USER_NAME_MAX_LENGTH,
+                  `Must be ${USER_NAME_MAX_LENGTH} characters or less`
                 )
                 .required("Required"),
               email: Yup.string()
                 .max(
-                  EMAIL_MAX_LENGTH,
-                  `Must be ${EMAIL_MAX_LENGTH} characters or less`
+                  USER_EMAIL_MAX_LENGTH,
+                  `Must be ${USER_EMAIL_MAX_LENGTH} characters or less`
                 )
                 .email("Invalid email address")
                 .required("Required"),
               password: Yup.string()
                 .max(
-                  PASSWORD_MAX_LENGTH,
-                  `Must be ${PASSWORD_MAX_LENGTH} characters or less`
+                  USER_PASSWORD_MAX_LENGTH,
+                  `Must be ${USER_PASSWORD_MAX_LENGTH} characters or less`
                 )
                 .required("Required"),
               repeatPassword: Yup.string()
                 .max(
-                  PASSWORD_MAX_LENGTH,
-                  `Must be ${PASSWORD_MAX_LENGTH} characters or less`
+                  USER_PASSWORD_MAX_LENGTH,
+                  `Must be ${USER_PASSWORD_MAX_LENGTH} characters or less`
                 )
                 .required("Required"),
             }).validate({

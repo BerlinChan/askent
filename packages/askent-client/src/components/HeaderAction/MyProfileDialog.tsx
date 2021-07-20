@@ -20,7 +20,7 @@ import { MeQuery, MeQueryVariables } from "../../generated/graphqlHooks";
 import { FormattedMessage, useIntl } from "react-intl";
 import PersonIcon from "@material-ui/icons/Person";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
-import { USERNAME_MAX_LENGTH, EMAIL_MAX_LENGTH } from "../../constant";
+import { USER_NAME_MAX_LENGTH, USER_EMAIL_MAX_LENGTH } from "../../constant";
 import { useUpdateUserMutation } from "../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -65,9 +65,9 @@ const MyProfileDialog: React.FC<Props> = ({
           email: userData?.me.email || ""
         }}
         validationSchema={Yup.object({
-          name: Yup.string().max(USERNAME_MAX_LENGTH),
+          name: Yup.string().max(USER_NAME_MAX_LENGTH),
           email: Yup.string()
-            .max(EMAIL_MAX_LENGTH)
+            .max(USER_EMAIL_MAX_LENGTH)
             .email()
         })}
         onSubmit={async (values, formikBag) => {

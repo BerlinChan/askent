@@ -1,7 +1,16 @@
 import { registerEnumType } from "type-graphql";
 
-export const DEFAULT_PAGE_OFFSET = 0;
-export const DEFAULT_PAGE_LIMIT = 50;
+export {
+  USER_NAME_MAX_LENGTH,
+  USER_EMAIL_MAX_LENGTH,
+  USER_PASSWORD_MAX_LENGTH,
+  QUESTION_CONTENT_MAX_LENGTH,
+  REPLY_CONTENT_MAX_LENGTH,
+  EVENT_NAME_MAX_LENGTH,
+  EVENT_CODE_MAX_LENGTH,
+  DEFAULT_PAGE_OFFSET,
+  DEFAULT_PAGE_LIMIT,
+} from "../../askent-client/src/constant";
 
 export const CLAIMS_NAMESPACE = "https://hasura.io/jwt/claims";
 

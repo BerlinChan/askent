@@ -8,12 +8,20 @@ import {
   Mutation,
   ResolverInterface,
   FieldResolver,
+  Args,
 } from "type-graphql";
 import { getRepository, Repository, Like, Brackets } from "typeorm";
 import { Context } from "../context";
 import { User as UserEntity } from "../entity/User";
 import { User } from "./User";
-import { Event, EventPaged, UpdateEventInput } from "./EventType";
+import {
+  Event,
+  EventPaged,
+  UpdateEventInput,
+  EventByCodeArgsType,
+  CheckEventCodeExistArgsType,
+  CreateEventArgsType,
+} from "./EventType";
 import { EventDateStatus } from "../constant";
 import { PaginationInput } from "./Pagination";
 import { Event as EventEntity } from "../entity/Event";
@@ -149,7 +157,7 @@ export class EventResolver implements ResolverInterface<Event> {
 
   @Query((returns) => [Event], { description: "Get events by code." })
   async eventsByCode(
-    @Arg("code", { nullable: true, defaultValue: "" }) code: string
+    @Args() { code }: EventByCodeArgsType
   ): Promise<EventEntity[]> {
     const events = await this.eventRepository.find({
       code: Like(`%${code}%`),
@@ -162,7 +170,7 @@ export class EventResolver implements ResolverInterface<Event> {
     description: "Check if a event code has already exist.",
   })
   async checkEventCodeExist(
-    @Arg("code") code: string,
+    @Args() { code }: CheckEventCodeExistArgsType,
     @Ctx() ctx: Context
   ): Promise<boolean> {
     return await checkEventCodeExist(ctx, code);
@@ -190,10 +198,7 @@ export class EventResolver implements ResolverInterface<Event> {
 
   @Mutation((returns) => Event)
   async createEvent(
-    @Arg("code") code: string,
-    @Arg("name") name: string,
-    @Arg("startAt") startAt: Date,
-    @Arg("endAt") endAt: Date,
+    @Args() { code, name, startAt, endAt }: CreateEventArgsType,
     @Ctx() ctx: Context
   ): Promise<EventEntity> {
     const ownerId = ctx.user?.id as string;

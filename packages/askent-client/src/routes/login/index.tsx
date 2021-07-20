@@ -15,7 +15,7 @@ import { useLoginMutation } from "../../generated/graphqlHooks";
 import { useToken } from "../../hooks";
 import { TextField } from "formik-material-ui";
 import { FormattedMessage, useIntl } from "react-intl";
-import { PASSWORD_MAX_LENGTH, EMAIL_MAX_LENGTH } from "../../constant";
+import { USER_PASSWORD_MAX_LENGTH, USER_EMAIL_MAX_LENGTH } from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,8 +55,8 @@ const Login: React.FC = () => {
       <Formik
         initialValues={{ email: "", password: "" }}
         validationSchema={Yup.object({
-          email: Yup.string().max(EMAIL_MAX_LENGTH).email().required(),
-          password: Yup.string().max(PASSWORD_MAX_LENGTH).required(),
+          email: Yup.string().max(USER_EMAIL_MAX_LENGTH).email().required(),
+          password: Yup.string().max(USER_PASSWORD_MAX_LENGTH).required(),
         })}
         onSubmit={async (values) => {
           const { data } = await loginMutation({ variables: values });

@@ -17,7 +17,7 @@ import * as Yup from "yup";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   REPLY_CONTENT_MAX_LENGTH,
-  USERNAME_MAX_LENGTH,
+  USER_NAME_MAX_LENGTH,
 } from "../../../../../constant";
 import { useSnackbar } from "notistack";
 import {
@@ -235,7 +235,7 @@ const ReplyForm: React.FC<Props> = ({
       initialValues={initialValues}
       validationSchema={Yup.object({
         content: Yup.string().max(REPLY_CONTENT_MAX_LENGTH).required(),
-        name: Yup.string().max(USERNAME_MAX_LENGTH),
+        name: Yup.string().max(USER_NAME_MAX_LENGTH),
       })}
       onSubmit={handleSubmit}
     >

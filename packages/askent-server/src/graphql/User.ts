@@ -9,6 +9,8 @@ import {
   Arg,
   Ctx,
   ID,
+  Args,
+  ArgsType,
 } from "type-graphql";
 import { getRepository, In, Repository } from "typeorm";
 import { hash, compare } from "bcryptjs";
@@ -16,9 +18,16 @@ import MD5 from "crypto-js/md5";
 import { Context } from "../context";
 import { signToken } from "../utils";
 import { Role as RoleEntity } from "../entity/Role";
-import { CLAIMS_NAMESPACE, RoleName } from "../constant";
+import {
+  CLAIMS_NAMESPACE,
+  RoleName,
+  USER_NAME_MAX_LENGTH,
+  USER_PASSWORD_MAX_LENGTH,
+  USER_EMAIL_MAX_LENGTH,
+} from "../constant";
 import { User as UserEntity } from "../entity/User";
 import { Role } from "./Role";
+import { IsEmail, MaxLength } from "class-validator";
 
 @ObjectType()
 export class User {
@@ -65,7 +74,7 @@ export class User {
 }
 
 @ObjectType()
-export class AuthPayload {
+class AuthPayload {
   @Field()
   public token!: string;
 
@@ -74,21 +83,59 @@ export class AuthPayload {
 }
 
 @ObjectType()
-export class PGP {
+class PGP {
   @Field()
   public pubKey!: string;
 }
 
+@ArgsType()
+class checkEmailExistArgs {
+  @Field((type) => String)
+  @IsEmail()
+  email!: string;
+}
+
 @InputType()
-export class UpdateUserInput implements Partial<User> {
-  @Field({ nullable: true })
+class UpdateUserInput implements Partial<User> {
+  @Field((type) => String, { nullable: true })
+  @MaxLength(USER_NAME_MAX_LENGTH)
   public name?: string;
 
-  @Field({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsEmail()
+  @MaxLength(USER_EMAIL_MAX_LENGTH)
   public email?: string;
 
-  @Field({ nullable: true })
+  @Field((type) => Boolean, { nullable: true })
   public anonymous?: boolean;
+}
+
+@ArgsType()
+class LoginArgsType {
+  @Field((type) => String, { description: "User Email" })
+  @IsEmail()
+  @MaxLength(USER_EMAIL_MAX_LENGTH)
+  email!: string;
+
+  @Field((type) => String)
+  @MaxLength(USER_PASSWORD_MAX_LENGTH)
+  password!: string;
+}
+
+@ArgsType()
+class SignupArgsType {
+  @Field((type) => String, { description: "User name" })
+  @MaxLength(USER_NAME_MAX_LENGTH)
+  name!: string;
+
+  @Field((type) => String, { description: "User Email" })
+  @IsEmail()
+  @MaxLength(USER_EMAIL_MAX_LENGTH)
+  email!: string;
+
+  @Field((type) => String)
+  @MaxLength(USER_PASSWORD_MAX_LENGTH)
+  password!: string;
 }
 
 @Resolver((of) => User)
@@ -115,9 +162,10 @@ export class UserResolver {
     description: "Check if a email has already exist.",
   })
   checkEmailExist(
-    @Arg("email") email: string,
+    @Args() { email }: checkEmailExistArgs,
     @Ctx() ctx: Context
   ): Promise<boolean> {
+    console.log(111, email);
     return checkEmailExist(ctx, email);
   }
 
@@ -128,8 +176,7 @@ export class UserResolver {
 
   @Mutation((returns) => AuthPayload)
   async login(
-    @Arg("email", { description: "User Email" }) email: string,
-    @Arg("password") password: string
+    @Args() { email, password }: LoginArgsType
   ): Promise<AuthPayload> {
     const user = await this.userRepository.findOne({
       where: { email },
@@ -192,9 +239,7 @@ export class UserResolver {
 
   @Mutation((returns) => AuthPayload, { description: "Signup a new user." })
   async signup(
-    @Arg("name", { description: "User name" }) name: string,
-    @Arg("email", { description: "User Email" }) email: string,
-    @Arg("password") password: string
+    @Args() { name, email, password }: SignupArgsType
   ): Promise<AuthPayload> {
     const hashedPassword = await hash(password, 10);
     const roleNames: Array<RoleName> = [RoleName.User, RoleName.Audience];

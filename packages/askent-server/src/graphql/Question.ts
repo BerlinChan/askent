@@ -9,15 +9,18 @@ import {
   Ctx,
   Mutation,
   Int,
+  ArgsType,
+  Args,
 } from "type-graphql";
 import { Context } from "../context";
 import { User as UserEntity } from "../entity/User";
-import { ReviewStatus } from "../constant";
+import { ReviewStatus, QUESTION_CONTENT_MAX_LENGTH } from "../constant";
 import { Event as EventEntity } from "../entity/Event";
 import { Question as QuestionEntity } from "../entity/Question";
 import { Event } from "./EventType";
 import { User } from "./User";
 import { getRepository, Repository } from "typeorm";
+import { MaxLength } from "class-validator";
 
 @ObjectType()
 export class Question {
@@ -88,15 +91,26 @@ export class Question {
 }
 
 @InputType()
-export class CreateQuestionInput implements Partial<Question> {
+class CreateQuestionInput implements Partial<Question> {
   @Field((returns) => ID)
   public eventId!: string;
 
   @Field()
+  @MaxLength(QUESTION_CONTENT_MAX_LENGTH)
   public content!: string;
 
   @Field({ nullable: true, defaultValue: false })
   public anonymous: boolean = false;
+}
+
+@ArgsType()
+class UpdateQuestionContentArgsType {
+  @Field((type) => ID)
+  questionId!: string;
+
+  @Field((type) => String)
+  @MaxLength(QUESTION_CONTENT_MAX_LENGTH)
+  content!: string;
 }
 
 @Resolver((of) => Question)
@@ -163,8 +177,8 @@ export class QuestionResolver {
     description: "Update a question content.",
   })
   async updateQuestionContent(
-    @Arg("questionId", (returns) => ID) questionId: string,
-    @Arg("content") content: string
+    @Args((type) => UpdateQuestionContentArgsType)
+    { questionId, content }: UpdateQuestionContentArgsType
   ): Promise<QuestionEntity> {
     await this.questionRepository.update(questionId, { content });
     const question = await this.questionRepository.findOneOrFail(questionId, {

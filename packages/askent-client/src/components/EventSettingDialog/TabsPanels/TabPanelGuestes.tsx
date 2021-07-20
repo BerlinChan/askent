@@ -29,7 +29,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { ButtonLoading } from "../../Form";
-import { EMAIL_MAX_LENGTH } from "../../../constant";
+import { USER_EMAIL_MAX_LENGTH } from "../../../constant";
 import Confirm from "../../Confirm";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -181,7 +181,7 @@ const AddGuestDialog: React.FC<AddGuestDialogProps> = ({
   }) => {
     try {
       await Yup.object({
-        email: Yup.string().max(EMAIL_MAX_LENGTH).email().required(),
+        email: Yup.string().max(USER_EMAIL_MAX_LENGTH).email().required(),
       }).validate({
         email,
       });
