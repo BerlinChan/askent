@@ -27,7 +27,9 @@ export function useMouseMove(timeout: number = 2000) {
       }
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return { mouseEvent, mouseStop };
 }

@@ -16,14 +16,15 @@ const QuestionsComponent = loadable(() => import("./questions"), {
 const PollsComponent = loadable(() => import("./polls"), {
   fallback: <Loading />,
 });
+const AnalyticsComponent = loadable(() => import("./analytics"), {
+  fallback: <Loading />,
+});
 
 const AdminEvent: React.FC = () => {
   const { path } = useRouteMatch();
   const { id } = useParams<{ id: string }>();
-  const [
-    eventDetailData,
-    setEventDetailData,
-  ] = React.useState<EventDetailLiveQueryFieldsFragment>();
+  const [eventDetailData, setEventDetailData] =
+    React.useState<EventDetailLiveQueryFieldsFragment>();
   const [loading, setLoading] = React.useState(true);
 
   useEventDetailLiveQuerySubscription({
@@ -39,21 +40,19 @@ const AdminEvent: React.FC = () => {
   return (
     <Layout
       header={
-        <AdminEventHeader
-          eventDetailData={eventDetailData}
-          loading={loading}
-        />
+        <AdminEventHeader eventDetailData={eventDetailData} loading={loading} />
       }
       body={
         <Switch>
           <Redirect exact path={`${path}`} to={`${path}/questions`} />
           <PrivateRoute path={`${path}/questions`}>
-            <QuestionsComponent
-              eventDetailData={eventDetailData}
-            />
+            <QuestionsComponent eventDetailData={eventDetailData} />
           </PrivateRoute>
           <PrivateRoute path={`${path}/polls`}>
             <PollsComponent />
+          </PrivateRoute>
+          <PrivateRoute path={`${path}/analytics`}>
+            <AnalyticsComponent />
           </PrivateRoute>
         </Switch>
       }

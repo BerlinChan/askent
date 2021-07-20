@@ -9,8 +9,6 @@
 
 ## TODO
 
-- [ ] API graphql-rate-limit
-- [ ] hasura authrization
 - [ ] add guest to event
 - [ ] event edit dialog
 - [ ] question support voteDown
