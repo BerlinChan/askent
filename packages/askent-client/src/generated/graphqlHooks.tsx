@@ -419,8 +419,6 @@ export type User = {
   anonymous?: Maybe<Scalars['Boolean']>;
   avatar?: Maybe<Scalars['String']>;
   roles: Array<Role>;
-  events: Array<Event>;
-  attendedEvents: Array<Event>;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   deletedAt?: Maybe<Scalars['DateTime']>;
@@ -637,6 +635,10 @@ export type EventFieldsFragment = (
 export type EventDetailFieldsFragment = (
   { __typename?: 'Event' }
   & Pick<Event, 'id' | 'name' | 'code' | 'startAt' | 'endAt' | 'dateStatus' | 'moderation'>
+  & { owner: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'email'>
+  ) }
 );
 
 export type EventsByMeQueryVariables = Exact<{
@@ -987,6 +989,11 @@ export const EventDetailFieldsFragmentDoc = gql`
   endAt
   dateStatus
   moderation
+  owner {
+    id
+    name
+    email
+  }
 }
     `;
 export const QuestionAudienceFieldsFragmentDoc = gql`

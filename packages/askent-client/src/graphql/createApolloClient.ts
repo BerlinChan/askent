@@ -73,7 +73,8 @@ const link = from([
     if (graphQLErrors?.length) {
       graphQLErrors.map(({ message, locations, path }) =>
         console.warn(
-          `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+          `[GraphQL error]: Message: ${message}, Path: ${path}, Location:`,
+          locations
         )
       );
       // switch (graphQLErrors[0].message) {

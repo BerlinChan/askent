@@ -162,6 +162,8 @@ const EventSettingDialog: React.FC<Props> = ({
     } catch (err) {
       const { path, errors } = err as Yup.ValidationError;
       console.error(path, errors);
+      
+      return { [path as string]: errors[0] };
     }
 
     if (endAt < startAt) {
@@ -259,6 +261,7 @@ const EventSettingDialog: React.FC<Props> = ({
                 index={tabIndex}
                 defaultFocus={defaultFocus}
                 eventId={eventId}
+                eventData={eventData}
               />
             </Box>
           </DialogContent>

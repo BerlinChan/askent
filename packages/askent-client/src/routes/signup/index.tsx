@@ -108,6 +108,8 @@ const Signup: React.FC = () => {
           } catch (err) {
             const { path, errors } = err as Yup.ValidationError;
             console.error(path, errors);
+
+            return { [path as string]: errors[0] };
           }
 
           if (password !== repeatPassword) {

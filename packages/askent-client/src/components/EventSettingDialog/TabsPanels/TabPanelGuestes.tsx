@@ -26,6 +26,7 @@ import {
   useCheckEmailExistLazyQuery,
   useAddGuestMutation,
   useRemoveGuestMutation,
+  EventByIdQuery,
 } from "../../../generated/graphqlHooks";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { ButtonLoading } from "../../Form";
@@ -40,19 +41,18 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   eventId: string;
+  eventData?: EventByIdQuery;
 }
 
-const TabPanelGuestes: React.FC<Props> = ({ eventId }) => {
+const TabPanelGuestes: React.FC<Props> = ({ eventId, eventData }) => {
   const classes = useStyles();
   const [addOpen, setAddOpen] = React.useState(false);
   const [removeId, setRemoveId] = React.useState("");
   const { data, loading, refetch } = useGuestesByEventQuery({
     variables: { eventId },
   });
-  const [
-    removeGuestMutation,
-    { loading: removeGuestLoading },
-  ] = useRemoveGuestMutation();
+  const [removeGuestMutation, { loading: removeGuestLoading }] =
+    useRemoveGuestMutation();
 
   const handleAddDialogOpen = () => {
     setAddOpen(true);
@@ -133,6 +133,7 @@ const TabPanelGuestes: React.FC<Props> = ({ eventId }) => {
       <AddGuestDialog
         open={addOpen}
         eventId={eventId}
+        eventData={eventData}
         handleClose={handleAddDialogClose}
       />
       <Confirm
@@ -157,21 +158,21 @@ export default TabPanelGuestes;
 interface AddGuestDialogProps {
   open: boolean;
   eventId: string;
+  eventData?: EventByIdQuery;
   handleClose: (refetch?: boolean) => void;
 }
 const AddGuestDialog: React.FC<AddGuestDialogProps> = ({
   open,
   eventId,
+  eventData,
   handleClose,
 }) => {
   const [
     checkEmailExistQuery,
     { data: checkEmailData, loading: checkEmailLoading },
   ] = useCheckEmailExistLazyQuery();
-  const [
-    addGuestMutation,
-    { loading: addGuestLoading },
-  ] = useAddGuestMutation();
+  const [addGuestMutation, { loading: addGuestLoading }] =
+    useAddGuestMutation();
 
   const initialValues = { email: "" };
   const handleValidate: (
@@ -188,6 +189,12 @@ const AddGuestDialog: React.FC<AddGuestDialogProps> = ({
     } catch (err) {
       const { path, errors } = err as Yup.ValidationError;
       console.error(path, errors);
+
+      return { [path as string]: errors[0] };
+    }
+
+    if (email === eventData?.eventById.owner.email) {
+      return { email: "Can't add event owner as guest" };
     }
 
     await checkEmailExistQuery({

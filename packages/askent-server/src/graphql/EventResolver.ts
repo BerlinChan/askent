@@ -27,6 +27,7 @@ import { PaginationInput } from "./Pagination";
 import { Event as EventEntity } from "../entity/Event";
 import { Question as QuestionEntity } from "../entity/Question";
 import { Question } from "./Question";
+import { MAX_PAGE_LIMIT } from "askent-common/src/constant";
 
 @Resolver((of) => Event)
 export class EventResolver implements ResolverInterface<Event> {
@@ -139,6 +140,8 @@ export class EventResolver implements ResolverInterface<Event> {
       .take(limit)
       .orderBy({
         weight: "DESC",
+        "event.createdAt": "DESC",
+        "event.code": "ASC",
         "event.startAt": "DESC",
         "event.endAt": "ASC",
       })
@@ -158,7 +161,14 @@ export class EventResolver implements ResolverInterface<Event> {
     @Args() { code }: EventByCodeArgsType
   ): Promise<EventEntity[]> {
     const events = await this.eventRepository.find({
-      code: Like(`%${code}%`),
+      where: {
+        code: Like(`%${code}%`),
+      },
+      order: {
+        createdAt: "DESC",
+        code: "ASC",
+      },
+      take: MAX_PAGE_LIMIT,
     });
 
     return events;

@@ -21,7 +21,10 @@ import {
   EventsByMeQueryVariables,
 } from "../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
-import { EVENT_CODE_MAX_LENGTH, EVENT_NAME_MAX_LENGTH } from "askent-common/src/constant";
+import {
+  EVENT_CODE_MAX_LENGTH,
+  EVENT_NAME_MAX_LENGTH,
+} from "askent-common/src/constant";
 import { TextField } from "formik-material-ui";
 import { DateTimePicker } from "formik-material-ui-pickers";
 
@@ -56,10 +59,8 @@ const CreateEventDialog: React.FC<Props> = ({
     checkEventCodeExistLazyQuery,
     { data: checkEventCodeData, loading: checkEventCodeLoading },
   ] = useCheckEventCodeExistLazyQuery();
-  const [
-    createEventMutation,
-    { loading: createEventLoading },
-  ] = useCreateEventMutation();
+  const [createEventMutation, { loading: createEventLoading }] =
+    useCreateEventMutation();
 
   const handleClose = () => {
     eventsQueryResult.refetch();
@@ -91,6 +92,8 @@ const CreateEventDialog: React.FC<Props> = ({
           } catch (err) {
             const { path, errors } = err as Yup.ValidationError;
             console.error(path, errors);
+
+            return { [path as string]: errors[0] };
           }
 
           if (endAt < startAt) {
