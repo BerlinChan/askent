@@ -77,21 +77,3 @@ select_permissions:
       - deletedAt:
           _is_null: true
   role: User
-- permission:
-    allow_aggregations: true
-    columns:
-    - id
-    - content
-    - anonymous
-    - reviewStatus
-    - star
-    - top
-    - voteUpCount
-    - replyCount
-    - createdAt
-    - updatedAt
-    - deletedAt
-    - eventId
-    - authorId
-    filter: {}
-  role: developer

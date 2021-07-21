@@ -8,11 +8,3 @@ object_relationships:
 - name: user
   using:
     foreign_key_constraint_on: userId
-select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - roleId
-    - userId
-    filter: {}
-  role: developer

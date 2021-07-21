@@ -9,14 +9,3 @@ array_relationships:
       table:
         name: userRoles
         schema: public
-select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - id
-    - name
-    - createdAt
-    - updatedAt
-    - deletedAt
-    filter: {}
-  role: developer

@@ -55,18 +55,3 @@ select_permissions:
       - deletedAt:
           _is_null: true
   role: User
-- permission:
-    allow_aggregations: true
-    columns:
-    - id
-    - content
-    - reviewStatus
-    - isModerator
-    - anonymous
-    - createdAt
-    - updatedAt
-    - deletedAt
-    - questionId
-    - authorId
-    filter: {}
-  role: developer

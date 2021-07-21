@@ -87,18 +87,3 @@ select_permissions:
       - deletedAt:
           _is_null: true
   role: User
-- permission:
-    allow_aggregations: true
-    columns:
-    - id
-    - fingerprint
-    - email
-    - avatar
-    - password
-    - name
-    - anonymous
-    - createdAt
-    - updatedAt
-    - deletedAt
-    filter: {}
-  role: developer

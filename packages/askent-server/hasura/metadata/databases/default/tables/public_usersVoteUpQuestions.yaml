@@ -24,10 +24,3 @@ select_permissions:
     - userId
     filter: {}
   role: User
-- permission:
-    allow_aggregations: true
-    columns:
-    - questionId
-    - userId
-    filter: {}
-  role: developer
