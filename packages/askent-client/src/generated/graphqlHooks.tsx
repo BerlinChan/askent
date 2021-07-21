@@ -16,81 +16,24 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type Query = {
-  __typename?: 'Query';
-  /** Check if a email has already exist. */
-  checkEmailExist: Scalars['Boolean'];
-  /** Check if a event code has already exist. */
-  checkEventCodeExist: Scalars['Boolean'];
-  eventById: Event;
-  /** Get events by code. */
-  eventsByCode: Array<Event>;
-  /** Get all my events. */
-  eventsByMe: EventPaged;
-  isEventAudience: Scalars['Boolean'];
-  me: User;
-  packageInfo: PackageInfo;
-  /** For demo use */
-  pgp: Pgp;
-  roles: Array<Role>;
+export type AuthPayload = {
+  __typename?: 'AuthPayload';
+  token: Scalars['String'];
+  user: User;
 };
 
-
-export type QueryCheckEmailExistArgs = {
-  email: Scalars['String'];
-};
-
-
-export type QueryCheckEventCodeExistArgs = {
-  code: Scalars['String'];
-};
-
-
-export type QueryEventByIdArgs = {
+export type CreateQuestionInput = {
   eventId: Scalars['ID'];
-};
-
-
-export type QueryEventsByCodeArgs = {
-  code?: Maybe<Scalars['String']>;
-};
-
-
-export type QueryEventsByMeArgs = {
-  dateStatusFilter?: Maybe<EventDateStatus>;
-  searchString?: Maybe<Scalars['String']>;
-  pagination: PaginationInput;
-};
-
-
-export type QueryIsEventAudienceArgs = {
-  eventId: Scalars['ID'];
-};
-
-export type Role = {
-  __typename?: 'Role';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-};
-
-export type User = {
-  __typename?: 'User';
-  id: Scalars['ID'];
-  email?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
+  content: Scalars['String'];
   anonymous?: Maybe<Scalars['Boolean']>;
-  avatar?: Maybe<Scalars['String']>;
-  roles: Array<Role>;
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  deletedAt?: Maybe<Scalars['DateTime']>;
 };
 
-
-export type Pgp = {
-  __typename?: 'PGP';
-  pubKey: Scalars['String'];
+export type CreateReplyInput = {
+  questionId: Scalars['ID'];
+  content: Scalars['String'];
+  anonymous: Scalars['Boolean'];
 };
+
 
 export type Event = {
   __typename?: 'Event';
@@ -115,30 +58,6 @@ export enum EventDateStatus {
   Past = 'Past'
 }
 
-export type Question = {
-  __typename?: 'Question';
-  id: Scalars['ID'];
-  content: Scalars['String'];
-  anonymous: Scalars['Boolean'];
-  reviewStatus: ReviewStatus;
-  star: Scalars['Boolean'];
-  top: Scalars['Boolean'];
-  voteUpCount: Scalars['Int'];
-  replyCount: Scalars['Int'];
-  event: Event;
-  author?: Maybe<User>;
-  voted: Scalars['Boolean'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-};
-
-/** Question's or Reply's review status */
-export enum ReviewStatus {
-  Review = 'Review',
-  Publish = 'Publish',
-  Archive = 'Archive'
-}
-
 export type EventPaged = IPagedType & {
   __typename?: 'EventPaged';
   offset: Scalars['Int'];
@@ -155,15 +74,9 @@ export type IPagedType = {
   hasNextPage: Scalars['Boolean'];
 };
 
-export type PaginationInput = {
-  /** Default offset 0. */
-  offset?: Maybe<Scalars['Int']>;
-  /** Default limit 50 */
-  limit?: Maybe<Scalars['Int']>;
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Add a user as guest administrator, who can cooperating manage the event. */
   addGuest: User;
   createEvent: Event;
   /** Create question */
@@ -222,10 +135,10 @@ export type MutationAddGuestArgs = {
 
 
 export type MutationCreateEventArgs = {
-  endAt: Scalars['DateTime'];
-  startAt: Scalars['DateTime'];
-  name: Scalars['String'];
   code: Scalars['String'];
+  name: Scalars['String'];
+  startAt: Scalars['DateTime'];
+  endAt: Scalars['DateTime'];
 };
 
 
@@ -270,8 +183,8 @@ export type MutationJoinEventArgs = {
 
 
 export type MutationLoginArgs = {
-  password: Scalars['String'];
   email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 
@@ -309,9 +222,9 @@ export type MutationSeedReplyArgs = {
 
 
 export type MutationSignupArgs = {
-  password: Scalars['String'];
-  email: Scalars['String'];
   name: Scalars['String'];
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 
@@ -321,8 +234,8 @@ export type MutationUpdateEventArgs = {
 
 
 export type MutationUpdateQuestionContentArgs = {
-  content: Scalars['String'];
   questionId: Scalars['ID'];
+  content: Scalars['String'];
 };
 
 
@@ -365,36 +278,90 @@ export type MutationVoteUpQuestionArgs = {
   questionId: Scalars['ID'];
 };
 
-export enum RoleName {
-  User = 'User',
-  Audience = 'Audience'
-}
-
-export type AuthPayload = {
-  __typename?: 'AuthPayload';
-  token: Scalars['String'];
-  user: User;
+export type Pgp = {
+  __typename?: 'PGP';
+  pubKey: Scalars['String'];
 };
 
-export type UpdateUserInput = {
-  name?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
-  anonymous?: Maybe<Scalars['Boolean']>;
+export type PackageInfo = {
+  __typename?: 'PackageInfo';
+  version: Scalars['String'];
+  description: Scalars['String'];
 };
 
-export type CreateQuestionInput = {
+export type PaginationInput = {
+  /** Default offset 0. */
+  offset?: Maybe<Scalars['Int']>;
+  /** Default limit 50 */
+  limit?: Maybe<Scalars['Int']>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  /** Check if a email has already exist. */
+  checkEmailExist: Scalars['Boolean'];
+  /** Check if a event code has already exist. */
+  checkEventCodeExist: Scalars['Boolean'];
+  eventById: Event;
+  /** Get events by code. */
+  eventsByCode: Array<Event>;
+  /** Get all my events. */
+  eventsByMe: EventPaged;
+  isEventAudience: Scalars['Boolean'];
+  me: User;
+  packageInfo: PackageInfo;
+  /** For demo use */
+  pgp: Pgp;
+  roles: Array<Role>;
+};
+
+
+export type QueryCheckEmailExistArgs = {
+  email: Scalars['String'];
+};
+
+
+export type QueryCheckEventCodeExistArgs = {
+  code: Scalars['String'];
+};
+
+
+export type QueryEventByIdArgs = {
   eventId: Scalars['ID'];
-  content: Scalars['String'];
-  anonymous?: Maybe<Scalars['Boolean']>;
 };
 
-export type UpdateEventInput = {
-  eventId: Scalars['ID'];
+
+export type QueryEventsByCodeArgs = {
   code?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  startAt?: Maybe<Scalars['DateTime']>;
-  endAt?: Maybe<Scalars['DateTime']>;
-  moderation?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type QueryEventsByMeArgs = {
+  dateStatusFilter?: Maybe<EventDateStatus>;
+  searchString?: Maybe<Scalars['String']>;
+  pagination: PaginationInput;
+};
+
+
+export type QueryIsEventAudienceArgs = {
+  eventId: Scalars['ID'];
+};
+
+export type Question = {
+  __typename?: 'Question';
+  id: Scalars['ID'];
+  content: Scalars['String'];
+  anonymous: Scalars['Boolean'];
+  reviewStatus: ReviewStatus;
+  star: Scalars['Boolean'];
+  top: Scalars['Boolean'];
+  voteUpCount: Scalars['Int'];
+  replyCount: Scalars['Int'];
+  event: Event;
+  author?: Maybe<User>;
+  voted: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type Reply = {
@@ -411,16 +378,52 @@ export type Reply = {
   updatedAt: Scalars['DateTime'];
 };
 
-export type CreateReplyInput = {
-  questionId: Scalars['ID'];
-  content: Scalars['String'];
-  anonymous: Scalars['Boolean'];
+/** Question's or Reply's review status */
+export enum ReviewStatus {
+  Review = 'Review',
+  Publish = 'Publish',
+  Archive = 'Archive'
+}
+
+export type Role = {
+  __typename?: 'Role';
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
-export type PackageInfo = {
-  __typename?: 'PackageInfo';
-  version: Scalars['String'];
-  description: Scalars['String'];
+export enum RoleName {
+  User = 'User',
+  Audience = 'Audience'
+}
+
+export type UpdateEventInput = {
+  eventId: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  startAt?: Maybe<Scalars['DateTime']>;
+  endAt?: Maybe<Scalars['DateTime']>;
+  moderation?: Maybe<Scalars['Boolean']>;
+};
+
+export type UpdateUserInput = {
+  name?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  anonymous?: Maybe<Scalars['Boolean']>;
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  email?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  anonymous?: Maybe<Scalars['Boolean']>;
+  avatar?: Maybe<Scalars['String']>;
+  roles: Array<Role>;
+  events: Array<Event>;
+  attendedEvents: Array<Event>;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
 };
 
 export type GuestesByEventQueryVariables = Exact<{

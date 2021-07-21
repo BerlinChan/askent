@@ -111,7 +111,7 @@ export class EventResolver implements ResolverInterface<Event> {
         "weight" // order weight
       )
       .innerJoin("event.owner", "owner")
-      .innerJoin("event.guestes", "guest")
+      .leftJoin("event.guestes", "guest")
       .where(
         dateStatusFilter === EventDateStatus.Active
           ? 'NOW() BETWEEN "event"."startAt" AND "event"."endAt"'

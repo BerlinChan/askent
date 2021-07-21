@@ -23,7 +23,13 @@ async function codegen() {
           },
           "src/generated/hasuraHooks.tsx": {
             documents: "./src/**/*.hasura.graphql",
-            schema: config.hasuraUri,
+            schema: {
+              [config.hasuraUri]: {
+                  headers: {
+                      'x-hasura-admin-secret': process.env.HASURA_GRAPHQL_ADMIN_SECRET,
+                  },
+              },
+          },
             plugins: [
               "typescript",
               "typescript-operations",

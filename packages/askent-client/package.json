@@ -14,7 +14,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "codegen": "ts-node --skip-project tools/codegen.ts",
+    "codegen": "env-cmd -f ../askent-server/.env ts-node --skip-project tools/codegen.ts",
     "intl:extract": "formatjs extract 'src/**/*.tsx' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "intl:compile": "formatjs compile-folder lang src/generated/lang"
   },
