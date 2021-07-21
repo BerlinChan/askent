@@ -18,7 +18,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   REPLY_CONTENT_MAX_LENGTH,
   USER_NAME_MAX_LENGTH,
-} from "../../../../../constant";
+} from "askent-common/src/constant";
 import { useSnackbar } from "notistack";
 import {
   useCreateReplyMutation,

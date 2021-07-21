@@ -15,7 +15,7 @@ import ListFooter from "../../../../../components/ListFooter";
 import {
   DEFAULT_PAGE_OFFSET,
   DEFAULT_PAGE_LIMIT,
-} from "../../../../../constant";
+} from "askent-common/src/constant";
 import { getHasNextPage } from "../../../../../utils";
 
 interface Props {

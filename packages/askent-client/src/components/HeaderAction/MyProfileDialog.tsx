@@ -20,7 +20,7 @@ import { MeQuery, MeQueryVariables } from "../../generated/graphqlHooks";
 import { FormattedMessage, useIntl } from "react-intl";
 import PersonIcon from "@material-ui/icons/Person";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
-import { USER_NAME_MAX_LENGTH, USER_EMAIL_MAX_LENGTH } from "../../constant";
+import { USER_NAME_MAX_LENGTH, USER_EMAIL_MAX_LENGTH } from "askent-common/src/constant";
 import { useUpdateUserMutation } from "../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>

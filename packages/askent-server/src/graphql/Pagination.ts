@@ -1,5 +1,5 @@
 import { InterfaceType, InputType, Field, Int } from 'type-graphql'
-import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from '../constant'
+import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from 'askent-common/src/constant'
 
 @InputType()
 export class PaginationInput {

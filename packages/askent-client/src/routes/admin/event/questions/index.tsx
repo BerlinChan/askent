@@ -11,11 +11,12 @@ import QuestionList from "./QuestionList";
 import ActionReview from "./ActionReview";
 import ActionRight, { QuestionQueryStateType } from "./ActionRight";
 import {
-  DEFAULT_PAGE_LIMIT,
-  DEFAULT_PAGE_OFFSET,
   QuestionFilter,
   QuestionOrder,
 } from "../../../../constant";
+import {  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+} from "askent-common/src/constant";
 import {
   getQuestionOrderByCondition,
   getQuestionWhereByFilter,

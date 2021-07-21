@@ -8,7 +8,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import CreateEventDialog from "./CreateEventDialog";
 import EventList from "./EventList";
-import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
+import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "askent-common/src/constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

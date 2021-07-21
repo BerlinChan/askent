@@ -1,5 +1,15 @@
 .idea/
+.vscode/
 .DS_Store
+*.tsbuildinfo
+
+# local secrets
+.env
+ormconfig.js
+
+# production
+build/
+dist/
 
 # Logs
 logs

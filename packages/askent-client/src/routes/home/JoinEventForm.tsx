@@ -11,7 +11,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { ButtonLoading } from "../../components/Form";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { EVENT_CODE_MAX_LENGTH } from "../../constant";
+import { EVENT_CODE_MAX_LENGTH } from "askent-common/src/constant";
 import {
   useEventCodeOptionsLazyQuery,
   Event,

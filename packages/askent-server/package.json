@@ -10,7 +10,7 @@
     "directory": "packages/askent-server"
   },
   "scripts": {
-    "dev": "env-cmd ts-node-dev --no-notify --respawn --transpile-only --inspect -- src/index",
+    "dev": "env-cmd ts-node-dev --no-notify --respawn --transpile-only -r tsconfig-paths/register -- src/index",
     "start": "env-cmd node src/index",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && tsc",
@@ -20,6 +20,7 @@
     "docker:build": "docker build --pull --rm -f Dockerfile -t askent-server:latest ."
   },
   "dependencies": {
+    "askent-common": "file:../askent-common",
     "apollo-server": "2.25.2",
     "bcryptjs": "2.4.3",
     "class-validator": "0.13.1",

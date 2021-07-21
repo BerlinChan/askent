@@ -9,9 +9,9 @@ RUN yarn build
 FROM node:lts-alpine
 
 COPY --from=build /app/dist /app
-COPY --from=build /app/.env /app/.env
-COPY --from=build /app/package.json /app/package.json
-WORKDIR /app
+COPY --from=build /app/.env /app/askent-server/.env
+COPY --from=build /app/package.json /app/askent-server/package.json
+WORKDIR /app/askent-server
 RUN yarn install --production
 
 EXPOSE 4000

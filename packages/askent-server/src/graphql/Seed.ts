@@ -3,12 +3,11 @@ import { addDays } from 'date-fns'
 import { Context } from '../context'
 import { Event as EventEntity } from '../entity/Event'
 import { Question as QuestionEntity } from '../entity/Question'
-import { ReviewStatus } from '../constant'
+import { ReviewStatus,RoleName } from '../constant'
 import { Event } from './EventType'
 import { Repository, getRepository } from 'typeorm'
 import { User as UserEntity } from '../entity/User'
 import { Role as RoleEntity } from '../entity/Role'
-import { RoleName } from '../constant'
 import { Reply as ReplyEntity } from '../entity/Reply'
 
 @Resolver((of) => Event)

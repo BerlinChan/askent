@@ -21,7 +21,7 @@ import {
   EventsByMeQueryVariables,
 } from "../../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
-import { EVENT_CODE_MAX_LENGTH, EVENT_NAME_MAX_LENGTH } from "../../../constant";
+import { EVENT_CODE_MAX_LENGTH, EVENT_NAME_MAX_LENGTH } from "askent-common/src/constant";
 import { TextField } from "formik-material-ui";
 import { DateTimePicker } from "formik-material-ui-pickers";
 

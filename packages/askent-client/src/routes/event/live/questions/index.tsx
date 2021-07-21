@@ -5,11 +5,13 @@ import { MeQuery, MeQueryVariables } from "../../../../generated/graphqlHooks";
 import QuestionList from "./QuestionList";
 import AskFabDialog from "./AskFabDialog";
 import {
-  DEFAULT_PAGE_LIMIT,
-  DEFAULT_PAGE_OFFSET,
   QuestionOrder,
   QuestionFilter,
 } from "../../../../constant";
+import {
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+} from "askent-common/src/constant";
 import {
   EventDetailLiveQueryFieldsFragment,
   QuestionLiveQueryAudienceSubscriptionVariables,

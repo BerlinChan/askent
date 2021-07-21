@@ -10,10 +10,12 @@ import { QueryResult } from "@apollo/client";
 import { MeQuery, MeQueryVariables } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
 import {
-  DEFAULT_PAGE_LIMIT,
-  DEFAULT_PAGE_OFFSET,
   QuestionFilter,
 } from "../../constant";
+import {
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+} from "askent-common/src/constant";
 import { useParams } from "react-router-dom";
 import { Virtuoso } from "react-virtuoso";
 import ListFooter from "../ListFooter";

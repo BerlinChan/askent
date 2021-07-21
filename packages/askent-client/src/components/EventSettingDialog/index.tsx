@@ -26,7 +26,7 @@ import {
   useUpdateEventMutation,
 } from "../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
-import { EVENT_NAME_MAX_LENGTH, EVENT_CODE_MAX_LENGTH } from "../../constant";
+import { EVENT_NAME_MAX_LENGTH, EVENT_CODE_MAX_LENGTH } from "askent-common/src/constant";
 import { tabList, TabPanel } from "./TabsPanels";
 
 const useStyles = makeStyles((theme: Theme) =>

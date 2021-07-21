@@ -15,7 +15,7 @@ import { useLoginMutation } from "../../generated/graphqlHooks";
 import { useToken } from "../../hooks";
 import { TextField } from "formik-material-ui";
 import { FormattedMessage, useIntl } from "react-intl";
-import { USER_PASSWORD_MAX_LENGTH, USER_EMAIL_MAX_LENGTH } from "../../constant";
+import { USER_PASSWORD_MAX_LENGTH, USER_EMAIL_MAX_LENGTH } from "askent-common/src/constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

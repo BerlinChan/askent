@@ -6,11 +6,13 @@ import QRCode from "qrcode.react";
 import { FormattedMessage } from "react-intl";
 import OrderSelect from "./OrderSelect";
 import {
-  DEFAULT_PAGE_LIMIT,
-  DEFAULT_PAGE_OFFSET,
   QuestionOrder,
   QuestionFilter,
 } from "../../../constant";
+import {
+  DEFAULT_PAGE_LIMIT,
+  DEFAULT_PAGE_OFFSET,
+} from "askent-common/src/constant";
 import QuestionList from "./QuestionList";
 import { QuestionQueryStateType } from "../../admin/event/questions/ActionRight";
 import {

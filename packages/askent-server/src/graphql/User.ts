@@ -18,15 +18,14 @@ import MD5 from "crypto-js/md5";
 import { Context } from "../context";
 import { signToken } from "../utils";
 import { Role as RoleEntity } from "../entity/Role";
+import { Role } from "./Role";
+import { User as UserEntity } from "../entity/User";
+import { CLAIMS_NAMESPACE, RoleName } from "../constant";
 import {
-  CLAIMS_NAMESPACE,
-  RoleName,
   USER_NAME_MAX_LENGTH,
   USER_PASSWORD_MAX_LENGTH,
   USER_EMAIL_MAX_LENGTH,
-} from "../constant";
-import { User as UserEntity } from "../entity/User";
-import { Role } from "./Role";
+} from "askent-common/src/constant";
 import { IsEmail, MaxLength } from "class-validator";
 
 @ObjectType()
@@ -165,7 +164,6 @@ export class UserResolver {
     @Args() { email }: checkEmailExistArgs,
     @Ctx() ctx: Context
   ): Promise<boolean> {
-    console.log(111, email);
     return checkEmailExist(ctx, email);
   }
 

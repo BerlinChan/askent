@@ -22,7 +22,7 @@ import {
   USER_NAME_MAX_LENGTH,
   USER_EMAIL_MAX_LENGTH,
   USER_PASSWORD_MAX_LENGTH,
-} from "../../constant";
+} from "askent-common/src/constant";
 import { useToken } from "../../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -29,7 +29,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { ButtonLoading } from "../../Form";
-import { USER_EMAIL_MAX_LENGTH } from "../../../constant";
+import { USER_EMAIL_MAX_LENGTH } from "askent-common/src/constant";
 import Confirm from "../../Confirm";
 
 const useStyles = makeStyles((theme: Theme) =>

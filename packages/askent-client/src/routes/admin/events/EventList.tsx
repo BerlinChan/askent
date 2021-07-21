@@ -14,7 +14,7 @@ import { QueryResult } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import { FormattedMessage } from "react-intl";
 import Confirm from "../../../components/Confirm";
-import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "../../../constant";
+import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "askent-common/src/constant";
 import { getEventDateFilterLabel } from "./index";
 import EventItem from "./EventItem";
 import EventSettingDialog from "../../../components/EventSettingDialog";

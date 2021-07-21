@@ -48,7 +48,7 @@ import QuestionToggleButton, {
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
-import { QUESTION_CONTENT_MAX_LENGTH } from "../../../../constant";
+import { QUESTION_CONTENT_MAX_LENGTH } from "askent-common/src/constant";
 import { TextField } from "formik-material-ui";
 import { ReplyDialogStateType } from "./reply/ReplyDialog";
 

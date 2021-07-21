@@ -6,7 +6,11 @@ import { Event as EventEntity } from "../entity/Event";
 import { Question as QuestionEntity } from "../entity/Question";
 import { IPagedType } from "./Pagination";
 import { Question } from "./Question";
-import { EventDateStatus, EVENT_CODE_MAX_LENGTH ,EVENT_NAME_MAX_LENGTH} from "../constant";
+import { EventDateStatus } from "../constant";
+import {
+  EVENT_CODE_MAX_LENGTH,
+  EVENT_NAME_MAX_LENGTH,
+} from "askent-common/src/constant";
 import { IsDate, MaxLength } from "class-validator";
 
 @ObjectType()
