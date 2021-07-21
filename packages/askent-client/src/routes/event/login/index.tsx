@@ -62,22 +62,27 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
           variables: { eventId: id },
         });
       })();
-    } else if (isEventAudienceData?.isEventAudience) {
+    } else if (token && !isEventAudienceData?.isEventAudience) {
+      (async () => {
+        await joinEventMutation({ variables: { eventId: id } });
+      })();
+    } else if (token && isEventAudienceData?.isEventAudience) {
       history.replace(`/event/${id}/live/questions`);
+
+      // fix Hasura subscription auth, https://github.com/apollographql/subscriptions-transport-ws/issues/171
+      window.location.reload();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isEventAudienceData]);
+  }, [id, token, isEventAudienceData]);
 
   const handleEventLogin = async () => {
     if (!token) {
       const { data } = await loginAudienceMutation({
         variables: { fingerprint },
       });
-      setToken(data?.loginAudience.token || "");
+      setToken(data?.loginAudience.token as string);
     }
-    await joinEventMutation({ variables: { eventId: id } });
-    history.replace(`/event/${id}/live/questions`);
   };
 
   return (
