@@ -1,0 +1,13 @@
+mutation Signup($name: String!, $email: String!, $password: String!) {
+  signup(name: $name, password: $password, email: $email) {
+    token
+    user {
+      name
+      email
+    }
+  }
+}
+
+query CheckEmailExist($email: String!) {
+  checkEmailExist(email: $email)
+}

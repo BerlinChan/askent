@@ -1,0 +1,9 @@
+query EventCodeOptions($code: String) {
+  eventsByCode(code: $code) {
+    id
+    code
+    name
+    startAt
+    endAt
+  }
+}

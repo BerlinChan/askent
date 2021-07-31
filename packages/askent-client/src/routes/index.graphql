@@ -1,0 +1,23 @@
+fragment UserInfo on User {
+  id
+  name
+  anonymous
+  email
+  avatar
+  roles {
+    id
+    name
+  }
+}
+
+query Me {
+  me {
+    ...UserInfo
+  }
+}
+
+mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    ...UserInfo
+  }
+}

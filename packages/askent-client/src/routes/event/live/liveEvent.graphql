@@ -1,0 +1,9 @@
+query EventForLogin($eventId: ID!) {
+  eventById(eventId: $eventId) {
+    id
+    name
+    code
+    startAt
+    endAt
+  }
+}

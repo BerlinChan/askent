@@ -1,0 +1,62 @@
+table:
+  name: reply
+  schema: public
+object_relationships:
+- name: author
+  using:
+    foreign_key_constraint_on: authorId
+- name: question
+  using:
+    foreign_key_constraint_on: questionId
+select_permissions:
+- permission:
+    allow_aggregations: true
+    columns:
+    - anonymous
+    - authorId
+    - content
+    - createdAt
+    - id
+    - isModerator
+    - questionId
+    - reviewStatus
+    - updatedAt
+    filter:
+      _and:
+      - question:
+          event:
+            audiences:
+              userId:
+                _eq: x-hasura-user-id
+      - deletedAt:
+          _is_null: true
+      - reviewStatus:
+          _eq: Publish
+  role: Audience
+- permission:
+    allow_aggregations: true
+    columns:
+    - anonymous
+    - authorId
+    - content
+    - createdAt
+    - id
+    - isModerator
+    - questionId
+    - reviewStatus
+    - updatedAt
+    filter:
+      _and:
+      - deletedAt:
+          _is_null: true
+      - _or:
+        - question:
+            event:
+              ownerId:
+                _eq: x-hasura-user-id
+        - question:
+            event:
+              guestes:
+                userId:
+                  _eq: x-hasura-user-id
+  role: User

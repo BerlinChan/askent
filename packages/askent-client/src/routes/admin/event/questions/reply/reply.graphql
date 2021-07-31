@@ -1,0 +1,37 @@
+fragment ReplyFields on Reply {
+  id
+  createdAt
+  updatedAt
+  content
+  reviewStatus
+  isModerator
+  author {
+    id
+    name
+    avatar
+  }
+}
+
+mutation CreateReply($input: CreateReplyInput!) {
+  createReply(input: $input) {
+    ...ReplyFields
+  }
+}
+
+mutation UpdateReplyContent($replyId: ID!, $content: String!) {
+  updateReplyContent(replyId: $replyId, content: $content) {
+    ...ReplyFields
+  }
+}
+
+mutation UpdateReplyReviewStatus($replyId: ID!, $reviewStatus: ReviewStatus!) {
+  updateReplyReviewStatus(replyId: $replyId, reviewStatus: $reviewStatus) {
+    ...ReplyFields
+  }
+}
+
+mutation DeleteReply($replyId: ID!) {
+  deleteReply(replyId: $replyId) {
+    id
+  }
+}

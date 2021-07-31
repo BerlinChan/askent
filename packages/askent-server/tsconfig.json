@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "target": "ES2019",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "lib": ["ESNext", "esnext.asynciterable"],
+    "strict": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": true,
+    "noUnusedLocals": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "askent-common": ["../askent-common"],
+      "askent-common/*": ["../askent-common/*"]
+    }
+  },
+  "include": ["src", "ormconfig"]
+}

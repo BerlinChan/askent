@@ -1,0 +1,16 @@
+mutation LoginAudience($fingerprint: String!) {
+  loginAudience(fingerprint: $fingerprint) {
+    token
+    user {
+      name
+    }
+  }
+}
+
+query IsEventAudience($eventId: ID!) {
+  isEventAudience(eventId: $eventId)
+}
+
+mutation JoinEvent($eventId: ID!) {
+  joinEvent(eventId: $eventId)
+}

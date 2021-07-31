@@ -1,0 +1,26 @@
+table:
+  name: usersVoteUpQuestions
+  schema: public
+object_relationships:
+- name: question
+  using:
+    foreign_key_constraint_on: questionId
+- name: user
+  using:
+    foreign_key_constraint_on: userId
+select_permissions:
+- permission:
+    columns:
+    - questionId
+    - userId
+    filter:
+      userId:
+        _eq: x-hasura-user-id
+  role: Audience
+- permission:
+    allow_aggregations: true
+    columns:
+    - questionId
+    - userId
+    filter: {}
+  role: User

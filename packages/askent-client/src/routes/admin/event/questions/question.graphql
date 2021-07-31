@@ -1,0 +1,57 @@
+fragment QuestionFields on Question {
+  id
+  createdAt
+  updatedAt
+  voteUpCount
+  replyCount
+  content
+  reviewStatus
+  star
+  top
+  author {
+    id
+    name
+    avatar
+  }
+}
+
+mutation DeleteQuestion($questionId: ID!) {
+  deleteQuestion(questionId: $questionId) {
+    id
+  }
+}
+
+mutation DeleteAllReviewQuestions($eventId: ID!) {
+  deleteAllReviewQuestions(eventId: $eventId)
+}
+
+mutation PublishAllReviewQuestions($eventId: ID!) {
+  publishAllReviewQuestions(eventId: $eventId)
+}
+
+mutation UpdateQuestionReviewStatus(
+  $questionId: ID!
+  $reviewStatus: ReviewStatus!
+) {
+  updateQuestionReviewStatus(
+    questionId: $questionId
+    reviewStatus: $reviewStatus
+  ) {
+    ...QuestionFields
+  }
+}
+mutation UpdateQuestionStar($questionId: ID!, $star: Boolean!) {
+  updateQuestionStar(questionId: $questionId, star: $star) {
+    ...QuestionFields
+  }
+}
+mutation UpdateQuestionTop($questionId: ID!, $top: Boolean!) {
+  updateQuestionTop(questionId: $questionId, top: $top) {
+    ...QuestionFields
+  }
+}
+mutation UpdateQuestionContent($questionId: ID!, $content: String!) {
+  updateQuestionContent(questionId: $questionId, content: $content) {
+    ...QuestionFields
+  }
+}

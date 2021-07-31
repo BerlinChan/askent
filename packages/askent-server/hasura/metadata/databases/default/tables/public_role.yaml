@@ -1,0 +1,11 @@
+table:
+  name: role
+  schema: public
+array_relationships:
+- name: users
+  using:
+    foreign_key_constraint_on:
+      column: roleId
+      table:
+        name: userRoles
+        schema: public

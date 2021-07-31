@@ -1,0 +1,16 @@
+fragment QuestionWallFields on Question {
+  id
+  createdAt
+  updatedAt
+  content
+  reviewStatus
+  top
+  star
+  voteUpCount
+  replyCount
+  author {
+    id
+    name
+    avatar
+  }
+}

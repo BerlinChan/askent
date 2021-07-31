@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "stack:deploy": "docker stack deploy -c docker-compose.yaml askent-stack",
+    "stack:rm": "docker stack rm askent-stack",
+    "docker:build": "docker build --pull --rm -f Dockerfile -t askent-server:latest ."
+  }
+}

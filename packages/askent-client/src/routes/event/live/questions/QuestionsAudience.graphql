@@ -1,0 +1,30 @@
+fragment QuestionAudienceFields on Question {
+  id
+  anonymous
+  createdAt
+  updatedAt
+  content
+  reviewStatus
+  top
+  star
+  voted
+  voteUpCount
+  replyCount
+  author {
+    id
+    name
+    avatar
+  }
+}
+
+mutation CreateQuestion($input: CreateQuestionInput!) {
+  createQuestion(input: $input) {
+    ...QuestionAudienceFields
+  }
+}
+
+mutation VoteUpQuestion($questionId: ID!) {
+  voteUpQuestion(questionId: $questionId) {
+    ...QuestionAudienceFields
+  }
+}

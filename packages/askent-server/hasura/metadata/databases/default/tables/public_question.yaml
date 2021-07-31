@@ -1,0 +1,82 @@
+table:
+  name: question
+  schema: public
+object_relationships:
+- name: author
+  using:
+    foreign_key_constraint_on: authorId
+- name: event
+  using:
+    foreign_key_constraint_on: eventId
+array_relationships:
+- name: replies
+  using:
+    foreign_key_constraint_on:
+      column: questionId
+      table:
+        name: reply
+        schema: public
+- name: voteUpUsers
+  using:
+    foreign_key_constraint_on:
+      column: questionId
+      table:
+        name: usersVoteUpQuestions
+        schema: public
+select_permissions:
+- permission:
+    allow_aggregations: true
+    columns:
+    - anonymous
+    - authorId
+    - content
+    - createdAt
+    - eventId
+    - id
+    - replyCount
+    - reviewStatus
+    - star
+    - top
+    - updatedAt
+    - voteUpCount
+    filter:
+      _and:
+      - deletedAt:
+          _is_null: true
+      - reviewStatus:
+          _eq: Publish
+      - event:
+          audiences:
+            userId:
+              _eq: x-hasura-user-id
+  role: Audience
+- permission:
+    allow_aggregations: true
+    columns:
+    - anonymous
+    - authorId
+    - content
+    - createdAt
+    - eventId
+    - id
+    - replyCount
+    - reviewStatus
+    - star
+    - top
+    - updatedAt
+    - voteUpCount
+    filter:
+      _and:
+      - _or:
+        - event:
+            ownerId:
+              _eq: x-hasura-user-id
+        - authorId:
+            _eq: x-hasura-user-id
+        - event:
+            guestes:
+              userId:
+                _eq: x-hasura-user-id
+      - deletedAt:
+          _is_null: true
+  role: User

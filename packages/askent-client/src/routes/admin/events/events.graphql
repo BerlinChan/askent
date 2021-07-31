@@ -1,0 +1,77 @@
+fragment EventFields on Event {
+  id
+  name
+  code
+  startAt
+  endAt
+  dateStatus
+}
+fragment EventDetailFields on Event {
+  id
+  name
+  code
+  startAt
+  endAt
+  dateStatus
+  moderation
+  owner {
+    id
+    name
+    email
+  }
+}
+
+query EventsByMe(
+  $searchString: String
+  $pagination: PaginationInput!
+  $eventOwnerFilter: EventOwnerFilter
+  $dateStatusFilter: EventDateStatus
+) {
+  eventsByMe(
+    searchString: $searchString
+    pagination: $pagination
+    eventOwnerFilter: $eventOwnerFilter
+    dateStatusFilter: $dateStatusFilter
+  ) {
+    limit
+    offset
+    totalCount
+    hasNextPage
+    list {
+      ...EventFields
+    }
+  }
+}
+
+query EventById($eventId: ID!) {
+  eventById(eventId: $eventId) {
+    ...EventDetailFields
+  }
+}
+
+query CheckEventCodeExist($code: String!) {
+  checkEventCodeExist(code: $code)
+}
+
+mutation CreateEvent(
+  $code: String!
+  $name: String!
+  $startAt: DateTime!
+  $endAt: DateTime!
+) {
+  createEvent(code: $code, name: $name, startAt: $startAt, endAt: $endAt) {
+    ...EventFields
+  }
+}
+
+mutation UpdateEvent($input: UpdateEventInput!) {
+  updateEvent(input: $input) {
+    ...EventDetailFields
+  }
+}
+
+mutation DeleteEvent($eventId: ID!) {
+  deleteEvent(eventId: $eventId) {
+    id
+  }
+}

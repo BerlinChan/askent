@@ -1,0 +1,13 @@
+query PGP {
+  pgp {
+    pubKey
+  }
+}
+
+# Use client-side schema
+mutation PackageInfo($version: String, $description: String) {
+  packageInfo(version: $version, description: $description) @client {
+    version
+    description
+  }
+}
