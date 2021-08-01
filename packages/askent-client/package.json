@@ -44,7 +44,7 @@
     "react-intl": "5.20.6",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.3",
-    "react-virtuoso": "1.9.6",
+    "react-virtuoso": "1.10.2",
     "screenfull": "5.1.0",
     "subscriptions-transport-ws": "0.9.18",
     "yup": "0.32.9"
