@@ -2157,12 +2157,10 @@
   resolved "https://registry.yarnpkg.com/@material-ui/types/-/types-5.1.0.tgz#efa1c7a0b0eaa4c7c87ac0390445f0f88b0d88f2"
   integrity sha512-7cqRjrY50b8QzRSYyhSpx4WRw2YuO0KKIGQEVk5J8uoz2BanawykgZGoWEqKm7pVIbzFDN0SpPcVV4IhOFkl8A==
 
-"@material-ui/types@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@material-ui/types/-/types-4.1.1.tgz#b65e002d926089970a3271213a3ad7a21b17f02b"
-  integrity sha512-AN+GZNXytX9yxGi0JOfxHrRTbhFybjUJ05rnsBVjcB+16e466Z0Xe5IxawuOayVZgTBNDxmPKo5j4V6OnMtaSQ==
-  dependencies:
-    "@types/react" "*"
+"@material-ui/types@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@material-ui/types/-/types-6.0.1.tgz#bfcdcd3bb5091e5feac2b191db516543d84e26af"
+  integrity sha512-t53C2BZE59e8ao38EDIZdM2smPDSEo5Xx9XxQ/MNM9Ph63Mu4vj5pmECiXkYp0y2OrvFiiZhcqRWV34SBOA18g==
 
 "@material-ui/utils@^4.11.2":
   version "4.11.2"
@@ -9853,13 +9851,13 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-material-ui-popup-state@1.8.3:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/material-ui-popup-state/-/material-ui-popup-state-1.8.3.tgz#1e263682659c6b39af38c68c21ce4f316f2bb56e"
-  integrity sha512-qvrX5snjXwn3rv5i3+w/T1WF3NHRPZ6KzB/gOzh9cxowEvlWV0HkCSbPmEDTnfQt6s6r964cMV987QZ50eNhxA==
+material-ui-popup-state@1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/material-ui-popup-state/-/material-ui-popup-state-1.9.0.tgz#569d173c941c41ba32791ea759ff21b1a84d70fd"
+  integrity sha512-a0OqcXgicrYYKMoBXuajjT94uARgl7ozt1gs735Xb+UmEtanBxjavtoOVo+C4pfVRCHOVamJg+1H48zhOrGd/w==
   dependencies:
     "@babel/runtime" "^7.12.5"
-    "@material-ui/types" "^4.1.1"
+    "@material-ui/types" "^6.0.1"
     classnames "^2.2.6"
     prop-types "^15.7.2"
 
