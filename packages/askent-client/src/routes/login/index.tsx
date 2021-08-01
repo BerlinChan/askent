@@ -19,6 +19,7 @@ import {
   USER_PASSWORD_MAX_LENGTH,
   USER_EMAIL_MAX_LENGTH,
 } from "askent-common/src/constant";
+import { TOKEN_KEY } from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,7 +40,7 @@ const Login: React.FC = () => {
   const [loginMutation, { loading }] = useLoginMutation();
   const history = useHistory();
   const { formatMessage } = useIntl();
-  const { token, setToken } = useToken();
+  const { token, setToken } = useToken(TOKEN_KEY.USER);
 
   React.useEffect(() => {
     if (token) {

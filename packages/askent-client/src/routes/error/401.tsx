@@ -3,9 +3,10 @@ import { Link as RouterLink, useHistory } from "react-router-dom";
 import { Link, Typography } from "@material-ui/core";
 import { useToken } from "../../hooks";
 import { FormattedMessage } from "react-intl";
+import { TOKEN_KEY } from "../../constant";
 
 const Error401: React.FC = (props) => {
-  const { removeToken } = useToken();
+  const { removeToken } = useToken(TOKEN_KEY.USER);
   const [countdown, setCountdown] = React.useState(5);
   const history = useHistory();
 

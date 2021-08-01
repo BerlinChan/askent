@@ -19,6 +19,7 @@ import {
   useJoinEventMutation,
 } from "../../../generated/graphqlHooks";
 import { useFingerprint, useToken } from "../../../hooks";
+import { TOKEN_KEY } from "../../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,7 +46,7 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
   const history = useHistory();
   let { id } = useParams<{ id: string }>();
-  const { token, setToken } = useToken();
+  const { token, setToken } = useToken(TOKEN_KEY.USER);
   const { data, loading: eventForLoginLoading } = eventQuery;
   const [loginAudienceMutation, { loading: loginAudienceLoading }] =
     useLoginAudienceMutation();

@@ -1,4 +1,7 @@
-export const AUTH_TOKEN = "AUTH_TOKEN";
+export enum TOKEN_KEY {
+  USER = "TOKEN_USER",
+  AUDIENCE = "TOKEN_AUDIENCE",
+}
 
 export const HASURA_LIVE_QUERY = /LiveQuery/;
 

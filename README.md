@@ -33,6 +33,7 @@ yarn workspace askent-server dev
 
 ## TODO
 
+- [ ] split token/apolloClient
 - [ ] About text
 - [ ] event edit dialog
 - [ ] question support voteDown

@@ -24,6 +24,7 @@ import {
   USER_PASSWORD_MAX_LENGTH,
 } from "askent-common/src/constant";
 import { useToken } from "../../hooks";
+import { TOKEN_KEY } from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,7 +50,7 @@ const Signup: React.FC = () => {
     checkEmailExistLazyQuery,
     { data: checkEmailData, loading: checkEmailLoading },
   ] = useCheckEmailExistLazyQuery();
-  const { token } = useToken();
+  const { token } = useToken(TOKEN_KEY.USER);
 
   React.useEffect(() => {
     if (token) {
