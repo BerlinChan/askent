@@ -40,7 +40,7 @@
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
     "@types/crypto-js": "4.0.1",
-    "@types/jsonwebtoken": "8.5.4",
+    "@types/jsonwebtoken": "8.5.5",
     "@types/ramda": "types/npm-ramda#dist",
     "@types/type-is": "1.6.3",
     "hasura-cli": "2.0.3",
