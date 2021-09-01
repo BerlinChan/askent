@@ -12,7 +12,6 @@ import {
 } from "../generated/graphqlHooks";
 
 export default function createCache() {
-  // Restore cache defaults to make the same one in server.js. Ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
   return new InMemoryCache({
     typePolicies: {
       Query: {

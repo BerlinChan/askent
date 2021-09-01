@@ -4,7 +4,6 @@ import AuthedAction from "./AuthedAction";
 import UnauthAction from "./UnauthAction";
 import { Box } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { TOKEN_KEY } from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,7 +19,7 @@ interface Props {
 }
 
 const HeaderAction: React.FC<Props> = ({ hideUserInfo = false }) => {
-  const { token } = useToken(TOKEN_KEY.USER);
+  const { token } = useToken();
   const classes = useStyles();
 
   return (

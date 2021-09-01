@@ -20,7 +20,6 @@ import HomeIcon from "@material-ui/icons/Home";
 import { useToken } from "../../hooks";
 import MyProfileDialog from "./MyProfileDialog";
 import MyQuestionsDialog from "./MyQuestionsDialog";
-import { TOKEN_KEY } from "../../constant";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -53,7 +52,7 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
-  const { removeToken } = useToken(TOKEN_KEY.USER);
+  const { removeToken } = useToken();
   const [myProfileDialogOpen, setMyProfileDialogOpen] =
     React.useState<boolean>(false);
   const [myQuestionsDialogOpen, setMyQuestionsDialogOpen] =
