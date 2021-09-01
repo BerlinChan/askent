@@ -77,6 +77,10 @@ select_permissions:
             guestes:
               userId:
                 _eq: x-hasura-user-id
+        - event:
+            audiences:
+              userId:
+                _eq: x-hasura-user-id
       - deletedAt:
           _is_null: true
   role: User
