@@ -12351,14 +12351,13 @@ react-transition-group@^4.0.0, react-transition-group@^4.4.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-virtuoso@1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-1.11.1.tgz#350dc88866b3f42cb396bf8f40b90efc6daaadde"
-  integrity sha512-NH8eLLmoowdq0x7/AEfXxOY9OY4PDpLuPPmCc8F2IoBQLvIcMait3A2TnR0fT9UT+gl8n7GHoORzeGqF5Ka0MA==
+react-virtuoso@2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-2.0.4.tgz#b21df27383d604ce3dcc0fd9106308004e43ed58"
+  integrity sha512-IOoeosrQARTKU8EbF2plvEj8/VHOdDpKoRUSid3tjLyqBzt3KKWKc5C9Q+QiUJ796Y2jeSqckp9h3qg3pr0T4A==
   dependencies:
     "@virtuoso.dev/react-urx" "^0.2.5"
     "@virtuoso.dev/urx" "^0.2.5"
-    resize-observer-polyfill "^1.5.1"
 
 react@17.0.2:
   version "17.0.2"
@@ -12682,11 +12681,6 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
-
-resize-observer-polyfill@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/resize-observer-polyfill/-/resize-observer-polyfill-1.5.1.tgz#0e9020dd3d21024458d4ebd27e23e40269810464"
-  integrity sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==
 
 resolve-cwd@^2.0.0:
   version "2.0.0"
