@@ -5,7 +5,7 @@ import { WebSocketLink } from "@apollo/client/link/ws";
 import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
 import config from "../config";
-import { TOKEN_KEY, HASURA_LIVE_QUERY } from "../constant";
+import { TOKEN_KEY } from "../constant";
 
 // Restore cache defaults to make the same one in server.js. Ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
 const getAuthToken = () =>
@@ -25,15 +25,6 @@ const authMiddleware = setContext((operation, { headers }) => {
 type ConnectionParamsType = {
   Authorization?: string;
 };
-const wsLink = new WebSocketLink({
-  uri: config.webSocketUri,
-  options: {
-    reconnect: true,
-    connectionParams: {
-      Authorization: getAuthToken(),
-    } as ConnectionParamsType,
-  },
-});
 const apiLink = new HttpLink({
   uri: config.apiUri,
 });
@@ -52,13 +43,6 @@ const hasuraWsLink = new WebSocketLink({
   },
 });
 
-const wsLinks = split(
-  (operation) => {
-    return new RegExp(HASURA_LIVE_QUERY).test(operation.operationName);
-  },
-  hasuraWsLink,
-  wsLink
-);
 const httpLinks = split(
   (operation) => operation.getContext().clientName === "hasura",
   hasuraLink,
@@ -98,7 +82,7 @@ export default function createLink() {
           definition.operation === "subscription"
         );
       },
-      wsLinks,
+      hasuraWsLink,
       httpLinks
     ),
   ]);
