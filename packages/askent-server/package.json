@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "askent-common": "file:../askent-common",
-    "apollo-server": "2.25.2",
+    "apollo-server": "3.3.0",
     "bcryptjs": "2.4.3",
     "class-validator": "0.13.1",
     "crypto-js": "4.1.1",
