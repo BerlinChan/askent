@@ -29,7 +29,7 @@
     "@material-ui/pickers": "3.3.10",
     "askent-common": "file:../askent-common",
     "copy-to-clipboard": "3.3.1",
-    "date-fns": "2.21.3",
+    "date-fns": "2.23.0",
     "formik": "2.2.9",
     "formik-material-ui": "3.0.1",
     "formik-material-ui-pickers": "0.0.12",
