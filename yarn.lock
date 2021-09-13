@@ -12346,10 +12346,10 @@ react-transition-group@^4.0.0, react-transition-group@^4.4.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-virtuoso@1.10.2:
-  version "1.10.2"
-  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-1.10.2.tgz#7755c7e7a7cb3b6ac8bc64a789beb1522b8c84a5"
-  integrity sha512-Dv9CYWWsRoa0Jr+HPpa25B28ZV9H+Xzi15k9RpH7VRdPQj47P1d0YAkhuRXC5Zu623HWP/0U2CT0n/1EGb4nIA==
+react-virtuoso@1.11.1:
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-1.11.1.tgz#350dc88866b3f42cb396bf8f40b90efc6daaadde"
+  integrity sha512-NH8eLLmoowdq0x7/AEfXxOY9OY4PDpLuPPmCc8F2IoBQLvIcMait3A2TnR0fT9UT+gl8n7GHoORzeGqF5Ka0MA==
   dependencies:
     "@virtuoso.dev/react-urx" "^0.2.5"
     "@virtuoso.dev/urx" "^0.2.5"
