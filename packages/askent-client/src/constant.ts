@@ -3,8 +3,6 @@ export enum TOKEN_KEY {
   AUDIENCE = "TOKEN_AUDIENCE",
 }
 
-export const HASURA_LIVE_QUERY = /LiveQuery/;
-
 export enum QuestionFilter {
   Review = "Review",
   Publish = "Publish",
