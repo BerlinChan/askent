@@ -3,7 +3,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  fade,
+  alpha,
 } from "@material-ui/core/styles";
 import {
   Container,
@@ -35,9 +35,9 @@ const useStyles = makeStyles((theme: Theme) =>
     searchInput: {
       padding: theme.spacing(0.2, 0.4),
       borderRadius: theme.shape.borderRadius,
-      backgroundColor: fade(theme.palette.common.white, 0.15),
+      backgroundColor: alpha(theme.palette.common.white, 0.15),
       "&:hover": {
-        backgroundColor: fade(theme.palette.common.white, 0.25),
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
       },
     },
     searchInputRoot: {

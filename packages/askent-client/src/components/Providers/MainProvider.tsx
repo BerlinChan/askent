@@ -1,7 +1,7 @@
 import React from "react";
 import { ApolloProvider } from "@apollo/client";
 import createApolloClient from "../../graphql/createApolloClient";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { createTheme , ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { SnackbarProvider } from "notistack";
 import { IntlProvider } from "react-intl";
@@ -11,7 +11,7 @@ import enLocale from "date-fns/locale/en-US";
 import zhLocale from "date-fns/locale/zh-CN";
 
 const apolloClient = createApolloClient();
-const theme = createMuiTheme();
+const theme = createTheme();
 
 // TODO: refactor i18n and code split, ref: https://github.com/formatjs/react-intl/issues/720
 const messages = {

@@ -20,7 +20,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  fade,
+  alpha,
 } from "@material-ui/core/styles";
 import { QueryResult } from "@apollo/client";
 import {
@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) =>
       boxShadow: theme.shadows[1],
     },
     topQuestion: {
-      backgroundColor: fade(theme.palette.success.light, 0.5),
+      backgroundColor: alpha(theme.palette.success.light, 0.5),
     },
     questionContent: { width: "100%" },
     reply: { cursor: "pointer" },

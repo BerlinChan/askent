@@ -4,7 +4,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  fade,
+  alpha,
 } from "@material-ui/core/styles";
 import { FormattedMessage } from "react-intl";
 import IconGene from "./img/icon-gene.png";
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
         height: "40px",
         borderRadius: "50%",
         content: "''",
-        backgroundColor: fade("#15aab9", 0.1),
+        backgroundColor: alpha("#15aab9", 0.1),
         zIndex: -1,
       },
       "&:after": {
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
         height: "25px",
         borderRadius: "50%",
         content: "''",
-        backgroundColor: fade("#6f7fda", 0.1),
+        backgroundColor: alpha("#6f7fda", 0.1),
         zIndex: -1,
       },
     },
