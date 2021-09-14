@@ -14,7 +14,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  fade,
+  alpha,
 } from "@material-ui/core/styles";
 import {
   useIntl,
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
       "& .questionHover": { display: "none" },
     },
     archived: {
-      backgroundColor: fade(theme.palette.warning.light, 0.3),
+      backgroundColor: alpha(theme.palette.warning.light, 0.3),
     },
     meta: {
       marginLeft: theme.spacing(0.5),

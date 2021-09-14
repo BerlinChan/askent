@@ -4,7 +4,4 @@
 
 ## Development
 
-```sh
-yarn install
-yarn dev
-```
+Create `.env`, `ormconfig.js` from template with your correcting options, then run `yarn dev`

@@ -12,7 +12,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  fade,
+  alpha,
 } from "@material-ui/core/styles";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Formik, Form, FormikErrors, FormikHelpers } from "formik";
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme: Theme) =>
         width: "100%",
         height: 12,
         pointerEvents: "none",
-        background: `linear-gradient(to top, ${fade(
+        background: `linear-gradient(to top, ${alpha(
           theme.palette.background.paper,
           0
         )} 0%, ${theme.palette.background.paper} 100%)`,
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
         width: "100%",
         height: 12,
         pointerEvents: "none",
-        background: `linear-gradient(to bottom, ${fade(
+        background: `linear-gradient(to bottom, ${alpha(
           theme.palette.background.paper,
           0
         )} 0%, ${theme.palette.background.paper} 100%)`,

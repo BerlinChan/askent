@@ -290,8 +290,8 @@ const QuestionForm: React.FC<Props> = ({
                     component={InputBase}
                     autoFocus={autoFocus}
                     multiline
-                    rows={3}
-                    rowsMax={8}
+                    minRows={3}
+                    maxRows={8}
                     name="content"
                     className={classes.questionInput}
                     placeholder={formatMessage({

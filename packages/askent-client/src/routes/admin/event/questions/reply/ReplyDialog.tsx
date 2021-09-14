@@ -24,7 +24,7 @@ export interface Props {
     ReplyDialogStateType,
     React.Dispatch<React.SetStateAction<ReplyDialogStateType>>
   ];
-  eventDetailData:EventDetailLiveQueryFieldsFragment|undefined;
+  eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }
 
 const ReplyDialog: React.FC<Props> = ({
@@ -45,7 +45,7 @@ const ReplyDialog: React.FC<Props> = ({
       scroll={"body"}
       open={replyDialog.open}
       onClose={handleClose}
-      onExited={onExited}
+      TransitionProps={{ onExited }}
       fullWidth
     >
       <DialogTitleWithClose

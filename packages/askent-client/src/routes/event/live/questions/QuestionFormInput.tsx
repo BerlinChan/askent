@@ -60,8 +60,8 @@ const QuestionFormInput: React.FC<Props> = ({
         disabled={disabled}
         autoFocus={autoFocus}
         multiline
-        rows={2}
-        rowsMax={3}
+        minRows={2}
+        maxRows={3}
         className={classes.questionInput}
         placeholder={formatMessage({
           id: "Type_your_question",
