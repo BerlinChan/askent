@@ -5,12 +5,12 @@ import { WebSocketLink } from "@apollo/client/link/ws";
 import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
 import config from "../config";
-import { TOKEN_KEY } from "../constant";
+import { LOCAL_STORAGE_KEY } from "../constant";
 
 // Restore cache defaults to make the same one in server.js. Ref: https://github.com/kriasoft/react-starter-kit/blob/feature/apollo-pure/src/core/createApolloClient/createApolloClient.client.ts
 const getAuthToken = () =>
-  localStorage.getItem(TOKEN_KEY.USER)
-    ? `Bearer ${localStorage.getItem(TOKEN_KEY.USER)}`
+  localStorage.getItem(LOCAL_STORAGE_KEY.AUTH_TOKEN)
+    ? `Bearer ${localStorage.getItem(LOCAL_STORAGE_KEY.AUTH_TOKEN)}`
     : "";
 
 const authMiddleware = setContext((operation, { headers }) => {

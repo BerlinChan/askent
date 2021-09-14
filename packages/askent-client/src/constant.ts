@@ -1,6 +1,5 @@
-export enum TOKEN_KEY {
-  USER = "TOKEN_USER",
-  AUDIENCE = "TOKEN_AUDIENCE",
+export enum LOCAL_STORAGE_KEY {
+  AUTH_TOKEN = "AUTH_TOKEN",
 }
 
 export enum QuestionFilter {

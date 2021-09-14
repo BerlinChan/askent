@@ -1,21 +1,21 @@
 import React from "react";
-import { TOKEN_KEY } from "../constant";
+import { LOCAL_STORAGE_KEY } from "../constant";
 import { useApolloClient } from "@apollo/client";
 
-export function useToken(tokenKey: TOKEN_KEY) {
+export function useToken() {
   const [token, setTokenState] = React.useState<string>(
-    localStorage.getItem(tokenKey) || ""
+    localStorage.getItem(LOCAL_STORAGE_KEY.AUTH_TOKEN) || ""
   );
   const client = useApolloClient();
 
   function setToken(token: string) {
     setTokenState(token);
-    localStorage.setItem(tokenKey, token);
+    localStorage.setItem(LOCAL_STORAGE_KEY.AUTH_TOKEN, token);
   }
 
   function removeToken() {
     setTokenState("");
-    localStorage.removeItem(tokenKey);
+    localStorage.removeItem(LOCAL_STORAGE_KEY.AUTH_TOKEN);
     client.resetStore();
   }
 
