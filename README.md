@@ -33,7 +33,7 @@ yarn workspace askent-server dev
 
 ## TODO
 
-- [ ] Test creating question as Anonymous or Named-user
+- [ ] Guest admin
 - [ ] About text
 - [ ] event edit dialog
 - [ ] question support voteDown

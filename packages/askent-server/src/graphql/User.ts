@@ -282,8 +282,8 @@ export class UserResolver {
       user.email = input.email;
       user.avatar = getGravatar(input.email);
     }
-    if(typeof input.anonymous ==='boolean'){
-      user.anonymous=input.anonymous
+    if (typeof input.anonymous === "boolean") {
+      user.anonymous = input.anonymous;
     }
     await this.userRepository.save(user);
 
