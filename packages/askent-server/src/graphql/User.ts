@@ -45,7 +45,7 @@ export class User {
   @Field({ nullable: true, defaultValue: "" })
   public name?: string;
 
-  @Field({ nullable: true, defaultValue: false })
+  @Field({ nullable: true, defaultValue: true })
   public anonymous?: boolean;
 
   @Field({ nullable: true, defaultValue: "" })
@@ -105,7 +105,7 @@ class UpdateUserInput implements Partial<User> {
   @MaxLength(USER_EMAIL_MAX_LENGTH)
   public email?: string;
 
-  @Field((type) => Boolean, { nullable: true })
+  @Field((type) => Boolean, { nullable: true, defaultValue: true })
   public anonymous?: boolean;
 }
 
@@ -274,19 +274,16 @@ export class UserResolver {
   ): Promise<UserEntity> {
     const userId = ctx.user?.id as string;
     let user = await this.userRepository.findOneOrFail(userId);
-    if (input.name === "" && input.anonymous) {
-      user.anonymous = input.anonymous;
-    } else {
-      user = Object.assign(
-        user,
-        typeof input.name === "string" ? { name: input.name } : {},
-        typeof input.email === "string"
-          ? { email: input.email, avatar: getGravatar(input.email) }
-          : {},
-        typeof input.anonymous === "boolean"
-          ? { anonymous: input.anonymous }
-          : {}
-      );
+    if (typeof input.name === "string") {
+      user.name = input.name;
+      user.anonymous = input.name === "";
+    }
+    if (typeof input.email === "string") {
+      user.email = input.email;
+      user.avatar = getGravatar(input.email);
+    }
+    if(typeof input.anonymous ==='boolean'){
+      user.anonymous=input.anonymous
     }
     await this.userRepository.save(user);
 
