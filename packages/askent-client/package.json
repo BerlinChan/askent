@@ -13,6 +13,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "cypress:open": "cypress open",
     "eject": "react-scripts eject",
     "codegen": "env-cmd -f ../askent-server/.env ts-node --skip-project tools/codegen.ts",
     "intl:extract": "formatjs extract 'src/**/*.tsx' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
@@ -50,6 +51,8 @@
     "yup": "0.32.9"
   },
   "devDependencies": {
+    "@cypress/react": "^5.10.0",
+    "@cypress/webpack-dev-server": "^1.6.0",
     "@formatjs/cli": "4.2.33",
     "@graphql-codegen/cli": "2.2.0",
     "@graphql-codegen/typescript-operations": "2.1.4",
@@ -65,6 +68,7 @@
     "@types/react-dom": "17.0.9",
     "@types/react-router-dom": "5.1.8",
     "@types/yup": "0.29.13",
+    "cypress": "^8.4.0",
     "typescript": "4.2.4"
   },
   "eslintConfig": {
