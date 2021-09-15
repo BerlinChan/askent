@@ -58,16 +58,24 @@ select_permissions:
     - avatar
     - createdAt
     - email
-    - fingerprint
     - id
     - name
     - updatedAt
     filter:
       _and:
-      - id:
-          _eq: x-hasura-user-id
       - deletedAt:
           _is_null: true
+      - _or:
+        - id:
+            _eq: x-hasura-user-id
+        - attendedEvents:
+            event:
+              audiences:
+                userId:
+                  _eq: x-hasura-user-id
+      - questions:
+          anonymous:
+            _eq: false
   role: Audience
 - permission:
     allow_aggregations: true
@@ -76,14 +84,31 @@ select_permissions:
     - avatar
     - createdAt
     - email
-    - fingerprint
     - id
     - name
     - updatedAt
     filter:
       _and:
-      - id:
-          _eq: x-hasura-user-id
       - deletedAt:
           _is_null: true
+      - _or:
+        - id:
+            _eq: x-hasura-user-id
+        - attendedEvents:
+            event:
+              ownerId:
+                _eq: x-hasura-user-id
+        - attendedEvents:
+            event:
+              guestes:
+                userId:
+                  _eq: x-hasura-user-id
+        - attendedEvents:
+            event:
+              audiences:
+                userId:
+                  _eq: x-hasura-user-id
+      - questions:
+          anonymous:
+            _eq: false
   role: User

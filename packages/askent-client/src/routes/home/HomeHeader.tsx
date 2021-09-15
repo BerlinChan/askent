@@ -3,7 +3,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  fade,
+  alpha,
 } from "@material-ui/core/styles";
 import { Toolbar, Container, AppBar, Box } from "@material-ui/core";
 import { ScrollSlide } from "../../components/ScrollHide";
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
       top: 0,
       left: 0,
       right: 0,
-      backgroundColor: fade(theme.palette.background.paper, 0.05),
+      backgroundColor: alpha(theme.palette.background.paper, 0.05),
       color: theme.palette.primary.contrastText,
       zIndex: theme.zIndex.appBar,
     },

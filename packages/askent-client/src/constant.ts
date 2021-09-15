@@ -1,6 +1,6 @@
-export const AUTH_TOKEN = "AUTH_TOKEN";
-
-export const HASURA_LIVE_QUERY = /LiveQuery/;
+export enum LOCAL_STORAGE_KEY {
+  AUTH_TOKEN = "AUTH_TOKEN",
+}
 
 export enum QuestionFilter {
   Review = "Review",

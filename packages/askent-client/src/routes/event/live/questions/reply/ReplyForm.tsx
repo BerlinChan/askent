@@ -245,8 +245,8 @@ const ReplyForm: React.FC<Props> = ({
             <FInputWithLabel
               autoFocus={autoFocus}
               multiline
-              rows={1}
-              rowsMax={5}
+              minRows={1}
+              maxRows={5}
               className={classes.replyInput}
               size="small"
               name="content"

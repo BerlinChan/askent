@@ -7,7 +7,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  fade,
+  alpha,
 } from "@material-ui/core/styles";
 import { FormattedMessage, FormattedDate, FormattedTime } from "react-intl";
 import { QueryResult } from "@apollo/client";
@@ -28,8 +28,8 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "center",
       height: "100vh",
       background: `radial-gradient(circle, 
-        ${fade(theme.palette.primary.main, 0.1)} 0%,
-        ${fade(theme.palette.primary.main, 0.4)} 100%)`,
+        ${alpha(theme.palette.primary.main, 0.1)} 0%,
+        ${alpha(theme.palette.primary.main, 0.4)} 100%)`,
     },
     eventInfoBox: {
       marginTop: theme.spacing(5),

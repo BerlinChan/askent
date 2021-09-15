@@ -135,7 +135,6 @@ const QuestionItemMenu: React.FC<Props> = ({
         )}
         {replyDialogState && (
           <MenuItem
-            disabled={question?.top}
             onClick={() => handleOpenReply(moreMenu.id)}
           >
             <ListItemIcon>

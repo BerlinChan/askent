@@ -14,8 +14,8 @@ import {
 } from "type-graphql";
 import { Context } from "../context";
 import { User as UserEntity } from "../entity/User";
-import { ReviewStatus,  } from "../constant";
-import {  QUESTION_CONTENT_MAX_LENGTH } from "askent-common/src/constant";
+import { ReviewStatus } from "../constant";
+import { QUESTION_CONTENT_MAX_LENGTH } from "askent-common/src/constant";
 import { Event as EventEntity } from "../entity/Event";
 import { Question as QuestionEntity } from "../entity/Question";
 import { Event } from "./EventType";
@@ -140,7 +140,7 @@ export class QuestionResolver {
         ? ReviewStatus.Review
         : ReviewStatus.Publish,
       content,
-      anonymous,
+      anonymous: anonymous || author.name === "",
       author,
       event,
     });

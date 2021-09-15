@@ -3,7 +3,7 @@
 ![Website](https://img.shields.io/website/https/askent.berlinchan.com)
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/BerlinChan/askent/CI/release)
 
-[Askent](https://askent.berlinchan.com)
+[https://askent.berlinchan.com](https://askent.berlinchan.com)
 
 [Askent](https://askent.berlinchan.com) is a simple interaction tool for the meeting. Currently, it's especially for the Q&A part, so you can better reach out audience.
 
@@ -33,6 +33,7 @@ yarn workspace askent-server dev
 
 ## TODO
 
+- [ ] Guest admin
 - [ ] About text
 - [ ] event edit dialog
 - [ ] question support voteDown

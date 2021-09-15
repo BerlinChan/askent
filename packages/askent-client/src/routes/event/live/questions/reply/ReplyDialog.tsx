@@ -72,7 +72,7 @@ const ReplyDialog: React.FC<Props> = ({
           scroll={"body"}
           open={replyDialog.open}
           onClose={handleClose}
-          onExited={onExited}
+          TransitionProps={{onExited}}
           fullWidth
         >
           <DialogTitleWithClose
@@ -99,7 +99,7 @@ const ReplyDialog: React.FC<Props> = ({
           fullScreen
           open={replyDialog.open}
           onClose={handleClose}
-          onExited={onExited}
+          TransitionProps={{onExited}}
           TransitionComponent={SlideUpFullScreen}
         >
           <AppBar className={classes.appBar}>

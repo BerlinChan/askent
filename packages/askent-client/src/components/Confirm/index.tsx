@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
 } from "@material-ui/core";
 import { ButtonLoading } from "../Form";
 import { FormattedMessage } from "react-intl";
@@ -14,6 +14,7 @@ import { FormattedMessage } from "react-intl";
 interface Props {
   open: boolean;
   loading?: boolean;
+  disableBackdropClick?: boolean;
   title?: React.ReactElement | string;
   contentText?: React.ReactElement | string;
   cancelText?: React.ReactElement | string;
@@ -31,10 +32,18 @@ const Confirm: React.FC<Props & Omit<DialogProps, "children">> = ({
   onCancel,
   onOk,
   loading = false,
+  disableBackdropClick = false,
   ...props
 }) => {
   return (
-    <Dialog open={open} onClose={onCancel} {...props}>
+    <Dialog
+      open={open}
+      onClose={(e, reason) => {
+        if (reason === "backdropClick" && disableBackdropClick) return;
+        onCancel(e as React.MouseEvent<Element, MouseEvent>);
+      }}
+      {...props}
+    >
       {title && <DialogTitle>{title}</DialogTitle>}
       {contentText && (
         <DialogContent>
