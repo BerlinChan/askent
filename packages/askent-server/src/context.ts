@@ -10,8 +10,7 @@ export interface Context extends ExpressContext {
 export function createContext({
   req,
   res,
-  connection,
 }: ExpressContext): Context {
   const user = getAuthedUser(req)
-  return { user, req, res, connection }
+  return { user, req, res }
 }
