@@ -5,6 +5,7 @@
 
 # local secrets
 .env
+.env.production
 ormconfig.js
 
 # production

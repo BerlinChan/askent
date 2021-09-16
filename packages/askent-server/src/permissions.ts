@@ -3,14 +3,15 @@ import { createRateLimitRule } from "graphql-rate-limit";
 import { Context } from "./context";
 import { getRepository } from "typeorm";
 import { Event as EventEntity } from "./entity/Event";
-import { ApolloError } from "apollo-server";
+
+const { NODE_ENV = "production" } = process.env;
 
 const isAuthenticated = rule()((parent, args, { user }: Context) => {
   return Boolean(user?.id);
 });
 const rateLimitRule = createRateLimitRule({
   identifyContext: ({ user }: Context) => user?.id || "",
-})({ window: "1s", max: 10 });
+})({ window: "1s", max: 100 });
 
 const isEventOwner = rule()(async (parent, args, { user }: Context, info) => {
   const event = await getRepository(EventEntity).findOneOrFail(parent.id, {
@@ -94,28 +95,7 @@ const permissions = shield(
   },
   {
     fallbackRule: rateLimitRule,
-    fallbackError: async (thrownThing, parent, args, context, info) => {
-      if (thrownThing instanceof ApolloError) {
-        // expected errors
-        return thrownThing;
-      } else if (thrownThing instanceof Error) {
-        if (thrownThing.message === "Argument Validation Error") {
-          return thrownThing;
-        } else {
-          // unexpected errors
-          console.error(thrownThing);
-          return new ApolloError(
-            "Internal server error",
-            "ERR_INTERNAL_SERVER"
-          );
-        }
-      } else {
-        // what the hell got thrown
-        console.error("The resolver threw something that is not an error.");
-        console.error(thrownThing);
-        return new ApolloError("Internal server error", "ERR_INTERNAL_SERVER");
-      }
-    },
+    allowExternalErrors: NODE_ENV !== "production",
   }
 );
 

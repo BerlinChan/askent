@@ -33,7 +33,7 @@ yarn workspace askent-server dev
 
 ## TODO
 
-- [ ] Guest admin
+- [ ] Guest admin access control
 - [ ] About text
 - [ ] event edit dialog
 - [ ] question support voteDown
