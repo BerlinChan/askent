@@ -1,0 +1,1 @@
+{"version":3,"sources":["routes/about/index.tsx"],"names":["About"],"mappings":"uHAAA,uBAUeA,UARS,WACtB,OACE,8BACE","file":"static/js/27.bcc2d0e7.chunk.js","sourcesContent":["import React from \"react\";\n\nconst About: React.FC = () => {\n  return (\n    <div>\n      <h2>About</h2>\n    </div>\n  );\n};\n\nexport default About;\n"],"sourceRoot":""}

@@ -1,0 +1,2 @@
+(this["webpackJsonpaskent-client"]=this["webpackJsonpaskent-client"]||[]).push([[30],{661:function(t,n,e){"use strict";e.r(n);e(1);var s=e(347),i=e(645),c=e(8);n.default=function(){return Object(c.jsx)(s.a,{children:Object(c.jsx)(i.a,{maxWidth:"lg",children:"Event Polls, still working in progress."})})}}}]);
+//# sourceMappingURL=30.ba25ea5f.chunk.js.map
