@@ -8,5 +8,6 @@ export async function connectPostgres() {
     await createConnection(ormconfig as ConnectionOptions);
   } catch (error) {
     console.error(error);
+    process.exit(1);
   }
 }
