@@ -11,6 +11,7 @@ import SecurityIcon from "@material-ui/icons/Security";
 import CollapseList from "../CollapseList";
 import { EventSettingValues } from "../index";
 import copy from "copy-to-clipboard";
+import { EventByIdQuery, MeQuery } from "../../../generated/graphqlHooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,13 +26,20 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   defaultFocus?: keyof EventSettingValues;
+  eventData?: EventByIdQuery;
+  meData?: MeQuery;
 }
 
-const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
+const TabPanelGeneral: React.FC<Props> = ({
+  defaultFocus = "name",
+  eventData,
+  meData,
+}) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const eventLinkRef = React.useRef<HTMLInputElement>(null);
   const [showCopies, setShowCopies] = React.useState(false);
+  const isGuestAdmin = eventData?.eventById.owner.id !== meData?.me.id;
 
   const handleEventLinkFocus = () => {
     eventLinkRef.current?.select();
@@ -73,6 +81,7 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                 })}
                 margin="normal"
                 size="small"
+                disabled={isGuestAdmin}
               />
               <Box className={classes.dateRange}>
                 <Field
@@ -88,7 +97,8 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                   size="small"
                   autoOk
                   disableToolbar
-                />
+                  disabled={isGuestAdmin}
+                  />
                 <Field
                   component={DateTimePicker}
                   autoFocus={defaultFocus === "endAt"}
@@ -102,6 +112,7 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                   size="small"
                   autoOk
                   disableToolbar
+                  disabled={isGuestAdmin}
                 />
               </Box>
               <Field
@@ -115,7 +126,8 @@ const TabPanelGeneral: React.FC<Props> = ({ defaultFocus = "name" }) => {
                 })}
                 margin="normal"
                 size="small"
-              />
+                disabled={isGuestAdmin}
+                />
               <Field
                 component={TextField}
                 inputRef={eventLinkRef}

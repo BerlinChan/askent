@@ -10,7 +10,7 @@ RUN yarn build
 FROM node:lts-alpine
 
 COPY --from=build /app/askent-server/dist /app
-COPY --from=build /app/askent-server/.env /app/askent-server/.env
+COPY --from=build /app/askent-server/.env.production /app/askent-server/.env
 COPY --from=build /app/askent-server/package.json /app/askent-server/package.json
 WORKDIR /app/askent-server
 RUN yarn install --production

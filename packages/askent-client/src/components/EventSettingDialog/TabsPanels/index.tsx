@@ -4,7 +4,7 @@ import TabPanelGeneral from "./TabPanelGeneral";
 import TabPanelFeatures from "./TabPanelFeatures";
 import TabPanelGuestes from "./TabPanelGuestes";
 import { EventSettingValues } from "../index";
-import { EventByIdQuery } from "../../../generated/graphqlHooks";
+import { EventByIdQuery, MeQuery } from "../../../generated/graphqlHooks";
 
 export const tabList = [
   <FormattedMessage id="General" defaultMessage="General" />,
@@ -20,18 +20,14 @@ interface Props {
   defaultFocus?: keyof EventSettingValues;
   eventId: string;
   eventData?: EventByIdQuery;
+  meData?: MeQuery;
 }
 
-export const TabPanel: React.FC<Props> = ({
-  index,
-  defaultFocus = "name",
-  eventId,
-  eventData,
-}) => {
+export const TabPanel: React.FC<Props> = ({ index, ...props }) => {
   const TabPanelList = [
-    <TabPanelGeneral defaultFocus={defaultFocus} />,
-    <TabPanelGuestes eventId={eventId} eventData={eventData} />,
-    <TabPanelFeatures />,
+    <TabPanelGeneral {...props} />,
+    <TabPanelGuestes {...props} />,
+    <TabPanelFeatures {...props} />,
     <div>Item Customization</div>,
     <div>Item Integrations</div>,
     <div>Item Share_access</div>,

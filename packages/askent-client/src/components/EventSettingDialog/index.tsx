@@ -24,9 +24,13 @@ import {
   useCheckEventCodeExistLazyQuery,
   useEventByIdLazyQuery,
   useUpdateEventMutation,
+  useMeLazyQuery,
 } from "../../generated/graphqlHooks";
 import { useSnackbar } from "notistack";
-import { EVENT_NAME_MAX_LENGTH, EVENT_CODE_MAX_LENGTH } from "askent-common/src/constant";
+import {
+  EVENT_NAME_MAX_LENGTH,
+  EVENT_CODE_MAX_LENGTH,
+} from "askent-common/src/constant";
 import { tabList, TabPanel } from "./TabsPanels";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -107,6 +111,7 @@ const EventSettingDialog: React.FC<Props> = ({
   const [tabIndex, setTabIndex] = React.useState(0);
   const [eventByIdQuery, { data: eventData, loading: eventLoading }] =
     useEventByIdLazyQuery();
+  const [meQuery, { data: meData, loading: meLoading }] = useMeLazyQuery();
   const [
     checkEventCodeExistLazyQuery,
     { data: checkEventCodeData, loading: checkEventCodeLoading },
@@ -117,6 +122,7 @@ const EventSettingDialog: React.FC<Props> = ({
   React.useEffect(() => {
     if (eventId) {
       eventByIdQuery({ variables: { eventId } });
+      meQuery();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -162,7 +168,7 @@ const EventSettingDialog: React.FC<Props> = ({
     } catch (err) {
       const { path, errors } = err as Yup.ValidationError;
       console.error(path, errors);
-      
+
       return { [path as string]: errors[0] };
     }
 
@@ -262,6 +268,7 @@ const EventSettingDialog: React.FC<Props> = ({
                 defaultFocus={defaultFocus}
                 eventId={eventId}
                 eventData={eventData}
+                meData={meData}
               />
             </Box>
           </DialogContent>
@@ -276,7 +283,10 @@ const EventSettingDialog: React.FC<Props> = ({
               style={{ width: 100 }}
               type="submit"
               loading={
-                eventLoading || updateEventLoading || checkEventCodeLoading
+                eventLoading ||
+                meLoading ||
+                updateEventLoading ||
+                checkEventCodeLoading
               }
             >
               <FormattedMessage id="Save" defaultMessage="Save" />

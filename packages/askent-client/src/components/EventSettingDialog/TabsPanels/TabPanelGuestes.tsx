@@ -27,6 +27,7 @@ import {
   useAddGuestMutation,
   useRemoveGuestMutation,
   EventByIdQuery,
+  MeQuery,
 } from "../../../generated/graphqlHooks";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { ButtonLoading } from "../../Form";
@@ -42,9 +43,10 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   eventId: string;
   eventData?: EventByIdQuery;
+  meData?: MeQuery;
 }
 
-const TabPanelGuestes: React.FC<Props> = ({ eventId, eventData }) => {
+const TabPanelGuestes: React.FC<Props> = ({ eventId, eventData, meData }) => {
   const classes = useStyles();
   const [addOpen, setAddOpen] = React.useState(false);
   const [removeId, setRemoveId] = React.useState("");
@@ -53,6 +55,7 @@ const TabPanelGuestes: React.FC<Props> = ({ eventId, eventData }) => {
   });
   const [removeGuestMutation, { loading: removeGuestLoading }] =
     useRemoveGuestMutation();
+  const isGuestAdmin = eventData?.eventById.owner.id !== meData?.me.id;
 
   const handleAddDialogOpen = () => {
     setAddOpen(true);
@@ -84,6 +87,7 @@ const TabPanelGuestes: React.FC<Props> = ({ eventId, eventData }) => {
           color="secondary"
           size="small"
           onClick={handleAddDialogOpen}
+          disabled={isGuestAdmin}
         >
           <FormattedMessage id="Add guest" defaultMessage="Add guest" />
         </Button>
@@ -116,6 +120,7 @@ const TabPanelGuestes: React.FC<Props> = ({ eventId, eventData }) => {
                     size="small"
                     className={classes.removeButton}
                     onClick={(e) => handleRemoveOpen(row.id)}
+                    disabled={isGuestAdmin}
                   >
                     <RemoveCircleOutlineIcon
                       fontSize="inherit"
