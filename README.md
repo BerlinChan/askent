@@ -3,7 +3,7 @@
 ![Website](https://img.shields.io/website/https/askent.berlinchan.com)
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/BerlinChan/askent/CI/release)
 
-[https://askent.berlinchan.com](https://askent.berlinchan.com)
+Try the app at [https://askent.berlinchan.com](https://askent.berlinchan.com)
 
 [Askent](https://askent.berlinchan.com) is a simple interaction tool for the meeting. Currently, it's especially for the Q&A part, so you can better reach out audience.
 
@@ -30,6 +30,9 @@ yarn
 yarn workspace askent-client start
 yarn workspace askent-server dev
 ```
+
+- [Client development README](./packages/askent-client#readme)
+- [Server development README](./packages/askent-server#readme)
 
 ## TODO
 
