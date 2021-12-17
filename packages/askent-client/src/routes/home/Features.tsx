@@ -164,8 +164,8 @@ const Features: React.FC = (props) => {
             gutterBottom
           >
             <FormattedMessage
-              id="Askent is a web app, leverages the browser's cross-platform ability, it can running anywhere, even on SmartTV."
-              defaultMessage="Askent is a web app, leverages the browser's cross-platform ability, it can running anywhere, even on SmartTV."
+              id="Askent is a web app, leverages the browser's cross-platform ability, it can run anywhere, even on SmartTV."
+              defaultMessage="Askent is a web app, leverages the browser's cross-platform ability, it can run anywhere, even on SmartTV."
             />
           </Typography>
         </Grid>

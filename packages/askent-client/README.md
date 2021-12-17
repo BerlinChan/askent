@@ -1,12 +1,6 @@
 # Askent Client
 
-[Askent](https://github.com/BerlinChan/askent/) 的客户端。
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Development
-
-按照 `.env.example` 配置好 `.env`。
+[Askent](https://github.com/BerlinChan/askent/) client。
 
 ## Available Scripts
 
@@ -14,7 +8,7 @@ In the project directory, you can run:
 
 ### `yarn codegen`
 
-生成 GranpQL Query Mutation 等
+Generate GranpQL types and hooks.
 
 ### `yarn start`
 
