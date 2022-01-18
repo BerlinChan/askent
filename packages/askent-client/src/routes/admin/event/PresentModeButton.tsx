@@ -192,11 +192,11 @@ const PresentModeButton: React.FC<Props> = () => {
           horizontal: "right",
         }}
       >
-        {menuItemList.map((item, index) => (
+        {menuItemList.map((item) => (
           <StyledMenuItem
             dense
             alignItems="flex-start"
-            key={index}
+            key={item.primary}
             onClick={item.handleClick}
           >
             <StyledListItemIcon>{item.icon}</StyledListItemIcon>

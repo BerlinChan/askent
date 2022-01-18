@@ -13,6 +13,7 @@ const TabPanelFeatures: React.FC<Props> = () => {
     <CollapseList
       list={[
         {
+          key: "audienceQA",
           titleIcon: <QuestionAnswerIcon />,
           titleText: (
             <FormattedMessage id="Audience_Q&A" defaultMessage="Audience Q&A" />
@@ -37,8 +38,8 @@ const TabPanelFeatures: React.FC<Props> = () => {
                 }
               />
             </React.Fragment>
-          )
-        }
+          ),
+        },
       ]}
     />
   );

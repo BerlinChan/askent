@@ -204,9 +204,9 @@ const ActionRight: React.FC<Props> = ({
       >
         {Object.values(QuestionFilter)
           .filter((item) => item !== QuestionFilter.Review)
-          .map((filterItem, index) => (
+          .map((filterItem) => (
             <MenuItem
-              key={index}
+              key={filterItem}
               selected={filterItem === queryState.filter}
               onClick={(e) => handleFilterOptionClick(filterItem)}
             >

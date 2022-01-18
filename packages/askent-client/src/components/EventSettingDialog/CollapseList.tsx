@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type CollapseItem = {
+  key: React.Key;
   titleIcon: React.ReactElement;
   titleText: React.ReactElement;
   body: React.ReactElement;
@@ -56,7 +57,7 @@ const CollapseList: React.FC<Props> = ({ list, defaultActiveKey = [] }) => {
   return (
     <Box className={classes.collapseList}>
       {list.map((item, index) => (
-        <Box className={classes.item} key={index}>
+        <Box className={classes.item} key={item.key}>
           <Box className={classes.head} onClick={e => handleToggle(index)}>
             <div className={classes.title}>
               {React.cloneElement(item.titleIcon, {

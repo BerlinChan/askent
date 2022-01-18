@@ -192,16 +192,14 @@ const LiveEventHeader: React.FC<Props> = ({ eventDetailData }) => {
         </Box>
         <Divider />
         <List>
-          {["Live interaction", "Switch event", "About Askent"].map(
-            (text, index) => (
-              <ListItem button key={index}>
-                <ListItemIcon>
-                  <QuestionAnswerIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            )
-          )}
+          {["Live interaction", "Switch event", "About Askent"].map((text) => (
+            <ListItem button key={text}>
+              <ListItemIcon>
+                <QuestionAnswerIcon />
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
         </List>
         <Divider />
       </Drawer>

@@ -14,7 +14,10 @@ import { QueryResult } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import { FormattedMessage } from "react-intl";
 import Confirm from "../../../components/Confirm";
-import { DEFAULT_PAGE_OFFSET, DEFAULT_PAGE_LIMIT } from "askent-common/src/constant";
+import {
+  DEFAULT_PAGE_OFFSET,
+  DEFAULT_PAGE_LIMIT,
+} from "askent-common/src/constant";
 import { getEventDateFilterLabel } from "./index";
 import EventItem from "./EventItem";
 import EventSettingDialog from "../../../components/EventSettingDialog";
@@ -101,12 +104,14 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
 
   const moreMenuList = [
     {
+      key: "open",
       text: <FormattedMessage id="Open" defaultMessage="Open" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
         history.push(`/admin/event/${moreMenuState[0].id}`);
       },
     },
     {
+      key: "setting",
       text: <FormattedMessage id="Setting" defaultMessage="Setting" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
         eventSettingState[1](moreMenuState[0].id);
@@ -114,6 +119,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
       },
     },
     {
+      key: "shareAccess",
       disabled: true,
       text: (
         <FormattedMessage id="Share_access" defaultMessage="Share access" />
@@ -121,16 +127,19 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {},
     },
     {
+      key: "duplicate",
       disabled: true,
       text: <FormattedMessage id="Duplicate" defaultMessage="Duplicate" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {},
     },
     {
+      key: "transfer",
       disabled: true,
       text: <FormattedMessage id="Transfer" defaultMessage="Transfer" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {},
     },
     {
+      key: "delete",
       text: <FormattedMessage id="Delete" defaultMessage="Delete" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
         handleOpenDelete(e, moreMenuState[0].id);
@@ -186,9 +195,9 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
         open={Boolean(moreMenuState[0].anchorEl)}
         onClose={handleMoreClose}
       >
-        {moreMenuList.map((menuItem, index) => (
+        {moreMenuList.map((menuItem) => (
           <MenuItem
-            key={index}
+            key={menuItem.key}
             disabled={menuItem.disabled}
             onClick={menuItem.onClick}
           >

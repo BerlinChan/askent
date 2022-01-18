@@ -109,8 +109,8 @@ const TabPanelGuestes: React.FC<Props> = ({ eventId, eventData, meData }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.eventById.guestes.map((row, index) => (
-              <TableRow key={index}>
+            {data?.eventById.guestes.map((row) => (
+              <TableRow key={row.id}>
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>

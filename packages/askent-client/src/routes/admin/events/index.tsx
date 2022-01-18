@@ -109,8 +109,8 @@ const Events: React.FC<Props> = ({ searchString }) => {
         >
           {["ALL"]
             .concat(Object.values(EventOwnerFilter))
-            .map((item, index) => (
-              <MenuItem key={index} value={item}>
+            .map((item) => (
+              <MenuItem key={item} value={item}>
                 {getEventOwnerFilterLabel(item as EventOwnerFilter | "ALL")}
               </MenuItem>
             ))}
@@ -120,8 +120,8 @@ const Events: React.FC<Props> = ({ searchString }) => {
           value={eventDateFilter}
           onChange={handleEventDateFilterChange}
         >
-          {["ALL"].concat(Object.values(EventDateStatus)).map((item, index) => (
-            <MenuItem key={index} value={item}>
+          {["ALL"].concat(Object.values(EventDateStatus)).map((item) => (
+            <MenuItem key={item} value={item}>
               {getEventDateFilterLabel(item as EventDateStatus | "ALL")}
             </MenuItem>
           ))}

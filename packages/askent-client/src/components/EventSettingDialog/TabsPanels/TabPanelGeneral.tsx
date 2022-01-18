@@ -61,6 +61,7 @@ const TabPanelGeneral: React.FC<Props> = ({
     <CollapseList
       list={[
         {
+          key: "basicInformation",
           titleIcon: <InfoOutlinedIcon />,
           titleText: (
             <FormattedMessage
@@ -98,7 +99,7 @@ const TabPanelGeneral: React.FC<Props> = ({
                   autoOk
                   disableToolbar
                   disabled={isGuestAdmin}
-                  />
+                />
                 <Field
                   component={DateTimePicker}
                   autoFocus={defaultFocus === "endAt"}
@@ -127,7 +128,7 @@ const TabPanelGeneral: React.FC<Props> = ({
                 margin="normal"
                 size="small"
                 disabled={isGuestAdmin}
-                />
+              />
               <Field
                 component={TextField}
                 inputRef={eventLinkRef}
@@ -175,6 +176,7 @@ const TabPanelGeneral: React.FC<Props> = ({
           ),
         },
         {
+          key: "security",
           titleIcon: <SecurityIcon />,
           titleText: (
             <FormattedMessage id="Security" defaultMessage="Security" />

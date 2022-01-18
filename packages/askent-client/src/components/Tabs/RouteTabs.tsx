@@ -20,7 +20,7 @@ export const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
   const history = useHistory();
 
   const getTabsValue = () => {
-    const findIndex = tabs.findIndex(tabItem => tabItem.to === pathname);
+    const findIndex = tabs.findIndex((tabItem) => tabItem.to === pathname);
     return findIndex < 0 ? 0 : findIndex;
   };
 
@@ -32,9 +32,9 @@ export const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
       }}
       {...props}
     >
-      {tabs.map((tabItem, index) => (
+      {tabs.map((tabItem) => (
         <Tab
-          key={index}
+          key={tabItem.to}
           label={tabItem.label}
           icon={tabItem.icon}
           classes={tabClasses}
