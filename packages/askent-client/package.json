@@ -48,7 +48,7 @@
     "react-virtuoso": "2.0.4",
     "screenfull": "5.2.0",
     "subscriptions-transport-ws": "0.9.19",
-    "yup": "0.32.9"
+    "yup": "0.32.11"
   },
   "devDependencies": {
     "@cypress/react": "5.10.3",
