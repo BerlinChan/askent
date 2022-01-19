@@ -3339,17 +3339,17 @@
     "@typescript-eslint/types" "4.28.2"
     eslint-visitor-keys "^2.0.0"
 
-"@virtuoso.dev/react-urx@^0.2.5":
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/@virtuoso.dev/react-urx/-/react-urx-0.2.6.tgz#e1d8bc717723b2fc23d80ea4e07703dbc276448b"
-  integrity sha512-+PLQ2iWmSH/rW7WGPEf+Kkql+xygHFL43Jij5aREde/O9mE0OFFGqeetA2a6lry3LDVWzupPntvvWhdaYw0TyA==
+"@virtuoso.dev/react-urx@^0.2.12":
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/@virtuoso.dev/react-urx/-/react-urx-0.2.12.tgz#6c75cdbea2503c129b34d1ce2ee8cd649503b47c"
+  integrity sha512-Lcrrmq/UztM+rgepAdThdIk8dL3LEi9o2NTkL6ZLKPrTGjr5tSmsauD30/O8yu7Q0ncDnptmMR3OObdvMGuEKQ==
   dependencies:
-    "@virtuoso.dev/urx" "^0.2.6"
+    "@virtuoso.dev/urx" "^0.2.12"
 
-"@virtuoso.dev/urx@^0.2.5", "@virtuoso.dev/urx@^0.2.6":
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/@virtuoso.dev/urx/-/urx-0.2.6.tgz#0028c49e52037e673993900d32abea83262fbd53"
-  integrity sha512-EKJ0WvJgWaXIz6zKbh9Q63Bcq//p8OHXHbdz4Fy+ruhjJCyI8ADE8E5gwSqBoUchaiYlgwKrT+sX4L2h/H+hMg==
+"@virtuoso.dev/urx@^0.2.12":
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/@virtuoso.dev/urx/-/urx-0.2.12.tgz#fa9bd1a2777cf70b19d4c9836b8d92b04f079c64"
+  integrity sha512-Q9nlRqYb5Uq4Ynu8cWPSJ7LxpuZsI+MZ09IJlDAAgwuNgfWRArpVRP0VN0coYgUo2fKMjhmV69MTqaUbIBhu/g==
 
 "@vue/compiler-core@3.1.4":
   version "3.1.4"
@@ -12766,13 +12766,13 @@ react-transition-group@^4.0.0, react-transition-group@^4.4.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-virtuoso@2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-2.0.4.tgz#b21df27383d604ce3dcc0fd9106308004e43ed58"
-  integrity sha512-IOoeosrQARTKU8EbF2plvEj8/VHOdDpKoRUSid3tjLyqBzt3KKWKc5C9Q+QiUJ796Y2jeSqckp9h3qg3pr0T4A==
+react-virtuoso@2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-2.4.1.tgz#f5e9e72660bda198d479d7fdff659674b33017d9"
+  integrity sha512-VrZhhT7ubjTVNCKxhpn8fBMmiTB0NE7zDpeJvWBrCV5d9QiYS17atBBkAt9Zsl7ubZhY7Wlayk0ypbLxWeDO3Q==
   dependencies:
-    "@virtuoso.dev/react-urx" "^0.2.5"
-    "@virtuoso.dev/urx" "^0.2.5"
+    "@virtuoso.dev/react-urx" "^0.2.12"
+    "@virtuoso.dev/urx" "^0.2.12"
 
 react@17.0.2:
   version "17.0.2"
