@@ -59,7 +59,7 @@
     "@graphql-codegen/typescript-react-apollo": "3.1.4",
     "@testing-library/jest-dom": "5.16.1",
     "@testing-library/react": "12.1.2",
-    "@testing-library/user-event": "13.2.1",
+    "@testing-library/user-event": "13.5.0",
     "@types/jest": "27.4.0",
     "@types/loadable__component": "5.13.4",
     "@types/node": "14.17.32",
