@@ -27,7 +27,7 @@ import FullscreenIcon from "@material-ui/icons/Fullscreen";
 import LaunchIcon from "@material-ui/icons/Launch";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 import copy from "copy-to-clipboard";
-import screenfull, { Screenfull } from "screenfull";
+import screenfull from "screenfull";
 import { WallThemeProvider } from "../../../components/Providers";
 import loadable from "@loadable/component";
 import Loading from "../../../components/Loading";
@@ -81,22 +81,21 @@ const PresentModeButton: React.FC<Props> = () => {
     variant: "popover",
     popupId: "presentModeMenu",
   });
-  const _screenfull = screenfull as Screenfull;
   const fullscreenWallRef = React.useRef<Element>();
   const [fullscreen, setFullscreen] = React.useState(false);
 
   React.useEffect(() => {
-    if (_screenfull.isEnabled) {
-      _screenfull.on("change", handleFullscreenChange);
+    if (screenfull.isEnabled) {
+      screenfull.on("change", handleFullscreenChange);
     }
 
     return () => {
-      _screenfull.off("change", handleFullscreenChange);
+      screenfull.off("change", handleFullscreenChange);
     };
   });
 
   const handleFullscreenChange = () => {
-    setFullscreen(_screenfull.isFullscreen);
+    setFullscreen(screenfull.isFullscreen);
   };
   const handleCopyEventLink = () => {
     if (copy(`${window.location.origin}/event/${id}`)) {
@@ -125,8 +124,8 @@ const PresentModeButton: React.FC<Props> = () => {
           "Display audience questions or poll results on a big screen",
       }),
       handleClick: () => {
-        if (_screenfull.isEnabled) {
-          _screenfull.request(fullscreenWallRef.current);
+        if (screenfull.isEnabled) {
+          screenfull.request(fullscreenWallRef.current);
         } else {
           enqueueSnackbar(
             formatMessage({
