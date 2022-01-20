@@ -2040,13 +2040,13 @@
   resolved "https://registry.yarnpkg.com/@cypress/mount-utils/-/mount-utils-1.0.2.tgz#afbc4f8c350b7cd86edc5ad0db0cbe1e0181edc8"
   integrity sha512-Fn3fdTiyayHoy8Ol0RSu4MlBH2maQ2ZEXeEVKl/zHHXEQpld5HX3vdNLhK5YLij8cLynA4DxOT/nO9iEnIiOXw==
 
-"@cypress/react@5.10.3":
-  version "5.10.3"
-  resolved "https://registry.yarnpkg.com/@cypress/react/-/react-5.10.3.tgz#7e459cb70d0287d2137305b79772164681b988d3"
-  integrity sha512-E68ws4P6CPFbtIqr98rWimf47E5nY6plWwKpHt98GKadSq/MN+57qego+Z5SA1CaDLk7Pvfdk98oYNzkmj20jA==
+"@cypress/react@5.12.1":
+  version "5.12.1"
+  resolved "https://registry.yarnpkg.com/@cypress/react/-/react-5.12.1.tgz#50f7e9adf6edaa1f59fdb24387dfa35a9a810451"
+  integrity sha512-yTtaeAcRrvUNQ+08rMgRS1hKdPoLUglD5CQlw/NEVBGg9B62oZR5BUCUczMg6dZYCz1OsPEren2QMUl2IPNuwQ==
   dependencies:
     "@cypress/mount-utils" "1.0.2"
-    debug "4.3.2"
+    debug "^4.3.2"
     find-webpack "2.2.1"
     find-yarn-workspace-root "2.0.0"
 
@@ -6374,7 +6374,7 @@ debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@4.3.2, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2:
+debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.2.tgz#f0a49c18ac8779e31d4a0c6029dfb76873c7428b"
   integrity sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==
