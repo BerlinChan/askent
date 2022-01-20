@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Typography,
   Card,
@@ -37,13 +37,13 @@ const useStyles = makeStyles((theme: Theme) =>
 const Login: React.FC = () => {
   const classes = useStyles();
   const [loginMutation, { loading }] = useLoginMutation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { formatMessage } = useIntl();
   const { token, setToken } = useToken();
 
   React.useEffect(() => {
     if (token) {
-      history.replace("/admin");
+      navigate("/admin", { replace: true });
     }
   });
 
@@ -61,7 +61,7 @@ const Login: React.FC = () => {
         onSubmit={async (values) => {
           const { data } = await loginMutation({ variables: values });
           setToken(data?.login.token || "");
-          history.replace("/admin");
+          navigate("/admin", { replace: true });
 
           // fix Hasura subscription auth, https://github.com/apollographql/subscriptions-transport-ws/issues/171
           window.location.reload();

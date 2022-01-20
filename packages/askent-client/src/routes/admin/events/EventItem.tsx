@@ -13,7 +13,7 @@ import {
   EventFieldsFragment,
   EventDateStatus
 } from "../../../generated/graphqlHooks";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FormattedDate, FormattedTime } from "react-intl";
 import DvrIcon from "@material-ui/icons/Dvr";
 import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
@@ -54,7 +54,7 @@ interface Props {
 
 const EventItem: React.FC<Props> = ({ event, moreMenuState }) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handlePhoneClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -85,7 +85,7 @@ const EventItem: React.FC<Props> = ({ event, moreMenuState }) => {
       divider
       className={classes.listItem}
       onClick={() => {
-        history.push(`/admin/event/${event.id}`);
+        navigate(`/admin/event/${event.id}`);
       }}
     >
       <React.Fragment>

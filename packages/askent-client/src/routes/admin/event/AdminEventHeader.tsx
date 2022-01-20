@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useNavigate, useMatch } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
@@ -61,8 +61,8 @@ interface Props {
 
 const AdminEventHeader: React.FC<Props> = ({ loading, eventDetailData }) => {
   const classes = useStyles();
-  const history = useHistory();
-  let { url } = useRouteMatch();
+  const navigate = useNavigate();
+  let { url } = useMatch();
   const eventSettingState = React.useState<string>("");
   const [
     eventSettingDefaultFocus,
@@ -93,7 +93,7 @@ const AdminEventHeader: React.FC<Props> = ({ loading, eventDetailData }) => {
                     color="inherit"
                     size="small"
                     style={{ width: 48 }}
-                    onClick={() => history.goBack()}
+                    onClick={() => navigate(-1)}
                   >
                     <NavigateBeforeIcon fontSize="large" />
                   </IconButton>

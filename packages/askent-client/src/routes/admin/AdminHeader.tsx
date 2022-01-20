@@ -14,7 +14,7 @@ import {
   TextField,
   InputAdornment,
 } from "@material-ui/core";
-import { useRouteMatch } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 import { RouteTabs } from "../../components/Tabs";
 import SearchIcon from "@material-ui/icons/Search";
 import { useIntl } from "react-intl";
@@ -64,7 +64,7 @@ interface Props {
 const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  let { url } = useRouteMatch();
+  let { url } = useMatch();
 
   return (
     <AppBar position="static" elevation={2}>

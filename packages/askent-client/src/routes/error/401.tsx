@@ -1,5 +1,5 @@
 import React from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Link, Typography } from "@material-ui/core";
 import { useToken } from "../../hooks";
 import { FormattedMessage } from "react-intl";
@@ -7,7 +7,7 @@ import { FormattedMessage } from "react-intl";
 const Error401: React.FC = (props) => {
   const { removeToken } = useToken();
   const [countdown, setCountdown] = React.useState(5);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     removeToken();
@@ -15,7 +15,7 @@ const Error401: React.FC = (props) => {
       if (countdown > 0) {
         setCountdown(countdown - 1);
       } else {
-        history.replace("/");
+        navigate("/", { replace: true });
       }
     }, 1000);
 

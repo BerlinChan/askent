@@ -1,14 +1,14 @@
 import React from "react";
 import {
-  Switch,
+  Routes,
   Route,
-  useRouteMatch,
+  useMatch,
   Redirect,
   useParams,
 } from "react-router-dom";
 import Loading from "../../components/Loading";
 import loadable from "@loadable/component";
-import PrivateRoute from "../../components/PrivateRoute";
+import RequireAuth from "../../components/RequireAuth";
 import { useEventForLoginQuery } from "../../generated/graphqlHooks";
 import { WallThemeProvider } from "../../components/Providers";
 
@@ -23,28 +23,38 @@ const WallComponent = loadable(() => import("./wall"), {
 });
 
 const Event: React.FC = () => {
-  let { path } = useRouteMatch();
+  let { path } = useMatch();
   let { id } = useParams<{ id: string }>();
   const eventForLoginQuery = useEventForLoginQuery({
     variables: { eventId: id },
   });
 
   return (
-    <Switch>
+    <Routes>
       <Redirect exact path={path} to={`${path}/login`} />
       <Route path={`${path}/login`}>
         <EventLoginComponent eventQuery={eventForLoginQuery} />
       </Route>
 
-      <PrivateRoute path={`${path}/live`}>
-        <LiveComponent />
-      </PrivateRoute>
-      <PrivateRoute path={`${path}/wall`}>
-        <WallThemeProvider>
-          <WallComponent />
-        </WallThemeProvider>
-      </PrivateRoute>
-    </Switch>
+      <Route
+        path={`${path}/live`}
+        element={
+          <RequireAuth>
+            <LiveComponent />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path={`${path}/wall`}
+        element={
+          <RequireAuth>
+            <WallThemeProvider>
+              <WallComponent />
+            </WallThemeProvider>
+          </RequireAuth>
+        }
+      />
+    </Routes>
   );
 };
 

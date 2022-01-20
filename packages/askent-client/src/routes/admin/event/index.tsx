@@ -1,6 +1,12 @@
 import React from "react";
-import { Switch, useRouteMatch, Redirect, useParams } from "react-router-dom";
-import PrivateRoute from "../../../components/PrivateRoute";
+import {
+  Routes,
+  Route,
+  useMatch,
+  Redirect,
+  useParams,
+} from "react-router-dom";
+import RequireAuth from "../../../components/RequireAuth";
 import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
 import AdminEventHeader from "./AdminEventHeader";
@@ -21,7 +27,7 @@ const AnalyticsComponent = loadable(() => import("./analytics"), {
 });
 
 const AdminEvent: React.FC = () => {
-  const { path } = useRouteMatch();
+  const { path } = useMatch();
   const { id } = useParams<{ id: string }>();
   const [eventDetailData, setEventDetailData] =
     React.useState<EventDetailLiveQueryFieldsFragment>();
@@ -41,18 +47,33 @@ const AdminEvent: React.FC = () => {
         <AdminEventHeader eventDetailData={eventDetailData} loading={loading} />
       }
       body={
-        <Switch>
+        <Routes>
           <Redirect exact path={`${path}`} to={`${path}/questions`} />
-          <PrivateRoute path={`${path}/questions`}>
-            <QuestionsComponent eventDetailData={eventDetailData} />
-          </PrivateRoute>
-          <PrivateRoute path={`${path}/polls`}>
-            <PollsComponent />
-          </PrivateRoute>
-          <PrivateRoute path={`${path}/analytics`}>
-            <AnalyticsComponent />
-          </PrivateRoute>
-        </Switch>
+          <Route
+            path={`${path}/questions`}
+            element={
+              <RequireAuth>
+                <QuestionsComponent eventDetailData={eventDetailData} />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={`${path}/polls`}
+            element={
+              <RequireAuth>
+                <PollsComponent />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={`${path}/analytics`}
+            element={
+              <RequireAuth>
+                <AnalyticsComponent />
+              </RequireAuth>
+            }
+          />
+        </Routes>
       }
     />
   );

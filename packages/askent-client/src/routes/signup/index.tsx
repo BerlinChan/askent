@@ -14,7 +14,7 @@ import {
   useCheckEmailExistLazyQuery,
 } from "../../generated/graphqlHooks";
 import { ButtonLoading } from "../../components/Form";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { FormattedMessage, useIntl } from "react-intl";
 import { TextField } from "formik-material-ui";
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Signup: React.FC = () => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
   const [signupMutation, { loading }] = useSignupMutation();
@@ -53,7 +53,7 @@ const Signup: React.FC = () => {
 
   React.useEffect(() => {
     if (token) {
-      history.replace("/admin");
+      navigate("/admin", { replace: true });
     }
   });
 
@@ -130,7 +130,7 @@ const Signup: React.FC = () => {
             enqueueSnackbar("Sign up success!", {
               variant: "success",
             });
-            history.replace("/login");
+            navigate("/login", { replace: true });
           }
         }}
       >

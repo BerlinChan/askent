@@ -1,5 +1,5 @@
 import React from "react";
-import { useRouteMatch } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 import {
   createStyles,
   makeStyles,
@@ -83,7 +83,7 @@ interface Props {
 
 const LiveEventHeader: React.FC<Props> = ({ eventDetailData }) => {
   const classes = useStyles();
-  let { url } = useRouteMatch();
+  let { url } = useMatch();
   const theme = useTheme();
   const matchMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const [open, setOpen] = React.useState(false);

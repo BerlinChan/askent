@@ -1,7 +1,7 @@
 import React from "react";
 import loadable from "@loadable/component";
-import PrivateRoute from "../components/PrivateRoute";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import RequireAuth from "../components/RequireAuth";
+import { BrowserRouter, Routes, Route, Redirect } from "react-router-dom";
 import Loading from "../components/Loading";
 import { MainProvider } from "../components/Providers";
 
@@ -37,25 +37,30 @@ const Router = () => {
   return (
     <MainProvider>
       <BrowserRouter>
-        <Switch>
-          <Route exact path="/" component={HomeComponent} />
-          <Route path="/login" component={LoginComponent} />
-          <Route path="/signup" component={SignupComponent} />
+        <Routes>
+          <Route path="/" element={HomeComponent} />
+          <Route path="/login" element={LoginComponent} />
+          <Route path="/signup" element={SignupComponent} />
 
           <Redirect exact path="/admin" to="/admin/events" />
-          <PrivateRoute path="/admin">
-            <AdminComponent />
-          </PrivateRoute>
+          <Route
+            path="/admin"
+            element={
+              <RequireAuth>
+                <AdminComponent />
+              </RequireAuth>
+            }
+          />
 
           <Redirect exact path="/event" to="/" />
-          <Route path="/event/:id" component={EventComponent} />
+          <Route path="/event/:id" element={EventComponent} />
 
-          <Route path="/about" component={AboutComponent} />
-          <Route path="/demo" component={DemoComponent} />
+          <Route path="/about" element={AboutComponent} />
+          <Route path="/demo" element={DemoComponent} />
 
-          <Route path="/unauthorized" component={Error401Component} />
-          <Route path="*" component={Error404Component} />
-        </Switch>
+          <Route path="/unauthorized" element={Error401Component} />
+          <Route path="*" element={Error404Component} />
+        </Routes>
       </BrowserRouter>
     </MainProvider>
   );

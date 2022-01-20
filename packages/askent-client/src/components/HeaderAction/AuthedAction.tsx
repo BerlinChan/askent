@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Box,
@@ -46,7 +46,7 @@ interface Props {
 
 const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const userQueryResult = useMeQuery();
   const roles = userQueryResult.data?.me.roles.map((role) => role.name);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
@@ -104,7 +104,7 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
         {roles?.includes(RoleName.User) && (
           <MenuItem
             onClick={() => {
-              history.replace("/admin");
+              navigate("/admin", { replace: true });
               handleMenuClose();
             }}
           >
@@ -142,7 +142,7 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
         <MenuItem
           onClick={() => {
             removeToken();
-            history.replace("/");
+            navigate("/", { replace: true });
             handleMenuClose();
 
             // fix Hasura subscription auth, https://github.com/apollographql/subscriptions-transport-ws/issues/171

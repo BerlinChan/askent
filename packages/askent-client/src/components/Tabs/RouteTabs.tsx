@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { TabsProps, Tabs, Tab, TabClassKey } from "@material-ui/core";
 
 interface Props {
@@ -17,7 +17,7 @@ export const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
   ...props
 }) => {
   let { pathname } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const getTabsValue = () => {
     const findIndex = tabs.findIndex((tabItem) => tabItem.to === pathname);
@@ -28,7 +28,7 @@ export const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
     <Tabs
       value={getTabsValue()}
       onChange={(event: React.ChangeEvent<{}>, newValue: number) => {
-        history.replace(tabs[newValue].to);
+        navigate(tabs[newValue].to, { replace: true });
       }}
       {...props}
     >

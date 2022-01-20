@@ -11,7 +11,7 @@ import {
   EventDateStatus,
 } from "../../../generated/graphqlHooks";
 import { QueryResult } from "@apollo/client";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FormattedMessage } from "react-intl";
 import Confirm from "../../../components/Confirm";
 import {
@@ -44,7 +44,7 @@ interface Props {
 
 const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { data, loading, refetch, fetchMore } = eventsByMeQueryResult;
   const moreMenuState = React.useState<{
     anchorEl: null | HTMLElement;
@@ -107,7 +107,7 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
       key: "open",
       text: <FormattedMessage id="Open" defaultMessage="Open" />,
       onClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
-        history.push(`/admin/event/${moreMenuState[0].id}`);
+        navigate(`/admin/event/${moreMenuState[0].id}`);
       },
     },
     {

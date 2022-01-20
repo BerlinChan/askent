@@ -1,7 +1,7 @@
 import React from "react";
 import AdminHeader from "./AdminHeader";
-import { Switch, Redirect, useRouteMatch } from "react-router-dom";
-import PrivateRoute from "../../components/PrivateRoute";
+import { Routes, Route, Redirect, useMatch } from "react-router-dom";
+import RequireAuth from "../../components/RequireAuth";
 import Loading from "../../components/Loading";
 import { Layout } from "../../components/Layout";
 import loadable from "@loadable/component";
@@ -17,15 +17,20 @@ const AdminEventComponent = loadable(() => import("./event"), {
 });
 
 const Admin: React.FC = () => {
-  let { path } = useRouteMatch();
+  let { path } = useMatch();
   const [searchString, setSearchString] = React.useState<string>("");
 
   return (
-    <Switch>
+    <Routes>
       <Redirect exact path={`${path}/event`} to={`${path}/events`} />
-      <PrivateRoute path={`${path}/event/:id`}>
-        <AdminEventComponent />
-      </PrivateRoute>
+      <Route
+        path={`${path}/event/:id`}
+        element={
+          <RequireAuth>
+            <AdminEventComponent />
+          </RequireAuth>
+        }
+      />
 
       <Layout
         header={
@@ -35,17 +40,27 @@ const Admin: React.FC = () => {
           />
         }
         body={
-          <Switch>
-            <PrivateRoute path={`${path}/events`}>
-              <EventsComponent searchString={searchString} />
-            </PrivateRoute>
-            <PrivateRoute path={`${path}/analytics`}>
-              <AnalyticsComponent />
-            </PrivateRoute>
-          </Switch>
+          <Routes>
+            <Route
+              path={`${path}/events`}
+              element={
+                <RequireAuth>
+                  <EventsComponent searchString={searchString} />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path={`${path}/analytics`}
+              element={
+                <RequireAuth>
+                  <AnalyticsComponent />
+                </RequireAuth>
+              }
+            />
+          </Routes>
         }
       />
-    </Switch>
+    </Routes>
   );
 };
 

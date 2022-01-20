@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, Button } from "@material-ui/core";
 import { ButtonLoading } from "../../../components/Form";
-import { useParams, useHistory, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import Logo from "../../../components/Logo";
 import {
   createStyles,
@@ -43,7 +43,7 @@ interface Props {
 
 const EventLogin: React.FC<Props> = ({ eventQuery }) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   let { id } = useParams<{ id: string }>();
   const { token, setToken } = useToken();
   const { data, loading: eventForLoginLoading } = eventQuery;
@@ -83,7 +83,7 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
     setToken(data?.loginAudience.token as string);
   };
   const handleNavToLive = () => {
-    history.replace(`/event/${id}/live/questions`);
+    navigate(`/event/${id}/live/questions`, { replace: true });
 
     // fix Hasura subscription auth, https://github.com/apollographql/subscriptions-transport-ws/issues/171
     window.location.reload();

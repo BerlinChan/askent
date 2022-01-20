@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { InputAdornment, CircularProgress, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
@@ -47,7 +47,7 @@ const JoinInputField = withStyles((theme: Theme) =>
 
 const JoinEventForm: React.FC = (props) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { formatMessage } = useIntl();
   const [eventCodeOptionsLazyQuery, { data, loading }] =
     useEventCodeOptionsLazyQuery();
@@ -60,7 +60,7 @@ const JoinEventForm: React.FC = (props) => {
         id: Yup.string().required(),
       })}
       onSubmit={async (values) => {
-        history.push(`/event/${values.id}/login`);
+        navigate(`/event/${values.id}/login`);
       }}
     >
       {(formProps) => (
