@@ -1,5 +1,4 @@
 import React from "react";
-import { useMatch } from "react-router-dom";
 import {
   createStyles,
   makeStyles,
@@ -83,7 +82,6 @@ interface Props {
 
 const LiveEventHeader: React.FC<Props> = ({ eventDetailData }) => {
   const classes = useStyles();
-  let { url } = useMatch();
   const theme = useTheme();
   const matchMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const [open, setOpen] = React.useState(false);
@@ -114,7 +112,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventDetailData }) => {
               <FormattedMessage id="Q&A" defaultMessage="Q&A" />
             </Typography>
           ),
-          to: `${url}/questions`,
+          to: `questions`,
         },
         {
           label: (
@@ -123,7 +121,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventDetailData }) => {
               <FormattedMessage id="Ideas" defaultMessage="Ideas" />
             </Typography>
           ),
-          to: `${url}/ideas`,
+          to: `ideas`,
         },
         {
           label: (
@@ -132,7 +130,7 @@ const LiveEventHeader: React.FC<Props> = ({ eventDetailData }) => {
               <FormattedMessage id="Polls" defaultMessage="Polls" />
             </Typography>
           ),
-          to: `${url}/polls`,
+          to: `polls`,
         },
       ]}
     />

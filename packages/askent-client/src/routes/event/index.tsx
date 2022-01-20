@@ -2,7 +2,6 @@ import React from "react";
 import {
   Routes,
   Route,
-  useMatch,
   Redirect,
   useParams,
 } from "react-router-dom";
@@ -23,7 +22,6 @@ const WallComponent = loadable(() => import("./wall"), {
 });
 
 const Event: React.FC = () => {
-  let { path } = useMatch();
   let { id } = useParams<{ id: string }>();
   const eventForLoginQuery = useEventForLoginQuery({
     variables: { eventId: id },
@@ -31,13 +29,13 @@ const Event: React.FC = () => {
 
   return (
     <Routes>
-      <Redirect exact path={path} to={`${path}/login`} />
-      <Route path={`${path}/login`}>
+      <Redirect exact path={'/'} to={`login`} />
+      <Route path={`login`}>
         <EventLoginComponent eventQuery={eventForLoginQuery} />
       </Route>
 
       <Route
-        path={`${path}/live`}
+        path={`live`}
         element={
           <RequireAuth>
             <LiveComponent />
@@ -45,7 +43,7 @@ const Event: React.FC = () => {
         }
       />
       <Route
-        path={`${path}/wall`}
+        path={`wall`}
         element={
           <RequireAuth>
             <WallThemeProvider>

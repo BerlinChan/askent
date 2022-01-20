@@ -64,7 +64,6 @@ interface Props {
 const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  let { url } = useMatch();
 
   return (
     <AppBar position="static" elevation={2}>
@@ -106,14 +105,14 @@ const AdminHeader: React.FC<Props> = ({ searchString, setSearchString }) => {
                   id: "Events",
                   defaultMessage: "Events",
                 }),
-                to: `${url}/events`,
+                to: `events`,
               },
               {
                 label: formatMessage({
                   id: "Analitics",
                   defaultMessage: "Analitics",
                 }),
-                to: `${url}/analytics`,
+                to: `analytics`,
               },
             ]}
             indicatorColor="primary"

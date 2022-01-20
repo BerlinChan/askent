@@ -27,7 +27,6 @@ const AnalyticsComponent = loadable(() => import("./analytics"), {
 });
 
 const AdminEvent: React.FC = () => {
-  const { path } = useMatch();
   const { id } = useParams<{ id: string }>();
   const [eventDetailData, setEventDetailData] =
     React.useState<EventDetailLiveQueryFieldsFragment>();
@@ -48,9 +47,9 @@ const AdminEvent: React.FC = () => {
       }
       body={
         <Routes>
-          <Redirect exact path={`${path}`} to={`${path}/questions`} />
+          <Redirect exact path={`/`} to={`questions`} />
           <Route
-            path={`${path}/questions`}
+            path={`questions`}
             element={
               <RequireAuth>
                 <QuestionsComponent eventDetailData={eventDetailData} />
@@ -58,7 +57,7 @@ const AdminEvent: React.FC = () => {
             }
           />
           <Route
-            path={`${path}/polls`}
+            path={`polls`}
             element={
               <RequireAuth>
                 <PollsComponent />
@@ -66,7 +65,7 @@ const AdminEvent: React.FC = () => {
             }
           />
           <Route
-            path={`${path}/analytics`}
+            path={`analytics`}
             element={
               <RequireAuth>
                 <AnalyticsComponent />

@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useMatch } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Container,
@@ -62,12 +62,9 @@ interface Props {
 const AdminEventHeader: React.FC<Props> = ({ loading, eventDetailData }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  let { url } = useMatch();
   const eventSettingState = React.useState<string>("");
-  const [
-    eventSettingDefaultFocus,
-    setEventSettingDefaultFocus,
-  ] = React.useState<keyof EventSettingValues>("name");
+  const [eventSettingDefaultFocus, setEventSettingDefaultFocus] =
+    React.useState<keyof EventSettingValues>("name");
   const { formatMessage } = useIntl();
 
   const handleOpenSetting = (
@@ -189,21 +186,21 @@ const AdminEventHeader: React.FC<Props> = ({ loading, eventDetailData }) => {
                     id: "Audience_Q&A",
                     defaultMessage: "Audience Q&A",
                   }),
-                  to: `${url}/questions`,
+                  to: `questions`,
                 },
                 {
                   label: formatMessage({
                     id: "Live_polls",
                     defaultMessage: "Live polls",
                   }),
-                  to: `${url}/polls`,
+                  to: `polls`,
                 },
                 {
                   label: formatMessage({
                     id: "Analitics",
                     defaultMessage: "Analitics",
                   }),
-                  to: `${url}/analytics`,
+                  to: `analytics`,
                 },
               ]}
               indicatorColor="primary"

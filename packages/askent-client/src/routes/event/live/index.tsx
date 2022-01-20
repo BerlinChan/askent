@@ -3,7 +3,6 @@ import {
   Routes,
   Route,
   Redirect,
-  useMatch,
   useParams,
 } from "react-router-dom";
 import Loading from "../../../components/Loading";
@@ -22,7 +21,6 @@ const LiveQuestionsComponent = loadable(() => import("./questions"), {
 });
 
 const Live: React.FC = () => {
-  let { path } = useMatch();
   let { id } = useParams<{ id: string }>();
   const meQueryResult = useMeQuery();
   const [eventDetailData, setEventDetailData] =
@@ -39,7 +37,7 @@ const Live: React.FC = () => {
 
   return (
     <Routes>
-      <Redirect exact path={path} to={`${path}/questions`} />
+      <Redirect exact path={'/'} to={`questions`} />
 
       <Layout
         disableContainer
@@ -47,7 +45,7 @@ const Live: React.FC = () => {
         body={
           <Routes>
             <Route
-              path={`${path}/questions`}
+              path={`questions`}
               element={
                 <RequireAuth>
                   <LiveQuestionsComponent

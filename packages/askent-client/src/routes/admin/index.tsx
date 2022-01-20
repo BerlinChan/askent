@@ -1,6 +1,6 @@
 import React from "react";
 import AdminHeader from "./AdminHeader";
-import { Routes, Route, Redirect, useMatch } from "react-router-dom";
+import { Routes, Route, Redirect } from "react-router-dom";
 import RequireAuth from "../../components/RequireAuth";
 import Loading from "../../components/Loading";
 import { Layout } from "../../components/Layout";
@@ -17,14 +17,13 @@ const AdminEventComponent = loadable(() => import("./event"), {
 });
 
 const Admin: React.FC = () => {
-  let { path } = useMatch();
   const [searchString, setSearchString] = React.useState<string>("");
 
   return (
     <Routes>
-      <Redirect exact path={`${path}/event`} to={`${path}/events`} />
+      <Redirect exact path={`event`} to={`events`} />
       <Route
-        path={`${path}/event/:id`}
+        path={`event/:id`}
         element={
           <RequireAuth>
             <AdminEventComponent />
@@ -42,7 +41,7 @@ const Admin: React.FC = () => {
         body={
           <Routes>
             <Route
-              path={`${path}/events`}
+              path={`events`}
               element={
                 <RequireAuth>
                   <EventsComponent searchString={searchString} />
@@ -50,7 +49,7 @@ const Admin: React.FC = () => {
               }
             />
             <Route
-              path={`${path}/analytics`}
+              path={`analytics`}
               element={
                 <RequireAuth>
                   <AnalyticsComponent />
