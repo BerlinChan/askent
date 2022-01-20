@@ -2,7 +2,6 @@ import React from "react";
 import {
   Routes,
   Route,
-  Redirect,
   useParams,
 } from "react-router-dom";
 import Loading from "../../components/Loading";
@@ -24,12 +23,11 @@ const WallComponent = loadable(() => import("./wall"), {
 const Event: React.FC = () => {
   let { id } = useParams<{ id: string }>();
   const eventForLoginQuery = useEventForLoginQuery({
-    variables: { eventId: id },
+    variables: { eventId: id as string },
   });
 
   return (
     <Routes>
-      <Redirect exact path={'/'} to={`login`} />
       <Route path={`login`}>
         <EventLoginComponent eventQuery={eventForLoginQuery} />
       </Route>

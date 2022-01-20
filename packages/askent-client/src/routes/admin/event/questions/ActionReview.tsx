@@ -18,12 +18,10 @@ const ActionReview: React.FC<Props> = ({ eventDetailData }) => {
   const { formatMessage } = useIntl();
   const { id } = useParams<{ id: string }>();
   const [updateEventMutation] = useUpdateEventMutation();
-  const [
-    deleteAllReviewQuestionsMutation,
-  ] = useDeleteAllReviewQuestionsMutation();
-  const [
-    publishAllReviewQuestionsMutation,
-  ] = usePublishAllReviewQuestionsMutation();
+  const [deleteAllReviewQuestionsMutation] =
+    useDeleteAllReviewQuestionsMutation();
+  const [publishAllReviewQuestionsMutation] =
+    usePublishAllReviewQuestionsMutation();
   const [confirmModeration, setConfirmModeration] = React.useState(false);
 
   const handleModerationChange = async () => {
@@ -33,7 +31,7 @@ const ActionReview: React.FC<Props> = ({ eventDetailData }) => {
       await updateEventMutation({
         variables: {
           input: {
-            eventId: id,
+            eventId: id as string,
             moderation: true,
           },
         },
@@ -42,12 +40,12 @@ const ActionReview: React.FC<Props> = ({ eventDetailData }) => {
   };
   const handleDeleteAll = async () => {
     await deleteAllReviewQuestionsMutation({
-      variables: { eventId: id },
+      variables: { eventId: id as string },
     });
     await updateEventMutation({
       variables: {
         input: {
-          eventId: id,
+          eventId: id as string,
           moderation: false,
         },
       },
@@ -56,12 +54,12 @@ const ActionReview: React.FC<Props> = ({ eventDetailData }) => {
   };
   const handlePublishAll = async () => {
     await publishAllReviewQuestionsMutation({
-      variables: { eventId: id },
+      variables: { eventId: id as string },
     });
     await updateEventMutation({
       variables: {
         input: {
-          eventId: id,
+          eventId: id as string,
           moderation: false,
         },
       },

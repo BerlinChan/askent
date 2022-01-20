@@ -59,7 +59,7 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
     if (token) {
       (async () => {
         await isEventAudienceLazyQuery({
-          variables: { eventId: id },
+          variables: { eventId: id as string },
         });
       })();
 
@@ -67,7 +67,7 @@ const EventLogin: React.FC<Props> = ({ eventQuery }) => {
         handleNavToLive();
       } else {
         (async () => {
-          await joinEventMutation({ variables: { eventId: id } });
+          await joinEventMutation({ variables: { eventId: id as string } });
           handleNavToLive();
         })();
       }

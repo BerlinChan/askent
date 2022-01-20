@@ -1,6 +1,6 @@
 import React from "react";
 import AdminHeader from "./AdminHeader";
-import { Routes, Route, Redirect } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import RequireAuth from "../../components/RequireAuth";
 import Loading from "../../components/Loading";
 import { Layout } from "../../components/Layout";
@@ -21,7 +21,6 @@ const Admin: React.FC = () => {
 
   return (
     <Routes>
-      <Redirect exact path={`event`} to={`events`} />
       <Route
         path={`event/:id`}
         element={

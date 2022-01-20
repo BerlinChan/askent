@@ -2,8 +2,6 @@ import React from "react";
 import {
   Routes,
   Route,
-  useMatch,
-  Redirect,
   useParams,
 } from "react-router-dom";
 import RequireAuth from "../../../components/RequireAuth";
@@ -47,7 +45,6 @@ const AdminEvent: React.FC = () => {
       }
       body={
         <Routes>
-          <Redirect exact path={`/`} to={`questions`} />
           <Route
             path={`questions`}
             element={

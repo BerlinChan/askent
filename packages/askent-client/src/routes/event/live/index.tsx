@@ -2,7 +2,6 @@ import React from "react";
 import {
   Routes,
   Route,
-  Redirect,
   useParams,
 } from "react-router-dom";
 import Loading from "../../../components/Loading";
@@ -37,8 +36,6 @@ const Live: React.FC = () => {
 
   return (
     <Routes>
-      <Redirect exact path={'/'} to={`questions`} />
-
       <Layout
         disableContainer
         header={<LiveEventHeader eventDetailData={eventDetailData} />}

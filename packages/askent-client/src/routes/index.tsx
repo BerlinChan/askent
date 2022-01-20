@@ -1,7 +1,7 @@
 import React from "react";
 import loadable from "@loadable/component";
 import RequireAuth from "../components/RequireAuth";
-import { BrowserRouter, Routes, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from "../components/Loading";
 import { MainProvider } from "../components/Providers";
 
@@ -38,11 +38,10 @@ const Router = () => {
     <MainProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={HomeComponent} />
-          <Route path="/login" element={LoginComponent} />
-          <Route path="/signup" element={SignupComponent} />
+          <Route path="/" element={<HomeComponent/>} />
+          <Route path="/login" element={<LoginComponent/>} />
+          <Route path="/signup" element={<SignupComponent/>} />
 
-          <Redirect exact path="/admin" to="/admin/events" />
           <Route
             path="/admin"
             element={
@@ -52,14 +51,13 @@ const Router = () => {
             }
           />
 
-          <Redirect exact path="/event" to="/" />
-          <Route path="/event/:id" element={EventComponent} />
+          <Route path="/event/:id" element={<EventComponent/>} />
 
-          <Route path="/about" element={AboutComponent} />
-          <Route path="/demo" element={DemoComponent} />
+          <Route path="/about" element={<AboutComponent/>} />
+          <Route path="/demo" element={<DemoComponent/>} />
 
-          <Route path="/unauthorized" element={Error401Component} />
-          <Route path="*" element={Error404Component} />
+          <Route path="/unauthorized" element={<Error401Component/>} />
+          <Route path="*" element={<Error404Component/>} />
         </Routes>
       </BrowserRouter>
     </MainProvider>

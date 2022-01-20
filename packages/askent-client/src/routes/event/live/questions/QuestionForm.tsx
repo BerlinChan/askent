@@ -135,7 +135,7 @@ const QuestionForm: React.FC<Props> = ({
     await createQuestionMutation({
       variables: {
         input: {
-          eventId: id,
+          eventId: id as string,
           content: values.content,
           anonymous: Boolean(values.anonymous && values.name),
         },

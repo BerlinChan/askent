@@ -1,5 +1,5 @@
 const config = {
-  apiUri: "https://askent-server.berlinchan.com:48444/graphql",
+  apiUri: "http://localhost:4000/graphql",
   hasuraUri: "https://hasura.berlinchan.com:48444/v1/graphql",
   hasuraWsUri: "wss://hasura.berlinchan.com:48444/v1/graphql",
 };

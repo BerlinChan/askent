@@ -1,5 +1,5 @@
 import React from "react";
-import { Redirect, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useToken } from "../../hooks";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -9,12 +9,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   return token ? (
     children
   ) : (
-    <Redirect
-      to={{
-        pathname: "/unauthorized",
-        state: { from: location },
-      }}
-    />
+    <Navigate to="/unauthorized" state={{ from: location }} />
   );
 }
 
