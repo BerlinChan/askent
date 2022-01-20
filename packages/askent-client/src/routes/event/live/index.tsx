@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  Routes,
-  Route,
-  useParams,
-} from "react-router-dom";
+import { Routes, Route, useParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
 import RequireAuth from "../../../components/RequireAuth";
@@ -35,27 +31,37 @@ const Live: React.FC = () => {
   });
 
   return (
-    <Routes>
-      <Layout
-        disableContainer
-        header={<LiveEventHeader eventDetailData={eventDetailData} />}
-        body={
-          <Routes>
-            <Route
-              path={`questions`}
-              element={
-                <RequireAuth>
-                  <LiveQuestionsComponent
-                    userQueryResult={meQueryResult}
-                    eventDetailData={eventDetailData}
-                  />
-                </RequireAuth>
-              }
+    <Route
+      element={
+        <Layout
+          disableContainer
+          header={<LiveEventHeader eventDetailData={eventDetailData} />}
+        />
+      }
+    >
+      <Route
+        index
+        element={
+          <RequireAuth>
+            <LiveQuestionsComponent
+              userQueryResult={meQueryResult}
+              eventDetailData={eventDetailData}
             />
-          </Routes>
+          </RequireAuth>
         }
       />
-    </Routes>
+      <Route
+        path={`questions`}
+        element={
+          <RequireAuth>
+            <LiveQuestionsComponent
+              userQueryResult={meQueryResult}
+              eventDetailData={eventDetailData}
+            />
+          </RequireAuth>
+        }
+      />
+    </Route>
   );
 };
 

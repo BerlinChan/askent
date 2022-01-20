@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  Routes,
-  Route,
-  useParams,
-} from "react-router-dom";
+import { Routes, Route, useParams } from "react-router-dom";
 import RequireAuth from "../../../components/RequireAuth";
 import Loading from "../../../components/Loading";
 import loadable from "@loadable/component";
@@ -43,35 +39,42 @@ const AdminEvent: React.FC = () => {
       header={
         <AdminEventHeader eventDetailData={eventDetailData} loading={loading} />
       }
-      body={
-        <Routes>
-          <Route
-            path={`questions`}
-            element={
-              <RequireAuth>
-                <QuestionsComponent eventDetailData={eventDetailData} />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path={`polls`}
-            element={
-              <RequireAuth>
-                <PollsComponent />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path={`analytics`}
-            element={
-              <RequireAuth>
-                <AnalyticsComponent />
-              </RequireAuth>
-            }
-          />
-        </Routes>
-      }
-    />
+    >
+      <Routes>
+        <Route
+          index
+          element={
+            <RequireAuth>
+              <QuestionsComponent eventDetailData={eventDetailData} />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`questions`}
+          element={
+            <RequireAuth>
+              <QuestionsComponent eventDetailData={eventDetailData} />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`polls`}
+          element={
+            <RequireAuth>
+              <PollsComponent />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`analytics`}
+          element={
+            <RequireAuth>
+              <AnalyticsComponent />
+            </RequireAuth>
+          }
+        />
+      </Routes>
+    </Layout>
   );
 };
 

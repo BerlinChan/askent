@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  Routes,
-  Route,
-  useParams,
-} from "react-router-dom";
+import { Routes, Route, useParams } from "react-router-dom";
 import Loading from "../../components/Loading";
 import loadable from "@loadable/component";
 import RequireAuth from "../../components/RequireAuth";
@@ -28,9 +24,14 @@ const Event: React.FC = () => {
 
   return (
     <Routes>
-      <Route path={`login`}>
-        <EventLoginComponent eventQuery={eventForLoginQuery} />
-      </Route>
+      <Route
+        index
+        element={<EventLoginComponent eventQuery={eventForLoginQuery} />}
+      />
+      <Route
+        path={`login`}
+        element={<EventLoginComponent eventQuery={eventForLoginQuery} />}
+      />
 
       <Route
         path={`live`}

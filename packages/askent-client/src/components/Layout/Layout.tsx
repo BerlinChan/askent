@@ -1,6 +1,7 @@
 import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Container, Box } from "@material-ui/core";
+import { Outlet } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,13 +24,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   header: React.ReactElement;
-  body: React.ReactElement;
   disableContainer?: boolean;
 }
 
 export const Layout: React.FC<Props> = ({
   header,
-  body,
   disableContainer = false,
 }) => {
   const classes = useStyles();
@@ -39,10 +38,10 @@ export const Layout: React.FC<Props> = ({
       {header}
       <Box className={classes.scrollBox}>
         {disableContainer ? (
-          body
+          <Outlet />
         ) : (
           <Container maxWidth="lg" className={classes.bodyContainer}>
-            {body}
+            <Outlet />
           </Container>
         )}
       </Box>

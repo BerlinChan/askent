@@ -30,34 +30,43 @@ const Admin: React.FC = () => {
         }
       />
 
-      <Layout
-        header={
-          <AdminHeader
-            searchString={searchString}
-            setSearchString={setSearchString}
+      <Route
+        element={
+          <Layout
+            header={
+              <AdminHeader
+                searchString={searchString}
+                setSearchString={setSearchString}
+              />
+            }
           />
         }
-        body={
-          <Routes>
-            <Route
-              path={`events`}
-              element={
-                <RequireAuth>
-                  <EventsComponent searchString={searchString} />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path={`analytics`}
-              element={
-                <RequireAuth>
-                  <AnalyticsComponent />
-                </RequireAuth>
-              }
-            />
-          </Routes>
-        }
-      />
+      >
+        <Route
+          index
+          element={
+            <RequireAuth>
+              <EventsComponent searchString={searchString} />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`events`}
+          element={
+            <RequireAuth>
+              <EventsComponent searchString={searchString} />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`analytics`}
+          element={
+            <RequireAuth>
+              <AnalyticsComponent />
+            </RequireAuth>
+          }
+        />
+      </Route>
     </Routes>
   );
 };
