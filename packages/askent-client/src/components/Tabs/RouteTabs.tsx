@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { TabsProps, Tabs, Tab, TabClassKey } from "@material-ui/core";
 
 interface Props {
@@ -16,11 +16,11 @@ export const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
   tabClasses,
   ...props
 }) => {
-  let { pathname } = useLocation();
+  let { "*": routeName } = useParams();
   const navigate = useNavigate();
 
   const getTabsValue = () => {
-    const findIndex = tabs.findIndex((tabItem) => tabItem.to === pathname);
+    const findIndex = tabs.findIndex((tabItem) => tabItem.to === routeName);
     return findIndex < 0 ? 0 : findIndex;
   };
 
@@ -28,7 +28,7 @@ export const RouteTabs: React.FC<Props & Partial<TabsProps>> = ({
     <Tabs
       value={getTabsValue()}
       onChange={(event: React.ChangeEvent<{}>, newValue: number) => {
-        navigate(tabs[newValue].to, { replace: true });
+        navigate(tabs[newValue].to);
       }}
       {...props}
     >

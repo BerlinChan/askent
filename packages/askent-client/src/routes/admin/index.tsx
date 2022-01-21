@@ -22,7 +22,7 @@ const Admin: React.FC = () => {
   return (
     <Routes>
       <Route
-        path={`event/:id`}
+        path={`event/:id/*`}
         element={
           <RequireAuth>
             <AdminEventComponent />

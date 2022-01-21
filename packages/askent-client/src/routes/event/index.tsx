@@ -34,7 +34,7 @@ const Event: React.FC = () => {
       />
 
       <Route
-        path={`live`}
+        path={`live/*`}
         element={
           <RequireAuth>
             <LiveComponent />

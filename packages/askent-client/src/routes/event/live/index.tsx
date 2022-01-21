@@ -14,6 +14,12 @@ import {
 const LiveQuestionsComponent = loadable(() => import("./questions"), {
   fallback: <Loading />,
 });
+const LiveIdeasComponent = loadable(() => import("./ideas"), {
+  fallback: <Loading />,
+});
+const LivePollsComponent = loadable(() => import("./polls"), {
+  fallback: <Loading />,
+});
 
 const Live: React.FC = () => {
   let { id } = useParams<{ id: string }>();
@@ -31,37 +37,55 @@ const Live: React.FC = () => {
   });
 
   return (
-    <Route
-      element={
-        <Layout
-          disableContainer
-          header={<LiveEventHeader eventDetailData={eventDetailData} />}
+    <Routes>
+      <Route
+        element={
+          <Layout
+            disableContainer
+            header={<LiveEventHeader eventDetailData={eventDetailData} />}
+          />
+        }
+      >
+        <Route
+          index
+          element={
+            <RequireAuth>
+              <LiveQuestionsComponent
+                userQueryResult={meQueryResult}
+                eventDetailData={eventDetailData}
+              />
+            </RequireAuth>
+          }
         />
-      }
-    >
-      <Route
-        index
-        element={
-          <RequireAuth>
-            <LiveQuestionsComponent
-              userQueryResult={meQueryResult}
-              eventDetailData={eventDetailData}
-            />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path={`questions`}
-        element={
-          <RequireAuth>
-            <LiveQuestionsComponent
-              userQueryResult={meQueryResult}
-              eventDetailData={eventDetailData}
-            />
-          </RequireAuth>
-        }
-      />
-    </Route>
+        <Route
+          path={`questions`}
+          element={
+            <RequireAuth>
+              <LiveQuestionsComponent
+                userQueryResult={meQueryResult}
+                eventDetailData={eventDetailData}
+              />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`ideas`}
+          element={
+            <RequireAuth>
+              <LiveIdeasComponent />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`polls`}
+          element={
+            <RequireAuth>
+              <LivePollsComponent />
+            </RequireAuth>
+          }
+        />
+      </Route>
+    </Routes>
   );
 };
 

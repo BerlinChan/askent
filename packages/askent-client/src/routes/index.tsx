@@ -38,12 +38,12 @@ const Router = () => {
     <MainProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomeComponent/>} />
-          <Route path="/login" element={<LoginComponent/>} />
-          <Route path="/signup" element={<SignupComponent/>} />
+          <Route path="/" element={<HomeComponent />} />
+          <Route path="/login" element={<LoginComponent />} />
+          <Route path="/signup" element={<SignupComponent />} />
 
           <Route
-            path="/admin"
+            path="/admin/*"
             element={
               <RequireAuth>
                 <AdminComponent />
@@ -51,13 +51,13 @@ const Router = () => {
             }
           />
 
-          <Route path="/event/:id" element={<EventComponent/>} />
+          <Route path="/event/:id/*" element={<EventComponent />} />
 
-          <Route path="/about" element={<AboutComponent/>} />
-          <Route path="/demo" element={<DemoComponent/>} />
+          <Route path="/about" element={<AboutComponent />} />
+          <Route path="/demo" element={<DemoComponent />} />
 
-          <Route path="/unauthorized" element={<Error401Component/>} />
-          <Route path="*" element={<Error404Component/>} />
+          <Route path="/unauthorized" element={<Error401Component />} />
+          <Route path="*" element={<Error404Component />} />
         </Routes>
       </BrowserRouter>
     </MainProvider>

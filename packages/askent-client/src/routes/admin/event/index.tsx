@@ -35,12 +35,19 @@ const AdminEvent: React.FC = () => {
   });
 
   return (
-    <Layout
-      header={
-        <AdminEventHeader eventDetailData={eventDetailData} loading={loading} />
-      }
-    >
-      <Routes>
+    <Routes>
+      <Route
+        element={
+          <Layout
+            header={
+              <AdminEventHeader
+                eventDetailData={eventDetailData}
+                loading={loading}
+              />
+            }
+          />
+        }
+      >
         <Route
           index
           element={
@@ -73,8 +80,8 @@ const AdminEvent: React.FC = () => {
             </RequireAuth>
           }
         />
-      </Routes>
-    </Layout>
+      </Route>
+    </Routes>
   );
 };
 
