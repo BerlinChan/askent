@@ -8049,10 +8049,10 @@ graphql-query-complexity@^0.7.0:
   dependencies:
     lodash.get "^4.4.2"
 
-graphql-rate-limit@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/graphql-rate-limit/-/graphql-rate-limit-3.1.0.tgz#df8f164cfda38604104b58647ea8a6821dd78b40"
-  integrity sha512-cT/WGsZye0e6EQPKPh01CcRrx/kstBe1Pxv8dae5LHtCSb0sCKQIdQMyBhJsFAkKERBiQVegLaDvhI+V9H7pJA==
+graphql-rate-limit@3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/graphql-rate-limit/-/graphql-rate-limit-3.3.0.tgz#241e3f6dc4cc3cbd139d63d40e2ce613f8485646"
+  integrity sha512-mbbEv5z3SjkDLvVVdHi0XrVLavw2Mwo93GIqgQB/fx8dhcNSEv3eYI1OGdp8mhsm/MsZm7hjrRlwQMVRKBVxhA==
   dependencies:
     "@graphql-tools/utils" "^7.6.0"
     graphql-shield "^7.5.0"
