@@ -46,6 +46,6 @@
     "hasura-cli": "2.1.1",
     "ts-node": "10.2.1",
     "ts-node-dev": "1.1.8",
-    "typescript": "4.2.4"
+    "typescript": "4.5.5"
   }
 }
