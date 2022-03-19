@@ -51,7 +51,7 @@
     "yup": "0.32.11"
   },
   "devDependencies": {
-    "@cypress/react": "5.12.1",
+    "@cypress/react": "5.12.4",
     "@cypress/webpack-dev-server": "1.8.0",
     "@formatjs/cli": "4.8.1",
     "@graphql-codegen/cli": "2.4.0",
