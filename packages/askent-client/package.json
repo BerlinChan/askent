@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@cypress/react": "5.12.4",
-    "@cypress/webpack-dev-server": "1.8.0",
+    "@cypress/webpack-dev-server": "1.8.4",
     "@formatjs/cli": "4.8.1",
     "@graphql-codegen/cli": "2.4.0",
     "@graphql-codegen/typescript-operations": "2.2.3",
