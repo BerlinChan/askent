@@ -37,7 +37,7 @@
     "graphql": "16.2.0",
     "graphql-tag": "2.12.6",
     "material-ui-popup-state": "1.9.3",
-    "notistack": "1.0.10",
+    "notistack": "2.0.8",
     "qrcode.react": "1.0.1",
     "ramda": "0.28.0",
     "react": "17.0.2",
