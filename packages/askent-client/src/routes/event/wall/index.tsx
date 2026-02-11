@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Grid, Card, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useParams } from "react-router-dom";
-import QRCode from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 import { FormattedMessage } from "react-intl";
 import OrderSelect from "./OrderSelect";
 import { QuestionOrder, QuestionFilter } from "../../../constant";
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: theme.palette.text.secondary,
     },
     listBox: { flex: 1 },
-  })
+  }),
 );
 
 interface Props {}
@@ -62,7 +62,7 @@ const EventWall: React.FC<Props> = () => {
   const [eventDetailData, setEventDetailData] =
     React.useState<EventDetailLiveQueryFieldsFragment>();
   const orderSelectedState = React.useState<QuestionOrder>(
-    QuestionOrder.Popular
+    QuestionOrder.Popular,
   );
   const questionQueryState = React.useState<QuestionQueryStateType>({
     filter: QuestionFilter.Publish,
@@ -105,7 +105,7 @@ const EventWall: React.FC<Props> = () => {
     <Grid container className={classes.wallGrid}>
       <Grid item xs={3} className={classes.gridItem}>
         <Card ref={qrcodeCardRef} style={{ height: qrcodeCardWidth }}>
-          <QRCode
+          <QRCodeSVG
             size={qrcodeCardWidth}
             includeMargin={true}
             value={`${window.location.origin}/event/${id}`}
