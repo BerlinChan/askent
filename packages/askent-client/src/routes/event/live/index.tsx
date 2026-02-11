@@ -1,7 +1,6 @@
 import React from "react";
 import { Routes, Route, useParams } from "react-router-dom";
 import Loading from "../../../components/Loading";
-import loadable from "@loadable/component";
 import RequireAuth from "../../../components/RequireAuth";
 import { Layout } from "../../../components/Layout";
 import LiveEventHeader from "./LiveEventHeader";
@@ -11,15 +10,9 @@ import {
   useEventDetailLiveQuerySubscription,
 } from "../../../generated/hasuraHooks";
 
-const LiveQuestionsComponent = loadable(() => import("./questions"), {
-  fallback: <Loading />,
-});
-const LiveIdeasComponent = loadable(() => import("./ideas"), {
-  fallback: <Loading />,
-});
-const LivePollsComponent = loadable(() => import("./polls"), {
-  fallback: <Loading />,
-});
+const LiveQuestionsComponent = React.lazy(() => import("./questions"));
+const LiveIdeasComponent = React.lazy(() => import("./ideas"));
+const LivePollsComponent = React.lazy(() => import("./polls"));
 
 const Live: React.FC = () => {
   let { id } = useParams<{ id: string }>();
@@ -50,10 +43,12 @@ const Live: React.FC = () => {
           index
           element={
             <RequireAuth>
-              <LiveQuestionsComponent
-                userQueryResult={meQueryResult}
-                eventDetailData={eventDetailData}
-              />
+              <React.Suspense fallback={<Loading />}>
+                <LiveQuestionsComponent
+                  userQueryResult={meQueryResult}
+                  eventDetailData={eventDetailData}
+                />
+              </React.Suspense>
             </RequireAuth>
           }
         />
@@ -61,10 +56,12 @@ const Live: React.FC = () => {
           path={`questions`}
           element={
             <RequireAuth>
-              <LiveQuestionsComponent
-                userQueryResult={meQueryResult}
-                eventDetailData={eventDetailData}
-              />
+              <React.Suspense fallback={<Loading />}>
+                <LiveQuestionsComponent
+                  userQueryResult={meQueryResult}
+                  eventDetailData={eventDetailData}
+                />
+              </React.Suspense>
             </RequireAuth>
           }
         />
@@ -72,7 +69,9 @@ const Live: React.FC = () => {
           path={`ideas`}
           element={
             <RequireAuth>
-              <LiveIdeasComponent />
+              <React.Suspense fallback={<Loading />}>
+                <LiveIdeasComponent />
+              </React.Suspense>
             </RequireAuth>
           }
         />
@@ -80,7 +79,9 @@ const Live: React.FC = () => {
           path={`polls`}
           element={
             <RequireAuth>
-              <LivePollsComponent />
+              <React.Suspense fallback={<Loading />}>
+                <LivePollsComponent />
+              </React.Suspense>
             </RequireAuth>
           }
         />

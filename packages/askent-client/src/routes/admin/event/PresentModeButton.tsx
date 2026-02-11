@@ -29,7 +29,6 @@ import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 import copy from "copy-to-clipboard";
 import screenfull from "screenfull";
 import { WallThemeProvider } from "../../../components/Providers";
-import loadable from "@loadable/component";
 import Loading from "../../../components/Loading";
 
 const StyledMenuItem = withStyles({
@@ -66,9 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const WallComponent = loadable(() => import("../../event/wall"), {
-  fallback: <Loading />,
-});
+const WallComponent = React.lazy(() => import("../../event/wall"));
 
 interface Props {}
 
@@ -223,7 +220,9 @@ const PresentModeButton: React.FC<Props> = () => {
       <Grid innerRef={fullscreenWallRef}>
         {fullscreen ? (
           <WallThemeProvider>
-            <WallComponent />
+            <React.Suspense fallback={<Loading />}>
+              <WallComponent />
+            </React.Suspense>
           </WallThemeProvider>
         ) : null}
       </Grid>

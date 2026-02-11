@@ -2,7 +2,6 @@ import React from "react";
 import { Routes, Route, useParams } from "react-router-dom";
 import RequireAuth from "../../../components/RequireAuth";
 import Loading from "../../../components/Loading";
-import loadable from "@loadable/component";
 import AdminEventHeader from "./AdminEventHeader";
 import { Layout } from "../../../components/Layout";
 import {
@@ -10,15 +9,9 @@ import {
   EventDetailLiveQueryFieldsFragment,
 } from "../../../generated/hasuraHooks";
 
-const QuestionsComponent = loadable(() => import("./questions"), {
-  fallback: <Loading />,
-});
-const PollsComponent = loadable(() => import("./polls"), {
-  fallback: <Loading />,
-});
-const AnalyticsComponent = loadable(() => import("./analytics"), {
-  fallback: <Loading />,
-});
+const QuestionsComponent = React.lazy(() => import("./questions"));
+const PollsComponent = React.lazy(() => import("./polls"));
+const AnalyticsComponent = React.lazy(() => import("./analytics"));
 
 const AdminEvent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,7 +45,9 @@ const AdminEvent: React.FC = () => {
           index
           element={
             <RequireAuth>
-              <QuestionsComponent eventDetailData={eventDetailData} />
+              <React.Suspense fallback={<Loading />}>
+                <QuestionsComponent eventDetailData={eventDetailData} />
+              </React.Suspense>
             </RequireAuth>
           }
         />
@@ -60,7 +55,9 @@ const AdminEvent: React.FC = () => {
           path={`questions`}
           element={
             <RequireAuth>
-              <QuestionsComponent eventDetailData={eventDetailData} />
+              <React.Suspense fallback={<Loading />}>
+                <QuestionsComponent eventDetailData={eventDetailData} />
+              </React.Suspense>
             </RequireAuth>
           }
         />
@@ -68,7 +65,9 @@ const AdminEvent: React.FC = () => {
           path={`polls`}
           element={
             <RequireAuth>
-              <PollsComponent />
+              <React.Suspense fallback={<Loading />}>
+                <PollsComponent />
+              </React.Suspense>
             </RequireAuth>
           }
         />
@@ -76,7 +75,9 @@ const AdminEvent: React.FC = () => {
           path={`analytics`}
           element={
             <RequireAuth>
-              <AnalyticsComponent />
+              <React.Suspense fallback={<Loading />}>
+                <AnalyticsComponent />
+              </React.Suspense>
             </RequireAuth>
           }
         />

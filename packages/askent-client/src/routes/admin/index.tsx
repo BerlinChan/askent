@@ -4,17 +4,10 @@ import { Routes, Route } from "react-router-dom";
 import RequireAuth from "../../components/RequireAuth";
 import Loading from "../../components/Loading";
 import { Layout } from "../../components/Layout";
-import loadable from "@loadable/component";
 
-const EventsComponent = loadable(() => import("./events"), {
-  fallback: <Loading />,
-});
-const AnalyticsComponent = loadable(() => import("./analytics"), {
-  fallback: <Loading />,
-});
-const AdminEventComponent = loadable(() => import("./event"), {
-  fallback: <Loading />,
-});
+const EventsComponent = React.lazy(() => import("./events"));
+const AnalyticsComponent = React.lazy(() => import("./analytics"));
+const AdminEventComponent = React.lazy(() => import("./event"));
 
 const Admin: React.FC = () => {
   const [searchString, setSearchString] = React.useState<string>("");
