@@ -1,8 +1,9 @@
 import React from "react";
-import { Box, InputBase } from "@material-ui/core";
+import { Box, InputBase } from "@mui/material";
 import { useIntl } from "react-intl";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

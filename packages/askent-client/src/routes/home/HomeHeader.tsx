@@ -2,10 +2,10 @@ import React from "react";
 import {
   createStyles,
   makeStyles,
-  Theme,
-  alpha,
-} from "@material-ui/core/styles";
-import { Toolbar, Container, AppBar, Box } from "@material-ui/core";
+} from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
+import { Toolbar, Container, AppBar, Box } from "@mui/material";
 import { ScrollSlide } from "../../components/ScrollHide";
 import HeaderAction from "../../components/HeaderAction";
 import Logo from "../../components/Logo";

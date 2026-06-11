@@ -9,7 +9,7 @@ import {
   ListItemText,
   ListItemAvatar,
   Tooltip,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   FormattedMessage,
   FormattedTime,
@@ -19,9 +19,9 @@ import {
 import {
   createStyles,
   makeStyles,
-  Theme,
-  alpha,
-} from "@material-ui/core/styles";
+} from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import { QueryResult } from "@apollo/client";
 import {
   MeQuery,
@@ -30,15 +30,15 @@ import {
   useUpdateQuestionContentMutation,
   ReviewStatus,
 } from "../../../../generated/graphqlHooks";
-import ThumbUpIcon from "@material-ui/icons/ThumbUp";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import TopIcon from "@material-ui/icons/Publish";
-import ScheduleIcon from "@material-ui/icons/Schedule";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import TopIcon from "@mui/icons-material/Publish";
+import ScheduleIcon from "@mui/icons-material/Schedule";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "askent-common/src/constant";
-import { TextField } from "formik-material-ui";
+import { FTextField } from "../../../../components/Form";
 import { QuestionLiveQueryAudienceFieldsFragment } from "../../../../generated/hasuraHooks";
 import { ReplyDialogStateType } from "./reply/ReplyDialog";
 
@@ -199,7 +199,7 @@ const QuestionItem: React.FC<Props> = ({
           {(formProps) => (
             <Form className={classes.editContentForm}>
               <Field
-                component={TextField}
+                component={FTextField}
                 inputRef={editContentInputRef}
                 fullWidth
                 id="content"
@@ -294,7 +294,7 @@ const QuestionItem: React.FC<Props> = ({
                   question.voteUpUsers.length &&
                   question.voteUpUsers[0].userId === userQueryResult.data?.me.id
                     ? "primary"
-                    : "default"
+                    : "inherit"
                 }
                 classes={{ root: classes.thumbUpButton }}
                 disabled={voteLoading}

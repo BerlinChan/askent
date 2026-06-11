@@ -2,7 +2,6 @@ import React from "react";
 import AdminHeader from "./AdminHeader";
 import { Routes, Route } from "react-router-dom";
 import RequireAuth from "../../components/RequireAuth";
-import Loading from "../../components/Loading";
 import { Layout } from "../../components/Layout";
 
 const EventsComponent = React.lazy(() => import("./events"));

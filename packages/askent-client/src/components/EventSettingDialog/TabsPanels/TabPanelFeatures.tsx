@@ -1,8 +1,8 @@
 import React from "react";
 import { FormattedMessage } from "react-intl";
 import { Field } from "formik";
-import { Switch } from "formik-material-ui";
-import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
+import { FSwitch } from "../../Form";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import CollapseList from "../CollapseList";
 import SwitchItem from "../SwitchItem";
 
@@ -34,7 +34,7 @@ const TabPanelFeatures: React.FC<Props> = () => {
                   />
                 }
                 switchField={
-                  <Field component={Switch} type="checkbox" name="moderation" />
+                  <Field component={FSwitch} type="checkbox" name="moderation" />
                 }
               />
             </React.Fragment>

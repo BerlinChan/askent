@@ -1,6 +1,7 @@
 import React from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Container, Box } from "@material-ui/core";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { Container, Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>

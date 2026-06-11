@@ -1,6 +1,6 @@
 import React from "react";
 import * as R from "ramda";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 import { QueryResult } from "@apollo/client";
 import {
   EventDetailLiveQueryFieldsFragment,

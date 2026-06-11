@@ -1,10 +1,6 @@
 import React from "react";
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  useTheme,
-} from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme, useTheme } from "@mui/material/styles";
 import {
   Box,
   Grid,
@@ -20,13 +16,13 @@ import {
   Divider,
   Hidden,
   useMediaQuery,
-} from "@material-ui/core";
+} from "@mui/material";
 import { RouteTabs } from "../../../components/Tabs";
-import MenuIcon from "@material-ui/icons/Menu";
+import MenuIcon from "@mui/icons-material/Menu";
 import HeaderAction from "../../../components/HeaderAction";
-import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
-import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
-import EqualizerIcon from "@material-ui/icons/Equalizer";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
+import EqualizerIcon from "@mui/icons-material/Equalizer";
 import { FormattedMessage, FormattedDate, FormattedTime } from "react-intl";
 import { EventDetailLiveQueryFieldsFragment } from "../../../generated/hasuraHooks";
 

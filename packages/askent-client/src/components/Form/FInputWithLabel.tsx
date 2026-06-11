@@ -1,5 +1,5 @@
 import React from "react";
-import { TextFieldProps, Input, InputLabel } from "@material-ui/core";
+import { TextFieldProps, Input, InputLabel } from "@mui/material";
 import { useField, FieldAttributes } from "formik";
 
 export type Props = FieldAttributes<any> & TextFieldProps;

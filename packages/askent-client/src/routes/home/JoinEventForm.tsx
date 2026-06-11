@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { InputAdornment, CircularProgress, TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { InputAdornment, CircularProgress, TextField } from "@mui/material";
+import Autocomplete from "@mui/lab/Autocomplete";
 import {
   createStyles,
   makeStyles,
   withStyles,
-  Theme,
-} from "@material-ui/core/styles";
+} from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import { ButtonLoading } from "../../components/Form";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -89,7 +89,6 @@ const JoinEventForm: React.FC = (props) => {
                 id: newValue?.id || "",
               });
             }}
-            getOptionSelected={(option, value) => option.id === value.id}
             getOptionLabel={(option) => option.code}
             options={data?.eventsByCode || []}
             loading={loading}

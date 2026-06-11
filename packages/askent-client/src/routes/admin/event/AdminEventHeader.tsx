@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import {
   Container,
   Box,
@@ -12,13 +13,13 @@ import {
   CircularProgress,
   Tooltip,
   Grid,
-} from "@material-ui/core";
+} from "@mui/material";
 import { RouteTabs } from "../../../components/Tabs";
-import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import { FormattedDate, FormattedTime, useIntl } from "react-intl";
 import HeaderAction from "../../../components/HeaderAction";
-import SettingsIcon from "@material-ui/icons/Settings";
-import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
+import SettingsIcon from "@mui/icons-material/Settings";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import EventSettingDialog, {
   EventSettingValues,
 } from "../../../components/EventSettingDialog";

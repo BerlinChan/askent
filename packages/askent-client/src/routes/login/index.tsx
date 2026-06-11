@@ -6,14 +6,15 @@ import {
   CardActions,
   CardContent,
   Container,
-} from "@material-ui/core";
+} from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../components/Form";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import { useLoginMutation } from "../../generated/graphqlHooks";
 import { useToken } from "../../hooks";
-import { TextField } from "formik-material-ui";
+import { FTextField } from "../../components/Form";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   USER_PASSWORD_MAX_LENGTH,
@@ -71,7 +72,7 @@ const Login: React.FC = () => {
           <Card className={classes.card}>
             <CardContent>
               <Field
-                component={TextField}
+                component={FTextField}
                 autoFocus
                 fullWidth
                 id="email"
@@ -84,7 +85,7 @@ const Login: React.FC = () => {
                 margin="normal"
               />
               <Field
-                component={TextField}
+                component={FTextField}
                 fullWidth
                 id="password"
                 name="password"

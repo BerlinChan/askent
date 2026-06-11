@@ -6,8 +6,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-} from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+} from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -25,8 +26,8 @@ import {
   EVENT_CODE_MAX_LENGTH,
   EVENT_NAME_MAX_LENGTH,
 } from "askent-common/src/constant";
-import { TextField } from "formik-material-ui";
-import { DateTimePicker } from "formik-material-ui-pickers";
+import { FTextField } from "../../../components/Form";
+import { FDateTimePicker } from "../../../components/Form";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -137,7 +138,7 @@ const CreateEventDialog: React.FC<Props> = ({
           </DialogTitle>
           <DialogContent>
             <Field
-              component={TextField}
+              component={FTextField}
               autoFocus
               fullWidth
               name="name"
@@ -149,7 +150,7 @@ const CreateEventDialog: React.FC<Props> = ({
             />
             <Box className={classes.dateRange}>
               <Field
-                component={DateTimePicker}
+                component={FDateTimePicker}
                 name="startAt"
                 label={formatMessage({
                   id: "Start_datetime",
@@ -161,7 +162,7 @@ const CreateEventDialog: React.FC<Props> = ({
                 disableToolbar
               />
               <Field
-                component={DateTimePicker}
+                component={FDateTimePicker}
                 name="endAt"
                 label={formatMessage({
                   id: "End_datetime",
@@ -174,7 +175,7 @@ const CreateEventDialog: React.FC<Props> = ({
               />
             </Box>
             <Field
-              component={TextField}
+              component={FTextField}
               fullWidth
               name="code"
               label={formatMessage({

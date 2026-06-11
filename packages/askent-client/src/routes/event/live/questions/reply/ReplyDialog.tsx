@@ -8,9 +8,10 @@ import {
   IconButton,
   Typography,
   Hidden,
-} from "@material-ui/core";
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
-import { Close as CloseIcon } from "@material-ui/icons";
+} from "@mui/material";
+import { makeStyles, createStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { Close as CloseIcon } from "@mui/icons-material";
 import { FormattedMessage } from "react-intl";
 import DialogTitleWithClose from "../../../../../components/DialogTitleWithClose";
 import ReplyList from "./ReplyList";

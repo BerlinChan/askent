@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Link, Typography } from "@material-ui/core";
+import { Link, Typography } from "@mui/material";
 import { useToken } from "../../hooks";
 import { FormattedMessage } from "react-intl";
 

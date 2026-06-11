@@ -12,19 +12,20 @@ import {
   ClickAwayListener,
   Avatar,
   Hidden,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { ButtonLoading } from "../../../../components/Form";
-import { InputBase, Switch } from "formik-material-ui";
+import { FInputBase, FSwitch } from "../../../../components/Form";
 import { Formik, Form, Field, FormikProps, FormikHelpers } from "formik";
 import * as Yup from "yup";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import {
   QUESTION_CONTENT_MAX_LENGTH,
   USER_NAME_MAX_LENGTH,
 } from "askent-common/src/constant";
-import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import { useSnackbar } from "notistack";
 import {
   useCreateQuestionMutation,
@@ -203,7 +204,7 @@ const QuestionForm: React.FC<Props> = ({
           src={userMeData?.me.avatar || ""}
         />
         <Field
-          component={InputBase}
+          component={FInputBase}
           className={classes.nameInput}
           name="name"
           placeholder={formatMessage({
@@ -224,7 +225,7 @@ const QuestionForm: React.FC<Props> = ({
           labelPlacement="end"
           control={
             <Field
-              component={Switch}
+              component={FSwitch}
               name="anonymous"
               type="checkbox"
               size="small"
@@ -287,7 +288,7 @@ const QuestionForm: React.FC<Props> = ({
                     <QuestionAnswerIcon color="secondary" />
                   </Box>
                   <Field
-                    component={InputBase}
+                    component={FInputBase}
                     autoFocus={autoFocus}
                     multiline
                     minRows={3}

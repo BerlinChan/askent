@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu, MenuItem, PopoverOrigin } from "@material-ui/core";
+import { Menu, MenuItem, PopoverOrigin } from "@mui/material";
 import { QuestionOrder } from "../../constant";
 import { FormattedMessage } from "react-intl";
 
@@ -52,7 +52,6 @@ const OrderSelectMenu: React.FC<Props> = ({
     <Menu
       keepMounted
       anchorEl={menuEl}
-      getContentAnchorEl={null}
       anchorOrigin={anchorOrigin}
       transformOrigin={transformOrigin}
       open={Boolean(menuEl)}

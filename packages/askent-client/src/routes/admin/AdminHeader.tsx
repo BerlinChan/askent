@@ -2,9 +2,9 @@ import React from "react";
 import {
   createStyles,
   makeStyles,
-  Theme,
-  alpha,
-} from "@material-ui/core/styles";
+} from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import {
   Container,
   Box,
@@ -13,10 +13,9 @@ import {
   Paper,
   TextField,
   InputAdornment,
-} from "@material-ui/core";
-import { useMatch } from "react-router-dom";
+} from "@mui/material";
 import { RouteTabs } from "../../components/Tabs";
-import SearchIcon from "@material-ui/icons/Search";
+import SearchIcon from "@mui/icons-material/Search";
 import { useIntl } from "react-intl";
 import HeaderAction from "../../components/HeaderAction";
 import Logo from "../../components/Logo";

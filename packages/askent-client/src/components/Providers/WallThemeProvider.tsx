@@ -4,7 +4,7 @@ import {
   createTheme,
   useTheme,
   Theme,
-} from "@material-ui/core/styles";
+} from "@mui/material/styles";
 
 interface Props {}
 
@@ -18,7 +18,7 @@ const WallThemeProvider: React.FC<PropsWithChildren<Props>> = ({
     setTheme(
       createTheme({
         palette: {
-          type: "dark",
+          mode: "dark",
         },
         typography: {
           htmlFontSize:

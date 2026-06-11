@@ -1,10 +1,10 @@
 import React from "react";
-import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { useIntl, FormattedMessage } from "react-intl";
 import { useDeleteReplyMutation } from "../../../../../generated/graphqlHooks";
 import Confirm from "../../../../../components/Confirm";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import EditIcon from "@material-ui/icons/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
 
 type MoreMenuStateType = {
   anchorEl: HTMLElement | null;
@@ -70,7 +70,6 @@ const ReplyListMenu: React.FC<Props> = ({
       <Menu
         MenuListProps={{ dense: true }}
         anchorEl={moreMenu.anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",

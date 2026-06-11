@@ -5,7 +5,7 @@ import {
   DialogTitle,
   DialogActions,
   DialogContent,
-} from "@material-ui/core";
+} from "@mui/material";
 import { QueryResult } from "@apollo/client";
 import { MeQuery, MeQueryVariables } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";

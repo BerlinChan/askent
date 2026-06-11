@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Button, Select, MenuItem } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Box, Button, Select, MenuItem, SelectChangeEvent } from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 import {
   useEventsByMeQuery,
@@ -83,15 +84,11 @@ const Events: React.FC<Props> = ({ searchString }) => {
     },
   });
 
-  const handleOwnerFilterChange = (
-    e: React.ChangeEvent<{ value: unknown }>
-  ) => {
+  const handleOwnerFilterChange = (e: SelectChangeEvent) => {
     setOwnerFilter(e.target.value as EventOwnerFilter);
   };
 
-  const handleEventDateFilterChange = (
-    e: React.ChangeEvent<{ value: unknown }>
-  ) => {
+  const handleEventDateFilterChange = (e: SelectChangeEvent) => {
     setEventDateFilter(e.target.value as EventDateStatus);
   };
 

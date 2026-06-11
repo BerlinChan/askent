@@ -1,5 +1,6 @@
 import React from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import { useIntl, FormattedMessage } from "react-intl";
 import {
   Box,
@@ -10,13 +11,13 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import { QuestionFilter, QuestionOrder } from "../../../../constant";
 import QuestionOrderMenu from "../../../../components/QuestionOrderMenu";
-import SearchIcon from "@material-ui/icons/Search";
-import ClearIcon from "@material-ui/icons/Clear";
-import SortIcon from "@material-ui/icons/Sort";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
+import SortIcon from "@mui/icons-material/Sort";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -87,7 +88,7 @@ const ActionRight: React.FC<Props> = ({
   const orderMenuElState = React.useState<null | HTMLElement>(null);
   const [queryState, setQueryState] = questionQueryState;
 
-  const handleFilterOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleFilterOpen = (event: React.MouseEvent<HTMLDivElement>) => {
     setFilterAnchorEl(event.currentTarget);
   };
   const handleFilterClose = () => {
@@ -190,7 +191,6 @@ const ActionRight: React.FC<Props> = ({
         keepMounted
         classes={{ list: classes.filterMenuList }}
         anchorEl={filterAnchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "center",

@@ -7,12 +7,13 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-} from "@material-ui/core";
+} from "@mui/material";
 import { FormattedMessage } from "react-intl";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import QuestionForm from "./QuestionForm";
 import DialogTitleWithClose from "../../../../components/DialogTitleWithClose";
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from "@mui/icons-material/Close";
 import SlideUpFullScreen from '../../../../components/Transition/SlideUpFullScreen'
 
 const useStyles = makeStyles((theme: Theme) =>

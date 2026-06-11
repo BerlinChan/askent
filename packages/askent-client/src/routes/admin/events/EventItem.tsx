@@ -7,20 +7,21 @@ import {
   ListItemAvatar,
   ListItemText,
   ListItemSecondaryAction
-} from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+} from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import {
   EventFieldsFragment,
   EventDateStatus
 } from "../../../generated/graphqlHooks";
 import { useNavigate } from "react-router-dom";
 import { FormattedDate, FormattedTime } from "react-intl";
-import DvrIcon from "@material-ui/icons/Dvr";
-import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
-import EventIcon from "@material-ui/icons/Event";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
-import EventBusyIcon from "@material-ui/icons/EventBusy";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import DvrIcon from "@mui/icons-material/Dvr";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+import EventIcon from "@mui/icons-material/Event";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

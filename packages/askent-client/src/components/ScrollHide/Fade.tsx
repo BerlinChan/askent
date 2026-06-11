@@ -1,5 +1,5 @@
 import React from "react";
-import { useScrollTrigger, Fade, FadeProps } from "@material-ui/core";
+import { useScrollTrigger, Fade, FadeProps } from "@mui/material";
 
 interface Props extends FadeProps {
   threshold?: number;

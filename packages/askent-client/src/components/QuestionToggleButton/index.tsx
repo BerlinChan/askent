@@ -1,5 +1,5 @@
 import React from "react";
-import { IconButtonProps, IconButton, Tooltip } from "@material-ui/core";
+import { IconButtonProps, IconButton, Tooltip } from "@mui/material";
 
 export type handleToggleType = (
   event: React.MouseEvent<HTMLButtonElement>,

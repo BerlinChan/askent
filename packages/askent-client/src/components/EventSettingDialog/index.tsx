@@ -7,13 +7,13 @@ import {
   Dialog,
   DialogContent,
   DialogActions,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   createStyles,
   makeStyles,
-  Theme,
-  alpha,
-} from "@material-ui/core/styles";
+} from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Formik, Form, FormikErrors, FormikHelpers } from "formik";
 import * as Yup from "yup";
@@ -253,10 +253,7 @@ const EventSettingDialog: React.FC<Props> = ({
             >
               {tabList.map((item, index) => (
                 <Tab
-                  classes={{
-                    root: classes.tabRoot,
-                    wrapper: classes.tabWrapper,
-                  }}
+                  className={classes.tabRoot}
                   key={index}
                   label={item}
                 />

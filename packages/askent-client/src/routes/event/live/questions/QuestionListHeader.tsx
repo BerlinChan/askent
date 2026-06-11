@@ -5,13 +5,9 @@ import {
   Typography,
   Container,
   useMediaQuery,
-} from "@material-ui/core";
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  useTheme,
-} from "@material-ui/core/styles";
+} from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme, useTheme } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 import QuestionForm from "./QuestionForm";
 import QuestionFormInput from "./QuestionFormInput";

@@ -16,9 +16,10 @@ import {
   DialogContentText,
   DialogActions,
   CircularProgress,
-} from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { TextField } from "formik-material-ui";
+} from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { FTextField } from "../../Form";
 import * as Yup from "yup";
 import { Formik, Form, Field, FormikErrors, FormikHelpers } from "formik";
 import {
@@ -29,7 +30,7 @@ import {
   EventByIdQuery,
   MeQuery,
 } from "../../../generated/graphqlHooks";
-import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { ButtonLoading } from "../../Form";
 import { USER_EMAIL_MAX_LENGTH } from "askent-common/src/constant";
 import Confirm from "../../Confirm";
@@ -238,7 +239,7 @@ const AddGuestDialog: React.FC<AddGuestDialogProps> = ({
               />
             </DialogContentText>
             <Field
-              component={TextField}
+              component={FTextField}
               autoFocus
               fullWidth
               name="email"

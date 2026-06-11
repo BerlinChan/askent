@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect, useRef } from "react";
-import useScrollTrigger from "@material-ui/core/useScrollTrigger";
-import { AppBar, AppBarProps, Box } from "@material-ui/core";
+import useScrollTrigger from "@mui/material/useScrollTrigger";
+import { AppBar, AppBarProps, Box } from "@mui/material";
 
 interface Props extends AppBarProps {}
 

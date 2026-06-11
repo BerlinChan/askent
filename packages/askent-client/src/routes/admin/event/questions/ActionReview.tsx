@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Typography, FormControlLabel, Switch } from "@material-ui/core";
+import { Typography, FormControlLabel, Switch } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   useUpdateEventMutation,

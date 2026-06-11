@@ -4,28 +4,23 @@ import {
   createStyles,
   makeStyles,
   withStyles,
-  Theme,
-} from "@material-ui/core/styles";
+} from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import {
   Button,
+  Menu,
   MenuItem,
   ListItemIcon,
   ListItemText,
   Divider,
   Grid,
-} from "@material-ui/core";
-import HoverMenu from "material-ui-popup-state/HoverMenu";
-import {
-  usePopupState,
-  bindHover,
-  bindMenu,
-} from "material-ui-popup-state/hooks";
+} from "@mui/material";
 import { useIntl, FormattedMessage } from "react-intl";
 import { useSnackbar } from "notistack";
-import DvrIcon from "@material-ui/icons/Dvr";
-import FullscreenIcon from "@material-ui/icons/Fullscreen";
-import LaunchIcon from "@material-ui/icons/Launch";
-import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
+import DvrIcon from "@mui/icons-material/Dvr";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import LaunchIcon from "@mui/icons-material/Launch";
+import FileCopyOutlinedIcon from "@mui/icons-material/FileCopyOutlined";
 import copy from "copy-to-clipboard";
 import screenfull from "screenfull";
 import { WallThemeProvider } from "../../../components/Providers";
@@ -74,11 +69,8 @@ const PresentModeButton: React.FC<Props> = () => {
   const { id } = useParams<{ id: string }>();
   const { enqueueSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
-  const popupState = usePopupState({
-    variant: "popover",
-    popupId: "presentModeMenu",
-  });
-  const fullscreenWallRef = React.useRef<Element>();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const fullscreenWallRef = React.useRef<HTMLDivElement>(null);
   const [fullscreen, setFullscreen] = React.useState(false);
 
   React.useEffect(() => {
@@ -94,6 +86,12 @@ const PresentModeButton: React.FC<Props> = () => {
   const handleFullscreenChange = () => {
     setFullscreen(screenfull.isFullscreen);
   };
+  const handlePresentModeOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handlePresentModeClose = () => {
+    setAnchorEl(null);
+  };
   const handleCopyEventLink = () => {
     if (copy(`${window.location.origin}/event/${id}`)) {
       enqueueSnackbar(
@@ -108,7 +106,12 @@ const PresentModeButton: React.FC<Props> = () => {
     }
   };
 
-  const menuItemList = [
+  const menuItemList: Array<{
+    icon: React.ReactNode;
+    primary: string;
+    secondary: string;
+    handleClick: (event: React.MouseEvent<HTMLElement>) => void;
+  }> = [
     {
       icon: <FullscreenIcon color="inherit" fontSize="inherit" />,
       primary: formatMessage({
@@ -122,7 +125,9 @@ const PresentModeButton: React.FC<Props> = () => {
       }),
       handleClick: () => {
         if (screenfull.isEnabled) {
-          screenfull.request(fullscreenWallRef.current);
+          if (fullscreenWallRef.current) {
+            screenfull.request(fullscreenWallRef.current);
+          }
         } else {
           enqueueSnackbar(
             formatMessage({
@@ -165,7 +170,7 @@ const PresentModeButton: React.FC<Props> = () => {
         variant="contained"
         color="secondary"
         size="small"
-        {...bindHover(popupState)}
+        onClick={handlePresentModeOpen}
       >
         <DvrIcon
           className={classes.presentModeIcon}
@@ -175,10 +180,11 @@ const PresentModeButton: React.FC<Props> = () => {
         <FormattedMessage id="Present mode" defaultMessage="Present mode" />
       </Button>
 
-      <HoverMenu
-        {...bindMenu(popupState)}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handlePresentModeClose}
         keepMounted
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
@@ -193,7 +199,12 @@ const PresentModeButton: React.FC<Props> = () => {
             dense
             alignItems="flex-start"
             key={item.primary}
-            onClick={item.handleClick}
+            onClick={(
+              event: React.MouseEvent<HTMLLIElement>
+            ) => {
+              handlePresentModeClose();
+              item.handleClick(event);
+            }}
           >
             <StyledListItemIcon>{item.icon}</StyledListItemIcon>
             <StyledListItemText
@@ -215,9 +226,9 @@ const PresentModeButton: React.FC<Props> = () => {
             })}
           />
         </StyledMenuItem>
-      </HoverMenu>
+      </Menu>
 
-      <Grid innerRef={fullscreenWallRef}>
+      <Grid ref={fullscreenWallRef}>
         {fullscreen ? (
           <WallThemeProvider>
             <React.Suspense fallback={<Loading />}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { useScrollTrigger, Slide, SlideProps } from "@material-ui/core";
+import { useScrollTrigger, Slide, SlideProps } from "@mui/material";
 
 interface Props extends SlideProps {
   threshold?: number;

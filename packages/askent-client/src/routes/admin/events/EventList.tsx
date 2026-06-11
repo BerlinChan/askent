@@ -1,8 +1,9 @@
 import React from "react";
 import * as R from "ramda";
-import { Paper, ListSubheader, Menu, MenuItem } from "@material-ui/core";
+import { Paper, ListSubheader, Menu, MenuItem } from "@mui/material";
 import { GroupedVirtuoso } from "react-virtuoso";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import {
   EventsByMeQuery,
   EventsByMeQueryVariables,
@@ -183,7 +184,6 @@ const EventList: React.FC<Props> = ({ eventsByMeQueryResult }) => {
       <Menu
         MenuListProps={{ dense: true }}
         anchorEl={moreMenuState[0].anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",

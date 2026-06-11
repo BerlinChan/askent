@@ -1,5 +1,6 @@
 import React from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import {
   Box,
   Button,
@@ -10,16 +11,16 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText
-} from "@material-ui/core";
-import { TextField } from "formik-material-ui";
+} from "@mui/material";
+import { FTextField } from "../Form";
 import { ButtonLoading } from "../Form";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { QueryResult } from "@apollo/client";
 import { MeQuery, MeQueryVariables } from "../../generated/graphqlHooks";
 import { FormattedMessage, useIntl } from "react-intl";
-import PersonIcon from "@material-ui/icons/Person";
-import MailOutlineIcon from "@material-ui/icons/MailOutline";
+import PersonIcon from "@mui/icons-material/Person";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { USER_NAME_MAX_LENGTH, USER_EMAIL_MAX_LENGTH } from "askent-common/src/constant";
 import { useUpdateUserMutation } from "../../generated/graphqlHooks";
 
@@ -87,7 +88,7 @@ const MyProfileDialog: React.FC<Props> = ({
               </Box>
               <Box className={classes.formItemBox}>
                 <Field
-                  component={TextField}
+                  component={FTextField}
                   fullWidth
                   autoFocus
                   name="name"
@@ -106,7 +107,7 @@ const MyProfileDialog: React.FC<Props> = ({
                   }}
                 />
                 <Field
-                  component={TextField}
+                  component={FTextField}
                   fullWidth
                   name="email"
                   label={formatMessage({

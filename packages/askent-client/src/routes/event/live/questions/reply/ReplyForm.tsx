@@ -7,14 +7,15 @@ import {
   FormHelperText,
   Avatar,
   IconButton,
-} from "@material-ui/core";
-import SendIcon from "@material-ui/icons/Send";
+} from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 import { FormattedMessage, useIntl } from "react-intl";
-import { InputBase, Switch } from "formik-material-ui";
+import { FInputBase, FSwitch } from "../../../../../components/Form";
 import { Formik, Form, Field, FormikProps, FormikHelpers } from "formik";
 import { FInputWithLabel } from "../../../../../components/Form";
 import * as Yup from "yup";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import {
   REPLY_CONTENT_MAX_LENGTH,
   USER_NAME_MAX_LENGTH,
@@ -170,7 +171,7 @@ const ReplyForm: React.FC<Props> = ({
           src={userMeData?.me.avatar||""}
         />
         <Field
-          component={InputBase}
+          component={FInputBase}
           className={classes.nameInput}
           name="name"
           placeholder={formatMessage({
@@ -190,7 +191,7 @@ const ReplyForm: React.FC<Props> = ({
           labelPlacement="end"
           control={
             <Field
-              component={Switch}
+              component={FSwitch}
               name="anonymous"
               type="checkbox"
               size="small"

@@ -1,6 +1,7 @@
 import React from "react";
-import { Tabs, TabsProps } from "@material-ui/core";
-import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
+import { Tabs, TabsProps } from "@mui/material";
+import { withStyles, createStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 
 interface StyledTabsProps {
   onChange: (event: React.ChangeEvent<{}>, newValue: number) => void;

@@ -6,18 +6,19 @@ import {
   ListItem,
   ListItemText,
   Avatar,
-} from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+} from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme, alpha } from "@mui/material/styles";
 import { useIntl, FormattedMessage } from "react-intl";
 import {
   useUpdateQuestionReviewStatusMutation,
   useUpdateQuestionTopMutation,
   ReviewStatus,
 } from "../../../generated/graphqlHooks";
-import ArchiveIcon from "@material-ui/icons/Archive";
-import UnarchiveIcon from "@material-ui/icons/Unarchive";
-import TopIcon from "@material-ui/icons/Publish";
-import ThumbUpIcon from "@material-ui/icons/ThumbUp";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
+import TopIcon from "@mui/icons-material/Publish";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import QuestionToggleButton, {
   handleToggleType,
 } from "../../../components/QuestionToggleButton";
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     topQuestion: {
-      backgroundColor: `${theme.palette.success[theme.palette.type]}90`,
+      backgroundColor: alpha(theme.palette.success.light, 0.56),
     },
     itemPrimary: {
       display: "flex",

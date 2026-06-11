@@ -9,13 +9,13 @@ import {
   Avatar,
   IconButton,
   Button,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   createStyles,
   makeStyles,
-  Theme,
-  alpha,
-} from "@material-ui/core/styles";
+} from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import {
   useIntl,
   FormattedMessage,
@@ -28,10 +28,10 @@ import {
   useUpdateReplyReviewStatusMutation,
 } from "../../../../../generated/graphqlHooks";
 import { ReplyLiveQueryFieldsFragment } from "../../../../../generated/hasuraHooks";
-import AccessTimeIcon from "@material-ui/icons/AccessTime";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import ArchiveIcon from "@material-ui/icons/Archive";
-import UnarchiveIcon from "@material-ui/icons/Unarchive";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import QuestionToggleButton, {
   handleToggleType,
 } from "../../../../../components/QuestionToggleButton";
@@ -39,7 +39,7 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ButtonLoading } from "../../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "askent-common/src/constant";
-import { TextField } from "formik-material-ui";
+import { FTextField } from "../../../../../components/Form";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -175,7 +175,7 @@ const ReplyListItem: React.FC<Props> = ({
             {(formProps) => (
               <Form className={classes.editContentForm}>
                 <Field
-                  component={TextField}
+                  component={FTextField}
                   inputRef={editContentInputRef}
                   fullWidth
                   id="content"

@@ -1,6 +1,6 @@
 import React from "react";
-import { Tab, TabProps } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
+import { Tab, TabProps } from "@mui/material";
+import { withStyles } from "@mui/styles";
 
 export const SubTab = withStyles({
   root: {

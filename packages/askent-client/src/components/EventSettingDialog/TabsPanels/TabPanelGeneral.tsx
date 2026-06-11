@@ -1,13 +1,14 @@
 import React from "react";
-import { Box, IconButton, InputAdornment, Tooltip } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Box, IconButton, InputAdornment, Tooltip } from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Field } from "formik";
-import { TextField } from "formik-material-ui";
-import { DateTimePicker } from "formik-material-ui-pickers";
-import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import SecurityIcon from "@material-ui/icons/Security";
+import { FTextField } from "../../Form";
+import { FDateTimePicker } from "../../Form";
+import FileCopyOutlinedIcon from "@mui/icons-material/FileCopyOutlined";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import SecurityIcon from "@mui/icons-material/Security";
 import CollapseList from "../CollapseList";
 import { EventSettingValues } from "../index";
 import copy from "copy-to-clipboard";
@@ -72,7 +73,7 @@ const TabPanelGeneral: React.FC<Props> = ({
           body: (
             <Box className={classes.basicInfoField}>
               <Field
-                component={TextField}
+                component={FTextField}
                 fullWidth
                 autoFocus={defaultFocus === "name"}
                 name="name"
@@ -86,7 +87,7 @@ const TabPanelGeneral: React.FC<Props> = ({
               />
               <Box className={classes.dateRange}>
                 <Field
-                  component={DateTimePicker}
+                  component={FDateTimePicker}
                   autoFocus={defaultFocus === "startAt"}
                   name="startAt"
                   label={formatMessage({
@@ -101,7 +102,7 @@ const TabPanelGeneral: React.FC<Props> = ({
                   disabled={isGuestAdmin}
                 />
                 <Field
-                  component={DateTimePicker}
+                  component={FDateTimePicker}
                   autoFocus={defaultFocus === "endAt"}
                   name="endAt"
                   label={formatMessage({
@@ -117,7 +118,7 @@ const TabPanelGeneral: React.FC<Props> = ({
                 />
               </Box>
               <Field
-                component={TextField}
+                component={FTextField}
                 fullWidth
                 autoFocus={defaultFocus === "code"}
                 name="code"
@@ -130,7 +131,7 @@ const TabPanelGeneral: React.FC<Props> = ({
                 disabled={isGuestAdmin}
               />
               <Field
-                component={TextField}
+                component={FTextField}
                 inputRef={eventLinkRef}
                 fullWidth
                 autoFocus={defaultFocus === "eventLink"}

@@ -1,14 +1,14 @@
 import React from "react";
-import { Box, Typography, Button } from "@material-ui/core";
+import { Box, Typography, Button } from "@mui/material";
 import { ButtonLoading } from "../../../components/Form";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Logo from "../../../components/Logo";
 import {
   createStyles,
   makeStyles,
-  Theme,
-  alpha,
-} from "@material-ui/core/styles";
+} from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import { FormattedMessage, FormattedDate, FormattedTime } from "react-intl";
 import { QueryResult } from "@apollo/client";
 import {

@@ -1,11 +1,11 @@
 import React from "react";
-import { Grid, Container, Typography, Box, Link } from "@material-ui/core";
+import { Grid, Container, Typography, Box, Link } from "@mui/material";
 import {
   createStyles,
   makeStyles,
-  Theme,
-  alpha,
-} from "@material-ui/core/styles";
+} from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 import IconGene from "./img/icon-gene.png";
 import IconCrossPlatform from "./img/icon-cross-platform.png";

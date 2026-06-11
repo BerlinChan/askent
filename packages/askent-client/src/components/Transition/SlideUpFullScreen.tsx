@@ -1,9 +1,9 @@
 import React from "react";
-import { Slide } from "@material-ui/core";
-import { TransitionProps } from "@material-ui/core/transitions";
+import { Slide } from "@mui/material";
+import { TransitionProps } from "@mui/material/transitions";
 
 const SlideUpFullScreen = React.forwardRef(function Transition(
-  props: TransitionProps & { children?: React.ReactElement },
+  props: TransitionProps & { children: React.ReactElement },
   ref: React.Ref<unknown>
 ) {
   return <Slide direction="up" ref={ref} {...props} />;

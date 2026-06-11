@@ -2,8 +2,9 @@ import React from "react";
 import { useToken } from "../../hooks";
 import AuthedAction from "./AuthedAction";
 import UnauthAction from "./UnauthAction";
-import { Box } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Box } from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

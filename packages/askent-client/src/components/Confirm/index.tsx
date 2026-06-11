@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-} from "@material-ui/core";
+} from "@mui/material";
 import { ButtonLoading } from "../Form";
 import { FormattedMessage } from "react-intl";
 
@@ -51,7 +51,7 @@ const Confirm: React.FC<Props & Omit<DialogProps, "children">> = ({
         </DialogContent>
       )}
       <DialogActions>
-        <Button onClick={onCancel} color="default">
+        <Button onClick={onCancel}>
           {cancelText ? (
             cancelText
           ) : (

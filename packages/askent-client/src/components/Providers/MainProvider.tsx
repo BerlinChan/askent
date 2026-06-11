@@ -1,11 +1,11 @@
 import React from "react";
 import { ApolloProvider } from "@apollo/client";
 import createApolloClient from "../../graphql/createApolloClient";
-import { createTheme , ThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import { SnackbarProvider } from "notistack";
 import { IntlProvider } from "react-intl";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { LocalizationProvider } from "@mui/lab";
 import DateFnsUtils from "@date-io/date-fns";
 import enLocale from "date-fns/locale/en-US";
 import zhLocale from "date-fns/locale/zh-CN";
@@ -48,12 +48,9 @@ const MainProvider: React.FC<Props> = props => {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <SnackbarProvider>
-            <MuiPickersUtilsProvider
-              utils={DateFnsUtils}
-              locale={localeMap[locale]}
-            >
+            <LocalizationProvider dateAdapter={DateFnsUtils} locale={localeMap[locale]}>
               {props.children}
-            </MuiPickersUtilsProvider>
+            </LocalizationProvider>
           </SnackbarProvider>
         </ThemeProvider>
       </IntlProvider>

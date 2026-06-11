@@ -1,7 +1,8 @@
 import React from "react";
-import { Grid, Container, Typography, Box } from "@material-ui/core";
+import { Grid, Container, Typography, Box } from "@mui/material";
 import HomeHeader from "./HomeHeader";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import JoinEventForm from "./JoinEventForm";
 import { FormattedMessage } from "react-intl";
 import heroConference from "./img/hero-conference.png";

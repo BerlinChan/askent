@@ -1,7 +1,8 @@
 import React from "react";
-import { DialogTitle, IconButton, Typography } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import CloseIcon from "@material-ui/icons/Close";
+import { DialogTitle, IconButton, Typography } from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
+import CloseIcon from "@mui/icons-material/Close";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,7 +23,7 @@ const DialogTitleWithClose: React.FC<Props> = ({ title, onClose }) => {
   const classes = useStyles();
 
   return (
-    <DialogTitle disableTypography className={classes.dialogTitle}>
+    <DialogTitle className={classes.dialogTitle}>
       <Typography variant="subtitle1" color="textSecondary">
         {title}
       </Typography>

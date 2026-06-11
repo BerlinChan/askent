@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Grid, Card, Typography } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Box, Grid, Card, Typography } from "@mui/material";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import { useParams } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import { FormattedMessage } from "react-intl";
@@ -57,7 +58,7 @@ interface Props {}
 const EventWall: React.FC<Props> = () => {
   const classes = useStyles();
   const { id } = useParams<{ id: string }>();
-  const qrcodeCardRef = React.useRef<HTMLElement>(null);
+  const qrcodeCardRef = React.useRef<HTMLDivElement>(null);
   const [qrcodeCardWidth, setQrcodeCardWidth] = React.useState(0);
   const [eventDetailData, setEventDetailData] =
     React.useState<EventDetailLiveQueryFieldsFragment>();

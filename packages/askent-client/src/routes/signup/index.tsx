@@ -5,10 +5,11 @@ import {
   CardActions,
   CardContent,
   Container,
-} from "@material-ui/core";
+} from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import {
   useSignupMutation,
   useCheckEmailExistLazyQuery,
@@ -17,7 +18,7 @@ import { ButtonLoading } from "../../components/Form";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { FormattedMessage, useIntl } from "react-intl";
-import { TextField } from "formik-material-ui";
+import { FTextField } from "../../components/Form";
 import {
   USER_NAME_MAX_LENGTH,
   USER_EMAIL_MAX_LENGTH,
@@ -138,7 +139,7 @@ const Signup: React.FC = () => {
           <Card className={classes.card}>
             <CardContent>
               <Field
-                component={TextField}
+                component={FTextField}
                 autoFocus
                 id="name"
                 name="name"
@@ -151,7 +152,7 @@ const Signup: React.FC = () => {
                 disabled={loading}
               />
               <Field
-                component={TextField}
+                component={FTextField}
                 id="email"
                 name="email"
                 fullWidth
@@ -161,7 +162,7 @@ const Signup: React.FC = () => {
                 disabled={loading}
               />
               <Field
-                component={TextField}
+                component={FTextField}
                 id="password"
                 name="password"
                 fullWidth
@@ -174,7 +175,7 @@ const Signup: React.FC = () => {
                 disabled={loading}
               />
               <Field
-                component={TextField}
+                component={FTextField}
                 id="repeatPassword"
                 name="repeatPassword"
                 fullWidth

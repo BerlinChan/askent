@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { TabsProps, Tabs, Tab, TabClassKey } from "@material-ui/core";
+import { TabsProps, Tabs, Tab, TabClassKey } from "@mui/material";
 
 interface Props {
   tabs: Array<{

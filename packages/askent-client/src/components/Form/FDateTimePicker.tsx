@@ -1,6 +1,6 @@
 import React from "react";
 import { useField, FieldAttributes } from "formik";
-import { DateTimePicker, DateTimePickerProps } from "@material-ui/pickers";
+import { DateTimePicker, DateTimePickerProps } from "@mui/lab";
 
 export const FDateTimePicker: React.FC<DateTimePickerProps &
   FieldAttributes<any>> = ({ validate, ...props }) => {

@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@mui/styles";
+import { Theme } from "@mui/material/styles";
 import {
   Box,
   IconButton,
@@ -10,13 +11,13 @@ import {
   MenuItem,
   ListItemIcon,
   Hidden,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useMeQuery, RoleName } from "../../generated/graphqlHooks";
 import { FormattedMessage } from "react-intl";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
-import PersonIcon from "@material-ui/icons/Person";
-import HomeIcon from "@material-ui/icons/Home";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import PersonIcon from "@mui/icons-material/Person";
+import HomeIcon from "@mui/icons-material/Home";
 import { useToken } from "../../hooks";
 import MyProfileDialog from "./MyProfileDialog";
 import MyQuestionsDialog from "./MyQuestionsDialog";
@@ -89,7 +90,6 @@ const AuthedAction: React.FC<Props> = ({ hideUserInfo = false }) => {
       <Menu
         keepMounted
         anchorEl={menuAnchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",

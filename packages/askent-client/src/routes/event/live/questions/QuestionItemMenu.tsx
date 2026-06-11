@@ -1,5 +1,5 @@
 import React from "react";
-import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
 import { QueryResult } from "@apollo/client";
 import {
@@ -9,9 +9,9 @@ import {
   ReviewStatus,
 } from "../../../../generated/graphqlHooks";
 import Confirm from "../../../../components/Confirm";
-import EditIcon from "@material-ui/icons/Edit";
-import ReplyIcon from "@material-ui/icons/Reply";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
+import ReplyIcon from "@mui/icons-material/Reply";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import {
   EventDetailLiveQueryFieldsFragment,
   QuestionLiveQueryAudienceFieldsFragment,
@@ -104,7 +104,6 @@ const QuestionItemMenu: React.FC<Props> = ({
       <Menu
         MenuListProps={{ dense: true }}
         anchorEl={moreMenu.anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
