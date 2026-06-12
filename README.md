@@ -26,9 +26,9 @@ Askent = **Ask** + Ev**ent**
 ## Develop
 
 ```sh
-yarn
-yarn workspace askent-client start
-yarn workspace askent-server dev
+npm install
+npm run start -w askent-client
+npm run dev -w askent-server
 ```
 
 - [Client development README](./packages/askent-client#readme)

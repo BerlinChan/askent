@@ -1,5 +1,10 @@
 {
   "private": true,
+  "packageManager": "npm@11.17.0",
+  "engines": {
+    "node": ">=18",
+    "npm": ">=11"
+  },
   "workspaces": [
     "packages/*"
   ],
@@ -7,5 +12,13 @@
     "stack:deploy": "docker stack deploy -c docker-compose.yaml askent-stack",
     "stack:rm": "docker stack rm askent-stack",
     "docker:build": "docker build --pull --rm -f Dockerfile -t askent-server:latest ."
+  },
+  "allowScripts": {
+    "cypress@9.4.1": true,
+    "hasura-cli@2.1.1": true,
+    "type-graphql@1.1.1": true,
+    "@apollo/protobufjs@1.2.8": true,
+    "@apollo/protobufjs@1.2.6": true,
+    "fsevents@2.3.3": true
   }
 }

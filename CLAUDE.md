@@ -14,37 +14,37 @@ Askent is a web-based interactive presentation and Q&A tool (similar to Sli.do) 
 ### Monorepo Commands
 ```bash
 # Install all dependencies
-yarn
+npm install
 
 # Deploy to Docker stack
-yarn stack:deploy
+npm run stack:deploy
 
 # Remove Docker stack
-yarn stack:rm
+npm run stack:rm
 
 # Build Docker image
-yarn docker:build
+npm run docker:build
 ```
 
 ### Client Development
 ```bash
 # Generate GraphQL types and hooks
-yarn workspace askent-client codegen
+npm run codegen -w askent-client
 
 # Start development server (port 3000)
-yarn workspace askent-client start
+npm run start -w askent-client
 
 # Run tests
-yarn workspace askent-client test
+npm test -w askent-client
 
 # Build for production
-yarn workspace askent-client build
+npm run build -w askent-client
 ```
 
 ### Server Development
 ```bash
 # Start development server with hot reload (port 4000)
-yarn workspace askent-server dev
+npm run dev -w askent-server
 
 # Create .env file from template
 cp packages/askent-server/.env.template packages/askent-server/.env
@@ -71,16 +71,16 @@ cp packages/askent-server/ormconfig.template.js packages/askent-server/ormconfig
 
 3. **Generate GraphQL Types**
 ```bash
-yarn workspace askent-client codegen
+npm run codegen -w askent-client
 ```
 
 4. **Start Services**
 ```bash
 # Terminal 1: Server
-yarn workspace askent-server dev
+npm run dev -w askent-server
 
 # Terminal 2: Client
-yarn workspace askent-client start
+npm run start -w askent-client
 ```
 
 ## Architecture Key Points
@@ -112,7 +112,7 @@ yarn workspace askent-client start
 
 ## Testing
 
-- **Client**: Run `yarn workspace askent-client test` for unit tests
+- **Client**: Run `npm test -w askent-client` for unit tests
 - **E2E**: Cypress tests in client package
 - **Server**: No explicit test setup (consider adding Jest)
 
@@ -147,7 +147,7 @@ HASURA_GRAPHQL_ADMIN_SECRET=your_hasura_secret
 ## GraphQL Development
 
 1. Update schema in `packages/askent-server/src/graphql/`
-2. Run `yarn workspace askent-client codegen` to regenerate types
+2. Run `npm run codegen -w askent-client` to regenerate types
 3. Import generated hooks from `src/generated/graphql.ts`
 
 ## Common Development Tasks
