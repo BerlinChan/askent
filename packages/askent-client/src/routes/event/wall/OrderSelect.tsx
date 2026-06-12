@@ -9,8 +9,7 @@ import { useMouseMove } from "../../../hooks";
 import QuestionOrderMenu from "../../../components/QuestionOrderMenu";
 import { QuestionOrder } from "../../../constant";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     sortSelect: {
       display: "inline-flex",
       alignItems: "center",
@@ -31,9 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
     menuItem: {
       width: theme.typography.pxToRem(180)
     }
-  })
-);
-
+  }));
 interface Props {
   orderSelectedState: [
     QuestionOrder,

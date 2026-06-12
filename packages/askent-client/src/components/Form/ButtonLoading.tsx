@@ -3,8 +3,7 @@ import { Button, CircularProgress, ButtonProps } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles({
     buttonWrapper: {
       position: "relative",
       "&.fullWidth": { width: "100%" }
@@ -16,8 +15,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: -12,
       marginLeft: -12
     }
-  })
-);
+  });
 
 interface Props {
   loading: boolean;

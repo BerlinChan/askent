@@ -27,8 +27,7 @@ import PresentModeButton from "./PresentModeButton";
 import { EventDetailLiveQueryFieldsFragment } from "../../../generated/hasuraHooks";
 import { getEventDateStatus } from "../../../utils";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles({
     toolbarLeft: {
       display: "flex",
     },
@@ -52,8 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "space-between",
       alignItems: "center",
     },
-  })
-);
+  });
 
 interface Props {
   loading: boolean;

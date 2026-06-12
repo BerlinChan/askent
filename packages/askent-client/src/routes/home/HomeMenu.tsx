@@ -5,16 +5,13 @@ import { Link, Box } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     header: {
       display: "flex",
       alignItems: "center",
     },
     link: { marginLeft: theme.spacing(2) },
-  })
-);
-
+  }));
 interface Props {}
 
 const HomeMenu: React.FC<Props> = () => {

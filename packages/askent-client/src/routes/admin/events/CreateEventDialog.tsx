@@ -29,8 +29,7 @@ import {
 import { FTextField } from "../../../components/Form";
 import { FDateTimePicker } from "../../../components/Form";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     createForm: { minWidth: 400 },
     dateRange: {
       display: "flex",
@@ -40,9 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
     boldButton: {
       fontWeight: theme.typography.fontWeightBold,
     },
-  })
-);
-
+  }));
 interface Props {
   openState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   eventsQueryResult: QueryResult<EventsByMeQuery, EventsByMeQueryVariables>;
@@ -158,8 +155,8 @@ const CreateEventDialog: React.FC<Props> = ({
                 })}
                 variant="inline"
                 margin="normal"
-                autoOk
-                disableToolbar
+                closeOnSelect
+                disableFuture
               />
               <Field
                 component={FDateTimePicker}
@@ -170,8 +167,8 @@ const CreateEventDialog: React.FC<Props> = ({
                 })}
                 variant="inline"
                 margin="normal"
-                autoOk
-                disableToolbar
+                closeOnSelect
+                disableFuture
               />
             </Box>
             <Field

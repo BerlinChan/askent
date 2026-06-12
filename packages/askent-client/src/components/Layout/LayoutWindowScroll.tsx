@@ -3,8 +3,7 @@ import { createStyles, makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 import { Container, Box } from "@mui/material";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     layoutBox: {
       display: "flex",
       flexDirection: "column",
@@ -23,9 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingTop: theme.spacing(2),
       height: "100%",
     },
-  })
-);
-
+  }));
 interface Props {
   header: React.ReactElement;
   body: React.ReactElement;

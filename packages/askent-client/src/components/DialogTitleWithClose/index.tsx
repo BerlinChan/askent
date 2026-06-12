@@ -4,15 +4,13 @@ import { createStyles, makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles({
     dialogTitle: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
     },
-  })
-);
+  });
 
 interface Props {
   title: React.ReactElement | string;

@@ -33,8 +33,7 @@ import {
 } from "askent-common/src/constant";
 import { tabList, TabPanel } from "./TabsPanels";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     paper: { overflowY: "hidden" },
     form: { display: "flex", flexDirection: "column", overflow: "hidden" },
     dialogContent: { display: "flex", overflowY: "hidden" },
@@ -82,9 +81,7 @@ const useStyles = makeStyles((theme: Theme) =>
         )} 0%, ${theme.palette.background.paper} 100%)`,
       },
     },
-  })
-);
-
+  }));
 export type EventSettingValues = {
   name: string;
   code: string;

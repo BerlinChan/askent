@@ -23,8 +23,7 @@ import {
 } from "../../../../../generated/graphqlHooks";
 import SlideUpFullScreen from "../../../../../components/Transition/SlideUpFullScreen";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     content: {},
     form: { marginTop: theme.spacing(1) },
 
@@ -35,9 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(2),
       flex: 1,
     },
-  })
-);
-
+  }));
 export type ReplyDialogStateType = {
   open: boolean;
   questionId: string;

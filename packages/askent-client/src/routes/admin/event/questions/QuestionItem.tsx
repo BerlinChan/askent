@@ -52,8 +52,7 @@ import { QUESTION_CONTENT_MAX_LENGTH } from "askent-common/src/constant";
 import { FTextField } from "../../../../components/Form";
 import { ReplyDialogStateType } from "./reply/ReplyDialog";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     listItem: {
       flexWrap: "wrap",
       position: "relative",
@@ -83,9 +82,7 @@ const useStyles = makeStyles((theme: Theme) =>
       right: 8,
       height: 48,
     },
-  })
-);
-
+  }));
 interface Props {
   question: QuestionLiveQueryFieldsFragment;
   eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
@@ -409,3 +406,4 @@ export default React.memo(QuestionListItem, (prevProps, nextProps) => {
   */
   return R.equals(prevProps, nextProps);
 });
+

@@ -8,13 +8,10 @@ import ReplyList from "./ReplyList";
 import ReplyForm from "./ReplyForm";
 import { EventDetailLiveQueryFieldsFragment } from "../../../../../generated/hasuraHooks";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     content: {},
     form: { marginTop: theme.spacing(1) },
-  })
-);
-
+  }));
 export type ReplyDialogStateType = {
   open: boolean;
   questionId: string;

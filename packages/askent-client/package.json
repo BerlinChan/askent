@@ -10,11 +10,12 @@
   },
   "homepage": "https://askent.berlinchan.com/",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "preview": "vite preview --host 0.0.0.0",
     "cypress:open": "cypress open",
-    "eject": "react-scripts eject",
     "codegen": "env-cmd -f ../askent-server/.env ts-node --skip-project tools/codegen.ts",
     "intl:extract": "formatjs extract 'src/**/*.tsx' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "intl:compile": "formatjs compile-folder lang src/generated/lang"
@@ -43,11 +44,10 @@
     "notistack": "2.0.8",
     "qrcode.react": "4.1.0",
     "ramda": "0.28.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-intl": "5.24.4",
     "react-router-dom": "6.2.1",
-    "react-scripts": "5.0.0",
     "react-virtuoso": "2.4.1",
     "screenfull": "6.0.1",
     "subscriptions-transport-ws": "0.11.0",
@@ -60,18 +60,22 @@
     "@graphql-codegen/cli": "2.4.0",
     "@graphql-codegen/typescript-operations": "2.2.3",
     "@graphql-codegen/typescript-react-apollo": "3.2.4",
-    "@testing-library/jest-dom": "5.16.1",
-    "@testing-library/react": "12.1.2",
-    "@testing-library/user-event": "13.5.0",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.1",
     "@types/jest": "27.4.0",
     "@types/node": "16.11.21",
     "@types/qrcode.react": "1.0.2",
-    "@types/react-dom": "17.0.11",
     "@types/react": "17.0.38",
-    "@types/react-router-dom": "5.3.3",
+    "@types/react-dom": "17.0.11",
     "@types/yup": "0.29.13",
+    "@vitejs/plugin-react": "6.0.2",
     "cypress": "9.4.1",
-    "typescript": "4.5.5"
+    "jsdom": "29.1.1",
+    "typescript": "5.9.3",
+    "vite": "8.0.16",
+    "vitest": "4.1.8"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -86,11 +90,6 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
-    ]
-  },
-  "jest": {
-    "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!(askent-common|my-project)/)"
     ]
   }
 }

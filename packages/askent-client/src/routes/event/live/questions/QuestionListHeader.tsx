@@ -1,12 +1,6 @@
 import React from "react";
-import {
-  Tabs,
-  Tab,
-  Typography,
-  Container,
-  useMediaQuery,
-} from "@mui/material";
-import { createStyles, makeStyles } from "@mui/styles";
+import { Tabs, Tab, Typography, Container, useMediaQuery } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { Theme, useTheme } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 import QuestionForm from "./QuestionForm";
@@ -15,34 +9,31 @@ import { QuestionOrder } from "../../../../constant";
 
 import { Props as AskFabDialogProps } from "./AskFabDialog";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    title: {
-      marginTop: theme.spacing(1),
-      marginDown: theme.spacing(1),
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
+  title: {
+    marginTop: theme.spacing(1),
+    marginDown: theme.spacing(1),
+  },
+  formBox: {
+    [theme.breakpoints.down("md")]: {
+      backgroundColor: theme.palette.background.paper,
+      paddingLeft: theme.spacing(2),
     },
-    formBox: {
-      [theme.breakpoints.down("md")]: {
-        backgroundColor: theme.palette.background.paper,
-        paddingLeft: theme.spacing(2),
-      },
-    },
-    questionForm: { marginBottom: theme.spacing(2) },
-    orderAndCount: {
-      display: "flex",
-      justifyContent: "space-between",
-    },
-    questionCount: {
-      display: "flex",
-      alignItems: "center",
-    },
-  })
-);
-
+  },
+  questionForm: { marginBottom: theme.spacing(2) },
+  orderAndCount: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  questionCount: {
+    display: "flex",
+    alignItems: "center",
+  },
+}));
 interface Props {
   questionOrderState: [
     QuestionOrder,
-    React.Dispatch<React.SetStateAction<QuestionOrder>>
+    React.Dispatch<React.SetStateAction<QuestionOrder>>,
   ];
   questionLiveQueryCount?: number;
   openAskDialogState: AskFabDialogProps["openAskDialogState"];
@@ -60,7 +51,7 @@ const QuestionListHeader: React.FC<Props> = ({
 
   const handleOrderTabChange = (
     event: React.ChangeEvent<{}>,
-    newValue: QuestionOrder
+    newValue: QuestionOrder,
   ) => {
     setQuestionOrder(newValue);
   };

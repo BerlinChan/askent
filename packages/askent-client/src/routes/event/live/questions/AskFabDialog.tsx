@@ -16,8 +16,7 @@ import DialogTitleWithClose from "../../../../components/DialogTitleWithClose";
 import CloseIcon from "@mui/icons-material/Close";
 import SlideUpFullScreen from '../../../../components/Transition/SlideUpFullScreen'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     paper: { width: 600 },
     askFab: {
       position: "fixed",
@@ -25,9 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
       right: theme.spacing(2),
     },
     toolbarTitle: { marginLeft: theme.spacing(2) },
-  })
-);
-
+  }));
 export interface Props {
   openAskDialogState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 }

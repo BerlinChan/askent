@@ -5,12 +5,9 @@ import { createStyles, makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     link: { marginLeft: theme.spacing(1) },
-  })
-);
-
+  }));
 const UnauthAction = () => {
   const classes = useStyles();
 

@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  createStyles,
   makeStyles,
 } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
@@ -13,8 +12,7 @@ import HomeMenu from "./HomeMenu";
 
 const HIDE_THRESHOLD = 400;
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     hoverBox: {
       position: "absolute",
       top: 0,
@@ -27,9 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
     toolbar: {
       justifyContent: "space-between",
     },
-  })
-);
-
+  }));
 export default function HomeHeader() {
   const classes = useStyles();
 

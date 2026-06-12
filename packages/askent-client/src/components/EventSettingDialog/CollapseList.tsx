@@ -5,8 +5,7 @@ import { Theme } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     collapseList: {},
     item: {
       marginBottom: theme.spacing(2)
@@ -27,9 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(1)
     },
     body: { paddingLeft: 32, marginBottom: theme.spacing(2) }
-  })
-);
-
+  }));
 type CollapseItem = {
   key: React.Key;
   titleIcon: React.ReactElement;

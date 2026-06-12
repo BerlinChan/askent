@@ -26,8 +26,7 @@ import {
 } from "askent-common/src/constant";
 import { useToken } from "../../hooks";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     signupBox: {
       height: "100vh",
       display: "flex",
@@ -37,9 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
     card: {
       padding: theme.spacing(2),
     },
-  })
-);
-
+  }));
 const Signup: React.FC = () => {
   const classes = useStyles();
   const navigate = useNavigate();

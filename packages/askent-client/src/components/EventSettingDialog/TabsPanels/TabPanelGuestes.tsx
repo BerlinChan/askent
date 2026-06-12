@@ -35,12 +35,9 @@ import { ButtonLoading } from "../../Form";
 import { USER_EMAIL_MAX_LENGTH } from "askent-common/src/constant";
 import Confirm from "../../Confirm";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     removeButton: { color: theme.palette.text.secondary },
-  })
-);
-
+  }));
 interface Props {
   eventId: string;
   eventData?: EventByIdQuery;

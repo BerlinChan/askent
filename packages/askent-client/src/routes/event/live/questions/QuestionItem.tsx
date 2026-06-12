@@ -42,8 +42,7 @@ import { FTextField } from "../../../../components/Form";
 import { QuestionLiveQueryAudienceFieldsFragment } from "../../../../generated/hasuraHooks";
 import { ReplyDialogStateType } from "./reply/ReplyDialog";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     listItem: {
       flexWrap: "wrap",
       position: "relative",
@@ -85,9 +84,7 @@ const useStyles = makeStyles((theme: Theme) =>
     editContentForm: { width: "100%" },
     editContentAction: { display: "flex", justifyContent: "space-between" },
     editContentFormButtons: { "& > *": { display: "inline-block" } },
-  })
-);
-
+  }));
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   question: QuestionLiveQueryAudienceFieldsFragment;
@@ -289,7 +286,12 @@ const QuestionItem: React.FC<Props> = ({
             )}
             {!disableVote && (
               <Button
-                variant="outlined"
+                variant={
+                  question.voteUpUsers.length &&
+                  question.voteUpUsers[0].userId === userQueryResult.data?.me.id
+                    ? "outlined"
+                    : "text"
+                }
                 color={
                   question.voteUpUsers.length &&
                   question.voteUpUsers[0].userId === userQueryResult.data?.me.id

@@ -20,8 +20,7 @@ import {
 } from "../../../generated/hasuraHooks";
 import { getQuestionOrderByCondition } from "../../../utils";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     wallGrid: {
       width: "100%",
       height: "100vh",

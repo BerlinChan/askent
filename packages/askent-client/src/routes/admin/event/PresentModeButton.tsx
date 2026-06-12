@@ -1,7 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
 import {
-  createStyles,
   makeStyles,
   withStyles,
 } from "@mui/styles";
@@ -48,8 +46,7 @@ const StyledListItemText = withStyles((theme: Theme) =>
   })
 )(ListItemText);
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     presentModeBtn: {
       marginRight: theme.spacing(1),
       borderRadius: theme.spacing(2),
@@ -197,7 +194,6 @@ const PresentModeButton: React.FC<Props> = () => {
         {menuItemList.map((item) => (
           <StyledMenuItem
             dense
-            alignItems="flex-start"
             key={item.primary}
             onClick={(
               event: React.MouseEvent<HTMLLIElement>

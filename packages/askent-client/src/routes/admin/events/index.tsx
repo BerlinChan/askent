@@ -15,8 +15,7 @@ import {
   DEFAULT_PAGE_LIMIT,
 } from "askent-common/src/constant";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     eventsBox: {
       display: "flex",
       flexDirection: "column",
@@ -35,9 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
         width: 120,
       },
     },
-  })
-);
-
+  }));
 const getEventOwnerFilterLabel = (value: EventOwnerFilter | "ALL") => {
   switch (value) {
     case EventOwnerFilter.Owner:

@@ -24,8 +24,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { USER_NAME_MAX_LENGTH, USER_EMAIL_MAX_LENGTH } from "askent-common/src/constant";
 import { useUpdateUserMutation } from "../../generated/graphqlHooks";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     largeAvatar: {
       width: theme.spacing(8),
       height: theme.spacing(8)
@@ -33,9 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
     formItemBox: {
       margin: theme.spacing(0, 4)
     }
-  })
-);
-
+  }));
 interface Props {
   userQueryResult: QueryResult<MeQuery, MeQueryVariables>;
   open: boolean;

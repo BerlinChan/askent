@@ -23,8 +23,7 @@ import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     listItem: {
       "& .actionHover": { display: "none" },
       "&:hover .actionHover": { display: "inline-flex" }
@@ -34,9 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: theme.typography.pxToRem(18),
       color: theme.palette.action.disabled
     }
-  })
-);
-
+  }));
 interface Props {
   event: EventFieldsFragment;
   moreMenuState: [

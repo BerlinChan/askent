@@ -19,8 +19,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import SortIcon from "@mui/icons-material/Sort";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     filterBox: {
       display: "flex",
       justifyContent: "flex-start",
@@ -46,9 +45,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
       },
     },
-  })
-);
-
+  }));
 const getQuestionFilterLabel = (value: QuestionFilter) => {
   switch (value) {
     case QuestionFilter.Publish:

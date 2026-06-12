@@ -6,14 +6,12 @@ import { Box } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles({
     header: {
       display: "flex",
       alignItems: "center",
     },
-  })
-);
+  });
 
 interface Props {
   hideUserInfo?: boolean;

@@ -3,15 +3,13 @@ import { Typography } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles({
     switchItem: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center"
     }
-  })
-);
+  });
 
 interface Props {
   label: React.ReactElement;

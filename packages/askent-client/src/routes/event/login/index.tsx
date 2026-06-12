@@ -20,8 +20,7 @@ import {
 } from "../../../generated/graphqlHooks";
 import { useFingerprint, useToken } from "../../../hooks";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     eventLogin: {
       display: "flex",
       flexDirection: "column",
@@ -34,9 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
     eventInfoBox: {
       marginTop: theme.spacing(5),
     },
-  })
-);
-
+  }));
 interface Props {
   eventQuery: QueryResult<EventForLoginQuery, EventForLoginQueryVariables>;
 }

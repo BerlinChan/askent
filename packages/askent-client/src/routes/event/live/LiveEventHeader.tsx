@@ -28,8 +28,7 @@ import { EventDetailLiveQueryFieldsFragment } from "../../../generated/hasuraHoo
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     appBar: {
       [theme.breakpoints.up("md")]: {
         zIndex: theme.zIndex.drawer + 1,
@@ -69,9 +68,7 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerInfo: {
       margin: theme.spacing(1, 2),
     },
-  })
-);
-
+  }));
 interface Props {
   eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }

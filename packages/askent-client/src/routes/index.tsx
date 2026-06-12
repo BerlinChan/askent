@@ -46,33 +46,48 @@ const Router = () => {
             }
           />
 
-          <Route path="/event/:id/*" element={
-            <React.Suspense fallback={<Loading />}>
-              <EventComponent />
-            </React.Suspense>
-          } />
+          <Route
+            path="/event/:id/*"
+            element={
+              <React.Suspense fallback={<Loading />}>
+                <EventComponent />
+              </React.Suspense>
+            }
+          />
 
-          <Route path="/about" element={
-            <React.Suspense fallback={<Loading />}>
-              <AboutComponent />
-            </React.Suspense>
-          } />
-          <Route path="/demo" element={
-            <React.Suspense fallback={<Loading />}>
-              <DemoComponent />
-            </React.Suspense>
-          } />
+          <Route
+            path="/about"
+            element={
+              <React.Suspense fallback={<Loading />}>
+                <AboutComponent />
+              </React.Suspense>
+            }
+          />
+          <Route
+            path="/demo"
+            element={
+              <React.Suspense fallback={<Loading />}>
+                <DemoComponent />
+              </React.Suspense>
+            }
+          />
 
-          <Route path="/unauthorized" element={
-            <React.Suspense fallback={<Loading />}>
-              <Error401Component />
-            </React.Suspense>
-          } />
-          <Route path="*" element={
-            <React.Suspense fallback={<Loading />}>
-              <Error404Component />
-            </React.Suspense>
-          } />
+          <Route
+            path="/unauthorized"
+            element={
+              <React.Suspense fallback={<Loading />}>
+                <Error401Component />
+              </React.Suspense>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <React.Suspense fallback={<Loading />}>
+                <Error404Component />
+              </React.Suspense>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </MainProvider>

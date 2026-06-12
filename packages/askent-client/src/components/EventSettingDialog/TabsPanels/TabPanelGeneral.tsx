@@ -14,16 +14,14 @@ import { EventSettingValues } from "../index";
 import copy from "copy-to-clipboard";
 import { EventByIdQuery, MeQuery } from "../../../generated/graphqlHooks";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles({
     basicInfoField: { width: "70%" },
     dateRange: {
       display: "flex",
       justifyContent: "space-between",
       "& > *": { width: "47%" },
     },
-  })
-);
+  });
 
 interface Props {
   defaultFocus?: keyof EventSettingValues;
@@ -97,8 +95,8 @@ const TabPanelGeneral: React.FC<Props> = ({
                   variant="inline"
                   margin="normal"
                   size="small"
-                  autoOk
-                  disableToolbar
+                  closeOnSelect
+                  disableFuture
                   disabled={isGuestAdmin}
                 />
                 <Field
@@ -112,8 +110,8 @@ const TabPanelGeneral: React.FC<Props> = ({
                   variant="inline"
                   margin="normal"
                   size="small"
-                  autoOk
-                  disableToolbar
+                  closeOnSelect
+                  disableFuture
                   disabled={isGuestAdmin}
                 />
               </Box>

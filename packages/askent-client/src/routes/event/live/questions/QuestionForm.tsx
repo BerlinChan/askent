@@ -33,8 +33,7 @@ import {
   useMeQuery,
 } from "../../../../generated/graphqlHooks";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     contentFormControl: {
       width: "100%",
       display: "flex",
@@ -76,9 +75,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: "unset",
     },
     mobileSubmit: { width: "100%", marginTop: theme.spacing(1) },
-  })
-);
-
+  }));
 type QuestionValues = { content: string; name: string; anonymous: boolean };
 interface Props {
   autoFocus?: boolean;

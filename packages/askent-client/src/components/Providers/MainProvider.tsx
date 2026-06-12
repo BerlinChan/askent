@@ -22,7 +22,7 @@ const messages = {
     CREATE_EVENT: "Create Event"
   }
 };
-// TODO: DatePicker i18n, ref: https://material-ui-pickers.dev/localization/date-fns
+// TODO: DatePicker i18n
 const localeMap = {
   en: enLocale,
   zh: zhLocale

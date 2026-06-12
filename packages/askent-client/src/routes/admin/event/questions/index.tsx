@@ -18,8 +18,7 @@ import {
 } from "askent-common/src/constant";
 import { getQuestionOrderByCondition } from "../../../../utils";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     questionsGrid: {
       height: "100%",
     },
@@ -46,9 +45,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "center",
       height: "100%",
     },
-  })
-);
-
+  }));
 interface Props {
   eventDetailData: EventDetailLiveQueryFieldsFragment | undefined;
 }

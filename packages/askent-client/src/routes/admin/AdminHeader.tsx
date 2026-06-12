@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  createStyles,
   makeStyles,
 } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
@@ -20,8 +19,7 @@ import { useIntl } from "react-intl";
 import HeaderAction from "../../components/HeaderAction";
 import Logo from "../../components/Logo";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     toolbar: {
       justifyContent: "space-between",
     },
@@ -52,9 +50,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
       },
     },
-  })
-);
-
+  }));
 interface Props {
   searchString: string;
   setSearchString: React.Dispatch<React.SetStateAction<string>>;

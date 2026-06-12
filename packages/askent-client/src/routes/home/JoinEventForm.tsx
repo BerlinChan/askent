@@ -2,11 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { InputAdornment, CircularProgress, TextField } from "@mui/material";
 import Autocomplete from "@mui/lab/Autocomplete";
-import {
-  createStyles,
-  makeStyles,
-  withStyles,
-} from "@mui/styles";
+import { makeStyles, withStyles, createStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 import { ButtonLoading } from "../../components/Form";
 import { Formik, Form } from "formik";
@@ -18,14 +14,11 @@ import {
 } from "../../generated/graphqlHooks";
 import { useIntl, FormattedMessage } from "react-intl";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    joinForm: {
-      padding: theme.spacing(4, 8, 10, 8),
-    },
-  })
-);
-
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
+  joinForm: {
+    padding: theme.spacing(4, 8, 10, 8),
+  },
+}));
 const JoinInputField = withStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -42,7 +35,7 @@ const JoinInputField = withStyles((theme: Theme) =>
           },
       },
     },
-  })
+  }),
 )(TextField);
 
 const JoinEventForm: React.FC = (props) => {
@@ -82,7 +75,7 @@ const JoinEventForm: React.FC = (props) => {
               newValue: Pick<
                 Event,
                 "id" | "code" | "name" | "startAt" | "endAt"
-              > | null
+              > | null,
             ) => {
               formProps.setValues({
                 code: newValue?.code || "",

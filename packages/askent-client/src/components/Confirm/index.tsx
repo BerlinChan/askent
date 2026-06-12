@@ -51,7 +51,7 @@ const Confirm: React.FC<Props & Omit<DialogProps, "children">> = ({
         </DialogContent>
       )}
       <DialogActions>
-        <Button onClick={onCancel}>
+        <Button onClick={onCancel} variant="text">
           {cancelText ? (
             cancelText
           ) : (

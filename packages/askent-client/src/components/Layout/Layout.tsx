@@ -4,8 +4,7 @@ import { Theme } from "@mui/material/styles";
 import { Container, Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     layoutBox: {
       display: "flex",
       flexDirection: "column",
@@ -20,9 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingTop: theme.spacing(2),
       height: "100%",
     },
-  })
-);
-
+  }));
 interface Props {
   header: React.ReactElement;
   disableContainer?: boolean;

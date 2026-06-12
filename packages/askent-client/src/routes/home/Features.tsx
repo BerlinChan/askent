@@ -11,8 +11,7 @@ import IconGene from "./img/icon-gene.png";
 import IconCrossPlatform from "./img/icon-cross-platform.png";
 import IconOpenSource from "./img/icon-open-source.png";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     featureTitle: {
       marginTop: theme.spacing(6),
       marginBottom: theme.spacing(4),
@@ -50,9 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
         zIndex: -1,
       },
     },
-  })
-);
-
+  }));
 const Features: React.FC = (props) => {
   const classes = useStyles();
 

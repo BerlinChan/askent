@@ -5,8 +5,7 @@ import { createStyles, makeStyles } from "@mui/styles";
 import { Theme } from "@mui/material/styles";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     inputBox: {
       width: "100%",
       display: "flex",
@@ -27,9 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
       fontSize: theme.typography.pxToRem(18),
     },
-  })
-);
-
+  }));
 interface Props {
   className?: string;
   value?: string;

@@ -24,8 +24,7 @@ import EventItem from "./EventItem";
 import EventSettingDialog from "../../../components/EventSettingDialog";
 import ListFooter from "../../../components/ListFooter";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     eventList: {
       margin: theme.spacing(2, 0),
       flex: 1,
@@ -36,9 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontWeight: theme.typography.fontWeightBold,
       backgroundColor: theme.palette.primary.main,
     },
-  })
-);
-
+  }));
 interface Props {
   eventsByMeQueryResult: QueryResult<EventsByMeQuery, EventsByMeQueryVariables>;
 }

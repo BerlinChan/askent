@@ -41,8 +41,7 @@ import { ButtonLoading } from "../../../../../components/Form";
 import { QUESTION_CONTENT_MAX_LENGTH } from "askent-common/src/constant";
 import { FTextField } from "../../../../../components/Form";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     listItem: {
       flexWrap: "wrap",
       position: "relative",
@@ -69,9 +68,7 @@ const useStyles = makeStyles((theme: Theme) =>
       right: 8,
       height: 48,
     },
-  })
-);
-
+  }));
 interface Props {
   reply: ReplyLiveQueryFieldsFragment;
   handleMoreClick: (
@@ -268,3 +265,4 @@ export default React.memo(ReplyListItem, (prevProps, nextProps) => {
   */
   return R.equals(prevProps, nextProps);
 });
+

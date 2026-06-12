@@ -21,8 +21,7 @@ import {
   USER_EMAIL_MAX_LENGTH,
 } from "askent-common/src/constant";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     loginBox: {
       height: "100vh",
       display: "flex",
@@ -32,9 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
     card: {
       padding: theme.spacing(2),
     },
-  })
-);
-
+  }));
 const Login: React.FC = () => {
   const classes = useStyles();
   const [loginMutation, { loading }] = useLoginMutation();

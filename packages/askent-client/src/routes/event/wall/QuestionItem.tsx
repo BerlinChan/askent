@@ -24,8 +24,7 @@ import QuestionToggleButton, {
 } from "../../../components/QuestionToggleButton";
 import { QuestionLiveQueryFieldsFragment } from "../../../generated/hasuraHooks";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     listItem: {
       flexWrap: "wrap",
       position: "relative",
@@ -75,9 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: theme.typography.pxToRem(14),
       marginLeft: theme.typography.pxToRem(8),
     },
-  })
-);
-
+  }));
 interface Props {
   question: QuestionLiveQueryFieldsFragment;
   isScrolling?: boolean;
@@ -203,3 +200,4 @@ const QuestionListItem: React.FC<Props> = ({
 export default React.memo(QuestionListItem, (prevProps, nextProps) => {
   return R.equals(prevProps, nextProps);
 });
+

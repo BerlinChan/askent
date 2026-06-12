@@ -22,8 +22,7 @@ import { useToken } from "../../hooks";
 import MyProfileDialog from "./MyProfileDialog";
 import MyQuestionsDialog from "./MyQuestionsDialog";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles<Theme, {}, string>((theme: Theme) => ({
     userInfo: {
       display: "flex",
       flexDirection: "column",
@@ -38,9 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
     role: {
       fontSize: theme.typography.pxToRem(14),
     },
-  })
-);
-
+  }));
 interface Props {
   hideUserInfo?: boolean;
 }
