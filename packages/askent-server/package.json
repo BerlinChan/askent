@@ -38,7 +38,7 @@
     "typeorm": "0.2.41"
   },
   "devDependencies": {
-    "@types/bcryptjs": "2.4.2",
+    "@types/bcryptjs": "2.4.6",
     "@types/crypto-js": "4.1.0",
     "@types/jsonwebtoken": "8.5.8",
     "@types/ramda": "types/npm-ramda#dist",
