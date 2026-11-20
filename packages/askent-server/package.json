@@ -22,7 +22,7 @@
     "askent-common": "file:../askent-common",
     "apollo-server": "3.6.6",
     "bcryptjs": "2.4.3",
-    "class-validator": "0.13.2",
+    "class-validator": "0.14.0",
     "crypto-js": "4.1.1",
     "date-fns": "2.23.0",
     "env-cmd": "10.1.0",
